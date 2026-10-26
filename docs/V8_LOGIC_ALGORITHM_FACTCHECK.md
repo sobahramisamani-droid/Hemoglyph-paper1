@@ -37,3 +37,37 @@ Recorded as `xfail(strict=True)` in `tests/test_properties.py` so it stays visib
   standard (431 criterion-negative labels), not by composition, exclusion or covering logic.
 - The only measured step this week was engine-external (sepsis companion, +4 points patient-level).
 - The next real gains require clinician rule audit and credentialed full datasets — both parked for the user.
+
+## v8.1 (2026-10-26, gated) — what was changed after the fact-check
+
+### 1. Covering inversion — root cause and fix
+Tracing `final_score` writes (`sys.settrace`) showed the 0.752 was **not** produced by the covering block or the
+anchored-subsumption loop (both already carry the "a presumptive explainer < 0.80 organises but does not lower a
+better-established finding" rule for `_cau`), but by the **final finding-demotion pass** (v6 SAP Amendment 14 C1,
+`_acc2`/`_best2`, l. ≈5805), which capped every `explained_by` finding to 95 % of the best accounting diagnosis
+regardless of how weak that diagnosis was. The fix applies the *same existing rule* at that pass (and, for consistency,
+at the covering block and the subsumption loop): the cap is only applied when the explainer itself is ≥ 0.80.
+The earlier alternative — lifting the cover to the finding's score — was tried and **rejected**: it made AKI 0.92 from a
+single creatinine without baseline, asserting acuity the data do not establish (KDIGO AKI needs a baseline or a rise).
+
+Result (creatinine 1.6 / 2.2 / 3.0 / 4.5 mg/dL, 55-year-old man): renal lead 0.828 → 0.92 → 0.923 → 0.924 (monotone);
+AKI stays 0.792 and still organises the list (rank 1, reduced GFR nested beneath it with `explained_by = acute_kidney_injury`
+and its own probability). Grouped/two-tier outputs unchanged in structure.
+
+### 2. Measurement-uncertainty model (reporting only)
+`measurement_uncertainty(fid, value, ref)` with σ = value·√(CVI² + CVA²)/100 using desirable biological-variation
+specifications (Ricós/EFLM database; ≈45 analytes tabulated) gives, per observation, the probability that the true value
+lies above the upper / below the lower reference limit (`p_above_high`, `p_below_low`). Values with 0.10 < p < 0.90 are
+listed in `report.borderline_values`. It does **not** feed any score (the healthy-sweep assertion rate therefore cannot
+change) — it is a transparency layer so that Na 136 (p_below_low 0.14) or K 5.1 (p_above_high 0.65) are shown as
+borderline rather than silently normal/abnormal.
+
+### 3. Property tests extended (`tests/test_properties.py`)
+P3 now covers 14 analyte–direction pairs (creatinine, glucose↑/↓, potassium↑/↓, sodium↑/↓, haemoglobin, ALT, bicarbonate,
+WBC↑/↓, platelets↑) and additionally asserts that the entity is actually asserted (≥ 0.5) at the most extreme step, so a
+stale id cannot pass trivially. P5: documented CKD never raises AKI. P6: borderline flags present for Na 136 / K 5.1 and
+absent for Na 120. Creatinine `xfail` removed. 21 tests pass.
+
+**Open registry gap found by P3:** there is no `hypoalbuminemia` finding entity — an isolated albumin 1.8 g/dL lists only
+cirrhosis 0.30 / malnutrition 0.27. Adding it is a registry item (Tietz: < 3.5 g/dL, severe < 2.5) for a future
+registry version; not patched here because it needs a new entity + rule + gate.

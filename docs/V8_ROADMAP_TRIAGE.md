@@ -32,3 +32,9 @@ No fusion weight, threshold, registry logic or ranking rule changed.
 `eval/results/gate_v8/run_gate_v8.sh`: hard batteries (expect 151/151, 124/124, 77/78), healthy sweep 0/1000,
 perturbation ≥ 753/755, probes, pytest 689, eICU labs-only non-inferiority (flat@5 ≥ 60.8 − 0.5, two-tier@5 ≥ 71.9 − 0.5).
 Frozen v7 results are not modified; v8 is a development candidate until a new freeze amendment.
+
+## v8.1 (2026-10-26) — gated and committed
+See `docs/V8_LOGIC_ALGORITHM_FACTCHECK.md` §v8.1 and `eval/results/gate_v81/GATE_v81_RESULT.md`. Covering-inversion fix
+(uniform "weak explainer organises but does not lower" rule, incl. the final demotion pass), measurement-uncertainty
+reporting (`borderline_values`), property tests P1–P6. Gate: hard 151/124/77 of 78, pert 753/755, healthy 0/1000,
+pytest 705/9 skipped, eICU flat 48.4/61.0/74.1 (v8 47.9/60.8/74.1). Open registry item: `hypoalbuminemia` finding entity.

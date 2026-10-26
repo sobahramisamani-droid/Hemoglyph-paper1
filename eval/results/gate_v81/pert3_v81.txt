@@ -1,0 +1,4 @@
+[BRITTLE] Hypovolaemic hyponatraemia (thiazide): 3/5
+
+PERTURBATION (3% noise, 5 reps): replicates passed 753/755 (99.7%); fully robust cases 150/151
+exit 0

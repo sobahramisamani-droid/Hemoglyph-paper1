@@ -806,6 +806,7 @@ class InterpretationReport:
     next_tests: list[dict[str, Any]] = field(default_factory=list)  # ESL extension 8
     temporal_findings: list[dict[str, Any]] = field(default_factory=list)   # ESL extension 11-T
     clinical_context_applied: list[dict[str, Any]] = field(default_factory=list)  # ESL extension 11-C
+    borderline_values: list[dict[str, Any]] = field(default_factory=list)   # v8.1 measurement uncertainty
 
     def to_dict(self) -> dict[str, Any]:
         return _json_safe(asdict(self))
@@ -1203,6 +1204,58 @@ def emal_interference_corrections(observations: Mapping[str, ObservationRecord],
 
     return corrections
 
+# ---------------------------------------------------------------------------
+# Measurement uncertainty (v8.1, 2026-10-26). A reported value is one draw from
+# analytical imprecision (CVA) and within-subject biological variation (CVI);
+# the question "is the true/homeostatic value beyond the cut-off?" therefore has
+# a probability, not a yes/no. sigma = value * sqrt(CVA^2 + CVI^2) with the
+# desirable specifications of Ricos et al. (Scand J Clin Lab Invest 1999;
+# 2014 update; EFLM Biological Variation Database 2019). Values are approximate
+# and apply to adults. REPORTING ONLY: no rule, membership or score is changed;
+# the engine stays deterministic and the healthy-sweep contract is untouched.
+# ---------------------------------------------------------------------------
+_BIOLOGICAL_VARIATION_CV: dict[str, tuple[float, float]] = {  # feature: (CVI %, CVA %)
+    "sodium": (0.6, 0.3), "potassium": (4.6, 2.3), "chloride": (1.2, 0.6), "bicarbonate": (4.8, 2.4),
+    "carbon_dioxide": (4.8, 2.4), "glucose": (5.6, 2.8), "fasting_plasma_glucose": (5.6, 2.8),
+    "creatinine": (6.0, 2.2), "blood_urea_nitrogen": (12.3, 6.1), "urea": (12.3, 6.1),
+    "calcium_total": (1.9, 1.0), "calcium": (1.9, 1.0), "magnesium": (3.6, 1.8), "phosphate": (8.5, 4.3),
+    "hemoglobin": (2.8, 1.4), "hematocrit": (2.8, 1.4), "platelet_count": (9.1, 4.6),
+    "white_blood_cell_count": (10.9, 5.5), "mean_corpuscular_volume": (1.3, 0.7),
+    "alanine_aminotransferase": (19.4, 9.7), "aspartate_aminotransferase": (12.3, 6.1),
+    "alkaline_phosphatase": (6.4, 3.2), "gamma_glutamyl_transferase": (13.8, 6.9),
+    "bilirubin_total": (23.8, 11.9), "albumin": (3.1, 1.6), "total_protein": (2.7, 1.4),
+    "total_cholesterol": (5.9, 3.0), "triglycerides": (20.9, 10.5), "hdl_cholesterol": (7.1, 3.6),
+    "ldl_cholesterol": (8.3, 4.1), "uric_acid": (8.6, 4.3), "thyroid_stimulating_hormone": (19.7, 9.9),
+    "free_thyroxine": (5.7, 2.9), "ferritin": (14.2, 7.1), "c_reactive_protein": (42.2, 21.1),
+    "lactate": (27.2, 13.6), "inr": (4.0, 2.0), "international_normalized_ratio": (4.0, 2.0),
+    "hba1c": (1.9, 1.0), "hemoglobin_a1c": (1.9, 1.0), "lipase": (8.1, 4.1), "amylase": (8.7, 4.4),
+}
+
+def _phi(z: float) -> float:
+    return 0.5 * (1.0 + math.erf(z / math.sqrt(2.0)))
+
+def measurement_uncertainty(fid: str, value: float, ref: Mapping[str, Any]) -> Optional[dict[str, Any]]:
+    """Probability that the true value lies beyond the applied reference limits.
+
+    Returns None when no variation data exist for the analyte. 'borderline' is
+    True when either exceedance probability lies in (0.10, 0.90), i.e. the value
+    sits within ~1.3 sigma of a limit and the verdict is uncertain at the
+    measurement level."""
+    cv = _BIOLOGICAL_VARIATION_CV.get(fid)
+    if cv is None or value is None or value <= 0:
+        return None
+    sigma = value * math.sqrt(cv[0] ** 2 + cv[1] ** 2) / 100.0
+    out: dict[str, Any] = {"sigma": round(sigma, 4), "cv_source": "Ricos/EFLM desirable (CVI, CVA)"}
+    lo, hi = ref.get("low"), ref.get("high")
+    if isinstance(hi, (int, float)) and sigma > 0:
+        out["p_above_high"] = round(_phi((value - float(hi)) / sigma), 3)
+    if isinstance(lo, (int, float)) and sigma > 0:
+        out["p_below_low"] = round(_phi((float(lo) - value) / sigma), 3)
+    ps = [out.get("p_above_high"), out.get("p_below_low")]
+    out["borderline"] = any(p is not None and 0.10 < p < 0.90 for p in ps)
+    return out
+
+
 def enrich_observations(observations: Mapping[str, ObservationRecord],
     context: Optional[ClinicalContext] = None,
     corrections: Optional[list[dict[str, Any]]] = None,
@@ -1275,6 +1328,9 @@ def enrich_observations(observations: Mapping[str, ObservationRecord],
                 ref_comp_val, ref)
             obs.fuzzy_membership = _fuzzy_membership(
                 ref_comp_val, ref)
+            _mu = measurement_uncertainty(fid, ref_comp_val, ref)
+            if _mu is not None:
+                obs.context_flags["measurement_uncertainty"] = _mu
 
 
         enriched[fid] = obs
@@ -5457,6 +5513,18 @@ class MultiStageReasoner:
                         if best_dx >= 0.80 and item.final_score > best_dx:
                             item.final_score = best_dx
                         continue
+                    # v8.1 (2026-10-26, property test P3): the "a weakly supported explainer
+                    # (< 0.80) does not pull a better-established finding beneath it" rule above
+                    # applied only to CAUSAL explainers; an analyte-COVERING explainer below 0.80
+                    # still capped the finding. Hence creatinine 1.6 -> 2.2 mg/dL lowered the renal
+                    # lead (0.828 -> 0.792): at 1.6 the rule-layer finding stood on its own, at 2.2
+                    # the strong 'renal_failure_marked' finding was capped to 95 % of a presumptive
+                    # AKI (0.792). One rule for both kinds of explainer: the finding is still NESTED
+                    # beneath the covering diagnosis (grouped output unchanged) but keeps its own
+                    # score when the explainer is below 0.80 and less established than the finding.
+                    if _by.final_score < 0.80 and item.final_score > _by.final_score * 0.95:
+                        explained_by[item.disease_id] = _by.disease_id
+                        continue
                     _cap = _by.final_score * 0.95
                     if item.final_score > _cap:
                         explained_by[item.disease_id] = _by.disease_id
@@ -5520,6 +5588,17 @@ class MultiStageReasoner:
                 # the other (DKA triad over high-anion-gap acidosis); equal
                 # evidence sets stay side by side for the clinician.
                 if item.disease_id in anchored and not fi < fa:
+                    continue
+                # v8.1 (2026-10-26, property test P3): a presumptive diagnosis (< 0.80) that
+                # subsumes a better-established finding organises it (explained_by is still
+                # recorded, grouped output unchanged) but does not pull its score down — the
+                # same rule the attribution step applies to causal explainers. Before this,
+                # creatinine 1.6 -> 2.2 mg/dL lowered the renal lead from 0.828 to 0.792
+                # because the strong 'renal_failure_marked' finding (0.92) was capped to
+                # 95 % of a presumptive imputed-baseline AKI (0.792).
+                if (self._is_finding(item.disease_id) and not self._is_finding(anchor.disease_id)
+                        and anchor.final_score < 0.80 and item.final_score > anchor.final_score * 0.95):
+                    explained_by.setdefault(item.disease_id, anchor.disease_id)
                     continue
                 cap = anchor.final_score * 0.95
                 if item.final_score > cap:
@@ -5729,7 +5808,10 @@ class MultiStageReasoner:
                 # its own that no diagnosis accounted for keeps its score.
                 if (self._is_finding(item.disease_id) and item.disease_id not in critical_findings
                         and item.disease_id in explained_by
-                        and item.final_score > _best2.final_score * 0.95):
+                        and item.final_score > _best2.final_score * 0.95
+                        # v8.1 (property test P3): a presumptive explainer (< 0.80) organises
+                        # the finding (tier 0.5, named) but does not lower its probability
+                        and _best2.final_score >= 0.80):
                     item.final_score = _best2.final_score * 0.95
         filtered.sort(key=lambda r: (_tier(r), -r.final_score, self._is_finding(r.disease_id), r.disease_id))
         # (c) continued: move each organising diagnosis to just ahead of the first
@@ -13891,6 +13973,11 @@ class ClinicalRuleEngine:
         enriched = enrich_observations(
             observations, context, corrections)
         obs_dict = {fid: obs.value for fid, obs in enriched.items()}
+        result["borderline_values"] = [
+            {"feature_id": fid, "value": obs.value, "unit": obs.unit,
+             "reference_used": obs.reference_used, **obs.context_flags["measurement_uncertainty"]}
+            for fid, obs in enriched.items()
+            if obs.context_flags.get("measurement_uncertainty", {}).get("borderline")]
 
 
         drug_interactions = tashkhis_interactions(
@@ -14637,6 +14724,7 @@ class ClinicalRuleEngine:
             temporal_findings=[{"id": h.get("syndrome_id"), "dx": h.get("dx"), "note": h.get("note"), "strength": h.get("strength"), "source": h.get("source")}
                                for h in (getattr(self, "_esl_hits", []) or []) if h.get("temporal")],
             clinical_context_applied=list(getattr(self._reasoner, "_context_applied", []) or []),
+            borderline_values=list(advanced.get("borderline_values", []) or []),
             executive_summary=executive_summary,
             data_completeness=completeness,
         )

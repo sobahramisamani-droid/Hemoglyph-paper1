@@ -1,0 +1,66 @@
+== Addison / adrenal crisis
+    1 adrenal_crisis                                p=0.76 diagnosis supported addison_disease
+    2 addison_disease                               p=0.74 diagnosis conflicting None
+    3 primary_adrenal_insufficiency                 p=0.74 diagnosis supported addison_disease
+    4 acute_kidney_injury                           p=0.63 diagnosis supported adrenal_crisis
+    5 eosinophilia                                  p=0.59 finding supported None
+== single creat 2.0 outpatient
+    1 reduced_gfr_chronicity_undetermined           p=0.92 finding supported None
+    2 acute_kidney_injury                           p=0.28 diagnosis insufficient None
+    3 anemia                                        p=0.27 finding weak None
+    4 chronic_kidney_disease                        p=0.25 diagnosis weak None
+    5 gout                                          p=0.19 diagnosis weak None
+== single creat 2.0 ICU
+    1 acute_kidney_injury                           p=0.79 diagnosis supported None
+    2 reduced_gfr_chronicity_undetermined           p=0.92 finding supported acute_kidney_injury
+    3 anemia                                        p=0.27 finding weak None
+    4 chronic_kidney_disease                        p=0.25 diagnosis weak None
+    5 gout                                          p=0.19 diagnosis weak None
+== documented CKD cr 1.6
+    1 chronic_kidney_disease                        p=0.80 diagnosis supported None
+    2 reduced_gfr_chronicity_undetermined           p=0.48 finding supported chronic_kidney_disease
+    3 acute_kidney_injury                           p=0.27 diagnosis insufficient None
+    4 gout                                          p=0.19 diagnosis weak None
+== IgG4 620
+    1 igg4_related_disease                          p=0.68 diagnosis supported None
+    2 elevated_serum_igg4                           p=0.88 finding supported igg4_related_disease
+    3 eosinophilia                                  p=0.80 finding supported elevated_serum_igg4
+    4 hereditary_angioedema_c1_inhibitor            p=0.49 diagnosis insufficient None
+    5 vitamin_d_deficiency                          p=0.30 diagnosis weak None
+== CKD4 panel
+    1 chronic_kidney_disease                        p=0.81 diagnosis supported None
+    2 acute_kidney_injury                           p=0.60 diagnosis supported None
+    3 reduced_gfr_chronicity_undetermined           p=0.77 finding supported chronic_kidney_disease
+    4 hyperkalemia                                  p=0.62 finding supported reduced_gfr_chronicity_undetermined
+    5 anemia                                        p=0.52 finding insufficient chronic_kidney_disease
+== INR 8.5 critical
+    1 elevated_inr_pattern                          p=0.95 finding supported None
+    2 anemia                                        p=0.79 finding supported None
+    3 sepsis                                        p=0.72 diagnosis conflicting None
+    4 hyponatremia                                  p=0.64 finding supported None
+    5 leukocytosis_pattern                          p=0.59 finding supported sepsis
+== uraemia + HAGMA
+    1 acute_kidney_injury                           p=0.70 diagnosis supported None
+    2 chronic_kidney_disease                        p=0.60 diagnosis insufficient None
+    3 metabolic_acidosis                            p=0.83 diagnosis supported None
+    4 hyponatremia                                  p=0.65 finding supported None
+    5 hyperkalemia                                  p=0.79 finding conflicting metabolic_acidosis
+== troponin single ICU
+    1 myocardial_injury_acuity_undetermined         p=0.83 finding supported None
+    2 hyponatremia                                  p=0.64 finding supported None
+    3 anemia                                        p=0.53 finding supported None
+    4 acute_myocardial_infarction                   p=0.46 diagnosis insufficient None
+    5 vitamin_b12_deficiency                        p=0.23 diagnosis weak None
+== sepsis-ish + anemia
+    1 sepsis                                        p=0.83 diagnosis conflicting None
+    2 acute_kidney_injury                           p=0.79 diagnosis supported sepsis
+    3 chronic_kidney_disease                        p=0.57 diagnosis supported None
+    4 anemia                                        p=0.79 finding supported None
+    5 thrombocytopenia                              p=0.52 finding insufficient None
+== septic panel mm[Hg]
+    1 sepsis                                        p=0.83 diagnosis conflicting None
+    2 lactic_acidosis                               p=0.79 diagnosis supported sepsis
+    3 acute_kidney_injury                           p=0.75 diagnosis supported lactic_acidosis
+    4 quick_sofa_positive                           p=0.79 syndrome supported sepsis
+    5 reduced_gfr_chronicity_undetermined           p=0.79 finding supported sepsis
+== healthy

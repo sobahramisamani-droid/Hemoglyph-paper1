@@ -53,12 +53,22 @@ MONO = [  # feature, unit, start, steps (further past threshold), entity ids
     ("glucose", "mg/dL", [220, 300, 400, 550], ("hyperglycemia", "hyperglycemia_pattern", "diabetes_mellitus", "type_2_diabetes")),
     ("platelet_count", "10^9/L", [120, 90, 60, 30], ("thrombocytopenia", "thrombocytopenia_pattern")),
 ]
-KNOWN_P3 = {"creatinine": ("flat renal maximum falls 0.828 -> 0.792 between creatinine 1.6 and 2.2 mg/dL: at 2.2 the "
-                            "`renal_failure_marked` constellation fires, AKI (0.792) becomes the covering entity and "
-                            "`reduced_gfr_chronicity_undetermined` is nested beneath it at 0.752. Grouped/two-tier output is "
-                            "monotone; the flat probability of the lead is not. Logged 2026-10-26 as a covering-step inversion "
-                            "(cover should never score below what it explains); not patched pending a gated v8.1.")}
-@pytest.mark.parametrize("feat,unit,steps,ids", [pytest.param(*m, marks=pytest.mark.xfail(strict=True, reason=KNOWN_P3[m[0]])) if m[0] in KNOWN_P3 else m for m in MONO], ids=[m[0] for m in MONO])
+MONO += [
+    ("sodium", "mmol/L", [133, 129, 124, 118], ("hyponatremia", "severe_hyponatremia")),
+    ("sodium", "mmol/L", [147, 152, 158, 165], ("hypernatremia", "severe_hypernatremia")),
+    ("potassium", "mmol/L", [3.3, 3.0, 2.6, 2.2], ("hypokalemia", "severe_hypokalemia")),
+    ("bicarbonate", "mmol/L", [20, 17, 13, 9], ("metabolic_acidosis", "high_anion_gap_metabolic_acidosis", "normal_anion_gap_metabolic_acidosis")),
+    ("white_blood_cell_count", "10^9/L", [12.5, 16, 22, 30], ("leukocytosis", "leukocytosis_pattern")),
+    ("white_blood_cell_count", "10^9/L", [3.5, 2.8, 2.0, 1.2], ("leukopenia", "leukopenia_pattern")),
+    ("glucose", "mg/dL", [65, 55, 45, 35], ("fasting_hypoglycemia", "hypoglycemia", "severe_hypoglycemia")),
+    ("platelet_count", "10^9/L", [460, 550, 700, 900], ("thrombocytosis", "thrombocytosis_pattern")),
+    # albumin: no `hypoalbuminemia` finding entity exists in registry 14.2 (isolated albumin 1.8 g/dL lists only
+    # cirrhosis 0.30 / malnutrition 0.27) - recorded as an open registry gap in docs/V8_LOGIC_ALGORITHM_FACTCHECK.md
+]
+# v8.1 (2026-10-26): the creatinine inversion found by this test (renal lead 0.828 -> 0.792) was traced to the
+# finding-demotion passes capping a strong finding to 95 % of a presumptive (< 0.80) AKI; fixed by applying the
+# existing "a weak explainer organises but does not lower a better-established finding" rule uniformly.
+@pytest.mark.parametrize("feat,unit,steps,ids", MONO, ids=[f"{m[0]}-{m[3][0]}" for m in MONO])
 def test_p3_directional_monotonicity(feat, unit, steps, ids):
     rng = random.Random(hash(feat) & 0xffff)
     viol = []
@@ -69,6 +79,7 @@ def test_p3_directional_monotonicity(feat, unit, steps, ids):
             if pr + 1e-9 < prev - 0.02:  # tolerate 2-point jitter from covering logic
                 viol.append((rep, v, round(prev, 3), round(pr, 3)))
             prev = max(prev, pr)
+        assert prev >= 0.5, f"{feat}: entity {ids} never asserted (>= 0.5) even at {steps[-1]} {unit} - stale id or missing rule"
     assert not viol, f"{feat}: probability fell when moving further past threshold: {viol}"
 
 # ---- P4 ----
@@ -78,3 +89,20 @@ def test_p4_absent_key_analyte_never_raises(feat, unit, val, ids):
     with_key = prob(diff(panel({feat: (val, unit)})), *ids)
     without = prob(diff(panel(drop=(feat,))), *ids)
     assert without <= with_key + 1e-9 and without < 0.5
+
+
+# ---- P5 context invariants ----
+def test_p5_documented_ckd_never_raises_aki():
+    obs = panel({"creatinine": (2.2, "mg/dL")})
+    plain = prob(diff(obs), "acute_kidney_injury")
+    ctx_ckd = dict(CTX, conditions=["chronic kidney disease"])
+    with_ckd = max([x["probability"] for x in E.interpret(obs, None, ctx_ckd).to_dict()["differential_diagnosis"] if x["disease_id"] == "acute_kidney_injury"] or [0.0])
+    assert with_ckd <= plain + 1e-9
+
+def test_p6_borderline_flags_are_consistent():
+    r = E.interpret(panel({"sodium": (136, "mmol/L"), "potassium": (5.1, "mmol/L")}), None, CTX).to_dict()
+    b = {x["feature_id"]: x for x in r["borderline_values"]}
+    assert "sodium" in b and 0.10 < b["sodium"]["p_below_low"] < 0.90
+    assert "potassium" in b and 0.10 < b["potassium"]["p_above_high"] < 0.90
+    r2 = E.interpret(panel({"sodium": (120, "mmol/L")}), None, CTX).to_dict()
+    assert all(x["feature_id"] != "sodium" for x in r2["borderline_values"])  # 7 sigma below: not borderline
