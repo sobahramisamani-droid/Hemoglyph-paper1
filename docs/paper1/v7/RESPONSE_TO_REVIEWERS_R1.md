@@ -251,3 +251,21 @@ All frozen numbers in the manuscript are unchanged; v8 is explicitly a post-free
 | 2 × 2 ablation | Discussion now states plainly that even in the most favourable cell the 32,911 AI-drafted rules buy three recall points and that registry scale is not claimed as a merit. |
 | Precision ceiling in Abstract | Added ("ceiling ≈ 21% under perfect ranking"). |
 | Supplementary information list | Rewritten as a structured list including Note 7 and Table S16. |
+
+
+# Round 8 — technical revision (added 2026-10-26)
+
+| item | finding in the source (.md and rebuilt .docx, verified by text extraction) | action |
+|---|---|---|
+| "4,486 assertions per stay" | Source reads **4.486 assertions per stay × 2,314 stays** (decimal point). | PDF extraction artefact; no change needed. The submission will contain the .docx and a PDF printed directly from it. |
+| "1 1 1 …" block, "igure 1.1.1", "Table 1: Arm and risk-model layer off", "5 | Component ablation" without "Table" | The .docx has five tables (12×5, 4×7, 17×3, 10×5, 16×8); none contains such content; Table 5's caption reads "Table 5 | Component ablation …" and every table row carries `cantSplit` + keep-with-next with a repeated header row. | Conversion artefact of the reviewed PDF. |
+| Duplicated headings | Each heading is one paragraph with one run in the .docx. | Artefact (heading + PDF bookmark extracted twice). |
+| Truncated sentence starts ("1its", "7.9%", "5-6) for Hemoglyph", "2nd,") | Source: "kits", "77.9%", "60.7% (56.5–65.0) for Hemoglyph", "Second,". | Glyph loss at page breaks in the extraction. |
+| "elCU" | 0 occurrences; "eICU" throughout. | Artefact. |
+| References heading; "Eper PL"; "S99-5103" | "References" is a Heading 1; source reads "Epner PL", "S99–S103". | Artefacts. |
+| Ref 14 "oaf048" | JAMIA Open article IDs have the form **ooaf048** (Crossref 10.1093/jamiaopen/ooaf048), so the source was right; published title and DOI added. | Done. |
+| Refs 15 and 18 placeholder | Both resolved on Crossref (10.1001/jamanetworkopen.2025.12994; 10.1038/s41746-025-01963-x); DOIs added; placeholder removed. | Done. |
+| "Three were supported" vs four implemented | Now "Four were supported—three … engine changes … and one separate companion module". | Done. |
+| Heading level of "Post-freeze roadmap" | Level-3 under Discussion (same style as "Limitations"). | No change. |
+
+We accept the reviewer's central point: the reviewed PDF looked unfinished. Every listed artefact arises downstream of the .docx; the submission PDF will be printed directly from the .docx and checked page by page for the strings above.
