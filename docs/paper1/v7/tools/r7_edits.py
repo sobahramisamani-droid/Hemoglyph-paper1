@@ -32,7 +32,7 @@ t = sub(t, "Three findings shape how these numbers should be read.", "Five findi
 t = sub(t, "A guideline-derived rule engine with no training data recovered 61%", "A guideline-transcribed rule engine with no training data recovered 61%", "npj disc open")
 t = sub(t, "An open, offline, guideline-derived rule engine interpreted structured laboratory panels", "An open, offline, guideline-transcribed rule engine—its rules transcribed from guidelines by one non-clinician author with AI assistance and not yet independently audited—interpreted structured laboratory panels", "npj concl")
 # 4. abstract: precision ceiling
-t = sub(t, "appeared in the top-5 at precision@5 of 14.2% against an incomplete problem list;", "appeared in the top-5 at precision@5 of 14.2% against an incomplete problem list (ceiling ≈ 21% under perfect ranking, because the list carries ~1.05 evaluable labels per stay);", "npj abstract")
+t = sub(t, "appeared in the top-5, at precision@5 14.2% against an incomplete problem list;", "appeared in the top-5, at precision@5 14.2% against an incomplete problem list (ceiling ≈ 21% under perfect ranking, because the list carries ~1.05 evaluable labels per stay);", "npj abstract")
 # 5. MELD justification (Methods)
 t = sub(t, "with sodium clamped to 125–137 mmol/L and creatinine capped at 4 mg/dL)", "with sodium clamped to 125–137 mmol/L and creatinine capped at 4 mg/dL; computed only when bilirubin > 2 mg/dL or INR > 1.5)", "npj meld1")
 t = sub(t, "only)—and in registry 14.2.0, which re-sources", "only)." + MELD_WHY + " The remaining difference is registry 14.2.0, which re-sources", "npj meld2")

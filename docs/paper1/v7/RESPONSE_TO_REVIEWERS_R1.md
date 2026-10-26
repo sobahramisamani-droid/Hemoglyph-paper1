@@ -233,3 +233,21 @@ The twelve improvement proposals in the latest report were triaged against the f
 | 'Probable' tiers, layer removal, thyroid/liver rules | Not supported by the data; reasons tabulated. | Note 7 |
 
 All frozen numbers in the manuscript are unchanged; v8 is explicitly a post-freeze development step without a quarantine round (Limitations). Files: `docs/V8_ROADMAP_TRIAGE.md`, `eval/sepsis_ml/`, `eval/results/sepsis_ml/`, `eval/results/gate_v8/`, `eval/registry_patches/patch_14_2_0.py`, `release/registry_14.2.0/`, `tests/test_v8_indices.py`.
+
+
+# Round 7 — presentation and structure (added 2026-10-26)
+
+| item | action |
+|---|---|
+| "1.0% vs 59.6%", "2.0% vs 65.1%", "(k 0.69)", "elCU", "oaof048", "igure 1.1.1…", "1 1 1 …" block, orphaned page numbers, "stay outputs and reproduce.sh" | None of these strings exists in the manuscript source or in the .docx (verified by text extraction of the rebuilt files: "60.7% vs 59.6%", "72.0% vs 65.1%", "κ 0.69", "eICU", "oaf048", "Per-stay outputs"). They are artefacts of the PDF→text extraction used for review (ligature "fi", kerning of "6"/"7", table-border glyphs). We will supply the .docx and a PDF rendered by the journal's own pipeline; if a reviewer's PDF reader reproduces these, we will add a plain-text version. |
+| Fig. 6 legend still read "GPT-4-class LLM" | Legend text replaced in the figure ("frontier LLM (unnamed)"); data unchanged. |
+| v8 section interrupted the frozen Results | Moved out of Results into a Discussion subsection "Post-freeze roadmap (engine v8)"; Results now contain frozen v7 numbers only. |
+| "Three findings" with five items | Now "Five findings" (both manuscripts); a broken splice in the sample-style Fourth finding repaired. |
+| guideline-derived vs guideline-transcribed | Discussion opening and Conclusion now say "guideline-transcribed", Conclusion carries the explanatory clause. |
+| Twelve proposals, five discussed | Supplementary Note 7 has the twelve-row table (proposal, evidence, verdict, action); the Discussion subsection now points to it explicitly. |
+| Challenge-winner comparison | Kept for orientation with an explicit "not directly comparable" qualifier (data access, threshold tuning, ensembles). |
+| Set-B re-tune is peeking | Now stated in the Discussion subsection with its effect (set-B hourly AUROC 0.719 → 0.757 for the boosting model); logistic model and set B2 remain one-shot. |
+| MELD gate | Justification added in Methods (MELD is calibrated for established hepatic dysfunction; on normal bilirubin/INR it degenerates to a creatinine term). |
+| 2 × 2 ablation | Discussion now states plainly that even in the most favourable cell the 32,911 AI-drafted rules buy three recall points and that registry scale is not claimed as a merit. |
+| Precision ceiling in Abstract | Added ("ceiling ≈ 21% under perfect ranking"). |
+| Supplementary information list | Rewritten as a structured list including Note 7 and Table S16. |
