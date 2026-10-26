@@ -1,0 +1,517 @@
+{
+"https://b-s-h.org.uk/guidelines": {
+"code": "200",
+"chars": 2324,
+"ok": true
+},
+"https://clsi.org": {
+"code": "200",
+"chars": 7485,
+"ok": true
+},
+"https://clsi.org/shop/standards/ep28/": {
+"code": "200",
+"chars": 9123,
+"ok": true
+},
+"https://diabetesjournals.org/care": {
+"code": "403",
+"chars": 60,
+"ok": false
+},
+"https://diabetesjournals.org/care/article/49/Supplement_1/S27/163926/2-Diagnosis-and-Classification-of-Diabetes": {
+"code": "403",
+"chars": 60,
+"ok": false
+},
+"https://doi.org/10.1001/jama.2016.0287": {
+"code": "403",
+"chars": 6946,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1002/art.39859": {
+"code": "403",
+"chars": 2509,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1002/art.40320": {
+"code": "403",
+"chars": 2406,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1002/art.40930": {
+"code": "403",
+"chars": 2218,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1002/jbmr.4677": {
+"code": "403",
+"chars": 2265,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1002/ncp.10474": {
+"code": "403",
+"chars": 2225,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1007/978-3-319-22822-8_9": {
+"code": "200",
+"chars": 2138,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1007/s00415-019-09185-4": {
+"code": "200",
+"chars": 2319,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1016/S1470-2045(14)70442-5": {
+"code": "200",
+"chars": 4146,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1016/S2213-8587(21)00235-7": {
+"code": "200",
+"chars": 15630,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1016/j.jhep.2009.04.009": {
+"code": "200",
+"chars": 625,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1016/j.jhep.2018.03.005": {
+"code": "200",
+"chars": 1221,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1016/j.kint.2019.09.018": {
+"code": "200",
+"chars": 4912,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1016/j.kint.2021.05.021": {
+"code": "200",
+"chars": 898,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1038/ajg.2016.517": {
+"code": "200",
+"chars": 84953,
+"ok": true
+},
+"https://doi.org/10.1038/s41375-022-01613-1": {
+"code": "200",
+"chars": 121725,
+"ok": true
+},
+"https://doi.org/10.1038/s41574-023-00886-5": {
+"code": "200",
+"chars": 135864,
+"ok": true
+},
+"https://doi.org/10.1089/thy.2014.0028": {
+"code": "403",
+"chars": 3716,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1089/thy.2016.0229": {
+"code": "403",
+"chars": 2867,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1093/ecco-jcc/jjy113": {
+"code": "403",
+"chars": 3967,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1093/eurheartj/ehad195": {
+"code": "403",
+"chars": 2799,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1093/eurheartj/eht273": {
+"code": "403",
+"chars": 3107,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1093/eurheartj/ehz405": {
+"code": "403",
+"chars": 2569,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1093/eurheartj/ehz455": {
+"code": "403",
+"chars": 2654,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1097/AOG.0000000000003891": {
+"code": "403",
+"chars": 1317,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1097/HEP.0000000000000323": {
+"code": "403",
+"chars": 2995,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1111/all.15214": {
+"code": "403",
+"chars": 1546,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1111/bjh.12959": {
+"code": "403",
+"chars": 2089,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1111/bjh.13058": {
+"code": "403",
+"chars": 706,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1111/bjh.14478": {
+"code": "403",
+"chars": 733,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1111/j.1365-2141.2004.05094.x": {
+"code": "403",
+"chars": 1621,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1111/jth.15006": {
+"code": "200",
+"chars": 3988,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1136/gutjnl-2012-302779": {
+"code": "403",
+"chars": 4229,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1136/gutjnl-2021-325210": {
+"code": "403",
+"chars": 2220,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1161/CIR.0000000000000625": {
+"code": "403",
+"chars": 11064,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1161/CIRCULATIONAHA.105.169404": {
+"code": "403",
+"chars": 821,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1164/rccm.201207-1284CI": {
+"code": "403",
+"chars": 1127,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1182/bloodadvances.2019001143": {
+"code": "403",
+"chars": 2627,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1210/jc.2014-1498": {
+"code": "403",
+"chars": 3709,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1210/jc.2015-1710": {
+"code": "403",
+"chars": 4905,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1210/jc.2015-2175": {
+"code": "403",
+"chars": 2879,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.1210/jc.2015-4061": {
+"code": "403",
+"chars": 2892,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.1210/jc.2018-01865": {
+"code": "403",
+"chars": 2253,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.14309/ajg.0000000000002968": {
+"code": "200",
+"chars": 138305,
+"ok": true
+},
+"https://doi.org/10.1530/EJE-13-1020": {
+"code": "403",
+"chars": 1577,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.2337/dc09-1848": {
+"code": "403",
+"chars": 1389,
+"ok": true,
+"via": "pubmed-abstract"
+},
+"https://doi.org/10.2337/dc25-S002": {
+"code": "403",
+"chars": 964,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://doi.org/10.2337/dci24-0032": {
+"code": "403",
+"chars": 1161,
+"ok": true,
+"via": "crossref/pubmed"
+},
+"https://eaaci.org/guidelines/anaphylaxis/": {
+"code": "200",
+"chars": 3683,
+"ok": true
+},
+"https://eaaci.org/guidelines/food-allergy/": {
+"code": "200",
+"chars": 4505,
+"ok": true
+},
+"https://easl.eu/guidelines/cirrhosis/": {
+"code": "404",
+"chars": 2503,
+"ok": true,
+"via": "retry"
+},
+"https://easl.eu/guidelines/masld/": {
+"code": "404",
+"chars": 2503,
+"ok": true,
+"via": "retry"
+},
+"https://gi.org": {
+"code": "403",
+"chars": 11240,
+"ok": true,
+"via": "retry"
+},
+"https://kdigo.org/guidelines/acute-kidney-injury/": {
+"code": "406",
+"chars": 6010,
+"ok": true,
+"via": "retry"
+},
+"https://kdigo.org/guidelines/ckd-evaluation-and-management/": {
+"code": "406",
+"chars": 8141,
+"ok": true,
+"via": "retry"
+},
+"https://naspghan.org": {
+"code": "403",
+"chars": 6774,
+"ok": true,
+"via": "retry"
+},
+"https://pro.aace.com/disease-state-resources/diabetes/guidelines": {
+"code": "404",
+"chars": 2535,
+"ok": true,
+"via": "retry"
+},
+"https://tumourclassification.iarc.who.int/": {
+"code": "200",
+"chars": 21,
+"ok": false
+},
+"https://www.aap.org": {
+"code": "200",
+"chars": 9831,
+"ok": true
+},
+"https://www.aasld.org": {
+"code": "200",
+"chars": 5660,
+"ok": true
+},
+"https://www.acog.org": {
+"code": "200",
+"chars": 3183,
+"ok": true
+},
+"https://www.asbmr.org": {
+"code": "403",
+"chars": 5464,
+"ok": true,
+"via": "retry"
+},
+"https://www.cdc.gov/": {
+"code": "403",
+"chars": 207,
+"ok": false
+},
+"https://www.cdc.gov/lead-prevention/php/news-features/updates-blood-lead-reference-value.html": {
+"code": "403",
+"chars": 280,
+"ok": false
+},
+"https://www.elsevier.com/": {
+"code": "200",
+"chars": 11679,
+"ok": true
+},
+"https://www.endocrine.org/clinical-practice-guidelines": {
+"code": "200",
+"chars": 7568,
+"ok": true
+},
+"https://www.endocrine.org/clinical-practice-guidelines/cushings-syndrome": {
+"code": "200",
+"chars": 4133,
+"ok": true
+},
+"https://www.endocrine.org/clinical-practice-guidelines/primary-adrenal-insufficiency": {
+"code": "200",
+"chars": 17777,
+"ok": true
+},
+"https://www.endocrine.org/clinical-practice-guidelines/primary-aldosteronism": {
+"code": "200",
+"chars": 4133,
+"ok": true
+},
+"https://www.espen.org/guidelines": {
+"code": "200",
+"chars": 3082,
+"ok": true
+},
+"https://www.eular.org/recommendations": {
+"code": "404",
+"chars": 4235,
+"ok": true,
+"via": "retry"
+},
+"https://www.hcvguidelines.org": {
+"code": "200",
+"chars": 4697,
+"ok": true
+},
+"https://www.idsociety.org/practice-guideline/practice-guidelines/": {
+"code": "200",
+"chars": 3302,
+"ok": true
+},
+"https://www.isth.org": {
+"code": "403",
+"chars": 60,
+"ok": false
+},
+"https://www.nccn.org/guidelines/category_1": {
+"code": "200",
+"chars": 12161,
+"ok": true
+},
+"https://www.nice.org.uk/guidance/ng33": {
+"code": "200",
+"chars": 4143,
+"ok": true
+},
+"https://www.rheumatology.org/": {
+"code": "200",
+"chars": 4485,
+"ok": true
+},
+"https://www.rheumatology.org/Practice-Quality/Clinical-Support/Criteria/Systemic-Lupus-Erythematosus": {
+"code": "200",
+"chars": 2148,
+"ok": true
+},
+"https://www.sccm.org": {
+"code": "200",
+"chars": 13038,
+"ok": true
+},
+"https://www.sccm.org/Clinical-Resources/Guidelines": {
+"code": "200",
+"chars": 9457,
+"ok": true
+},
+"https://www.sccm.org/SurvivingSepsisCampaign/Guidelines": {
+"code": "200",
+"chars": 1756,
+"ok": true,
+"via": "retry"
+},
+"https://www.thyroid.org/professionals/ata-professional-guidelines": {
+"code": "200",
+"chars": 15724,
+"ok": true
+},
+"https://www.who.int/": {
+"code": "200",
+"chars": 4668,
+"ok": true
+},
+"https://www.who.int/publications": {
+"code": "200",
+"chars": 4032,
+"ok": true
+},
+"https://www.who.int/publications/i/item/9789240090446": {
+"code": "404",
+"chars": 3089,
+"ok": true,
+"via": "retry"
+},
+"https://www.who.int/publications/i/item/9789241595827": {
+"code": "200",
+"chars": 4052,
+"ok": true
+},
+"https://www.who.int/publications/i/item/guidelines-for-malaria": {
+"code": "200",
+"chars": 4411,
+"ok": true
+}
+}

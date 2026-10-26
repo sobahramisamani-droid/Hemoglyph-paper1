@@ -704,3 +704,79 @@ Largest standardised logistic coefficients (signed): respiratory rate +0.49, hou
 | 12 | LLM extraction front end; path A/B/C on 'untrained' | path C: engine stays untrained; supervised components only as labelled companions | decided | item 1 is the first such component |
 
 Gate for v8 (`eval/results/gate_v8/GATE_v8_RESULT.md`): batteries 151/151, 124/124, 77/78 (same pre-existing miss); healthy sweep 0/1,000; perturbation 753/755; 680 unit tests passed + 4 new; eICU labs-only counts identical to v7 in every group. The Supplementary Note 6 manifest refers to the v7 artefacts; the v8 registry (14.2.0) is archived at `release/registry_14.2.0/` with SHA-256 sums and the v7 registry at `release/registry_14.1.0/`.
+
+
+## Supplementary Note 8 — Source-concordance audit of 200 sampled rules (non-clinical; added in revision round 9, 2026-10-26)
+
+**Purpose and scope.** This audit asks one narrow question: does the executable rule transcribe what its cited source says
+(analyte, operator/threshold, population qualifier, disease attribution)? It does **not** assess clinical validity: a rule
+can be transcribed perfectly and still be clinically wrong, and no clinician took part. The protocol was frozen before
+sampling (`eval/source_audit/PROTOCOL.md`).
+
+**Sampling.** Seed 20261026; 100 of the 272 curated anchor rules (stratum A); 100 executable candidates (stratum B), split
+50/50 between B1 "eICU-relevant" (feature present in >= 50 % of eICU first panels and disease in an evaluated label group;
+141 eligible) and B2 uniform from the remaining 32,760 candidates. Registry 14.1.0 (frozen v7).
+
+**Source retrieval.** The 200 rules cite 92 unique locators. From the audit sandbox, 43 returned HTTP 403 (publisher
+paywalls: Wiley, OUP, Lippincott, Endocrine Society, AHA, ADA), 7 returned 404/406 (including the WHO essential
+diagnostics list URL cited by 13 rules and both kdigo.org guideline pages, whose PDFs were then retrieved directly), and 42
+returned a page; for paywalled DOIs the Crossref title and PubMed abstract were obtained instead. Net: 12 rules had no
+retrievable text at all, 55 only a title/abstract, 46 cite only generic methodological sources (WHO essential diagnostics
+list, CLSI EP28, CLSI C59) that cannot by construction contain a disease-specific threshold, and 71 a landing page or a
+full text in which the specific statement was looked for.
+
+**Labels (rater 1 = AI agent, declared; rater 2 = human non-clinician co-author, pending).** Tie-break: when in doubt,
+UNRESOLVABLE, never CONCORDANT. A rule was called DISCORDANT only when a reachable source was clearly about a different
+disease (attribution error) or when a retrieved full text was on-topic and demonstrably did not contain the rule's
+threshold or definition.
+
+| Stratum | n | Concordant | Discordant | Unresolvable | Discordant / resolvable (Wilson 95 % CI) | Discordant / all (95 % CI) | Unresolvable / all (95 % CI) |
+|---|---:|---:|---:|---:|---|---|---|
+| A anchors | 100 | 1 | 7 | 92 | 7/8 = 87.5 % (52.9–97.8) | 7.0 % (3.4–13.7) | 92.0 % (85.0–95.9) |
+| B1 eICU-relevant candidates | 50 | 0 | 7 | 43 | 7/7 = 100 % (64.6–100) | 14.0 % (7.0–26.2) | 86.0 % (73.8–93.0) |
+| B2 other candidates | 50 | 0 | 1 | 49 | 1/1 (20.7–100) | 2.0 % (0.4–10.5) | 98.0 % (89.5–99.6) |
+| All | 200 | 1 | 15 | 184 | 15/16 = 93.8 % (71.7–98.9) | 7.5 % (4.6–12.0) | 92.0 % (87.4–95.1) |
+
+**How to read this.** The resolvable subset is tiny (16/200) and strongly selected: an attribution error is visible from a
+source *title*, whereas confirming concordance needs the *full text* behind a paywall, so discordant rules are far easier
+to detect than concordant ones in this environment. The 94 % discordance among resolvable rules is therefore **not** an
+estimate of the registry's discordance rate; the defensible statements are (i) at least 7.5 % (4.6–12.0) of sampled rules
+are demonstrably discordant with their cited source, (ii) 92 % could not be verified from the locator the registry
+provides, and (iii) the dominant failure is provenance granularity — organisation-level URLs, generic methodological
+standards and homepages instead of section-level citations — which makes the registry, as released, **not auditable
+rule-by-rule from its own locators**. Seven of the 15 discordances are attribution errors in *curated anchors* (e.g. a
+hypernatraemia rule citing the hyponatraemia guideline; acquired haemophilia A citing the rare-coagulation-disorders
+guideline that excludes it); eight are thresholds or definitions absent from an on-topic source, the most consequential
+being an AKI "diagnostic criterion" defined by a fixed creatinine > 1.1 mg/dL and attributed to KDIGO 2012, which defines
+AKI only by change from baseline (this candidate rule is one of the B1 rules most likely to have fired in eICU).
+
+**Discordant rules (all 15, verbatim).**
+
+| rule_id | stratum | disease | finding |
+|---|---|---|---|
+| `hypernatremia_severe_155_cur13` | A | hypernatremia | attribution: hypernatraemia >155 cites the EJE 2014 hyponatraemia guideline, which does not address hypernatraemia |
+| `pseudohypoparathyroidism_hypocalcemia_high_pth_normal_renal_cur13` | A | pseudohypoparathyroidism | attribution: pseudohypoparathyroidism criteria cite the primary hyperparathyroidism workshop guideline (different disease) |
+| `hypomagnesemia_severe_1_2_cur13` | A | hypomagnesemia | attribution: severe hypomagnesaemia <1.2 mg/dL cites the KDIGO potassium/dyskalaemia conference report |
+| `septic_shock_severe_lactic_acidosis_sepsis3_lactate_4_cur13` | A | septic_shock_severe_lactic_acidosis | threshold: cited Sepsis-3 defines septic shock with lactate >2 mmol/L; the >4 mmol/L cut-off is not in the cited source (it derives from the SSC resuscitation bundle) |
+| `hyperprolactinemia_pituitary_2023_prolactin_elevated_cur13` | A | hyperprolactinemia | threshold: Pituitary Society 2023 consensus (full text retrieved) defers to assay-specific reference ranges and does not state 25 ng/mL |
+| `hepatitis_a_igm_anti_hav_positive_cur13` | A | hepatitis_a | attribution: hepatitis A IgM criterion cites the EASL hepatitis E guideline |
+| `acquired_hemophilia_a_reanchor_scre_v13_4` | A | acquired_hemophilia_a | attribution: acquired haemophilia A cites the BSH rare coagulation disorders guideline, which excludes FVIII deficiency (covered by a separate BSH guideline) |
+| `diabetes_insipidus_nephrogenic_hypokalemia_risk` | B1 | diabetes_insipidus_nephrogenic | attribution/statement: nephrogenic diabetes insipidus screen by potassium <=3.0 cites KDIGO CKD 2024 (full PDF retrieved); no such statement |
+| `hyponatremia_hyperkalemia_pattern_diagnostic_criterion_1_v1` | B1 | hyponatremia_hyperkalemia_pattern | threshold: Endocrine Society PAI 2016 guideline (full text retrieved) names hyperkalaemia as a feature but states no potassium threshold; 5.5 mmol/L not in source |
+| `acute_kidney_injury_v1_f13_3` | B1 | acute_kidney_injury | definition: AKI 'diagnostic criterion' by fixed creatinine >1.1 mg/dL / eGFR <60 cites KDIGO AKI 2012 (full PDF retrieved), which defines AKI only by change from baseline (>=0.3 mg/dL in 48 h or >=1.5x in 7 days) |
+| `hyperkalemia_pattern_staging_severity_1_v1` | B1 | hyperkalemia_pattern | statement absent: hyperkalaemia >6.5 severity cites WHO essential diagnostics list (404) and KDIGO AKI 2012 (full PDF retrieved) - no potassium threshold in the source |
+| `hyperkalemia_acidosis_pattern_screening_1_v1` | B1 | hyperkalemia_acidosis_pattern | statement absent: potassium >5.5 pattern cites KDIGO AKI 2012 (full PDF retrieved) - no threshold in source |
+| `hyperkalemia_pattern_diagnostic_criterion_1_v1` | B1 | hyperkalemia_pattern | statement absent: potassium >5.5 'diagnostic criterion' cites KDIGO AKI 2012 (full PDF retrieved) - no threshold in source |
+| `hypokalemia_pattern_screening_1_v1` | B1 | hypokalemia_pattern | statement absent: potassium <3.5 pattern cites KDIGO AKI 2012 (full PDF retrieved) - no threshold in source |
+| `ckd_stage_g2_hypokalemia_risk_v1` | B2 | ckd_stage_g2 | attribution/statement: 'CKD stage G2' screen by potassium <=3.0 cites KDIGO CKD 2024 (full PDF retrieved); G2 is defined by eGFR 60-89, potassium plays no role |
+
+**Concordant rule.**
+
+| rule_id | stratum | disease | finding |
+|---|---|---|---|
+| `chronic_kidney_disease_kdigo_2024_albuminuria_a2_cur13` | A | chronic_kidney_disease | KDIGO CKD 2024 (full PDF retrieved): ACR 30-300 mg/g = A2, ACR >30 mg/g is a marker of kidney damage; rule threshold, analyte and disease match (chronicity >3 months handled by engine context, not by this rule) |
+
+**Consequence.** Registry 15 will carry section-level locators (document + section/table + page) for every executable rule,
+the 46 generic-source candidates will be retired or re-sourced, and the five anchor attribution errors found here are
+corrected in the next release with a dated change-log entry; none of these changes alters the frozen v7 results reported in
+this paper. Files: `eval/source_audit/{PROTOCOL.md, sample_200.csv, summary_rater1.json, source_access_status.json}`.

@@ -1,0 +1,128 @@
+{
+ "protocol": "eval/source_audit/PROTOCOL.md",
+ "seed": 20261026,
+ "registry": "14.1.0",
+ "rater1": "AI agent (declared)",
+ "rater2": "pending (human non-clinician co-author)",
+ "unique_urls": 92,
+ "urls_with_any_text": 86,
+ "urls_http_403": 43,
+ "urls_http_404": 7,
+ "results": {
+  "A": {
+   "n": 100,
+   "concordant": 1,
+   "discordant": 7,
+   "unresolvable": 92,
+   "disc_rate_resolvable": 0.875,
+   "ci_resolvable": [
+    0.5291051942301386,
+    0.9775830911367038
+   ],
+   "disc_rate_all": 0.07,
+   "ci_all": [
+    0.034318824364064096,
+    0.13749671006529757
+   ],
+   "unres_rate": 0.92,
+   "ci_unres": [
+    0.8500173312059693,
+    0.9589070305141891
+   ]
+  },
+  "B1": {
+   "n": 50,
+   "concordant": 0,
+   "discordant": 7,
+   "unresolvable": 43,
+   "disc_rate_resolvable": 1.0,
+   "ci_resolvable": [
+    0.6456611570247934,
+    1.0
+   ],
+   "disc_rate_all": 0.14,
+   "ci_all": [
+    0.06950745262022862,
+    0.2618645719852809
+   ],
+   "unres_rate": 0.86,
+   "ci_unres": [
+    0.738135428014719,
+    0.9304925473797714
+   ]
+  },
+  "B2": {
+   "n": 50,
+   "concordant": 0,
+   "discordant": 1,
+   "unresolvable": 49,
+   "disc_rate_resolvable": 1.0,
+   "ci_resolvable": [
+    0.20654329147389294,
+    1.0
+   ],
+   "disc_rate_all": 0.02,
+   "ci_all": [
+    0.0035391680889764604,
+    0.10495686471836953
+   ],
+   "unres_rate": 0.98,
+   "ci_unres": [
+    0.8950431352816304,
+    0.9964608319110235
+   ]
+  },
+  "B": {
+   "n": 100,
+   "concordant": 0,
+   "discordant": 8,
+   "unresolvable": 92,
+   "disc_rate_resolvable": 1.0,
+   "ci_resolvable": [
+    0.6755843804891231,
+    1.0
+   ],
+   "disc_rate_all": 0.08,
+   "ci_all": [
+    0.04109296948581091,
+    0.14998266879403072
+   ],
+   "unres_rate": 0.92,
+   "ci_unres": [
+    0.8500173312059693,
+    0.9589070305141891
+   ]
+  },
+  "ALL": {
+   "n": 200,
+   "concordant": 1,
+   "discordant": 15,
+   "unresolvable": 184,
+   "disc_rate_resolvable": 0.9375,
+   "ci_resolvable": [
+    0.7167073163197013,
+    0.9888809426916687
+   ],
+   "disc_rate_all": 0.075,
+   "ci_all": [
+    0.045974507057252416,
+    0.12004459797332034
+   ],
+   "unres_rate": 0.92,
+   "ci_unres": [
+    0.8740095102048769,
+    0.9501598448237337
+   ]
+  }
+ },
+ "unresolvable_breakdown": {
+  "landing_page_or_full_text_without_the_statement": 71,
+  "no_text_retrieved": 12,
+  "abstract_or_title_only": 55,
+  "generic_methodological_source_cannot_contain_statement": 46
+ },
+ "discordant_kinds": {
+  "attribution": 7,
+  "threshold/statement": 8
+ }
+}
