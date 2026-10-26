@@ -185,3 +185,35 @@ The ALT discrepancy was the registry-14.1 MASLD rule revision, present in v7 but
 
 ## Files added or changed in R4
 `eval/ablation/run_ablation.py` (+arm `anchor_only_no_esl`), `run_chain.sh`, `ablation_ci.py` → `eval/results/eicu_demo/{per_stay,report,summary}_abl_anchor_only_no_esl*`, `ABLATION_v7_{ci,full}.md`; `eval/results/nhanes_2017/{report_v7.md,summary_v7.json,per_subject_v7.json.gz,nhanesJ_v7.log}`; `eval/realdata/nhanes_weighted.py` (J → v7) → `eval/results/nhanes_weighted_v7.{md,json}`; `eval/subgroup_fairness.py` (reads .gz) → `eval/results/eicu_demo/subgroups_v7.md`; `docs/paper1/v7/tools/{r4_edits.py,r4b_nhanesJ.py,build_docx_R1.py,build_sample_docx_R1.py}`; `make_paper_src_figs.py` + `fig/Fig5.png`; both `_R1.md` manuscripts and `.docx`; `docs/paper1/supplement/SUPPLEMENT_R1.md` (Table S4, S10 flow, Note 4, Note 5, TRIPOD+AI checklist).
+
+---
+
+# Response to the fifth report — added 2026-10-26
+
+Items requiring resources outside the authors' control (independent clinical rule audit, clinician adjudication of assertions, a clinical co-author/advisory board, credentialed full eICU/MIMIC-IV, a version-pinned named LLM) remain **open** and are now stated as such in Limitations; everything else was implemented.
+
+| Point | Status | What changed |
+|---|---|---|
+| M1 pre-specified vs changed criteria | **R5** | Abstract now states: SAP internal and hash-frozen, not publicly registered; criteria changed from superiority to non-inferiority after Round 1 failed; Round 2 supportive, not confirmatory. Title no longer says "one-shot quarantine" unqualified ("frozen quarantine rounds") and names the demo subsets. Conclusion repeats both. The garbled sentence "'pre-specified', not 'pre-specified'" (a global-replace error) is fixed. |
+| M2 unaudited knowledge base | **partly R5 / open** | Abstract and Conclusion now say the components carrying the result (272 anchors, syndrome layer) are exactly those not yet independently audited and were written by a non-clinician; Discussion wording changed to "guideline-*transcribed*". The audit itself requires two independent clinicians (package ready) — open. |
+| M3 LLM not reproducible | **R5 (wording) / open (re-run)** | "GPT-4-class" removed from title, abstract, headings, tables and text → "unnamed frontier LLM accessed through an agent platform (model not disclosed)". A version-pinned re-run is not possible for the authors (no paid API access); stated. |
+| M4 reference-standard ceiling | **R5 / open** | Abstract: precision@5 14.2 % against an incomplete list; panel-supported metric labelled post hoc there and in Limitations; prevalence baseline overtaking at k = 10 and "contribution is ordering" in abstract. Clinician adjudication of a 200-assertion sample — open. |
+| M5 demo subsets only | **R5 (scoping)** | Title and abstract name the demo subsets; Limitations note small external cohorts and ILPD 0.704. Full releases need PhysioNet credentialing — open. |
+| M6 COI / non-clinician authorship | **R5 (disclosure) / open** | Limitations now state the financial interest and the non-clinician authorship of the load-bearing components explicitly; Introduction states the product engine is the evaluated file. Clinical co-author — open. |
+| M7 open vs proprietary | **R5** | Supplementary Table S15 (npj) / Table 1b in the main text (Sample): component, licence, whether evaluated. |
+| M8 sepsis SIRS/qSOFA post hoc | **R5** | Results now say the rules were added *after* the pre-specified negative result (post-hoc addition), developed on A, validated once on B2; abstract gives AUROC 0.60 and this caveat. |
+| M9 structured inputs only | **R5** | Sentence added to abstract; Introduction states laboratory-only input as a design choice. |
+| M10 calibration | **R5** | Table 2 note: scores are ranks; after cross-fitted isotonic recalibration ECE 0.162 → 0.003, Brier 0.117 → 0.040 with no rank change; the product applies no calibration map and shows no probabilities. |
+| Historical rows Tables 2/4 | **R5** | Removed; archived as Supplementary Table S12b. |
+| Bayesian priors / fusion weights / expert floor | **R5** | Methods: 75 Bayesian nodes with hand-coded priors, 68 with literature LRs, none fitted to data; fusion weights 0.35/0.25/0.20/0.10/0.10 set by author judgement, not tuned on any evaluation set; expert floor defined and its bias discussed in Discussion (and Section 2.4 of the Sample version). |
+| "executable" and "AI assistance" definitions | **R5** | Both defined precisely in Methods (what the LLM produced, what the automated audits checked, that no human read the bulk, how anchors differ). |
+| Healthy-adult filter (30 analytes), synthetic 0/1,000 | **R5** | Limitation of the filter stated (lower bound on false assertions); synthetic panels separated from real adults and labelled a regression check. |
+| Critical values 39/39 | **R5** | Wilson CI 91–100 % added; labelled a shared safety floor, non-discriminating. |
+| Concurrent analysis 247/600; safety batteries | **R5** | Clarified as set B2 only; batteries summarised in main text. |
+| Fairness claim | **R5** | Bounded: three strata in one US dataset do not support a fairness claim; only the absence of a race term and race-free eGFR are asserted. |
+| Sepsis logistic numbers, Fig. 6 per-group, label omission, κ 0.69, recall@1/@10 | **R5** | All quantified in Results/Discussion with numbers. |
+| Version control | **R5 (partial)** | Stated as limitation; retrospective SHA-256/timestamp manifest of retained artefacts (Supplementary Note 6); Git repository initialised with tag `paper1-R1-round5` for all future changes. |
+| Novelty-search claim | **R5** | Dated search summarised in the Introduction, method in Note 5. |
+| Typos / page 8 | **R5** | "stylustered" and "S99-5103"/"Eper" do not exist in the source (PDF extraction artefacts of "stay-clustered"/"S99–S103"/"Epner"); the abstract now reads "clustered by stay" to avoid the ligature. No block of "1 1 1 …" exists in the docx text or tables; it is presumably a PDF rasterisation of a figure and we could not reproduce it — please send the page if it recurs. |
+| Refs 15/18 "to be verified", affiliation/contributions "to be confirmed" | **open** | Co-author confirmation pending; references were finalised in R3. |
+| Abstract length | note | The abstract now carries every element the reviewer asked for and runs to ~310 words, above npj guidance (~150–250); we will cut to the journal limit at submission if the editor prefers, dropping numeric detail rather than caveats. |
