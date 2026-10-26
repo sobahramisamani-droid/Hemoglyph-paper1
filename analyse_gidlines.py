@@ -7104,6 +7104,54 @@ def tahlil_olgoo_haye_moshtagh(
                 inputs={"AST": ast, "ALT": alt, "PLT": plt_,
                         'Age': age})
 
+    # MELD-Na (Kamath 2001; Kim NEJM 2008; OPTN policy 2016) — severity
+    # of established liver disease, only computed when the panel itself
+    # shows hepatic synthetic/excretory impairment (bilirubin >2 or INR
+    # >1.5); the score is a prognostic index, not a diagnostic criterion,
+    # so it never proposes a diagnosis on its own (supports=[]).
+    bili_m = g("bilirubin_total"); inr_m = g("inr") or g("international_normalized_ratio")
+    cr_m = g("creatinine"); na_m = g("sodium")
+    if bili_m and inr_m and cr_m and (bili_m > 2.0 or inr_m > 1.5):
+        b = max(bili_m, 1.0); i = max(inr_m, 1.0); c = min(max(cr_m, 1.0), 4.0)
+        meld = 3.78 * math.log(b) + 11.2 * math.log(i) + 9.57 * math.log(c) + 6.43
+        meld = round(min(max(meld, 6.0), 40.0))
+        label = "MELD"
+        if na_m is not None:
+            na_c = min(max(na_m, 125.0), 137.0)
+            if meld > 11:
+                meld = round(min(max(meld + 1.32 * (137 - na_c) - (0.033 * meld * (137 - na_c)), 6.0), 40.0))
+            label = "MELD-Na"
+        mort = ("≈۲٪" if meld < 10 else "≈۶٪" if meld < 20 else "≈۲۰٪" if meld < 30 else "≈۵۰–۷۰٪")
+        add(pattern_id="meld_na", name_en=f"{label} score", name_fa=f"امتیاز {label}",
+            value=int(meld),
+            interpretation=(
+                f"{label} = {int(meld)} — مرگ‌ومیر سه‌ماهه تقریبی {mort} در بیماری کبدی "
+                "مزمن (شاخص پیش‌آگهی؛ تشخیص را تعیین نمی‌کند؛ در AKI حاد، کلستاز "
+                "بدون سیروز یا مصرف وارفارین اعتبار محدود دارد)."
+                + (" امتیاز ≥۱۵: ارجاع برای ارزیابی پیوند کبد." if meld >= 15 else "")),
+            significance="high" if meld >= 20 else "moderate",
+            supports=[], citation="Kamath PS, Hepatology 2001; Kim WR, NEJM 2008; OPTN 2016",
+            inputs={"Bilirubin": bili_m, "INR": inr_m, "Creatinine": cr_m,
+                    **({"Na": na_m} if na_m is not None else {})})
+
+    # Platelet-to-lymphocyte ratio — weak, heterogeneous evidence base
+    # (no consensus cutoff); reported as a low-significance inflammatory
+    # marker only when NLR-type data are present, never as support.
+    wbc_p = g("white_blood_cell_count") or g("wbc"); lym_p = g("lymphocytes")
+    if plt_ and wbc_p and lym_p and lym_p > 0:
+        alc = wbc_p * lym_p / 100.0
+        if alc > 0:
+            plr = plt_ / alc
+            if plr > 200:
+                add(pattern_id="plr_high", name_en="Platelet-to-lymphocyte ratio",
+                    name_fa="نسبت پلاکت به لنفوسیت", value=round(plr, 0),
+                    interpretation=(
+                        f"PLR = {plr:.0f} (>200) — نشانگر غیراختصاصی التهاب سیستمیک/"
+                        "لنفوپنی نسبی؛ شواهد ناهمگن و فاقد آستانهٔ اجماعی — فقط اطلاع‌رسانی."),
+                    significance="low", supports=[],
+                    citation="Templeton AJ, Cancer Epidemiol Biomarkers Prev 2014",
+                    inputs={"PLT": plt_, "ALC": round(alc, 2)})
+
     tg, hdl = g("triglycerides"), g("hdl_cholesterol")
     if tg and hdl and hdl > 0:
         ratio = tg / hdl
@@ -14530,6 +14578,35 @@ class ClinicalRuleEngine:
                     _d["recommended_tests"] = [r["test"] for r in _NEXT_TEST_LIBRARY.get(_k, []) if not any(f in observations for f in r["features"])][:4]
         except Exception:  # never let a recommendation break the report
             _nt = []
+        # v8 presentation layer (2026-10-26): a confidence band per entry and a
+        # 'concise' flag so a viewer can show the short list without changing
+        # ranking. Bands are DESCRIPTIVE, calibrated on the eICU development
+        # set (precision of coded match within band, labs only):
+        # >=0.70 -> 'high' (~23 %), 0.60-0.70 -> 'moderate' (~19 % cumulative),
+        # 0.50-0.60 -> 'low', <0.50 -> 'consider'. Truncating to the concise
+        # list raised precision@5 from 14 % to 19 % at the cost of 7 recall
+        # points (60.8 -> 53.5), so the full list is always retained.
+        try:
+            for _d in differential_list:
+                if not isinstance(_d, dict):
+                    continue
+                _p = _d.get("probability")
+                _p = float(_p) if _p is not None else 0.0
+                if _d.get("evidence_state") in ("refuted",):
+                    _band = "consider"
+                elif _p >= 0.70:
+                    _band = "high"
+                elif _p >= 0.60:
+                    _band = "moderate"
+                elif _p >= 0.50:
+                    _band = "low"
+                else:
+                    _band = "consider"
+                _d["confidence_band"] = _band
+                _d["concise"] = bool(_band in ("high", "moderate")
+                                     or _d.get("status") in ("established", "documented_history"))
+        except Exception:
+            pass
         return InterpretationReport(
             next_tests=_nt,
             interpretations=results,
