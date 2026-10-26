@@ -1,0 +1,83 @@
+itemid,feature_id,unit,expected_label_regex,fluid
+51222,hemoglobin,g/dL,^hemoglobin$,Blood
+51221,hematocrit,%,^hematocrit$,Blood
+51279,red_blood_cell_count,10*6/uL,^red blood cells$,Blood
+51250,mean_corpuscular_volume,fL,^mcv$,Blood
+51248,mean_corpuscular_hemoglobin,pg,^mch$,Blood
+51249,mean_corpuscular_hemoglobin_concentration,g/dL,^mchc$,Blood
+51277,red_cell_distribution_width_cv,%,^rdw$,Blood
+51301,white_blood_cell_count,10*3/uL,^white blood cells$,Blood
+51265,platelets,10*3/uL,^platelet count$,Blood
+51256,neutrophils_percent,%,^neutrophils$,Blood
+51244,lymphocytes_percent,%,^lymphocytes$,Blood
+51254,monocytes_percent,%,^monocytes$,Blood
+51200,eosinophils_percent,%,^eosinophils$,Blood
+51146,basophils_percent,%,^basophils$,Blood
+50912,creatinine,mg/dL,^creatinine$,Blood
+51006,blood_urea_nitrogen,mg/dL,^urea nitrogen$,Blood
+50983,sodium,mmol/L,^sodium$,Blood
+50971,potassium,mmol/L,^potassium$,Blood
+50902,chloride,mmol/L,^chloride$,Blood
+50882,bicarbonate,mmol/L,^bicarbonate$,Blood
+50868,anion_gap,mmol/L,^anion gap$,Blood
+50931,glucose,mg/dL,^glucose$,Blood
+50862,albumin,g/dL,^albumin$,Blood
+50976,total_protein,g/dL,"^protein,? total$",Blood
+50885,total_bilirubin,mg/dL,"^bilirubin,? total$",Blood
+50883,direct_bilirubin,mg/dL,"^bilirubin,? direct$",Blood
+50884,indirect_bilirubin,mg/dL,"^bilirubin,? indirect$",Blood
+50861,alanine_aminotransferase,U/L,alanine aminotransferase|^alt,Blood
+50878,aspartate_aminotransferase,U/L,asparate aminotransferase|aspartate aminotransferase|^ast,Blood
+50863,alkaline_phosphatase,U/L,^alkaline phosphatase$,Blood
+50927,gamma_glutamyl_transferase,U/L,gamma glutamyltransferase|ggt,Blood
+50893,calcium_total,mg/dL,"^calcium,? total$",Blood
+50970,phosphate,mg/dL,^phosphate$,Blood
+50960,magnesium,mg/dL,^magnesium$,Blood
+50813,lactate,mmol/L,^lactate$,Blood
+50910,creatine_kinase_total,U/L,creatine kinase \(ck\)|^creatine kinase$,Blood
+50911,creatine_kinase_mb,ng/mL,"ck-mb|creatine kinase,? mb",Blood
+51003,troponin_t,ng/mL,^troponin t$,Blood
+51002,troponin_i,ng/mL,^troponin i$,Blood
+50963,nt_probnp,pg/mL,ntprobnp|nt-probnp,Blood
+50820,arterial_ph,[pH],^ph$,Blood
+50818,arterial_pco2,mm[Hg],^pco2$,Blood
+50821,arterial_po2,mm[Hg],^po2$,Blood
+51237,international_normalized_ratio,1,^inr\(pt\)$|^inr$,Blood
+51274,prothrombin_time,s,^pt$,Blood
+51275,activated_partial_thromboplastin_time,s,^ptt$,Blood
+50924,ferritin,ng/mL,^ferritin$,Blood
+50952,serum_iron,ug/dL,^iron$,Blood
+50953,total_iron_binding_capacity,ug/dL,iron binding capacity,Blood
+50998,transferrin,mg/dL,^transferrin$,Blood
+51000,triglycerides,mg/dL,^triglycerides$,Blood
+50907,total_cholesterol,mg/dL,"^cholesterol,? total$",Blood
+50904,hdl_cholesterol,mg/dL,"cholesterol,? hdl",Blood
+50905,ldl_cholesterol_calculated,mg/dL,"ldl,? calc",Blood
+50906,ldl_cholesterol_direct,mg/dL,"ldl,? meas",Blood
+50852,hemoglobin_a1c,%,hemoglobin a1c,Blood
+50993,thyroid_stimulating_hormone,uIU/mL,thyroid stimulating hormone|^tsh$,Blood
+50995,free_thyroxine,ng/dL,"thyroxine \(t4\),? free",Blood
+50994,total_thyroxine,ug/dL,^thyroxine \(t4\)$,Blood
+51214,fibrinogen,mg/dL,fibrinogen,Blood
+50889,c_reactive_protein,mg/L,c-reactive protein,Blood
+50954,lactate_dehydrogenase,U/L,lactate dehydrogenase|^ld\b,Blood
+50956,lipase,U/L,^lipase$,Blood
+50867,amylase,U/L,^amylase$,Blood
+51288,erythrocyte_sedimentation_rate,mm/h,sedimentation rate,Blood
+50925,folate_serum,ng/mL,^folate$,Blood
+51196,d_dimer,ng/mL,d-dimer,Blood
+51007,uric_acid,mg/dL,uric acid,Blood
+50964,serum_osmolality,mOsm/kg,osmolality,Blood
+52075,neutrophil_count_absolute,10*9/L,^absolute neutrophil count$,Blood
+51133,lymphocyte_count_absolute,10*9/L,^absolute lymphocyte count$,Blood
+52073,eosinophil_count_absolute,10*9/L,^absolute eosinophil count$,Blood
+52074,monocyte_count_absolute,10*9/L,^absolute monocyte count$,Blood
+50935,serum_haptoglobin,mg/dL,^haptoglobin$,Blood
+51010,vitamin_b12,pg/mL,^vitamin b12$,Blood
+51283,reticulocyte_percent,%,"^reticulocyte count, automated$",Blood
+50950,total_immunoglobulin_g,mg/dL,^immunoglobulin g$,Blood
+51144,band_neutrophils_percent,%,^bands$,Blood
+50808,calcium_ionized,mmol/L,^free calcium$,Blood
+50802,base_excess,mmol/L,^base excess$,Blood
+51257,nucleated_red_blood_cells_percent,%,^nucleated red cells$,Blood
+51148,blasts_percent,%,^blasts$,Blood

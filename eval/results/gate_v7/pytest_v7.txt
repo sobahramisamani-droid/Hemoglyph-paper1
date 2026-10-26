@@ -1,0 +1,28 @@
+........................................................................ [ 10%]
+.F
+=================================== FAILURES ===================================
+______________________ test_esl_silent_on_healthy_panels _______________________
+
+engine = <analyse_gidlines.ClinicalRuleEngine object at 0x7f535de4f390>
+
+    def test_esl_silent_on_healthy_panels(engine):
+        rng = random.Random(20261021)
+        for _ in range(40):
+            sex = rng.choice(["male", "female"])
+            obs = {k: (round(rng.uniform(lo, hi), 3), u) for k, (lo, hi, u) in _NORMAL.items()}
+            if sex == "female":
+                obs["hemoglobin"] = (round(rng.uniform(12.2, 15.2), 2), "g/dL")
+            rep = _run(engine, obs, {"age_years": rng.randint(18, 85), "sex_at_birth": sex})
+>           assert rep["expert_syndromes"] == [], rep["expert_syndromes"]
+E           AssertionError: [{'cap': {'acute_chest_syndrome': 0.3, 'sickle_cell_anemia_hbss': 0.3, 'sickle_cell_disease': 0.35, 'vaso_occlusive_crisis': 0.3}, 'context': False, 'dx': [], 'features': ['hemoglobin'], ...}]
+E           assert [{'cap': {'ac...lobin'], ...}] == []
+E             
+E             Left contains one more item: {'cap': {'acute_chest_syndrome': 0.3, 'sickle_cell_anemia_hbss': 0.3, 'sickle_cell_disease': 0.35, 'vaso_occlusive_crisis': 0.3}, 'context': False, 'dx': [], 'features': ['hemoglobin'], ...}
+E             Use -v to get more diff
+
+tests/test_esl_20261021.py:176: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_esl_20261021.py::test_esl_silent_on_healthy_panels - Assert...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 73 passed in 34.97s
+exit 1

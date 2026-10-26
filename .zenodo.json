@@ -1,0 +1,30 @@
+{
+  "title": "Hemoglyph v1.3.1 — knowledge-based laboratory-interpretation engine, registries and multi-dataset evaluation harness (frozen v1 e0231327…, v2 48313758…)",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Bahrami, Sobhan",
+      "affiliation": "Allameh Helli 10 High School, NODET, Tehran, Iran",
+      "orcid": "0009-0004-6639-5081"
+    },
+    {
+      "name": "Tahmasebinejad, Zhaleh",
+      "affiliation": "Statistics & Data Science Clinic, Shahid Beheshti University, Tehran, Iran"
+    },
+    {
+      "name": "Bahrami Samani, Ehsan",
+      "affiliation": "Statistics & Data Science Clinic, Shahid Beheshti University, Tehran, Iran"
+    }
+  ],
+  "description": "Engine (analyse_gidlines.py, calcu.py), Brotli-compressed feature (12.1.0) and disease-guideline (13.3.0 frozen for Paper 1; 13.4.2 shipped) registries, expert syndrome library, statistical analysis plan, SHA-256 freeze manifests, test batteries and evaluation scripts for eICU-CRD demo, NHANES 2017-18, UCI thyroid0387, UCI HCV, ILPD, PMC-Patients case reports and PhysioNet Sepsis-2019, plus per-encounter outputs. Companion to the manuscript 'Design and multi-dataset retrospective evaluation of Hemoglyph'.",
+  "keywords": [
+    "laboratory medicine",
+    "clinical decision support",
+    "knowledge-based system",
+    "calibration"
+  ],
+  "access_right": "open",
+  "version": "1.3.1",
+  "license": "AGPL-3.0-or-later",
+  "notes": "Code: GNU AGPL-3.0-or-later (LICENSE). Clinical registries (13.3.0 frozen for Paper 1; 13.4.2 release) and aggregated evaluation outputs: CC BY-SA 4.0 (LICENSE-DATA.md). The commercial desktop distribution is proprietary and not part of this deposit (NOTICE)."
+}

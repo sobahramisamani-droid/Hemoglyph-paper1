@@ -1,0 +1,9 @@
+437a0b000ad08a47e7d97e2e0eb20c0c30b4d9ef04d4648fe20da2bec60140e7  analyse_gidlines.py
+53b810a8cfc31190e554448e756e92b3949b20d225fc081ea36bc531ae104655  calcu.py
+cebe06ae07e53f17b570401e75a971b7bc50312df6ea008fd70aac5a1bc5d298  HEMOGLYPH_GUIDELINE_REGISTRY.json.br
+953d8daa4d0fe4dfeb8d421fed0d915ce5306feec06bd43516c9b59e353717d5  HEMOGLYPH_FEATURE_REGISTRY.json.br
+aa72183d15d32c9db44eef1831a72405882ad64229a6e112994b043be42b1b30  eval/patches/esl_ext6_ranking_20261021.py
+c0a12d8d3365109a876d5236ce03f12d89829c77579709b89a61fb17b7fea896  eval/patches/esl_ext6b_20261021.py
+f0e1676c7578b1123bc12bdeca840b1f5c6478daed76f637c773f0939c179a3b  eval/patches/esl_ext6c_20261021.py
+e811b140f779d99b463270205d7d99033d4ee57c6cea73dc38d46b0083c417fe  eval/patches/esl_ext6d_20261021.py
+# engine v3 = v1 + ESL ext5/ext6/6b/6c/6d (frozen 2026-10-21T23:29:59Z after B5 post-hoc fixes; pytest 606, batteries 489/489)

@@ -1,0 +1,11 @@
+fef29ed749cf69e7ebe0fa28ad9d1e8759f358909a4eefe7a6095a3c77ac47f2  analyse_gidlines.py
+53b810a8cfc31190e554448e756e92b3949b20d225fc081ea36bc531ae104655  calcu.py
+cebe06ae07e53f17b570401e75a971b7bc50312df6ea008fd70aac5a1bc5d298  HEMOGLYPH_GUIDELINE_REGISTRY.json.br
+953d8daa4d0fe4dfeb8d421fed0d915ce5306feec06bd43516c9b59e353717d5  HEMOGLYPH_FEATURE_REGISTRY.json.br
+235cf88a5258e435b843e91561bc6d3ba04256e4d0642f9df0e281f814683c4a  eval/patches/esl_ext5_20261021.py
+aa72183d15d32c9db44eef1831a72405882ad64229a6e112994b043be42b1b30  eval/patches/esl_ext6_ranking_20261021.py
+c0a12d8d3365109a876d5236ce03f12d89829c77579709b89a61fb17b7fea896  eval/patches/esl_ext6b_20261021.py
+f0e1676c7578b1123bc12bdeca840b1f5c6478daed76f637c773f0939c179a3b  eval/patches/esl_ext6c_20261021.py
+bb0d429ad65fffe50c2abc6432618329af0bd5bfa7fc34952c7bd7e5b100b440  eval/patches/esl_ext6d_20261021.py
+ba983c4f9c523368f23148219ea297155749ceec1fcfe9802b5a05f3b45ea950  eval/patches/esl_ext7_20261022.py
+# engine v4 = v3 + ext 6d + ext 7/7b; frozen 2026-10-22T04:56:45Z; pytest 620; batteries 489/489; healthy sweep 200 -> 0; fusion weights unchanged after sweep (eval/results/run_20261022_v4/weight_sweep_n300.md)

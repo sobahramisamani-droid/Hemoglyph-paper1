@@ -1,0 +1,29 @@
+Hemoglyph — explainable, offline laboratory-result interpretation
+Copyright (C) 2024–2026 Sobhan Bahrami (sobahramisamani@gmail.com)
+
+LICENSING SUMMARY (open core)
+-----------------------------
+1. Engine source code released in this repository (analyse_gidlines.py, cache_registry.py,
+   calcu.py, preflight_check.py, the eval/ and tests/ harnesses and all other .py files
+   present here) is licensed under the GNU Affero General Public License v3.0 or later
+   (see LICENSE). Any software that uses or links this code and is made available to
+   users, including over a network, must make its complete corresponding source
+   available under the same licence (AGPL §13).
+
+2. Clinical knowledge registries and aggregated evaluation outputs are licensed under
+   Creative Commons Attribution-ShareAlike 4.0 International (see LICENSE-DATA.md):
+   any modified or derived registry that is distributed must be published under the same
+   licence (copyleft for the knowledge base).
+
+3. The commercial desktop distribution of Hemoglyph v1.3.1 (compiled binaries, QML user
+   interface assets, OCR pipeline packaging, installer, hardware-bound RSA-4096
+   activation system and telemetry components) is NOT part of this open release and is
+   distributed under a separate proprietary end-user licence. The copyright holder
+   retains the right to license the AGPL-covered code under other terms (dual
+   licensing); contact the address above.
+
+4. This software is a research artefact and not a medical device. It is provided
+   WITHOUT ANY WARRANTY; see LICENSE sections 15–16.
+
+Third-party components keep their own licences (PySide6/Qt LGPL-3.0; scikit-learn,
+numpy, pandas BSD-3; brotli MIT; Vazirmatn font OFL-1.1).

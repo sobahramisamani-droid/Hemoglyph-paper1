@@ -1,0 +1,6 @@
+[FAIL] Alcoholic pancreatitis: rank=2 (max 1)
+        [('alcohol_use_disorder', 0.79, 'supported'), ('alcoholic_pancreatitis', 0.79, 'supported'), ('acute_pancreatitis', 0.76, 'supported'), ('alcoholic_liver_pattern', 0.67, 'supported'), ('hypertriglyceridemia', 0.58, 'insufficient')]
+        syn=['alcohol_biomarker_macrocytosis', 'alcoholic_pancreatitis']
+
+HARD3 SCORE 77/78 (98.7%)  median 433 ms  p95 950 ms
+FAILS: ['Alcoholic pancreatitis']

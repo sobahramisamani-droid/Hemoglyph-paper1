@@ -1,0 +1,19 @@
+# data, bulky results and build artefacts are excluded from the repository; frozen outputs are archived on Zenodo
+eval/realdata/
+eval/quarantine/
+eval/quarantine_v15/
+eval/results/**/*.json.gz
+eval/results/**/*.json
+eval/results/run_*/
+eval/engine_13_4_2_ref/
+eval/patches/
+release/
+*.bak_v*
+*.zip
+*.docx
+*.png
+*.pdf
+__pycache__/
+.venv/
+*.log
+*.json.br

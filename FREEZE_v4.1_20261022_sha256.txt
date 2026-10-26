@@ -1,0 +1,13 @@
+# Hemoglyph FREEZE v4.1 — 2026-10-22 20:58 UTC
+# v4 (ext7/7b) + ext8 next-test layer, ext8b glucose→HbA1c trigger, ext8c plausibility hardening.
+# ext8* are additive: no change to probabilities/ranks (batteries 489/489 identical; pytest 627; fabrication 200/200).
+# eICU v4 held-out (n=2314): recall@5 61.1% all / 65.2% lab-detectable; mean AUROC .767 (k=24).
+4cce2a5f74a161eff17b8a624dcbe44214a55aa3b5760580d9422f6c92f6af0d  analyse_gidlines.py
+cebe06ae07e53f17b570401e75a971b7bc50312df6ea008fd70aac5a1bc5d298  HEMOGLYPH_GUIDELINE_REGISTRY.json.br
+953d8daa4d0fe4dfeb8d421fed0d915ce5306feec06bd43516c9b59e353717d5  HEMOGLYPH_FEATURE_REGISTRY.json.br
+53b810a8cfc31190e554448e756e92b3949b20d225fc081ea36bc531ae104655  calcu.py
+0122b89c937097b6a43b16181f0a64d8cc4228aa8e048cab7658632d0f436739  sarvis_tahlil.py
+bc8ece1d1e7dd157f7c6923b66d4c7f8d7dd68d258da87ba6b04afcbd0cf2552  eval/realdata/eval_eicu.py
+6dfd167335600e72f95511d2b8164a2f596928d5fe4336f122cc1b6a1cca24f8  eval/next_test_utility.py
+f185a40afad811bf685ca187a521f027557608ef66e27327ceb5aadb665aac03  tests/fabrication_provocation.py
+0813e986e4463aa1c9a5917e716edad7ca7d40aa9a99d9aacc344f76cfb18c9c  tests/test_esl_ext8_20261022.py

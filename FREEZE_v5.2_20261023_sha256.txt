@@ -1,0 +1,21 @@
+# Hemoglyph FREEZE v5.2 — 2026-10-23 19:42 UTC (FINAL; supersedes the 11:51 provisional freeze)
+# v5.1 (v5 + ext9b + ext10) + ESL ext11: optional temporal module (11-T) + clinical-context layer (11-C). Registry LIVE = 13.1.0 (patches 13.2.0/13.3.0 NOT applied in this freeze).
+# eICU demo held-out 2314 stays / 2432 scorable labels — recall@3/5/10 (all groups; lab-detectable):
+#   labs-only v5.1      49.3 / 63.7 / 76.7  (53.9 / 68.2 / 80.5)  mean AUROC .767
+#   + context (ctx)     52.1 / 66.5 / 79.3  (54.6 / 69.1 / 82.2)  mean AUROC .781
+#   + temporal (tmp)    48.7 / 63.2 / 77.1  (53.2 / 68.4 / 81.1)  mean AUROC .765
+#   + ctx + tmp         51.6 / 66.1 / 79.8  (54.6 / 69.3 / 82.8)  mean AUROC .779
+# Gate (gate_ext11.txt): pytest 689; engine 50/50, hard 151/151, hard2 124/124, hard3 77/78 (pre-existing), adversarial 86/86; fabrication 200/200.
+# Reports: eval/results/run_20261023_v5/eicu_report_v5_2_{ctx,tmp,ctx_tmp}.md ; per-stay json alongside.
+90c053175f59530e8ed70ddf5f132a0f9abf7048b66951682bba55d569c0ae61  analyse_gidlines.py
+cebe06ae07e53f17b570401e75a971b7bc50312df6ea008fd70aac5a1bc5d298  HEMOGLYPH_GUIDELINE_REGISTRY.json.br
+953d8daa4d0fe4dfeb8d421fed0d915ce5306feec06bd43516c9b59e353717d5  HEMOGLYPH_FEATURE_REGISTRY.json.br
+53b810a8cfc31190e554448e756e92b3949b20d225fc081ea36bc531ae104655  calcu.py
+d463a69de4bdbb69856553a226aadd1a99de11227a39112eaa505bbd8a142d91  sarvis_tahlil.py
+a8bb8bce2af99f9642335ce966b96effd5898054f9f6d6c3a9536ff4e4af08a5  eval/realdata/eval_eicu.py
+bfcc1367db4fd728cfb4c4f7c4218f3e1ce546fa77455201d921f43fd0356267  eval/patches/esl_ext11_20261023.py
+17d2a2262de35144e6ab2467dcefd848707ae37a3bc3509c562a1c06089c2c47  tests/test_esl_ext11_20261023.py
+0cbf8be1ff7e4fb97925cec08746ecbfa5855d43a828737ac45181f38890b200  eval/results/run_20261023_v5/eicu_report_v5_2_ctx.md
+bff11c60918fe3aa3bbae2fb42ab751099235db718f28b3c7509b25384262dd1  eval/results/run_20261023_v5/eicu_report_v5_2_tmp.md
+74b8cbcdc2cf6f645cfce841083077f323a6f094d23f9940df75db1a3f744911  eval/results/run_20261023_v5/eicu_report_v5_2_ctx_tmp.md
+bdd6ebe89637badb539f61a3883abf089796b8ccaf237449f4278e51ad0441ef  eval/results/run_20261023_v5/gate_ext11.txt

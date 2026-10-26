@@ -1,0 +1,14 @@
+# Hemoglyph FREEZE v5 — 2026-10-23 04:08 UTC
+# v4.1 + ESL ext9 ranking hygiene (synonym families; aetiology-beneath-finding; organising-diagnosis precedence; thal-trait erythrocytosis guard) + SAP Amendment 7 synonym ids.
+# Probabilities unchanged by construction (AUROC .767 identical to v4); rank metrics: eICU recall@5 61.1 -> 63.3 % (all), 65.2 -> 68.1 % (lab-detectable).
+# Gate: pytest 634; batteries 489/489; healthy 200 -> 0; fabrication 200/200.
+befdc810dc8caaf40528eb60755c1f033325f25730dd926788f0fc433ba08af9  analyse_gidlines.py
+cebe06ae07e53f17b570401e75a971b7bc50312df6ea008fd70aac5a1bc5d298  HEMOGLYPH_GUIDELINE_REGISTRY.json.br
+953d8daa4d0fe4dfeb8d421fed0d915ce5306feec06bd43516c9b59e353717d5  HEMOGLYPH_FEATURE_REGISTRY.json.br
+53b810a8cfc31190e554448e756e92b3949b20d225fc081ea36bc531ae104655  calcu.py
+0122b89c937097b6a43b16181f0a64d8cc4228aa8e048cab7658632d0f436739  sarvis_tahlil.py
+ea9125d272ed5532e4d0d99232ac3135433c541fe1336c91e091f5f6a25eea9f  eval/realdata/eval_eicu.py
+6dfd167335600e72f95511d2b8164a2f596928d5fe4336f122cc1b6a1cca24f8  eval/next_test_utility.py
+f185a40afad811bf685ca187a521f027557608ef66e27327ceb5aadb665aac03  tests/fabrication_provocation.py
+0813e986e4463aa1c9a5917e716edad7ca7d40aa9a99d9aacc344f76cfb18c9c  tests/test_esl_ext8_20261022.py
+53863ae4be18e677ece26073cc1ed8808b6b9537727492385bd75b07b4bc8b8d  tests/test_esl_ext9_20261023.py

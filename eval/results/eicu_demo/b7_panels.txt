@@ -1,0 +1,50 @@
+#0 55m: WBC=7 Plt=229 K=5.5 Na=119 Ca=9.2 Hb=14.9 HCO3=38 Cr=0.7 Glu=101 Lac=0.8 INR=1.6 pH=7.38 blood_urea_nitrogen=18 troponin_i=0.03 arterial_pco2=52 magnesium=2.1 albumin=3.5 total_bilirubin=0.7
+#1 53f: WBC=6.7 Ca=9.5 Glu=135 Cr=0.77 Plt=166 Na=137 HCO3=21 Hb=14.9 K=3.8 INR=1 blood_urea_nitrogen=11 magnesium=1.42
+#2 42f: Plt=132 Glu=32 K=7.7 Hb=10.9 Ca=9.5 Cr=19.9 WBC=5.1 HCO3=14 Na=135 Lac=0.4 blood_urea_nitrogen=108 anion_gap=29 total_bilirubin=0.4 albumin=2.7 phosphate=3.4 magnesium=2.5
+#3 39m: HCO3=23.1 pH=7.394 Ca=8 Hb=7.6 Glu=165 Cr=1.2 K=3.2 WBC=14.9 Na=147 Plt=244 arterial_pco2=38.6 blood_urea_nitrogen=21 magnesium=1.3 phosphate=4
+#4 26m: Ca=8.9 HCO3=5.7 Cr=1.62 Na=133 K=4.6 Plt=353 WBC=8.9 Glu=564 Hb=16.7 pH=7.152 blood_urea_nitrogen=18 total_bilirubin=0.4 albumin=4.4 arterial_pco2=11.9
+#5 60m: Na=141 Lac=1.9 K=4.4 HCO3=23.6 pH=7.258 Hb=12.8 Ca=7.5 Glu=137 Plt=168 Cr=0.81 WBC=11.6 arterial_pco2=54 magnesium=2.1 blood_urea_nitrogen=20 total_bilirubin=0.4 albumin=2.8 anion_gap=10
+#6 40m: Glu=88 WBC=6.7 HCO3=27 Na=140 K=3.8 Ca=8.9 Hb=11.1 Cr=0.6 Plt=475 blood_urea_nitrogen=5 anion_gap=8
+#7 83m: WBC=8 Hb=13.6 Ca=8.8 Na=135 HCO3=13 Glu=93 K=5.5 Cr=1.33 INR=1.3 Plt=162 Lac=9.9 pH=7.17 anion_gap=25 albumin=3.2 total_bilirubin=3.1 troponin_i=0.17 blood_urea_nitrogen=47 magnesium=2.7 arterial_pco2=47
+#8 71m: Plt=14 WBC=2.3 Hb=5.9 Ca=7.7 Na=138 HCO3=22 Glu=92 Cr=2.52 K=4.2 albumin=3.1 blood_urea_nitrogen=40 total_bilirubin=1.4
+#9 58m: pH=7.02 HCO3=24.8 Glu=119 Na=149 Cr=1.64 K=5.1 Hb=12.9 WBC=11.8 Plt=135 Lac=3.5 INR=1.31 arterial_pco2=96 magnesium=1.7 albumin=2.1 blood_urea_nitrogen=31
+#10 85f: Na=139 K=2.9 Cr=1.14 HCO3=31 Ca=8.8 Glu=99 INR=5.7 anion_gap=10 blood_urea_nitrogen=10 magnesium=1.8
+#11 74f: Ca=8.3 Cr=0.7 Na=133 K=6.6 Glu=194 Hb=14 INR=1.6 Plt=142 WBC=15.2 Lac=3.6 pH=7.42 HCO3=21 albumin=2.9 anion_gap=14 blood_urea_nitrogen=29 total_bilirubin=0.8 magnesium=1.8 phosphate=2.8 arterial_pco2=31.9
+#12 60f: Hb=7.5 Plt=164 WBC=8.76 HCO3=24 Cr=1.2 Na=127 K=4.7 Glu=469 Ca=8.2 magnesium=1.8 phosphate=3.3 anion_gap=3 albumin=2.5 blood_urea_nitrogen=29
+#13 75m: Glu=156 HCO3=25 Cr=1.33 Na=141 Ca=8.4 K=4.2 Hb=11.4 Plt=153 WBC=9.9 magnesium=2 blood_urea_nitrogen=23 anion_gap=10
+#14 71m: Plt=23 Hb=6.4 WBC=2.1 K=5 Na=139 Ca=8.6 Glu=134 Cr=2.19 HCO3=19 blood_urea_nitrogen=42
+#15 69m: HCO3=22 pH=7.4 Hb=9 Ca=8 Na=126 Glu=555 Cr=2 K=4.5 Plt=239 WBC=11.2 Lac=2.7 arterial_pco2=35 blood_urea_nitrogen=42 anion_gap=10 phosphate=3.1 magnesium=2.1 total_bilirubin=0.7
+#16 21m: Lac=4.3 pH=7.04 HCO3=8 Plt=258 WBC=15 Na=135 Hb=17.8 Glu=474 Ca=10.4 K=5 Cr=1.76 arterial_pco2=31 anion_gap=30 total_bilirubin=1.9 albumin=5.4 blood_urea_nitrogen=23 phosphate=2.6 magnesium=2.1
+#17 44m: Cr=2.24 K=3.5 Hb=12.7 Na=139 Ca=8.7 HCO3=28 WBC=7.1 Plt=201 Glu=88 INR=0.9 albumin=3.3 blood_urea_nitrogen=21 total_bilirubin=0.7 anion_gap=10.5 troponin_i=2.44 magnesium=1.6
+#18 70m: pH=7.03 HCO3=18.5 Plt=232 WBC=18.5 K=6 Na=137 Cr=3.3 Glu=238 Ca=10.1 Hb=11.4 Lac=6.2 INR=2.3 arterial_pco2=70 blood_urea_nitrogen=81 total_bilirubin=1.3 magnesium=2.6 phosphate=6.9 albumin=3.2 anion_gap=19 troponin_i=0.36
+#19 57f: Na=139 K=4 Plt=142 Cr=0.89 WBC=6.9 HCO3=29 Glu=113 Hb=14.2 Ca=8.8 troponin_i=6.67 anion_gap=11 blood_urea_nitrogen=11
+#20 78m: Hb=10.8 pH=7.429 HCO3=28.4 Na=139 Cr=2.7 K=3.6 Ca=8.9 Glu=133 Plt=228 WBC=11.57 troponin_i=7.789 arterial_pco2=43.6 blood_urea_nitrogen=50
+#21 60f: Glu=93 Cr=0.92 Na=138 HCO3=29 K=3.9 Hb=13.7 WBC=11.1 Ca=9 Plt=132 INR=1.1 blood_urea_nitrogen=18 anion_gap=12.9 total_bilirubin=1.9 albumin=3.5 troponin_i=0.05 phosphate=4.2 magnesium=1.9
+#22 57m: Na=140 Cr=1.28 Glu=107 WBC=9 HCO3=26 K=3.7 Plt=257 Hb=14.4 Ca=9.1 INR=1.1 blood_urea_nitrogen=27 anion_gap=12.7 magnesium=2.4
+#23 73m: HCO3=21 Lac=2.4 Na=138 Ca=8.1 K=5 Cr=2.2 Glu=123 WBC=14.4 Hb=5.7 Plt=205 INR=1.2 anion_gap=8 phosphate=3.6 magnesium=1.6 blood_urea_nitrogen=97 total_bilirubin=1.4
+#24 29m: Cr=1.1 Na=137 Ca=8.7 HCO3=27 WBC=7.7 Glu=95 Hb=13.4 Plt=243 K=3.3 anion_gap=13 albumin=4.3 total_bilirubin=0.7 blood_urea_nitrogen=10
+#25 55f: Hb=13.2 WBC=21.92 K=4.3 Ca=9.4 HCO3=7 Glu=524 Cr=1.1 Plt=433 Na=136 pH=7.32 blood_urea_nitrogen=18 albumin=3.9 anion_gap=32 total_bilirubin=0.7 arterial_pco2=26 phosphate=3.1 magnesium=1.5
+#26 70m: Hb=8.1 WBC=14.9 Plt=209 HCO3=28 Glu=97 Na=140 Cr=1.97 Ca=7.4 K=4.4 INR=1.2 albumin=1.7 total_bilirubin=0.2 anion_gap=6 blood_urea_nitrogen=32 magnesium=1.7
+#27 40m: Plt=169 Cr=1.84 K=4.6 Hb=12.7 Na=139 WBC=13.2 Ca=8.5 Glu=74 INR=1.6 Lac=23 pH=7.041 HCO3=4.7 magnesium=3.4 total_bilirubin=0.7 albumin=3.3 blood_urea_nitrogen=21 arterial_pco2=18.5 anion_gap=14.7
+#28 77m: Glu=152 Ca=9.6 Na=135 HCO3=27 Cr=3.8 K=4.7 pH=7.43 WBC=10 Hb=14.6 Plt=175 Lac=3.1 blood_urea_nitrogen=42 anion_gap=15.7 arterial_pco2=22.3 albumin=2.9 total_bilirubin=1.3 troponin_i=0.11 phosphate=6.6 magnesium=1.9
+#29 89f: Hb=12 Plt=126 WBC=33.8 Na=119 Cr=1.71 HCO3=20 K=5.3 Ca=9.4 Glu=290 Lac=1.6 INR=1.1 anion_gap=18 blood_urea_nitrogen=40 albumin=3.3 magnesium=1.96 total_bilirubin=0.2 phosphate=2.3
+#30 29m: Glu=451 K=4.5 HCO3=7 Na=129 Ca=9.2 Cr=0.9 Plt=382 WBC=8.4 Hb=17.4 Lac=1.8 pH=7.07 blood_urea_nitrogen=20 albumin=4.4 anion_gap=26 total_bilirubin=0.6 magnesium=2.1 arterial_pco2=19 phosphate=1.8
+#31 46m: Glu=454 Ca=9.4 Cr=2.12 K=4.2 Na=129 HCO3=10 pH=7.26 Lac=1.6 Plt=216 Hb=14.8 WBC=16.3 phosphate=6.1 magnesium=2.7 total_bilirubin=1.1 albumin=5.1 blood_urea_nitrogen=35 arterial_pco2=26
+#32 77f: Hb=13.6 WBC=8.3 Plt=246 K=4.1 Cr=0.96 Glu=111 Ca=10.7 Na=143 HCO3=38 total_bilirubin=0.4 blood_urea_nitrogen=12 anion_gap=13 albumin=4.4
+#33 34m: Lac=1.4 K=6.4 Cr=4.5 Na=136 Hb=12.6 HCO3=25 Plt=350 Glu=91 Ca=9.8 INR=1.8 WBC=17.2 pH=7.1 blood_urea_nitrogen=76 albumin=2.1 total_bilirubin=0.6 troponin_i=0.02 anion_gap=7 arterial_pco2=90
+#34 73f: Glu=112 Cr=1 Na=146 WBC=8.7 blood_urea_nitrogen=37 total_bilirubin=0.9 albumin=2.9
+#35 52f: Hb=15.2 WBC=10.9 Plt=389 INR=1 K=3.6 HCO3=26 Glu=223 Cr=0.8 Na=142 pH=7.31 Lac=3.2 Ca=8.3 blood_urea_nitrogen=11 troponin_i=0.01 arterial_pco2=49 anion_gap=12 magnesium=1.8 phosphate=4.5
+#36 78m: Lac=2.7 WBC=5.5 Plt=241 Hb=12.2 INR=1 HCO3=33 K=4.1 Cr=1.8 Glu=115 Ca=9.7 Na=161 blood_urea_nitrogen=52 total_bilirubin=0.37 anion_gap=22 albumin=3.2 magnesium=2.7 phosphate=2.7
+#37 71f: pH=7.34 HCO3=44 Plt=258 Cr=0.53 Hb=13.2 Na=141 K=3.7 Glu=101 WBC=9 Ca=9.3 arterial_pco2=82 anion_gap=8 blood_urea_nitrogen=10
+#38 54m: pH=7.43 HCO3=26 Glu=120 INR=1.2 Ca=8.5 WBC=17.2 Plt=173 Cr=0.69 Na=136 K=3.6 Hb=14.5 arterial_pco2=39 blood_urea_nitrogen=12 anion_gap=5 magnesium=2.4
+#39 71m: Glu=101 HCO3=17 Na=138 Cr=3.43 Ca=7.9 K=5.3 Plt=48 Hb=5.7 WBC=2.7 blood_urea_nitrogen=67 phosphate=4.1 magnesium=1.7
+#40 66m: Na=135 HCO3=26 Glu=99 Ca=9 Cr=0.66 INR=1.1 K=4.6 Lac=2.1 Plt=114 WBC=3.4 Hb=10.2 anion_gap=9 albumin=2.7 total_bilirubin=0.4 blood_urea_nitrogen=43 magnesium=1.6 troponin_i=0.51
+#41 70m: K=3.2 Cr=0.9 Ca=8.1 Glu=127 Lac=1.3 Na=108 Plt=16 WBC=0.7 INR=1.1 Hb=6.2 HCO3=23.6 pH=7.5 blood_urea_nitrogen=16 anion_gap=11 total_bilirubin=1.5 arterial_pco2=30.8
+#42 67m: Hb=14.3 Glu=151 Ca=8.1 HCO3=22 Na=136 Cr=1.3 Plt=199 WBC=13.6 INR=1.1 K=3.9 anion_gap=7 blood_urea_nitrogen=16
+#43 76f: Ca=8.5 Glu=847 HCO3=11 Na=132 Cr=4.08 K=5.5 pH=7.18 Hb=8.9 WBC=10.8 Plt=168 anion_gap=32 blood_urea_nitrogen=75 arterial_pco2=44 total_bilirubin=0.5 albumin=3.2
+#44 51m: Plt=207 WBC=15.2 Hb=13.4 K=5.6 Ca=10 Glu=580 HCO3=11 Na=138 Cr=1.73 Lac=0.5 troponin_i=0.041 blood_urea_nitrogen=56 albumin=3.7 total_bilirubin=0.4 phosphate=2 magnesium=2.2
+#45 64m: Na=140 Cr=0.51 HCO3=26 Ca=8.5 Glu=148 K=3.5 Plt=161 WBC=9.36 Hb=12.1 pH=7.469 anion_gap=8 blood_urea_nitrogen=14 phosphate=4.6 magnesium=2 arterial_pco2=32.8
+#46 64f: pH=6.96 HCO3=4.3 Glu=1453 K=5.2 Ca=9.7 Cr=2.6 Hb=12.9 WBC=16.1 Plt=292 Na=128 total_bilirubin=3 albumin=3.4 blood_urea_nitrogen=40 anion_gap=45 troponin_i=0.12 magnesium=1.8 phosphate=4.3
+#47 71m: HCO3=16.3 pH=7.443 Na=131 INR=1.2 K=6 Hb=12.3 WBC=14.4 Plt=177 Cr=11.1 Glu=218 Ca=9 arterial_pco2=24.4 anion_gap=19 blood_urea_nitrogen=85 phosphate=2.8 magnesium=1.9
+#48 76f: HCO3=21.3 pH=7.54 Plt=264 Hb=9.2 WBC=8.65 Cr=0.53 Glu=70 K=3.1 Ca=7.6 Na=132 arterial_pco2=25 blood_urea_nitrogen=12 total_bilirubin=0.4 albumin=2.1
+#49 46f: INR=1.1 Plt=249 Glu=100 Hb=15.3 K=4 WBC=5.4 HCO3=29 Na=137 Ca=9.4 Cr=0.9 blood_urea_nitrogen=9 total_bilirubin=0.5 anion_gap=14 albumin=3.8 troponin_i=0.02
