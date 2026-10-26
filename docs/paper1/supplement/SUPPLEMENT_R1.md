@@ -667,3 +667,40 @@ No version-control system was used during development; this is a stated limitati
 | `eval/frozen_registry_13_3_0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br` | 2026-10-26 03:25 | 1,210,768 | 91cdb766fbf5c009… |
 
 Together with the dated SAP amendments (Note 1), the engine change log C1–C16 (Table S1) and the v14/v15 freeze manifests (261 and 316 files), these allow a reader to verify that the frozen artefacts used for every reported number are the ones archived, but **not** to verify the intent or sequence of individual edits inside the development period. From revision round 5 onwards the project is tracked in Git (repository initialised 2026-10-26 with annotated tag `paper1-R1-round5`, tracking code, manuscripts and scripts; the Brotli registries and data are excluded for size and identified by the SHA-256 values above and in the freeze manifests; every later change is a dated commit).
+
+
+## Supplementary Table S16 — Sepsis companion risk model (post-freeze, engine-external; added in revision round 6)
+
+Trained once on PhysioNet/CinC 2019 set A (5,000-patient public subset; 446 septic), evaluated on the untouched subsets B (280 septic / 4,699) and B2 (280 / 4,711). Threshold for the utility score fixed on set A. Source: `eval/results/sepsis_ml/sepsis_ml_report.md`.
+
+| set | model | hourly AUROC | hourly AUPRC | patient-level AUROC | AUROC at −6 / −12 / −24 h | PhysioNet utility |
+|---|---|---|---|---|---|---|
+| A (development) | logistic (L2) | 0.773 | 0.091 | 0.658 | 0.754 / 0.800 / 0.818 | 0.364 |
+| A (development) | gradient boosting | 0.934 | 0.319 | 0.832 | 0.950 / 0.909 / 0.865 | 0.689 |
+| B (held out) | logistic (L2) | 0.717 | 0.051 | 0.552 | 0.698 / 0.780 / 0.776 | 0.199 |
+| B (held out) | gradient boosting | 0.757 | 0.066 | 0.654 | 0.775 / 0.799 / 0.774 | 0.253 |
+| B2 (held out) | logistic (L2) | 0.726 | 0.052 | 0.557 | 0.709 / 0.778 / 0.783 | 0.216 |
+| B2 (held out) | gradient boosting | 0.750 | 0.068 | 0.631 | 0.774 / 0.765 / 0.786 | 0.220 |
+| reference: frozen engine v7 (labs only) | rules | — | — | 0.600 / 0.610 / 0.588 (A / B / B2) | — | — |
+
+Largest standardised logistic coefficients (signed): respiratory rate +0.49, hours since ICU admission +0.45, creatinine +0.39, base-excess missing −0.35, MAP missing −0.33, SBP missing +0.31, shock index −0.28, heart rate +0.26, 12-h maximum temperature +0.23. Measurement-availability flags carry signal in this dataset (sampling intensity), a known property of the challenge data; the module is reported with its contributing features so each alert can be inspected. The boosting hyper-parameters were regularised once after a first look at set B (training AUROC 0.997 / B 0.719 in the first configuration); B2 was not opened until the final configuration.
+
+## Supplementary Note 7 — Evidence triage of the twelve post-review improvement proposals (2026-10-26)
+
+| # | proposal | evidence on frozen v7 artefacts | verdict | v8 action |
+|---|---|---|---|---|
+| 1 | Hybrid rule + interpretable ML for sepsis with vitals, time and utility score | companion model: Table S16 | supported (modest gain) | engine-external module, labelled predictive |
+| 2a | Evidence-state thresholding / adaptive truncation for precision@5 | precision vs recall on v7 top-5: k = 5 14.2 / 60.8; relative ≥ 0.6 15.3 / 58.8; relative ≥ 0.8 18.1 / 48.9; absolute ≥ 0.6 19.0 / 53.5; absolute ≥ 0.7 23.3 / 43.3; absolute ≥ 0.8 25.7 / 23.4; gap > 0.15 16.7 / 45.4; k = 3 16.5 / 47.9; ceiling under perfect ranking ≈ 21% | refuted as an accuracy gain | descriptive `confidence_band`, no ranking change |
+| 2b | Asymmetric covering-diagnosis suppression (DKA, GI bleed, pancreatitis) | DKA 107 coded: 68 top-5, 7 at 6–10, 26 absent; absent stays lack HCO₃/anion gap/ketones; entities above DKA when missed: diabetes 23, AKI 22, sepsis 18 | refuted (missing criterion, not suppression) | none |
+| 3 | Remove or revive the four 'inert' fusion layers | ablation Δ flat@5: Bayesian −1.3, fuzzy +0.3, graph +0.1, risk 0.0; fuzzy/risk carry perturbation robustness and the documented risk models | partly | kept; reported as such |
+| 4 | 'Probable' tiers for CKD, leukocytosis, diabetes | CKD surfaces as `reduced_gfr_chronicity_undetermined` (renal union 255 vs 250); leukocytosis correctly nested under sepsis; diabetes absent stays lack HbA1c with glucose < 200 mg/dL | refuted (would create false positives) | none |
+| 5 | Prune registry, drop 28 `unverified_source` rules, remove 388 unused sources | the 28 rules are correct toxicology/transfusion/endocrine thresholds; ablation 0.0 only because eICU has no such cases | partly | registry 14.2.0: re-sourced with 13 Crossref DOIs; 0 unverified; unused sources retained as provenance |
+| 6 | Audit and expand the syndrome layer | no matched evaluation set for new syndromes | deferred | clinician audit (resource) |
+| 7 | Medication/history context as risk and trend rules | context predicates and `documented_history` tier already present; not measurable on labs-only eICU | already present | none |
+| 8 | Derived indices (NLR, PLR, MELD, Child-Pugh, CURB-65, HAS-BLED, CHA₂DS₂-VASc, APRI, BARD, corrected Ca, osmolal gap, delta-delta) | present: corrected Ca, NLR, delta ratio, osmolal gap, effective osmolality, glucose-corrected Na, FIB-4, APRI, HOMA; scores needing clinical inputs excluded | partly | MELD/MELD-Na and PLR added |
+| 9 | Post-hoc calibration map with disclosure | already in v7 (ECE 0.162 → 0.003; Fig. 8, Table S10) | already present | none |
+| 10 | Thyroid and liver rules | thyroid AUROC 0.979 (TSH) / 0.798 (self-report); HCV 0.925; ILPD 0.704 (label noise) | no action supported | none |
+| 11 | Fuzzy thresholds for perturbation | fuzzy layer active; 753/755 by design | already present | none |
+| 12 | LLM extraction front end; path A/B/C on 'untrained' | path C: engine stays untrained; supervised components only as labelled companions | decided | item 1 is the first such component |
+
+Gate for v8 (`eval/results/gate_v8/GATE_v8_RESULT.md`): batteries 151/151, 124/124, 77/78 (same pre-existing miss); healthy sweep 0/1,000; perturbation 753/755; 680 unit tests passed + 4 new; eICU labs-only counts identical to v7 in every group. The Supplementary Note 6 manifest refers to the v7 artefacts; the v8 registry (14.2.0) is archived at `release/registry_14.2.0/` with SHA-256 sums and the v7 registry at `release/registry_14.1.0/`.

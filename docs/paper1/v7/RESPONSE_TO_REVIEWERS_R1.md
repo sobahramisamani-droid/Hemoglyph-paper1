@@ -217,3 +217,19 @@ Items requiring resources outside the authors' control (independent clinical rul
 | Typos / page 8 | **R5** | "stylustered" and "S99-5103"/"Eper" do not exist in the source (PDF extraction artefacts of "stay-clustered"/"S99–S103"/"Epner"); the abstract now reads "clustered by stay" to avoid the ligature. No block of "1 1 1 …" exists in the docx text or tables; it is presumably a PDF rasterisation of a figure and we could not reproduce it — please send the page if it recurs. |
 | Refs 15/18 "to be verified", affiliation/contributions "to be confirmed" | **open** | Co-author confirmation pending; references were finalised in R3. |
 | Abstract length | note | The abstract now carries every element the reviewer asked for and runs to ~310 words, above npj guidance (~150–250); we will cut to the journal limit at submission if the editor prefers, dropping numeric detail rather than caveats. |
+
+
+# Round 6 — post-freeze development step (engine v8) added 2026-10-26
+
+The twelve improvement proposals in the latest report were triaged against the frozen v7 artefacts before any code changed (Supplementary Note 7). We implemented what the data supported and report, rather than argue, what they refuted.
+
+| proposal | outcome | where |
+|---|---|---|
+| Supervised sepsis component with vitals and time | Built outside the engine; held-out hourly AUROC 0.757 / 0.750, horizon AUROC ≈ 0.77–0.80, utility 0.25 / 0.22, patient-level 0.654 / 0.631 vs engine 0.610 / 0.588. Modest, labelled predictive, one disclosed re-tune after set B. | Results §v8; Methods §v8; Table S16 |
+| Adaptive truncation for precision@5 | Refuted: precision and recall trade ≈ 1:1; ceiling ≈ 21% from the reference standard. Added descriptive confidence bands only. | Results §v8; Note 7 |
+| Covering-diagnosis suppression (DKA) | Refuted: the 26 absent DKA stays lack HCO₃/anion gap/ketones; no suppression. | Results §v8; Note 7 |
+| Drop 28 `unverified_source` rules | Not dropped (clinically correct toxicology thresholds); re-sourced with 13 Crossref-verified DOIs in registry 14.2.0, 0 remaining. | Methods §v8; Note 7 |
+| Derived indices | MELD/MELD-Na and PLR added; scores needing clinical inputs excluded. | Methods §v8 |
+| 'Probable' tiers, layer removal, thyroid/liver rules | Not supported by the data; reasons tabulated. | Note 7 |
+
+All frozen numbers in the manuscript are unchanged; v8 is explicitly a post-freeze development step without a quarantine round (Limitations). Files: `docs/V8_ROADMAP_TRIAGE.md`, `eval/sepsis_ml/`, `eval/results/sepsis_ml/`, `eval/results/gate_v8/`, `eval/registry_patches/patch_14_2_0.py`, `release/registry_14.2.0/`, `tests/test_v8_indices.py`.
