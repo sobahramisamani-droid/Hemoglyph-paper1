@@ -1,3 +1,0 @@
-
-HARD2 SCORE 124/124 (100.0%)  median 471 ms  p95 779 ms
-exit 0

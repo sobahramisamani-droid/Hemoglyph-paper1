@@ -1,3 +1,0 @@
-
-HARD SCORE 151/151 (100.0%)  median 531 ms  p95 936 ms
-exit 0
