@@ -227,7 +227,7 @@ blocks = sorted((sub(b) for b in blocks), key=lambda b: int(re.match(r"\*\*Table
 body = sub(head) + "## Tables\n\n" + "\n\n".join(blocks) + "\n\n## Supplementary information" + sub(sp)
 
 # ---------- supplement: archive the R5 main-text sections that were condensed (verbatim)
-body = body.rstrip() + "\n\n### Supplementary Note 12 — Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length)\n\n" \
+body = body.rstrip() + "\n\n### Supplementary Note 12 — Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length — statements about a pending second rater in R5 §2.8/§3.10 are superseded by main-text Sections 2.4 and 3.2)\n\n" \
        + "#### R5 Methods\n\n" + old_methods.replace("### ", "##### ") + "\n\n#### R5 Results\n\n" + old_results.replace("### ", "##### ") + "\n\n#### R5 Discussion\n\n" + old_disc.replace("### ", "##### ") + "\n"
 body = body.replace("Notes: Note 1 SAP and amendments;", "Notes: Note 1 SAP and amendments;", 1)
 

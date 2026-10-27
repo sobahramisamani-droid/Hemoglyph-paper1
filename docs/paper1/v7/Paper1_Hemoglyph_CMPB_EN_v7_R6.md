@@ -282,7 +282,7 @@ On the UCI thyroid referral set (6,932 scored records) AUROC was 0.979 (0.974–
 
 Pooled over 52,689 stay–group units, AUROC was 0.797 but raw scores were over-confident: calibration slope 0.25, ECE 0.162, Brier 0.117 (Fig. 7). Split-half cross-fitted isotonic recalibration reduced ECE to 0.003 within eICU—evidence that ranks are recalibrable, not a transferable calibration. Raw scores are therefore ranks, not probabilities. Twenty-seven of 29 groups with ≥10 labels had AUROC above 0.5 after Benjamini–Hochberg adjustment (exceptions: malnutrition, hypocalcaemia). Recall@5 was 62.3% in men and 58.5% in women, 58–64% across age bands and 59–61% across the three largest ethnicity strata (Supplementary Table S4); three strata in one US dataset do not support a fairness claim. The engine contains no race or ethnicity term, and its optional `ethnicity` field is parsed but never read. The release passed the non-regression gate: 689/689 unit tests, 352/353 adversarial vignettes (alcoholic pancreatitis ranked second behind alcohol-use disorder, deliberately not patched), 753/755 perturbation pairs (both failures are replicates of one thiazide-hyponatraemia vignette under 3% noise) and the SI/conventional unit-twin battery (Supplementary Note 4).
 
-### Supplementary Note 12 — Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length)
+### Supplementary Note 12 — Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length — statements about a pending second rater in R5 §2.8/§3.10 are superseded by main-text Sections 2.4 and 3.2)
 
 #### R5 Methods
 
