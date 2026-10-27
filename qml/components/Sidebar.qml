@@ -8,6 +8,14 @@ Rectangle {
     property bool collapsed: backend ? backend.sidebarCollapsed : false
     width: collapsed ? 82 : 262
     color: Theme.sidebar
+    gradient: Gradient {
+        GradientStop { position: 0.0; color: Theme.sidebarTop }
+        GradientStop { position: 1.0; color: Theme.sidebarBottom }
+    }
+    Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: "#22FFFFFF"; z: 2 }
+    Rectangle { anchors.left: parent.right; width: 10; height: parent.height; z: 2
+        gradient: Gradient { orientation: Gradient.Horizontal
+            GradientStop { position: 0; color: "#22000000" } GradientStop { position: 1; color: "transparent" } } }
     Behavior on width { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
 
     readonly property bool aiOk: (backend && backend.chatConfigured !== undefined) ? backend.chatConfigured : true
@@ -331,10 +339,17 @@ Rectangle {
             Text { text: navControl.iconText; color: "#B9C7D9"; font.pixelSize: 17; Layout.preferredWidth: 24; horizontalAlignment: Text.AlignHCenter }
             Text { visible: !navControl.collapsed; text: navControl.label; color: "#DDE6F2"; font.family: Theme.fontFamily; font.pixelSize: 13; font.weight: Font.Medium; Layout.fillWidth: true }
         }
+        readonly property bool active: navControl.target !== "theme" && navControl.target.length > 0 && backend && backend.currentPage === navControl.target
         background: Rectangle {
             radius: 11
-            color: navControl.target !== "theme" && navControl.target.length > 0 && backend && backend.currentPage === navControl.target ? "#1A3655" : navControl.hovered ? "#17253A" : "transparent"
-            border.color: navControl.target !== "theme" && navControl.target.length > 0 && backend && backend.currentPage === navControl.target ? "#27557D" : "transparent"
+            color: navControl.active ? "#1A3655" : navControl.hovered ? "#17253A" : "transparent"
+            border.color: navControl.active ? "#27557D" : "transparent"
+            Behavior on color { ColorAnimation { duration: 140 } }
+            Rectangle {
+                visible: navControl.active
+                anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
+                width: 3; height: 20; radius: 2; color: Theme.accent
+            }
         }
         ToolTip.visible: collapsed && hovered
         ToolTip.text: label

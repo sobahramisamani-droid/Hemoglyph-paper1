@@ -8,6 +8,9 @@ Rectangle {
     height: 72
     color: Theme.background
     property string title: "Workspace"
+    Rectangle { anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom; height: 1; color: Theme.border }
+    Rectangle { anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.bottom; height: 8; z: 5
+        gradient: Gradient { GradientStop { position: 0; color: Theme.shadowSoft } GradientStop { position: 1; color: "transparent" } } }
 
     RowLayout {
         anchors.fill: parent
