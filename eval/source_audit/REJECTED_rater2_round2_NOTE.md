@@ -12,3 +12,13 @@ encoding; xlsx was requested).
 
 Consequence: the audit remains single-rater in the manuscript; this round is archived, as was round 1, and is reported in
 Supplementary Note 8. Both rejected rounds share the same failure mode: verdicts produced without opening the source text.
+
+## Round 2b ("REVISED", same day) — NOT ACCEPTED
+Labels: CONCORDANT 70 / UNRESOLVABLE 25 / DISCORDANT 5; kappa vs rater 1 = 0.04. The quote column now contains numeric
+sentences, but they are paraphrases of the rule expressions, not text from the cited sources. Decisive examples:
+#17 and #36 quote "Hb < 10.67 g/dL" (a unit-conversion artefact of the rule, not a value any guideline prints); #30 quotes
+Sepsis-3 as "lactate > 4.0 mmol/L despite fluid resuscitation" whereas Sepsis-3 states > 2 mmol/L; #58 quotes the Atlanta
+classification with ">= 180 U/L", which the source does not contain (it states 3x ULN); #78 quotes an "acquired haemophilia A"
+criterion from a guideline on rare factor deficiencies; #60/#91 quote sentences from WHO landing pages that return no text.
+Sixty-six CONCORDANT rows correspond to sources rater 1 could not reach at all. The submission is archived; the manuscript
+remains single-rater.
