@@ -32,7 +32,7 @@ pip install numpy pandas brotli scikit-learn scipy pytest matplotlib openpyxl
 sha256sum -c FREEZE_v15_20261025_sha256.txt        # engine + registry byte-identical to the frozen v7 / 14.1.0
 python -m pytest tests/test_properties.py -q        # the 21 invariants of Section 2.3
 python tests/hard_battery.py && python tests/healthy_sweep.py
-python analyse_gidlines.py --demo                   # one annotated panel, cited differential on stdout
+python examples_quickstart.py                       # one panel in, cited differential out (~1 s)
 ```
 
 ## Reproducing the tables and figures
