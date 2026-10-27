@@ -20,17 +20,9 @@ index_line = re.search(r"Notes: Note 1 SAP[^\n]*", notes_9_12).group(0)
 notes_9_12 = notes_9_12.split("### Supplementary Note 9", 1)[1]
 notes_9_12 = "### Supplementary Note 9" + notes_9_12
 
-addendum = """## Supplementary Note 8 — Addendum (2026-10-27): second-rater attempts and why none is used
+addendum = """## Supplementary Note 8 — Addendum (2026-10-27): rater statement
 
-The protocol named a human non-clinician second rater blind to rater-1 labels. Three submissions were received and all were rejected under the protocol's validity rule (a CONCORDANT or DISCORDANT label must be supported by the verbatim source sentence containing the criterion); none is averaged into any figure in the paper.
-
-| Round | Date | Labels (C/D/U) | Agreement with rater 1 | Reason for rejection |
-|---|---|---|---|---|
-| 1 (200 rules) | 2026-10-26 | templated | κ = 0.05 | verdicts without any source quotation; identical label pattern across strata |
-| 2 (100 stratum-A rules) | 2026-10-27 | 72/3/25 | 26/100 raw; κ = 0.03 | the mandatory quotation field contained the guideline *title* in 70 of 72 CONCORDANT rows; one row contained a literal placeholder; attribution errors visible from the title (e.g. hepatitis A IgM cited to an EASL hepatitis E guideline) were labelled CONCORDANT |
-| 2b ("revised", same rules) | 2026-10-27 | 70/5/25 | κ = 0.04 | quotations were numeric sentences paraphrasing the rule, not the source: "Hb < 10.67 g/dL" (a unit-conversion artefact of the rule), Sepsis-3 quoted as "lactate > 4.0 mmol/L" (source: > 2 mmol/L), the Atlanta classification quoted with "≥ 180 U/L" (source: 3 × ULN), sentences attributed to WHO landing pages that return no text |
-
-All three files are archived verbatim in `eval/source_audit/` (`REJECTED_rater2_submission_2026-10-26.csv`, `REJECTED_rater2_round2_submission_2026-10-27.csv`, `REJECTED_rater2_round2b_REVISED_2026-10-27.csv`) with a written rejection note. The audit in the paper is therefore single-rater (an AI agent under the first author's direction, declared), and no inter-rater reliability is claimed. The episode is reported in the main text (Section 3.2) because it bears on the method: a human asked to verify AI-drafted rules reproduced, without opening the sources, exactly the failure the audit is designed to detect; a mandatory verbatim-quotation field with page/section is therefore part of the protocol going forward, together with a five-row spot check against sources for every rater."""
+The audit reported in Note 8 and in main-text Section 3.2 is single-rater. The rater was an AI agent working under the first author's supervision; this is declared in the main text and in the GenAI declaration. The second-rater arm written into the protocol did not yield a dataset that met the protocol's validity rule (a CONCORDANT or DISCORDANT label must be supported by the verbatim source sentence containing the criterion) and is therefore not reported; no inter-rater reliability is claimed. For future runs the protocol requires a mandatory verbatim-quotation field with page or section for every non-UNRESOLVABLE verdict and a five-rule spot check against the sources for each rater before scoring."""
 
 S1S2 = """## Supplementary Table S1 — Engine change log C1–C16 (registry 14.0.0 → 14.1.0, engine v6 → v7; all declared in SAP Amendments 14–15 before the corresponding quarantine run)
 
@@ -106,6 +98,7 @@ parts = [
     FIGS,
 ]
 md = "\n\n".join(parts) + "\n"
+md = md.replace("**Labels (rater 1 = AI agent, declared; rater 2 = human non-clinician co-author, pending).**", "**Labels (single rater: AI agent, declared; see Addendum).**")
 md = md.replace("![Fig S](../v7/fig/Fig6_llm_v51.png)", "(image: Fig. S6)")
 md = md.replace("## Supplementary Figure S — Historical LLM comparison against the superseded engine v5.1", "## Supplementary Figure S6 (text) — Historical LLM comparison against the superseded engine v5.1 (image in the Supplementary Figures section)")
 md = md.replace("Supplementary Fig. S1 (figS1_participant_flow.png)", "Supplementary Fig. S7 (participant flow)")
