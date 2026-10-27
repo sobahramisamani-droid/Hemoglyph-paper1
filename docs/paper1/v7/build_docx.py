@@ -7,7 +7,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 doc=Document()
 for s in doc.sections: s.left_margin=s.right_margin=Cm(2.5); s.top_margin=s.bottom_margin=Cm(2.5)
-n=doc.styles["Normal"]; n.font.name="Calibri"; n.font.size=Pt(11); n.paragraph_format.line_spacing=1.5; n.paragraph_format.space_after=Pt(6)
+n=doc.styles["Normal"]; n.font.name="Calibri"; n.font.size=Pt(11); n.paragraph_format.line_spacing=2.0; n.paragraph_format.space_after=Pt(6)
 def inline(p,text,size=None):
     for pt in re.split(r"(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\^[^^]+\^)",text):
         if not pt: continue
@@ -19,13 +19,17 @@ def inline(p,text,size=None):
         if size: r.font.size=Pt(size)
 def shade(c,f):
     t=c._tc.get_or_add_tcPr(); s=OxmlElement("w:shd"); s.set(qn("w:val"),"clear"); s.set(qn("w:fill"),f); t.append(s)
-lines=open("Paper1_Hemoglyph_JBI_EN_v7_R5.md").read().split("\n"); i=0
+lines=open("Paper1_Hemoglyph_CMPB_EN_v7_R6.md").read().split("\n"); i=0
 while i<len(lines):
     l=lines[i]
     if l.startswith("# "):
         p=doc.add_paragraph(); inline(p,l[2:],16); p.runs[0].bold=True; p.paragraph_format.line_spacing=1.2
     elif l.startswith("## "):
         h=doc.add_heading(l[3:],1); h.runs[0].font.color.rgb=RGBColor(0,0,0)
+    elif l.startswith("##### "):
+        h=doc.add_heading(l[6:],4); h.runs[0].font.color.rgb=RGBColor(0x30,0x30,0x30)
+    elif l.startswith("#### "):
+        h=doc.add_heading(l[5:],3); h.runs[0].font.color.rgb=RGBColor(0x30,0x30,0x30)
     elif l.startswith("### "):
         h=doc.add_heading(l[4:],2); h.runs[0].font.color.rgb=RGBColor(0x30,0x30,0x30)
     elif l.startswith("|"):
@@ -65,4 +69,4 @@ for k,f in enumerate(NPJ,1):
     p=doc.add_paragraph(); r=p.add_run(f"Fig. {k} | {LEG.get(k,('',''))[0]} "); r.bold=True; r.font.size=Pt(9.5)
     inline(p,LEG.get(k,('',''))[1],9.5); p.paragraph_format.line_spacing=1.15
     doc.add_page_break()
-doc.save("Paper1_Hemoglyph_JBI_EN_v7_R5.docx"); print("docx ok")
+doc.save("Paper1_Hemoglyph_CMPB_EN_v7_R6.docx"); print("docx ok")
