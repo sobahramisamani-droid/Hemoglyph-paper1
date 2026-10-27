@@ -10,7 +10,7 @@ Sobhan Bahrami^a*^, Zhaleh Tahmasebinejad^b,c^, Ehsan Bahrami Samani^b^
 **Highlights**
 - Property-based invariants for a clinical rule engine, run on every release
 - The invariants found a ranking defect that 353 hand-written vignettes had missed
-- Frozen source-concordance protocol: 92% of sampled rules not checkable from locators
+- Frozen source-concordance protocol: 92% of sampled rules unverifiable by locator
 - Untrained, traceable engine at recall@5 parity with an unnamed frontier LLM
 - Engine-agnostic tools and protocol released; applicable to any analyte-rule base
 
