@@ -1,0 +1,186 @@
+{
+ "n_cases": {
+  "eicu": 2314,
+  "nhanes_I": 500,
+  "nhanes_J": 1000
+ },
+ "n_exec": 33183,
+ "sets": {
+  "active_core": 364,
+  "hot_core": 174,
+  "fired_not_contributing": 1627,
+  "dormant": 31192
+ },
+ "anchors": {
+  "total": 272,
+  "in_core": 46,
+  "in_hot": 32,
+  "dormant": 223
+ },
+ "provenance": {
+  "active_core": {
+   "generic_landing_page": 199,
+   "landing_page": 69,
+   "no_locator": 10,
+   "doi_resolved": 38,
+   "unreachable": 44,
+   "other": 4
+  },
+  "hot_core": {
+   "generic_landing_page": 72,
+   "landing_page": 45,
+   "unreachable": 25,
+   "doi_resolved": 24,
+   "no_locator": 4,
+   "other": 4
+  },
+  "dormant": {
+   "generic_landing_page": 28860,
+   "landing_page": 1736,
+   "doi_resolved": 215,
+   "unreachable": 328,
+   "no_locator": 49,
+   "verified_manual": 3,
+   "other": 1
+  },
+  "all_exec": {
+   "generic_landing_page": 30104,
+   "landing_page": 2202,
+   "doi_resolved": 258,
+   "unreachable": 518,
+   "no_locator": 93,
+   "other": 5,
+   "verified_manual": 3
+  }
+ },
+ "top_sources_core": [
+  [
+   "who_essential_lab_2024",
+   107
+  ],
+  [
+   "who_anaemia_2024",
+   19
+  ],
+  [
+   "acmg_act_2024",
+   17
+  ],
+  [
+   "esc_hf_2023",
+   12
+  ],
+  [
+   "ada_2026",
+   10
+  ],
+  [
+   "endocrine_guidelines",
+   10
+  ],
+  [
+   "acg_crohn_2018",
+   8
+  ],
+  [
+   "endocrine_society_hypopituitarism_2016",
+   7
+  ],
+  [
+   "acmt_toxic_alcohols_2024",
+   7
+  ],
+  [
+   "tietz_7e_2023",
+   6
+  ],
+  [
+   "idsa_guidelines",
+   6
+  ],
+  [
+   "aace_diabetes_2024",
+   6
+  ],
+  [
+   "bsh_hematology_2024",
+   5
+  ],
+  [
+   "surviving_sepsis_2024",
+   5
+  ],
+  [
+   "kdigo_ckd_2024",
+   5
+  ]
+ ],
+ "top_sources_hot": [
+  [
+   "who_essential_lab_2024",
+   30
+  ],
+  [
+   "ada_2026",
+   9
+  ],
+  [
+   "acmg_act_2024",
+   9
+  ],
+  [
+   "who_anaemia_2024",
+   9
+  ],
+  [
+   "esc_hf_2023",
+   8
+  ],
+  [
+   "endocrine_guidelines",
+   6
+  ],
+  [
+   "kdigo_ckd_2024",
+   5
+  ],
+  [
+   "ssc_2026",
+   4
+  ],
+  [
+   "aace_diabetes_2024",
+   4
+  ],
+  [
+   "surviving_sepsis_2024",
+   4
+  ],
+  [
+   "tietz_7e_2023",
+   4
+  ],
+  [
+   "acg_crohn_2018",
+   3
+  ],
+  [
+   "idsa_guidelines",
+   3
+  ],
+  [
+   "gold_copd_2024",
+   3
+  ],
+  [
+   "acmt_toxic_alcohols_2024",
+   3
+  ]
+ ],
+ "rule_types_core": {
+  "diagnostic_criterion": 158,
+  "screening": 141,
+  "staging_severity": 65
+ },
+ "diseases_core": 258
+}
