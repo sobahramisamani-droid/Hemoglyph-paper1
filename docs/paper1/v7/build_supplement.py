@@ -93,6 +93,33 @@ HYBRID = """
 To test whether a trained layer on top of the frozen engine would raise recall, a 5-fold out-of-fold gradient-boosting probability per label group (identical inputs: raw analytes, age, sex) was combined with the frozen v7 group probability by a parameter-free rule, max(engine, ML). On the group-level metric (same 2,432 scorable labels) recall@5 was 58.8 % for the engine, 60.6 % for the hybrid (+1.8, 95 % bootstrap CI +1.2 to +2.5), 59.8 % when the ML term was allowed only for the six groups without a single-analyte criterion (+1.0), and 68.8 % for ML alone (+10.0). The ML-only gain comes from sepsis (94 %), diabetes (91 %) and CKD (65 %) — cohort priors learned from the labels — while ML loses most single-analyte groups (hyponatraemia 38 %, metabolic acidosis 12 %, hypomagnesaemia 3 %). A taxonomy of the engine's DKA misses (40 of 108) found only 2 panels meeting ADA criteria that the engine failed; 32 had bicarbonate ≥ 18 mmol/L or glucose < 250 mg/dL at the first panel (resolving or treated DKA) and 5 had glucose without acid–base data. Together with the earlier input arms (full in-window time series 63.7 → 63.2 %; documented history +2.9 points, mostly echo), these results indicate that the frozen figure is bounded by the reference standard rather than by rule content, and no post-freeze rule change was made (`eval/hybrid_arm.py`; `eval/results/eicu_demo/hybrid_arm_v7.md`).
 """
 
+
+BLACKBOX = """## Supplementary Note 13 — Black-box property-conformance benchmark (engine and LLM on identical perturbed panels; declared 2026-10-27)
+
+**Rationale.** The invariants of Section 2.3 run inside the engine's process. Four of them can be stated for any reader that maps a panel to a ranked list, so they were run as a black-box benchmark on real panels with the engine and the LLM of Note 2 receiving identical inputs. The panel generator, the scoring script and all metric definitions were committed before any reading was collected; predictions registered at that time were: LLM top-5 Jaccard 0.6–0.8 for P2/P3, engine violations 10–30 % for P4, LLM unsupported assertions 30–60 % for P5.
+
+**Panels** (`eval/blackbox/make_property_panels.py`, seed 20261027; base stays drawn from the 400 already read blind, so no new label exposure). P2: 40 panels re-expressed in SI units (creatinine µmol/L, glucose/urea/calcium/magnesium/phosphate/lipids mmol/L, bilirubin µmol/L, haemoglobin/albumin/protein g/L, lactate mg/dL). P3: the same 40 with analyte order shuffled and up to five normal-valued distractors appended (MCV 89 fL, alkaline phosphatase 72 U/L, total protein 6.9 g/dL, chloride 102 mmol/L, TSH 1.8 mIU/L; a distractor was only added when the analyte id was absent, but two distractor ids were aliases of analytes already present, see Residuals). P4: 20 stays with baseline creatinine 0.6–1.3 mg/dL, each at ×1.0/×1.5/×2.0. P5: 40 stays in which a criterion-met diagnosis ranked ≤ 3 by the frozen engine; its defining analyte (for creatinine also urea) was removed; the reader never saw the target or the removed analyte. The healthy-adult property (P6) was not re-run because the earlier blinded NHANES 2017–18 test (40 guideline-healthy + 30 reference-positive adults, same reader) already covers it.
+
+**Reads.** Engine: live run on each panel; reference for P2/P3 = live run on the conventional-unit twin built by the same generator (deterministic). LLM: the same agent-platform reader as Note 2, blind to labels, targets and removed analytes, returning ten named entries with probabilities, mapped to label groups by the synonym table of Note 2. The LLM reference for P2/P3 is its original blind reading from an earlier session, so its Jaccard includes test–retest variability (κ 0.69). For P4 the ladder step was visible to the LLM reader (the panel key carries it), so the LLM P4 row is not a blind result.
+
+**Metrics** (`eval/blackbox/score_property_panels.py`). P2/P3: Jaccard of top-5 label-group sets versus the reference, share of identical sets, and the change in clinician-label recall@5. P4: share of ladders in which the best renal rank (acute kidney injury, renal impairment, CKD) worsens at any step. P5: share of panels in which the target group is still at rank ≤ 5; a post-hoc row (declared after the first scoring run) excludes panels in which a redundant analyte remained (haematocrit for haemoglobin, CK-MB/troponin T for troponin I, anion gap/pH/base excess for bicarbonate).
+
+| Property (n) | Engine | LLM |
+|---|---|---|
+| P2 SI units: identical top-5 / mean Jaccard / label Δ (40) | 40/40 / 1.00 / 0 (v8.1 first run: 36/40 / 0.98) | 8/40 / 0.72 / +3 |
+| P3 shuffle + distractors (40) | 35/40 / 0.96 / 0 | 10/40 / 0.73 / +3 |
+| P4 monotonicity violations (20 ladders) | 2/20 | 0/20 (step visible) |
+| P5 unsupported assertion (40) | 3/40 | 14/40 |
+| P5, no redundant analyte left (29; post hoc) | 1/29 | 4/29 |
+| Healthy adults, disease asserted at p ≥ 0.5 (40; NHANES 2017–18) | 0/40 | 4/40 |
+
+**Defect found and fixed.** The first engine run gave 36/40 identical P2 sets. All four discrepancies traced to one cause: a record mirrored under an engine-internal legacy identifier (`bilirubin_total`) was not canonicalised because that identifier has no registry metadata, so a normal bilirubin of 9 µmol/L was compared with the 8 mg/dL panic threshold (false critical alert) and scored as high by the fuzzy and Bayesian layers (cholestasis 0.49 → 0.58). The in-process P2 test had not reached this path because it used glucose and creatinine. The fix resolves legacy identifiers to the registry feature they mirror before canonicalisation and before the panic check; a regression test (`tests/test_properties.py::test_p2_unit_invariance_legacy_alias_ids`, bilirubin/urea/phosphate in SI units) fails before and passes after the fix; the 705-test suite passes; the fix is in v8.2 and the frozen v7 results are unchanged.
+
+**Residuals.** P3 engine 5/40: in three stays the alias distractors (`mcv` 89, `tsh` 1.8) duplicated an analyte already present under its canonical id with a different value (measured MCV 100.5 fL; TSH 4.7 and 4.3 mIU/L), so the perturbation was not value-preserving there; in two stays the differential had fewer than five entries and 0.15-probability items entered the top-5 set. P4 engine 2/20: at the ×2.0 step the renal cluster's best rank fell because the engine switched from "reduced GFR, chronicity undetermined" (anchor 0.92) to a lower-scored acute-kidney-injury entry; logged as a candidate for the next release, not changed. P5 engine 3/40: two anaemia panels with haematocrit present (supported) and one assertion of acute kidney injury with neither creatinine nor urea in the panel (a defect candidate). P5 LLM 14/40: ten with a redundant analyte present (eight anaemia with haematocrit, one myocardial infarction with CK-MB 28 ng/mL, one metabolic acidosis with anion gap 24.5); four without (three "diabetic ketoacidosis" from acid–base data alone, one heart failure without BNP).
+
+**Interpretation.** The engine kept unit and presentation invariance where the LLM's ranking changed in most panels, and asserted the target without its defining analyte less often; but the LLM's P2/P3 figures are bounded by its own retest variability, the P4 LLM row is not blind, and the properties test consistency, not correctness. The practical difference is that an engine violation is a reproducible bug report (two were found here), whereas an LLM's changed answer is not actionable.
+"""
+
 parts = [
     "# Supplementary Information\n\n*Verification and provenance auditing of an AI-drafted clinical rule base — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R6 (2026-10-27), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
     "## Supplementary Note 1 — Statistical analysis plan and amendments\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "SAP_Hemoglyph_v1.md")), flags=re.M).replace("\n## ", "\n### "),
@@ -103,6 +130,7 @@ parts = [
     rd(os.path.join(SUP, "SUPPLEMENT_R1.md")).split("\n", 1)[1].strip(),
     addendum,
     notes_9_12.replace("### Supplementary Note", "## Supplementary Note").replace("\n## Supplementary Note 10", HYBRID + "\n## Supplementary Note 10", 1),
+    BLACKBOX,
     FIGS,
 ]
 md = "\n\n".join(parts) + "\n"
@@ -152,6 +180,7 @@ Every number in the main text and in this file is produced by a script in the pu
 | Table 5, Fig. 4, Fig. 3 (ML baseline: `eval/baselines/ml_baseline_eicu.py`), Table S7, Table S13, Note 10 | `eval/realdata/eval_nhanes.py`, `eval_uci_thyroid.py`, `eval_uci_hcv.py`, `eval_ilpd.py`, `eval_pmc_cases.py`, `eval/mimic/run_retrospective.py` | NHANES H/I/J, UCI thyroid0387, UCI HCV, ILPD, MIMIC-IV demo, PMC case reports | v7 / 14.1.0 |
 | Fig. 5, Table S16 | `eval/realdata/eval_sepsis2019.py`, `eval_sepsis2019_concurrent.py`, `eval/sepsis_ml/sepsis_risk_module.py` | PhysioNet Sepsis-2019 sets A, B, B2 | v7 / 14.1.0 |
 | Section 3.1, Note 4 | `tests/test_properties.py`, `tests/test_bayes_properties.py`, `tests/hard_battery.py`, `hard_battery2.py`, `hard_battery3.py`, `tests/healthy_sweep.py`, `tests/perturbation_fuzz.py` | synthetic panels (seeded) | v7, v8, v8.1 |
+| Section 3.8, Table 6, Note 13 | `eval/blackbox/make_property_panels.py`, `eval/blackbox/score_property_panels.py`; healthy-adult row: `eval/baselines/b5_nhanes_blind.py` | 40/40/60/40 perturbed eICU panels from the 400 blinded stays; NHANES 2017–18 | v8.1 (first run) and v8.2; LLM as Note 2 |
 | Section 3.2, Fig. S1, Note 8, Table S10 | `eval/source_audit/PROTOCOL.md` with the frozen sample `eval/source_audit/sample_200.csv` (seed 20261026), `eval/registry_source_verify.py` | registry 14.1.0 (seed 20261026) | 14.1.0 |
 | Table S1, Table S2, Note 1 | SAP document (dated amendments); freeze manifests | — | 14.0.0 → 14.1.0; v6 → v7 |
 | Table S5 | `eval/next_test_utility.py` | eICU-CRD demo audit sample | v5.3 (superseded) |

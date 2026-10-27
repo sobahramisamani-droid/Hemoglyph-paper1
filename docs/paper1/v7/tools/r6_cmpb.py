@@ -7,6 +7,10 @@ ethics statement with exemption reason; ≤ 50 references; tables editable, no s
 4 mandatory elements.  Reframed as a methods paper: verification + provenance auditing of an AI-drafted clinical rule base, with the
 frozen benchmark as evidence.  All numbers are those of R5; passages dropped from the main text remain verbatim in the Supplement.
 """
+import sys as _sys
+if "--force" not in _sys.argv:  # one-off R5→R6 transform; the R6 manuscript has since been edited directly (§3.8, Table 6, abstract). Re-running would discard those edits.
+    _sys.exit("r6_cmpb.py is a one-off transform; the manuscript is now edited directly. Use --force only to regenerate from R5.")
+
 import re
 
 SRC, DST = "Paper1_Hemoglyph_JBI_EN_v7_R5.md", "Paper1_Hemoglyph_CMPB_EN_v7_R6.md"
