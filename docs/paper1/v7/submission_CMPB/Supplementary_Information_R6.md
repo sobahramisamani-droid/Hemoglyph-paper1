@@ -2,7 +2,7 @@
 
 *Verification and provenance auditing of an AI-drafted clinical rule base — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R6 (2026-10-27), Computer Methods and Programs in Biomedicine.*
 
-**Index.** Notes: Note 1 SAP and amendments; Table S1 engine changes C1–C16; Table S2 quarantine criteria and outcomes; Table S3 participant flow; Fig. S1 provenance audit; Fig. S2 per-release eICU metrics; Fig. S3 per-group panel-supported recall; Fig. S4 per-group calibration; Fig. S5 context-echo analysis; Table S4 subgroup analysis; Table S5 next-test utility; Table S6 missing-panel threshold sensitivity; Table S7 survey-weighted NHANES AUROC; Table S8 per-group calibration; Table S9 label-mapping audit (400 stays); Note 2 LLM comparison protocol; Note 3 formal fusion/Theory-of-Evidence algorithm, weight profiles and the 27 consistency identities; Fig. S2 historical LLM comparison vs engine v5.1; Table S10 registry count reconciliation; Table S11 precision/F1/NDCG, alert burden, per-group PPV and prevalence baseline; Table S12 fusion-weight sensitivity; Table S13 participant flow for the UCI thyroid and HCV cohorts; Note 4 regression-gate definition and residual failures; Note 5 healthy-adult definition, critical-value thresholds, race-term audit, hardware, novelty-search method, LLM model-identity statement and completed TRIPOD+AI checklist; Table S4 subgroup recall (v7); Note 7 evidence triage of the twelve post-review proposals (twelve rows: proposal, evidence, verdict, action); Table S16 sepsis companion risk model; Data 1 per-stay outputs and LLM prompts/outputs. Note 9 post-freeze development version v8; Note 10 external cohorts and case reports (full); Note 11 calibration, subgroups and robustness (full).
+**Index.** Notes: Note 1 SAP and amendments; Table S1 engine change log C1–C16 with sources; Table S2 quarantine criteria and outcomes (rounds 1 and 2); Note 2 LLM comparison protocol; Table S3 participant flow and baseline characteristics; Note 3 fusion/Theory-of-Evidence algorithm and consistency identities; Table S4 subgroup recall; Table S5 next-test utility (engine v5.3, superseded metric); Tables S6–S6c calibration, recalibration, decision curves, multiplicity and panel-size sensitivity; Table S7 survey-weighted NHANES AUROC; Table S8 per-group calibration; Table S9 label-mapping audit (400 stays); Table S10 registry count reconciliation; Table S11 precision/F1/NDCG, alert burden, per-group PPV and prevalence baseline; Table S12 fusion-weight sensitivity; Table S12b historical comparisons (superseded); Table S13 participant flow for the UCI cohorts; Table S15 open vs proprietary components; Table S16 sepsis companion model; Note 4 regression gate; Note 5 definitions, audits and completed TRIPOD+AI checklist; Note 6 version manifest; Note 7 evidence triage of twelve proposals; Note 8 source-concordance audit and addendum on the rejected second-rater rounds; Notes 9–12 material moved from the main text; Fig. S1 provenance audit; Fig. S2 per-release eICU metrics; Fig. S3 per-group panel-supported recall; Fig. S4 per-group calibration; Fig. S5 context-echo analysis; Fig. S6 historical LLM comparison vs engine v5.1; Fig. S7 participant flow; Data 1 per-stay outputs and LLM prompts/outputs.
 
 ## Supplementary Note 1 — Statistical analysis plan and amendments
 
@@ -334,6 +334,49 @@ Source: `eval/results/eicu_demo/deep_review_20261023.md`, written before the v5.
 
 **Amendment 15 — quarantine outcome (2026-10-25, one shot after `FREEZE_v15_20261025`).** All three non-inferiority criteria met: NHANES I AUROC diabetes .924 / CKD .962 / anaemia .983 / iron deficiency .972 / hypercholesterolaemia .886 / hyperuricaemia .955 (largest deviation from H/J 0.018), healthy 0/79; Sepsis set B2 concurrent arm B .635 (.597–.673), flag 14.2 %; healthy 0/1000, fuzz 753/755. Secondary prediction framing on B2: .588 (logistic .679). Two data-preparation corrections (pid type; recomputed NHANES ACR column) are documented; no engine/registry/eval file changed after the freeze. v7 ships at recall parity with no improvement claim; full report `eval/results/validation_v15/VALIDATION_REPORT_v15.md`.
 
+## Supplementary Table S1 — Engine change log C1–C16 (registry 14.0.0 → 14.1.0, engine v6 → v7; all declared in SAP Amendments 14–15 before the corresponding quarantine run)
+
+| ID | Date | Change | Guideline source | Trigger | Outcome-fitted? |
+|---|---|---|---|---|---|
+| C1 | 2026-10-24 | Two-tier output: entity kind ∈ diagnosis / laboratory finding / syndrome; top-k scored on diagnoses, findings always reported | — (output structure) | Amendment 14 closed list | no |
+| C2 | 2026-10-24 | Syndrome layer: SIRS, qSOFA, SOFA sub-scores; sepsis asserted only as syndrome + laboratory support, otherwise "hyperlactataemia, cause undetermined"; `not_assessable` when anchor analytes absent | Sepsis-3 (Singer 2016); SSC 2021 | Amendment 14 closed list | no |
+| C3 | 2026-10-24 | KDIGO chronicity: single creatinine → "renal impairment, chronicity undetermined"; CKD requires > 90-day persistence or chronicity markers; AKI requires KDIGO delta | KDIGO 2012/2024 | Amendment 14 closed list | no |
+| C4 | 2026-10-24 | `n_of` operator; absent ≠ normal in `all` criteria | — (rule semantics) | Amendment 14 closed list | no |
+| C5 | 2026-10-24 | Missing guideline patterns: alcohol-related liver pattern, R-ratio, bilirubin classification, septic shock, toxic alcohol (osmolal gap), MASLD/FIB-4, PSGN | each with a located source (registry) | Amendment 14 closed list | no |
+| C6 | 2026-10-24 | Hypoglycaemia/hypocalcaemia threshold-unit fixes only if the 20-case audit shows an engine error; malnutrition → requires clinical data | GLIM | Amendment 14 closed list | no |
+| — | 2026-10-24 | Unit aliases: UCUM `mm[Hg]`, `torr`, `/min`, `Cel`… (blood gases and blood pressures were silently dropped in every 13.x run) | UCUM | defect found by the 14.0.0 gate | no |
+| C7 | 2026-10-25 | Screening-syndrome hits capped at 0.45 ("possible", non-anchoring); hypotension added as organ-dysfunction support | SSC 2021 (screen = prompt for evaluation); Sepsis-3 | development-set flag rate 26.1 % > 20 % — **declared openly as a development-set trigger**; rule content guideline-sourced | trigger yes, content no |
+| C8 | 2026-10-25 | Explained findings sorted after self-standing asserted entities (probabilities unchanged) | — (ordering) | development error audit (displacement) | no |
+| C9 | 2026-10-25 | Ischaemic-context MI syndrome (injury + ischaemia) | 4th UDMI; ESC 2023 rule-in | development error audit | no |
+| C10 | 2026-10-25 | Single troponin > 99th URL → "myocardial injury, acuity undetermined"; acute injury requires rise/fall | 4th UDMI §3 | development error audit | no |
+| v6.1 | 2026-10-25 | Anchor-strength constellation floor = full constellation vote (fusion asymmetry found by perturbation fuzz) | — (ordering principle anchor > strong > pattern) | synthetic fuzz, declared before any run | no |
+| C11 | 2026-10-25 | Causal attribution map: a diagnosis explains a finding only if its fired evidence covers the finding's analytes or the pair is in a curated cause→finding map; explainer < 0.80 cannot pull a better-established finding beneath it | per-entry guideline sources (KDIGO, ADA, AHA/ACC, SSC, AASLD/EASL, ATA, ACOG 222, ASH) | Amendment 15 closed list | no |
+| C12 | 2026-10-25 | Renal parsimony: presumptive AKI, zero chronicity markers, no documented CKD → CKD ≤ 0.49 | KDIGO 2012 | Amendment 15 closed list | no |
+| C13 | 2026-10-25 | Non-thyroidal illness in acute care requires an abnormal thyroid test (low T3/FT4 with non-suppressed TSH; TSH 0.1–0.4; recovery TSH 4.5–10); revised after firing on a normal TSH in a 300-stay smoke | Fliers 2015; ATA/AACE 2012 | Amendment 15 closed list (+ dev smoke) | no |
+| C14 | 2026-10-25 | Urate 7.0–9.0 mg/dL = pattern (0.80); ≥ 9.0 = strong (0.88) | ACR 2020; Cairo–Bishop | Amendment 15 closed list | no |
+| C15 | 2026-10-25 | Hypocalcaemia anchor/strong grades require albumin-corrected or ionised calcium; uncorrected total calcium < 7.5 mg/dL = pattern | Cooper & Gittoes 2008 | Amendment 15 closed list | no |
+| C16 | 2026-10-25 | Sickle-cell context guard: acute chest syndrome / vaso-occlusive crisis capped at 0.3 unless SCD documented or HbS measured | NHLBI 2014; ASH 2020 | Amendment 15 closed list | no |
+
+Not allowed at any point (SAP Amendment 14): weights tuned to a dataset; rules written for a specific missed case; thresholds without a source. No registry edit after 14.1.0. The development-gate clause "flat top-3/5 not worse than 13.4.2" was **not** met by v6 (43.8/58.4 vs 49.3/63.7 %) and is recorded as such; C8–C10 recovered the loss to the same-engine control (60.8 vs 60.9 % at top-5).
+
+## Supplementary Table S2 — Quarantine criteria and outcomes, rounds 1 and 2 (one run each, after SHA-256 freeze; no re-tuning after)
+
+| Round / freeze | Criterion (pre-stated) | Threshold | Result | Met |
+|---|---|---|---|---|
+| 1 — `FREEZE_v14_20261025` (registry 14.1.0, engine v6.1) | MIMIC-IV demo, labs-only, lab-detectable coded diagnoses: top-5 / top-1 (primary) | ≥ 65 % / ≥ 45 % | 47.9 % / ≈ 18 % (control 13.3.0 registry, same engine: 50.1 %); difference driven by CKD recall 27.7 vs 50.8 % (KDIGO chronicity) | **no** |
+| 1 | Sepsis-2019 set B (4,558 windows / 268 sepsis), concurrent, labs + vitals: AUROC (primary) | ≥ 0.65 | 0.638 (0.601–0.675); control 0.639 | **no** |
+| 1 | set B flag rate in non-sepsis windows | ≤ 20 % | 16.1 % | yes |
+| 1 | NHANES 2013–14 (H): diabetes, CKD, anaemia, iron-deficiency AUROC within 0.03 of NHANES J (13.3.0); CKD false positives not higher | 0.03 | all within 0.03; CKD false positives lower | yes |
+| 1 | New PMC case reports: top-5 | ≥ 60 % | 68 % syndrome-level / 26 % specific (manual extraction) | partial (syndrome yes, specific no) |
+| 1 | Safety: healthy false flags; fuzz | 0/40; 0/1000 | 0/40; fuzz 753/755 (2 pre-existing) | yes |
+| Interpretation rule (round 1) | any primary missed → reported verbatim as failure; prior release remains headline | — | applied: no recall-improvement claim for 14.x | — |
+| 2 — `FREEZE_v15_20261025` (registry 14.1.0, engine v7; criteria re-specified as non-inferiority in Amendment 15, dated after round 1 and before any round-2 file was opened) | NHANES 2015–16 (I): diabetes, CKD, anaemia, iron deficiency, hypercholesterolaemia, hyperuricaemia AUROC within 0.03 of H/J; healthy false flags | 0.03; ≤ 1 % | .924 / .962 / .983 / .972 / .886 / .955 (largest deviation 0.018); healthy 0/79 | yes |
+| 2 | Sepsis-2019 set B2 (5,000 records disjoint from set B), concurrent arm B: AUROC not lower than set B (0.638) by more than 0.02; flag rate | −0.02; ≤ 20 % | 0.635 (0.597–0.673); 14.2 % | yes |
+| 2 | Safety: healthy sweep; fuzz | 0/1000; no new breaks | 0/1000; 753/755 | yes |
+| Interpretation rule (round 2) | criteria met → v7 ships as the frozen engine at parity, **no improvement claim**; eICU/MIMIC changes reported as development results | — | applied | — |
+
+Because the criteria were weakened between rounds (superiority → non-inferiority), round 2 is supportive evidence of non-regression, not the confirmatory test originally planned (main text Section 3.4). Two data-preparation corrections after the round-2 freeze (participant-id type; recomputed NHANES ACR column) are documented in `eval/results/validation_v15/VALIDATION_REPORT_v15.md`; no engine, registry or evaluation file changed.
+
 ## Supplementary Note 2 — LLM comparison protocol
 
 ### Supplementary Note — Protocol of the blinded LLM comparison (B3 / B4 / B8) and reviewer additions
@@ -389,9 +432,9 @@ The eICU-CRD demo is public (PhysioNet) and may be present in the LLM's pre-trai
 ### 5. Limitations of this arm
 One model class, two prompts, one run per prompt (plus one re-read), no retrieval augmentation or chain-of-thought prompting, scoring by regex rather than clinician adjudication, admission-level labels. The arm is an author-run self-baseline, not a vendor benchmark.
 
-## Supplementary Table S1/S3 — Cohort and participant flow
+## Supplementary Table S3 — Participant flow and baseline characteristics
 
-### Table S1 — Participant flow and baseline characteristics of all evaluation cohorts (TRIPOD+AI 14a/b, 13a)
+### Table S3 — Participant flow and baseline characteristics of all evaluation cohorts (TRIPOD+AI 14a/b, 13a)
 
 | cohort | source | step1 | step2 | step3 | analysed | age | female | inputs | labels | split |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -410,6 +453,25 @@ One model class, two prompts, one run per prompt (plus one re-read), no retrieva
 | PhysioNet/CinC Sepsis 2019 (training set A, every 4th file) | US ICU hourly records (Reyna 2020) | files sampled: 4937 | ≥3 lab analytes in ICU h 1–24: 4843 | — | 4843 patients (438 Sepsis-3 at any hour) | see dataset | see dataset | labs of first 24 h + temperature | Sepsis-3 onset label | held-out, single-target prediction |
 | Sepsis 2019 — post-hoc concurrent re-analysis (SAP Am. 13) | same files | sepsis patients 438; non-sepsis 4,499 | ≥3 labs in 12 h around onset: 388 cases; seeded dwell-time-matched control windows 772 (2:1) | — | 1,160 windows | see dataset | see dataset | arm A labs; arm B labs + HR/SBP/MAP/RR/Temp | Sepsis-3 onset in window | post-hoc, exploratory (Table S12) |
 All cohorts are public; no participant was contacted. eICU: exclusion for <8 mapped analytes is the only data-driven exclusion (stays with sparse panels are not interpretable by any lab-only system). NHANES: participants without biochemistry/CBC subsample were not included. No imputation of missing analytes anywhere: absent analytes are treated as 'not measured' by the engine.
+
+## Supplementary Table S5 — Next-test utility on category-A misses (eICU-CRD demo; computed on engine v5.3, 2026-10-23; metric defined in SAP Amendment 6; not re-run on v7 because the recommendation layer was unchanged by C1–C16 and the metric is reported for completeness only)
+
+Category-A misses in the fixed-seed audit sample with a scorable discriminating test: 88. For each, the engine was re-run and its `next_tests` / per-entity `recommended_tests` were searched for the test that would establish the listed condition (e.g. BNP for heart failure, HbA1c for diabetes, lactate/procalcitonin/cultures for sepsis, prior creatinine/ACR/cystatin C for CKD).
+
+| listed condition (no lab signature) | n | discriminating test recommended | % |
+|---|---:|---:|---:|
+| heart failure | 27 | 14 | 52% |
+| diabetes | 21 | 5 | 24% |
+| hyperglycemia | 7 | 3 | 43% |
+| chronic kidney disease | 7 | 3 | 43% |
+| sepsis | 7 | 5 | 71% |
+| renal impairment | 6 | 5 | 83% |
+| acute kidney injury | 5 | 2 | 40% |
+| malnutrition | 4 | 2 | 50% |
+| alcohol withdrawal | 4 | 3 | 75% |
+| **all** | **88** | **42** | **48%** |
+
+Median number of next-test recommendations per stay: 12.
 
 *Companion to `Paper1_Hemoglyph_npj_EN_v7_R1` and `Paper1_Hemoglyph_SampleStyle_v7_R1`. Every table below is generated from a file in `eval/results/` named in its heading; the numbers are not retyped.*
 
@@ -892,9 +954,9 @@ Arms `uniform_w` (all five weights 0.20, all profiles), `w_rule_heavy` (0.55/0.1
 
 Reading: moving weight toward the rule layer changes nothing measurable; moving it away costs about one point of flat recall@5 while leaving two-tier recall unchanged. The headline is insensitive to the hand-set weights within this range, which is consistent with the layer ablation (rule vote −12.1, syndrome layer −9.5, every other layer ≤ 1.3 points). Files: `eval/results/eicu_demo/{report_abl_w_rule_heavy.md, report_abl_w_rule_light.md, ABLATION_v7_ci.md, ABLATION_v7_full.md}`; chain completed 2026-10-26 01:07 UTC.
 
-## Supplementary Figure S — Historical LLM comparison against the superseded engine v5.1
+## Supplementary Figure S6 (text) — Historical LLM comparison against the superseded engine v5.1 (image in the Supplementary Figures section)
 
-![Fig S](../v7/fig/Fig6_llm_v51.png)
+(image: Fig. S6)
 
 Same 400 stays and LLM outputs as the main-text comparison, scored against engine v5.1 (the release current when the LLM was run): recall@5 64.4% (engine) vs 59.6% (LLM). The main text reports the re-score against the frozen v7 (60.7% vs 59.6%), because v7 is the evaluated release; the historical figure is kept so that the change in the engine's number is visible.
 
@@ -1019,7 +1081,7 @@ Status key: ✅ available now · 🟡 partly / needs the pending work · ❌ not
 | 11 | Fairness: subgroup analysis | ✅ | eval/subgroup_fairness.py → sex, age band, hospital, panel size (eICU v5.3: run_20261023_v53/subgroup.log; Supplementary Table S4; sex gap M 65.4 vs F 61.1 reported as unresolved, H1 failed) |
 | 12 | Evaluation / internal validation design | ✅ | SAP §3 roles |
 | 13 | Comparison to other models / baselines | ✅ | B1 single-analyte rule; B2 supervised ML (eICU); blind unnamed frontier (capability-tier "GPT-4-class") LLM via agent (B3/B4/B8, n = 400, McNemar p = 0.009); supervised logistic baseline on Sepsis-2019; published Isabel/DXplain figures in Discussion (not head-to-head) |
-| 14a | Participant flow diagram | ✅ | Supplementary Fig. S1 (figS1_participant_flow.png) + Table S1 (TABLE_S1_cohort_flow.md) |
+| 14a | Participant flow diagram | ✅ | Supplementary Fig. S7 (participant flow) + Table S3 (cohort flow) |
 | 14b | Participant characteristics | ✅ | Supplementary Table S1 (cohort flow + age/sex/panel size per cohort) |
 | 15 | Model specification / availability | ✅ | code + registries public (GitHub); add Zenodo DOI |
 | 16 | Model performance with CIs | ✅ | reports in eval/results |
@@ -1350,54 +1412,18 @@ What would change the evidence level? A rule audit by independent clinicians on 
 
 The knowledge base has not been audited rule-by-rule by clinicians, and the non-clinical source-concordance audit reported here shows that 92% of sampled rules cannot even be checked against their cited source from the locator provided, while at least 7.5% are demonstrably discordant; the components that carry the result—272 anchor rules and ~900 syndrome constellations—were written by a non-clinician first author; 34 sources lack a locator; the Bayesian priors are hand-coded without a per-value citation table. No version-control history exists for the development period, so the claim that no change was outcome-fitted rests on the dated change log. Only the open demo subsets of eICU and MIMIC-IV were used; the reference standards are admission-level problem lists and ICD codes, not adjudicated panel-level diagnoses. The LLM comparison is an author-run self-baseline through an agent platform that does not disclose the model, so it is not reproducible against a named model; it used two prompts, no retrieval augmentation and no clinician adjudication, and the model's training data may include the public eICU demo. The quarantine criteria were weakened after round 1 failed; the panel-supported metric is post hoc; the OCR front end was not evaluated; laboratory-defined NHANES labels overlap the inputs; raw scores are uncalibrated; the external cohorts are small and ILPD discrimination was modest. No clinician-in-the-loop evaluation was performed. Iranian populations and non-English laboratory conventions were not evaluated. The first author is a secondary-school student with a financial interest in the commercial product, and the system, including 99.2% of the rules, was developed with AI-agent assistance. Hemoglyph is a research prototype with no regulatory clearance.
 
-## Supplementary Note 5.7 — TRIPOD+AI checklist
+## Supplementary Figures
 
-### TRIPOD+AI (BMJ 2024;385:e078378) checklist — Hemoglyph Paper 1 (updated 2026-10-24, engine v5.3 / registry 13.3.0)
+![Fig. S1. Provenance audit of the shipped registry (14.1.0): source-locator classes and verification outcome per rule; see Note 8 for the sampled concordance audit.](../fig/src_fig08_provenance.png)
 
-Status key: ✅ available now · 🟡 partly / needs the pending work · ❌ not yet.
-(Hemoglyph is a knowledge-based, untrained system; items on "training data" are answered as
-"not applicable — knowledge base construction described instead", which TRIPOD+AI permits.)
+![Fig. S2. eICU-CRD demo (2,314 ICU stays, labs only): flat and two-tier top-k recall per engine/registry release, 13.4.2 → v7; identical inputs and label map.](../fig/src_fig02_eicu_versions.png)
 
-| # | Item | Status | Where / what is needed |
-|---|---|---|---|
-| 1 | Title identifies study as development/evaluation of a prediction/diagnostic model with AI | ✅ | Paper 1 title: "...retrospective multi-cohort evaluation" |
-| 2 | Abstract: TRIPOD+AI for Abstracts | ✅ | Paper 1 abstract (cohorts, n, recall@5 / AUROC with 95% CI, baselines) |
-| 3a | Background, rationale | ✅ | manuscript intro |
-| 3b | Target population, intended use, users | ✅ | laboratory physicians / clinicians; decision support, not autonomous |
-| 4 | Objectives | ✅ | SAP §1 |
-| 5a | Source of data, study design | ✅ | SAP §3 (6 public datasets) |
-| 5b | Setting, dates, eligibility | ✅ | Paper 1 Methods table (eICU-CRD demo 2014–15; NHANES 2005–2018 (7 cycles); PhysioNet/CinC 2019; UCI HCV/ILPD/thyroid; MIMIC-IV demo) |
-| 5c | Participants' eligibility | ✅ | SAP §6 |
-| 6a | Outcome definition and assessment | ✅ | SAP §5, script docstrings |
-| 6b | Outcome blinded to predictors? | ✅ | labels pre-exist in datasets; engine untrained |
-| 7a | Predictors (inputs) | ✅ | analyte lists per dataset (map tables) |
-| 7b | Predictors blinded to outcome | ✅ | yes |
-| 8 | Sample size | ✅ | no formal power calculation (pre-specified fixed public cohorts); groups with < 20 events flagged "exploratory" in every table; eICU B3+B4+B8 LLM comparison n = 400 stays / 596 labels gives ±4 pp CI half-width |
-| 9 | Missing data handling | ✅ | no imputation; key-analyte conditioning |
-| 10a | Model building: how predictors handled | ✅ | registry/ESL/fusion description |
-| 10b | Model type, training | n/a | knowledge base construction (AI-assisted curation + sources) — **registry audit needed (🟡)** |
-| 10c | Hyper-parameters | ✅ | fusion constants table |
-| 10d | Performance measures | ✅ | SAP §4 |
-| 10e | Model updating | ✅ | ESL ext. 4 / fixes after MIMIC demo, disclosed |
-| 11 | Fairness: subgroup analysis | ✅ | eval/subgroup_fairness.py → sex, age band, hospital, panel size (eICU v5.3: run_20261023_v53/subgroup.log; Supplementary Table S4; sex gap M 65.4 vs F 61.1 reported as unresolved, H1 failed) |
-| 12 | Evaluation / internal validation design | ✅ | SAP §3 roles |
-| 13 | Comparison to other models / baselines | ✅ | B1 single-analyte rule; B2 supervised ML (eICU); blind GPT-4-class LLM via agent (B3/B4/B8, n = 400, McNemar p = 0.009); supervised logistic baseline on Sepsis-2019; published Isabel/DXplain figures in Discussion (not head-to-head) |
-| 14a | Participant flow diagram | ✅ | Supplementary Fig. S1 (figS1_participant_flow.png) + Table S1 (TABLE_S1_cohort_flow.md) |
-| 14b | Participant characteristics | ✅ | Supplementary Table S1 (cohort flow + age/sex/panel size per cohort) |
-| 15 | Model specification / availability | ✅ | code + registries public (GitHub); add Zenodo DOI |
-| 16 | Model performance with CIs | ✅ | reports in eval/results |
-| 17 | Model updating results | ✅ | before/after tables |
-| 18a | Limitations | ✅ | REAL_DATA_VALIDATION §4 |
-| 18b | Interpretation | ✅ | Paper 1 Discussion |
-| 18c | Implications | ✅ | Paper 1 Discussion (decision support, not autonomous; calibration needed before thresholds are used) |
-| 19 | Registration / protocol | 🟡 | SAP v1 + Amendments 1–12 time-stamped in git; OSF registration text ready (docs/paper1/supplement/OSF_REGISTRATION_TEXT.md) — upload needs the author's OSF account |
-| 20 | Code, data availability | ✅/🟡 | code public (GitHub); all datasets public (URLs in Data availability); Zenodo DOI minted at release by the author |
-| 21 | Funding, conflicts | ✅ | no funding; SB is the sole developer of Hemoglyph (declared) |
-| 22 | Ethics approval | ✅ | public de-identified data; no IRB needed; state DUA terms |
-| 23 | Patient & public involvement | ✅ | none — stated |
-| 24 | Open science: data sharing, code | ✅ | — |
-| 25 | Supplementary materials | ✅ | SAP + amendments; per-group tables; error audit taxonomy (A/B/C1/C2, n = 200); calibration + DCA; fairness; LLM blind protocol & raw read-outs |
-| 26 | Human–AI interaction, deployment context | 🟡 | UI, explanation and alert hierarchy described; NO reader study (stated as limitation) |
-| 27 | Safety / failure analysis | ✅ | S5 critical-value capture; B7 critical values; fabrication provocation 200/200; healthy sweep 0/1000; error audit n = 200 |
+![Fig. S3. Per-group recall@5 on panel-supported labels, frozen engine v7 (secondary metric defined after the ceiling was observed; see main text Section 3.3).](../fig/src_fig04_groups.png)
 
-Also required by DECIDE-AI if a reader study / early live evaluation is added.
+![Fig. S4. Per-group expected calibration error, raw scores vs cross-fitted isotonic recalibration (Table S6b).](../fig/src_fig09_calibration.png)
+
+![Fig. S5. Context-echo analysis: the gain of the context arm is concentrated in labels that are restatements of documented history.](../fig/src_fig13_context_echo.png)
+
+![Fig. S6. Historical LLM comparison against the superseded engine v5.1 (n = 100 + 60 + 240 panels; see Table S12b); superseded by the v7 re-scoring in Note 2 and main-text Table 2.](../fig/Fig6_llm_v51.png)
+
+![Fig. S7. Participant flow for all evaluation cohorts (TRIPOD+AI 14a; counts in Table S3).](../../figures/figS1_participant_flow.png)
