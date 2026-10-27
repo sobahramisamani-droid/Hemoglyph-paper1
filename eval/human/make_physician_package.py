@@ -39,6 +39,33 @@ HEME_TERMS = ("anemia", "thrombocyt", "leukocyt", "leukopenia", "neutropen", "pa
               "hemochromatosis", "myelo", "lymph", "sickle", "gaucher", "immune_thrombocytopenia")
 
 
+def expr_text(e):
+    """Render a registry expression (JSON) as 'analyte operator threshold unit' with AND/OR."""
+    if isinstance(e, str):
+        try:
+            e = json.loads(e)
+        except Exception:
+            return e
+    if isinstance(e, dict):
+        if "all" in e:
+            return "(" + ") AND (".join(expr_text(x) for x in e["all"]) + ")"
+        if "any" in e:
+            return "(" + ") OR (".join(expr_text(x) for x in e["any"]) + ")"
+        if "feature_id" in e:
+            return f"{e['feature_id']} {e.get('operator', '')} {e.get('value', '')} {e.get('unit', '')}".strip()
+    return json.dumps(e)
+
+
+def pop_text(p):
+    try:
+        p = json.loads(p)
+    except Exception:
+        return p
+    ag = p.get("age_groups", [])
+    ages = "all ages" if len(ag) >= 6 else ", ".join(ag)
+    return f"{ages}; sex: {p.get('sex', 'all')}; pregnancy: {p.get('pregnancy', '')}"
+
+
 def heme(name):
     return any(t in name for t in HEME_TERMS)
 
@@ -132,7 +159,7 @@ def main():
     dvl = DataValidation(type="list", formula1='"CONCORDANT,DISCORDANT,UNRESOLVABLE"', allow_blank=True); wr.add_data_validation(dvl)
     dvu = DataValidation(type="list", formula1='"403-blocked,landing page,abstract only,generic standard,no threshold found,ambiguous"', allow_blank=True); wr.add_data_validation(dvu)
     for i, x in enumerate(heme_rules, 1):
-        wr.append([i, x["rule_id"], x["stratum"], x["disease_id"], x["rule_type"], x["expression"], x["population"], x["source_ids"], x["source_urls"], None, None, None, None])
+        wr.append([i, x["rule_id"], x["stratum"], x["disease_id"], x["rule_type"], expr_text(x["expression"]), pop_text(x["population"]), x["source_ids"], x["source_urls"], None, None, None, None])
         for col in (10, 11, 12, 13): wr.cell(i + 1, col).fill = fill_in
         dvl.add(wr.cell(i + 1, 10)); dvu.add(wr.cell(i + 1, 12))
     for col, w in zip("ABCDEFGHIJKLM", (4, 30, 10, 24, 16, 50, 24, 20, 40, 18, 60, 22, 30)): wr.column_dimensions[col].width = w
