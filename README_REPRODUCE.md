@@ -19,7 +19,7 @@ bash reproduce.sh           # ~10 h on one core: all public cohorts, baselines, 
 
 Data licences: eICU-CRD demo and MIMIC-IV demo (PhysioNet open data, ODbL/credential-free demo), NHANES (public domain), PhysioNet/CinC 2019 (ODC-By 1.0), UCI HCV/ILPD/thyroid (CC BY 4.0). Raw downloads are not redistributed in this repository; the scripts fetch them.
 
-The blind LLM read-outs (`eval/results/eicu_demo/{llm_agent_b3_n100,b4_llm_blind_n60,b8_llm_blind_n240}.json`) are frozen artefacts: they were produced by a GPT-4-class model operating through an agent interface, from panels containing only age, sex and laboratory values, before the labels or engine outputs were opened. They are re-scored, not regenerated, by `reproduce.sh`.
+The blind LLM read-outs (`eval/results/eicu_demo/{llm_agent_b3_n100,b4_llm_blind_n60,b8_llm_blind_n240}.json`) are frozen artefacts: they were produced by a frontier-tier LLM whose identity the platform does not disclose, operating through an agent interface, from panels containing only age, sex and laboratory values, before the labels or engine outputs were opened. They are re-scored, not regenerated, by `reproduce.sh`.
 
 ## Added 2026-10-23
 * `eval/realdata/eval_pmc_cases.py` — B6: 50 PMC-Patients vignettes (Bhasuran 2025), three arms (parser / manual / manual_strict); key and panels in `eval/realdata/pmc_cases/`.

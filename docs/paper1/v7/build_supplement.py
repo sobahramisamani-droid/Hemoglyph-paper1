@@ -99,6 +99,7 @@ parts = [
 ]
 md = "\n\n".join(parts) + "\n"
 md = md.replace("**Labels (rater 1 = AI agent, declared; rater 2 = human non-clinician co-author, pending).**", "**Labels (single rater: AI agent, declared; see Addendum).**")
+md = md.replace("GPT-4-class general-purpose model accessed through the Arena.ai Agent Mode interface; model identity withheld", "frontier-tier general-purpose LLM accessed through the Arena.ai Agent Mode interface; model identity not disclosed by the platform and withheld")
 md = md.replace("![Fig S](../v7/fig/Fig6_llm_v51.png)", "(image: Fig. S6)")
 md = md.replace("## Supplementary Figure S — Historical LLM comparison against the superseded engine v5.1", "## Supplementary Figure S6 (text) — Historical LLM comparison against the superseded engine v5.1 (image in the Supplementary Figures section)")
 md = md.replace("Supplementary Fig. S1 (figS1_participant_flow.png)", "Supplementary Fig. S7 (participant flow)")

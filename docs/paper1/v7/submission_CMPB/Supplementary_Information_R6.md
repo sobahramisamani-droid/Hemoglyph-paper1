@@ -364,7 +364,7 @@ Paired, blinded comparison of Hemoglyph with a general-purpose large language mo
 |---|---|
 | stays | 400 (B3 n = 100, seed 20261021; B4 n = 60 out-of-sample, seed 20261022; B8 n = 240 disjoint, seed 20261023) |
 | scorable labels | 596 (clinician diagnosis strings → 31 groups via the frozen regex map `eval_eicu.GROUPS`; label counted only when the group's key analyte was in the panel) |
-| LLM | GPT-4-class general-purpose model accessed through the Arena.ai Agent Mode interface; model identity withheld in the manuscript at the platform's request and **disclosed to the editor on request** |
+| LLM | frontier-tier general-purpose LLM accessed through the Arena.ai Agent Mode interface; model identity not disclosed by the platform and withheld in the manuscript at the platform's request and **disclosed to the editor on request** |
 | dates | B3 2026-10-21; B4 2026-10-22; B8 2026-10-23; test–retest 2026-10-24; prompt-sensitivity arm 2026-10-25 |
 | decoding | interface default; temperature not user-controllable (hence the test–retest arm) |
 | prompt P1 | "You are a clinical laboratory medicine expert. Given the following laboratory panel of an adult ICU patient (first 24 h of admission), list the most likely diagnoses or clinically important laboratory syndromes this panel supports. Return ONLY JSON of the form {"diagnoses":[{"name":"...","probability":0.0-1.0}]} with at most 10 entries, ordered by probability. Do not include explanations. Patient: {age}-year-old {sex}. Panel: {analyte value unit …}" |
