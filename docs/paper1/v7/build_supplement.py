@@ -110,6 +110,54 @@ md = md.replace("![Fig S](../v7/fig/Fig6_llm_v51.png)", "(image: Fig. S6)")
 md = md.replace("## Supplementary Figure S — Historical LLM comparison against the superseded engine v5.1", "## Supplementary Figure S6 (text) — Historical LLM comparison against the superseded engine v5.1 (image in the Supplementary Figures section)")
 md = md.replace("Supplementary Fig. S1 (figS1_participant_flow.png)", "Supplementary Fig. S7 (participant flow)")
 md = md.replace("Table S1 (TABLE_S1_cohort_flow.md)", "Table S3 (cohort flow)")
+
+# ---- de-clutter: internal report/data file names are removed; scripts (.py/.sh) and the audit protocol are kept
+_KEEP = ("PROTOCOL.md",)
+def _strip_files(s):
+    pat = re.compile(r"`([^`\n]*?\.(?:md|json|json\.gz|csv|csv\.gz|txt|xlsx|log)(?:/\.json)?)`")
+    def rep(m):
+        return m.group(0) if any(k in m.group(1) for k in _KEEP) else ""
+    s = pat.sub(rep, s)
+    s = re.sub(r"; script (?=`)", "; script ", s)
+    s = re.sub(r"\((?:\s*[;,]\s*)+", "(", s)          # "(; script …" → "(script …"
+    s = re.sub(r"\(\s*\)", "", s)                        # empty parentheses
+    s = re.sub(r"\(\s*[;,]?\s*(?=[^()\n]*\))", "(", s)
+    s = re.sub(r"[ \t]+([;,.)])", r"\1", s)
+    s = re.sub(r"\s{2,}", " ", s)
+    s = re.sub(r"\(\s*[;,]\s*", "(", s)
+    s = re.sub(r"[;,]\s*\)", ")", s)
+    s = s.replace("Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length —", "Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length —")
+    return s
+# apply to everything except Note 1 (the SAP is a dated protocol document and is reproduced verbatim) and Note 12 (verbatim R5)
+_keep_verbatim = re.compile(r"(## Supplementary Note 1 — .*?)(?=\n## Supplementary Table S1 —)|(## Supplementary Note 12 — .*?)(?=\n## Supplementary Figures)", re.S)
+_blocks = []
+def _hold(m):
+    _blocks.append(m.group(0)); return f"@@HOLD{len(_blocks)-1}@@"
+md = _keep_verbatim.sub(_hold, md)
+md = _strip_files(md)
+for i, b in enumerate(_blocks):
+    md = md.replace(f"@@HOLD{i}@@", b)
+
+REPRO = """## Reproducibility map
+
+Every number in the main text and in this file is produced by a script in the public repository from a hash-frozen engine and registry (SHA-256 manifests `FREEZE_v15_20261025`; Note 6). Internal report file names are omitted throughout; the table below is the single place that links each item to its generating script and input.
+
+| Item | Script (repository path) | Input data | Engine / registry |
+|---|---|---|---|
+| Table 1, Fig. 2, Fig. S2, Table S4, Table S6–S6c, Table S8, Table S11 | `eval/realdata/eval_eicu.py` (`--encounter icu`), `eval/realdata/panel_supported_metric.py`, `eval/subgroup_fairness.py`, `eval/reviewer_r2_metrics.py`, `eval/calibration_dca.py` | eICU-CRD demo v2.0.1 (2,314 ICU stays) | v7 / 14.1.0 |
+| Table 2, Fig. 6, Note 2, Fig. S6 | `eval/baselines/llm_zero_shot.py`, `b8_score.py`, `b8_v7_cluster.py`, `b8_rank_metrics.py`, `b8_prompt_sensitivity.py` | 400 blinded eICU panels (Data 1) | v7 / 14.1.0 (historical: v5.1) |
+| Table 3 | `eval/ablation/run_ablation.py` | eICU-CRD demo | v7 / 14.1.0 |
+| Table 5, Fig. 4, Fig. 3 (ML baseline: `eval/baselines/ml_baseline_eicu.py`), Table S7, Table S13, Note 10 | `eval/realdata/eval_nhanes.py`, `eval_uci_thyroid.py`, `eval_uci_hcv.py`, `eval_ilpd.py`, `eval_pmc_cases.py`, `eval/mimic/run_retrospective.py` | NHANES H/I/J, UCI thyroid0387, UCI HCV, ILPD, MIMIC-IV demo, PMC case reports | v7 / 14.1.0 |
+| Fig. 5, Table S16 | `eval/realdata/eval_sepsis2019.py`, `eval_sepsis2019_concurrent.py`, `eval/sepsis_ml/sepsis_risk_module.py` | PhysioNet Sepsis-2019 sets A, B, B2 | v7 / 14.1.0 |
+| Section 3.1, Note 4 | `tests/test_properties.py`, `tests/test_bayes_properties.py`, `tests/hard_battery.py`, `hard_battery2.py`, `hard_battery3.py`, `tests/healthy_sweep.py`, `tests/perturbation_fuzz.py` | synthetic panels (seeded) | v7, v8, v8.1 |
+| Section 3.2, Fig. S1, Note 8, Table S10 | `eval/source_audit/PROTOCOL.md` with the frozen sample `eval/source_audit/sample_200.csv` (seed 20261026), `eval/registry_source_verify.py` | registry 14.1.0 (seed 20261026) | 14.1.0 |
+| Table S1, Table S2, Note 1 | SAP document (dated amendments); freeze manifests | — | 14.0.0 → 14.1.0; v6 → v7 |
+| Table S5 | `eval/next_test_utility.py` | eICU-CRD demo audit sample | v5.3 (superseded) |
+| Table S9 | `eval/label_audit_300.py` (seed 11; the first 100 stays by the author adjudication described in Table S9) | 400 eICU stays | v7 |
+| Fig. S5 | `eval/deep_review_ctx_sex.py` | eICU-CRD demo, context arm | v5.2 |
+"""
+md = md.replace("## Supplementary Figures", REPRO + "\n## Supplementary Figures", 1)
+
 os.makedirs(os.path.join(V7, "submission_CMPB"), exist_ok=True)
 open(os.path.join(V7, "submission_CMPB", "Supplementary_Information_R6.md"), "w", encoding="utf-8").write(md)
 
