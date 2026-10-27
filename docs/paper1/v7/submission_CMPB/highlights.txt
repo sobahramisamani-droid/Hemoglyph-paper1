@@ -4,4 +4,4 @@ Highlights
 • The invariants found a ranking defect that 353 hand-written vignettes had missed
 • Frozen source-concordance protocol: 92% of sampled rules unverifiable by locator
 • Engine at recall@5 parity with a frontier LLM; unit-invariant in 40/40 panels vs 8/40
-• Engine-agnostic tools and protocol released; applicable to any analyte-rule base
+• As a verifier, the engine's criteria cut LLM unsupported assertions 40% at no cost

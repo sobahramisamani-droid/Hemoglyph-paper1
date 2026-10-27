@@ -1,0 +1,293 @@
+{
+ "n_stays": 400,
+ "n_labels": 596,
+ "entry_verdicts": {
+  "supported": 1439,
+  "not_verifiable": 263,
+  "contradicted": 182,
+  "out_of_vocabulary": 525,
+  "absent": 15
+ },
+ "top5_unsupported": {
+  "llm": [
+   140,
+   1486
+  ],
+  "engine": [
+   233,
+   1518
+  ],
+  "llm_after_demotion": [
+   84,
+   1464
+  ],
+  "llm_excluding_respiratory_names": [
+   106,
+   1486
+  ]
+ },
+ "recall": {
+  "A_llm_raw": {
+   "1": 0.28187919463087246,
+   "3": 0.5083892617449665,
+   "5": 0.5956375838926175,
+   "10": 0.6510067114093959
+  },
+  "B_llm_demoted": {
+   "1": 0.2936241610738255,
+   "3": 0.5033557046979866,
+   "5": 0.5939597315436241,
+   "10": 0.6510067114093959
+  },
+  "C_llm_removed": {
+   "1": 0.2936241610738255,
+   "3": 0.5016778523489933,
+   "5": 0.5838926174496645,
+   "10": 0.6375838926174496
+  },
+  "D_engine_v7": {
+   "1": 0.23993288590604026,
+   "3": 0.4697986577181208,
+   "5": 0.6073825503355704,
+   "10": 0.7197986577181208
+  }
+ },
+ "paired_B_minus_A": {
+  "1": [
+   0.001828153564899404,
+   0.023049645390070927,
+   0.014
+  ],
+  "3": [
+   -0.01311475409836066,
+   0.0017035775127768327,
+   0.2265
+  ],
+  "5": [
+   -0.00540540540540535,
+   0.0,
+   0.7535
+  ],
+  "10": [
+   0.0,
+   0.0,
+   1.0
+  ]
+ },
+ "paired_C_minus_A": {
+  "1": [
+   0.001828153564899404,
+   0.023049645390070927,
+   0.014
+  ],
+  "3": [
+   -0.015679442508710784,
+   0.0,
+   0.123
+  ],
+  "5": [
+   -0.02146690518783545,
+   -0.003937007874015741,
+   0.001
+  ],
+  "10": [
+   -0.023569023569023573,
+   -0.005119453924914641,
+   0.001
+  ]
+ },
+ "demoted_label_entries": [
+  {
+   "stay": "1278738",
+   "name": "prerenal azotemia / GI bleeding (BUN/Cr 40)",
+   "verdict": "contradicted",
+   "labels": [
+    "gi_bleeding"
+   ],
+   "vals": {
+    "hemoglobin": 11.4
+   }
+  },
+  {
+   "stay": "294032",
+   "name": "acute respiratory acidosis / hypercapnic respiratory failure",
+   "verdict": "contradicted",
+   "labels": [
+    "metabolic_acidosis"
+   ],
+   "vals": {
+    "bicarbonate": 28.2
+   }
+  },
+  {
+   "stay": "2825782",
+   "name": "high anion gap metabolic acidosis (alcoholic ketoacidosis / toxic alcohol)",
+   "verdict": "contradicted",
+   "labels": [
+    "alcohol_withdrawal"
+   ],
+   "vals": {
+    "aspartate_aminotransferase": 160.0
+   }
+  },
+  {
+   "stay": "3131438",
+   "name": "hyperglycemia stress",
+   "verdict": "contradicted",
+   "labels": [
+    "hyperglycemia"
+   ],
+   "vals": {
+    "glucose": 134.0
+   }
+  },
+  {
+   "stay": "1772933",
+   "name": "prerenal azotemia / GI bleeding (BUN 47/Cr 1.07)",
+   "verdict": "contradicted",
+   "labels": [
+    "gi_bleeding"
+   ],
+   "vals": {
+    "hemoglobin": 10.2
+   }
+  },
+  {
+   "stay": "2684065",
+   "name": "prerenal azotemia mild",
+   "verdict": "contradicted",
+   "labels": [
+    "renal_impairment"
+   ],
+   "vals": {
+    "creatinine": 0.94
+   }
+  },
+  {
+   "stay": "3086265",
+   "name": "acute hypercapnic respiratory failure / respiratory acidosis with hypoxemia (pCO2 56, pO2 56, pH 7.24)",
+   "verdict": "contradicted",
+   "labels": [
+    "metabolic_acidosis"
+   ],
+   "vals": {
+    "bicarbonate": 26.0
+   }
+  },
+  {
+   "stay": "426975",
+   "name": "coagulopathy",
+   "verdict": "contradicted",
+   "labels": [
+    "coagulopathy"
+   ],
+   "vals": {
+    "international_normalized_ratio": 1.4
+   }
+  },
+  {
+   "stay": "310446",
+   "name": "metabolic acidosis / DKA (possible)",
+   "verdict": "absent",
+   "labels": [
+    "diabetic_ketoacidosis"
+   ],
+   "vals": {
+    "glucose": 382.0,
+    "bicarbonate": null
+   }
+  },
+  {
+   "stay": "2767923",
+   "name": "high anion gap metabolic acidosis / early DKA",
+   "verdict": "contradicted",
+   "labels": [
+    "diabetic_ketoacidosis"
+   ],
+   "vals": {
+    "glucose": 353.0,
+    "bicarbonate": 24.0
+   }
+  }
+ ],
+ "n_demoted_entries": 197,
+ "verdict_agreement_criterion_vs_engine": {
+  "crit_True_engine_True": 1685,
+  "crit_False_engine_True": 136,
+  "crit_False_engine_False": 124,
+  "crit_True_engine_False": 51
+ },
+ "engine_top5_by_group": {
+  "acute_kidney_injury|supported": 131,
+  "chronic_kidney_disease|supported": 33,
+  "renal_impairment|supported": 148,
+  "acute_myocardial_infarction|supported": 74,
+  "renal_impairment|contradicted": 49,
+  "metabolic_acidosis|supported": 70,
+  "thrombocytopenia|supported": 50,
+  "heart_failure|supported": 37,
+  "acute_kidney_injury|contradicted": 39,
+  "hypernatremia|supported": 14,
+  "anemia|supported": 196,
+  "hypophosphatemia|supported": 15,
+  "hyponatremia|supported": 47,
+  "hypomagnesemia|supported": 30,
+  "diabetes|contradicted": 54,
+  "hyperglycemia|contradicted": 33,
+  "leukocytosis|supported": 98,
+  "hypocalcemia|supported": 36,
+  "coagulopathy|supported": 15,
+  "diabetes|supported": 69,
+  "hyperglycemia|supported": 90,
+  "acute_pancreatitis|supported": 8,
+  "hypokalemia|supported": 47,
+  "diabetic_ketoacidosis|supported": 23,
+  "hyperkalemia|supported": 19,
+  "hypothyroidism|contradicted": 3,
+  "chronic_kidney_disease|contradicted": 2,
+  "lactic_acidosis|supported": 26,
+  "metabolic_acidosis|contradicted": 13,
+  "acute_myocardial_infarction|contradicted": 4,
+  "hypercalcemia|contradicted": 2,
+  "rhabdomyolysis|supported": 4,
+  "anemia|absent": 1,
+  "metabolic_acidosis|absent": 2,
+  "anemia|contradicted": 5,
+  "hypocalcemia|contradicted": 17,
+  "lactic_acidosis|contradicted": 2,
+  "heart_failure|contradicted": 1,
+  "hypercalcemia|supported": 1,
+  "hypothyroidism|supported": 3,
+  "diabetic_ketoacidosis|contradicted": 3,
+  "hypoglycemia|supported": 1,
+  "rhabdomyolysis|contradicted": 3
+ },
+ "engine_top5_total_by_group": {
+  "acute_kidney_injury": 170,
+  "chronic_kidney_disease": 35,
+  "renal_impairment": 197,
+  "acute_myocardial_infarction": 78,
+  "metabolic_acidosis": 85,
+  "thrombocytopenia": 50,
+  "heart_failure": 38,
+  "hypernatremia": 14,
+  "anemia": 202,
+  "hypophosphatemia": 15,
+  "hyponatremia": 47,
+  "hypomagnesemia": 30,
+  "diabetes": 123,
+  "hyperglycemia": 123,
+  "leukocytosis": 98,
+  "hypocalcemia": 53,
+  "coagulopathy": 15,
+  "acute_pancreatitis": 8,
+  "hypokalemia": 47,
+  "diabetic_ketoacidosis": 26,
+  "hyperkalemia": 19,
+  "hypothyroidism": 6,
+  "lactic_acidosis": 28,
+  "hypercalcemia": 3,
+  "rhabdomyolysis": 7,
+  "hypoglycemia": 1
+ }
+}
