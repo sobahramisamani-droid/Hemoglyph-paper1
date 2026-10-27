@@ -1,0 +1,11 @@
+# Registry 15.0.0 — 2026-10-27 (provenance/fidelity release)
+- Protocol `eval/registry_patches/PROTOCOL_15_0_0.md`; patch `patch_15_0_0.py`; review `REVIEW_15_0_0.md`; gate `eval/provenance/REGISTRY_15_RESULTS.md`.
+- R1: 24,308 template `co_*` rules re-attributed to the synthetic source `generated_pair_pattern` (previously cited the WHO essential-diagnostics landing page). Logic unchanged.
+- R2: 278 rules retired (`executable: false`): 234 nonspecific single-marker, 25 clinically incorrect, 19 unsourced/duplicate thresholds. Each carries `retired_reason`.
+- R3: 37 rules re-sourced with verbatim quotes (`provenance.verified_quote/verified_locator/verified_on`); 3 locator-only.
+- R4: 36 reference-limit rules re-attributed to `reference_interval_convention` (+ topical locator for sodium/potassium).
+- R5 logic: child anaemia rule gated to children (was all ages, Hb < 11.5 for men too); male IDA rule Hb < 13 (was 12); prediabetes A1c >= 5.7 (was > 5.7); hypoglycaemia < 54 mg/dL (was 55); rhabdomyolysis CK > 1000 (was >=); euglycaemic DKA gains a beta-hydroxybutyrate >= 3 mmol/L leaf.
+- R6: 7 source records added, 18 repaired (WHO 2024 anaemia URL/ISBN/IRIS locator; KDIGO PDFs; PMC ids; DOIs).
+- Deviation: `acute_kidney_injury_v1` kept as `single_panel_surrogate` (test gate dependency), see REVIEW §4.
+- Executable rules 33,183 -> 32,905; sources 785 -> 792. Gate: pytest 709 passed; eICU flat recall@5 61.0 -> 61.2 %, @10 74.1 -> 74.3 %, top-1 two-tier 33.5 -> 33.3 %, grouped@1 30.2 -> 29.0 %; NHANES AUROCs within 0.012.
+- Previous release: `release/registry_14.2.0/`.
