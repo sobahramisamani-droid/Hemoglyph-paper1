@@ -19,7 +19,7 @@ def inline(p,text,size=None):
         if size: r.font.size=Pt(size)
 def shade(c,f):
     t=c._tc.get_or_add_tcPr(); s=OxmlElement("w:shd"); s.set(qn("w:val"),"clear"); s.set(qn("w:fill"),f); t.append(s)
-lines=open("Paper1_Hemoglyph_JBI_EN_v7_R4.md").read().split("\n"); i=0
+lines=open("Paper1_Hemoglyph_JBI_EN_v7_R5.md").read().split("\n"); i=0
 while i<len(lines):
     l=lines[i]
     if l.startswith("# "):
@@ -65,4 +65,4 @@ for k,f in enumerate(NPJ,1):
     p=doc.add_paragraph(); r=p.add_run(f"Fig. {k} | {LEG.get(k,('',''))[0]} "); r.bold=True; r.font.size=Pt(9.5)
     inline(p,LEG.get(k,('',''))[1],9.5); p.paragraph_format.line_spacing=1.15
     doc.add_page_break()
-doc.save("Paper1_Hemoglyph_JBI_EN_v7_R4.docx"); print("docx ok")
+doc.save("Paper1_Hemoglyph_JBI_EN_v7_R5.docx"); print("docx ok")

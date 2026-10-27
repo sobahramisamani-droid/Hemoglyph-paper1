@@ -258,7 +258,7 @@ Engine and evaluation scripts (AGPL-3.0-or-later) and the rule registries (CC BY
 
 ## Tables
 
-**Table 3 | Component ablation of the frozen engine v7 (2,314 eICU stays; the 28 `unverified_source` rules are a subset of the 33,183 executable rules).**
+**Table 1 | Component ablation of the frozen engine v7 (2,314 eICU stays; the 28 `unverified_source` rules are a subset of the 33,183 executable rules).**
 
 | Arm | flat @3 | flat @5 | flat @10 | Δ flat @5 (95% CI) | two-tier @5 | Δ two-tier @5 (95% CI) | mean AUROC (24 groups) |
 |---|---:|---:|---:|---|---:|---|---:|
@@ -280,7 +280,7 @@ Engine and evaluation scripts (AGPL-3.0-or-later) and the rule registries (CC BY
 
 Arm definitions (full definitions and environment switches in Supplementary Note 3 / `eval/ablation/run_ablation.py`): *rule-engine vote off* removes the rule_engine channel from fusion, through which both registry rules and expert-syndrome constellations vote, so it is a superset of *syndrome layer off*, which silences only the ~900 constellations while registry rules remain; *anchor-only* keeps the 272 curated rules and the syndrome layer. The mean AUROC column covers the 24 laboratory-detectable groups with ≥ 5 listed stays and a group score; the multiplicity analysis covers all 29 groups with ≥ 10 coded labels, including five without a single-analyte criterion.
 
-**Table 4 | External and quarantine datasets, engine v7.**
+**Table 2 | External and quarantine datasets, engine v7.**
 
 | Dataset / task | Metric | Value (95% CI) |
 |---|---|---|
@@ -301,7 +301,7 @@ Arm definitions (full definitions and environment switches in Supplementary Note
 | PMC case reports, manual labs: specific / syndrome | top-5 | 26% / 68% |
 | Sepsis set B2 prediction / concurrent (labs + vitals) | AUROC | 0.588 (0.559–0.616) / 0.635 (0.597–0.673); logistic 0.679 / 0.726 |
 
-**Table 2 | Data sources, reference standards and roles.**
+**Table 3 | Data sources, reference standards and roles.**
 
 | Dataset | Setting | Reference standard | Role | n evaluated |
 |---|---|---|---|---|
@@ -317,7 +317,7 @@ Arm definitions (full definitions and environment switches in Supplementary Note
 | PMC-Patients | published case reports | published diagnosis | external anchor | 50 |
 | Synthetic healthy panels | generated | all-normal | safety | 1,000 per seed |
 
-**Table 5 | eICU-CRD demo (n = 2,314 stays), laboratory values only: recall of clinician-listed diagnoses by release.**
+**Table 4 | eICU-CRD demo (n = 2,314 stays), laboratory values only: recall of clinician-listed diagnoses by release.**
 
 | Release | flat @3 | flat @5 | flat @10 | two-tier @5 | panel-supported @5 / @10 (n = 1,460) | two-tier panel-supported @5 / @10 |
 |---|---|---|---|---|---|---|
@@ -327,7 +327,7 @@ Arm definitions (full definitions and environment switches in Supplementary Note
 
 CIs for the v7 row are stay-clustered (top-3 45.8–50.0; top-5 58.7–62.9; top-10 72.2–76.0). The historical registry-off ablation on engine v5.3 (first submission) is moved to Supplementary Table S12b; the ablations that belong to the evaluated release are those of Table 1. All scores in this table are rank-based and uncalibrated; after cross-fitted isotonic recalibration within eICU the pooled ECE fell from 0.162 to 0.003 and the Brier score from 0.117 to 0.040 without changing any rank, so recall values are unaffected. The shipped product displays ranks and evidence states, not probabilities, and applies no calibration map.
 
-**Table 1 | Blinded comparison with an unnamed frontier LLM (agent platform, model not disclosed), 400 eICU stays, 596 labels.** The historical v5.1 comparison from the first submission is in Supplementary Figure S (superseded).
+**Table 5 | Blinded comparison with an unnamed frontier LLM (agent platform, model not disclosed), 400 eICU stays, 596 labels.** The historical v5.1 comparison from the first submission is in Supplementary Figure S (superseded).
 
 | Metric | Hemoglyph v7 (flat) | LLM | Difference (95% CI) | Cluster-adjusted p |
 |---|---|---|---|---|

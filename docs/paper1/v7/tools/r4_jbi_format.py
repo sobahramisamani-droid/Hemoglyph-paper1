@@ -204,8 +204,7 @@ by_old = {int(re.match(r"\*\*Table (\d)", b).group(1)): b for b in blocks}
 new_blocks = []
 for old in sorted(by_old, key=lambda o: tmap[o]):
     b = by_old[old]
-    b = re.sub(r"^\*\*Table \d", f"**Table {tmap[old]}", b)
-    b = re.sub(r"Table (\d)\b(?!\d)", lambda m: f"Table {tmap[int(m.group(1))]}", b)
+    b = re.sub(r"Table (\d)\b(?!\d)", lambda m: f"Table {tmap[int(m.group(1))]}", b)   # one pass: caption and cross-references
     new_blocks.append(b)
 supp_block = re.sub(r"Table (\d)\b(?!\d)", lambda m: f"Table {tmap[int(m.group(1))]}", supp_block)
 body = head + "## Tables\n\n" + "\n\n".join(new_blocks) + "\n\n## Supplementary information" + supp_block
