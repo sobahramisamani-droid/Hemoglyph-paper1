@@ -85,6 +85,14 @@ FIGS = """## Supplementary Figures
 
 ![Fig. S7. Participant flow for all evaluation cohorts (TRIPOD+AI 14a; counts in Table S3).](../../figures/figS1_participant_flow.png)"""
 
+
+HYBRID = """
+
+#### Note 9 addendum — hybrid arm and the limits of post-freeze improvement (declared experiment, 2026-10-27)
+
+To test whether a trained layer on top of the frozen engine would raise recall, a 5-fold out-of-fold gradient-boosting probability per label group (identical inputs: raw analytes, age, sex) was combined with the frozen v7 group probability by a parameter-free rule, max(engine, ML). On the group-level metric (same 2,432 scorable labels) recall@5 was 58.8 % for the engine, 60.6 % for the hybrid (+1.8, 95 % bootstrap CI +1.2 to +2.5), 59.8 % when the ML term was allowed only for the six groups without a single-analyte criterion (+1.0), and 68.8 % for ML alone (+10.0). The ML-only gain comes from sepsis (94 %), diabetes (91 %) and CKD (65 %) — cohort priors learned from the labels — while ML loses most single-analyte groups (hyponatraemia 38 %, metabolic acidosis 12 %, hypomagnesaemia 3 %). A taxonomy of the engine's DKA misses (40 of 108) found only 2 panels meeting ADA criteria that the engine failed; 32 had bicarbonate ≥ 18 mmol/L or glucose < 250 mg/dL at the first panel (resolving or treated DKA) and 5 had glucose without acid–base data. Together with the earlier input arms (full in-window time series 63.7 → 63.2 %; documented history +2.9 points, mostly echo), these results indicate that the frozen figure is bounded by the reference standard rather than by rule content, and no post-freeze rule change was made (`eval/hybrid_arm.py`; `eval/results/eicu_demo/hybrid_arm_v7.md`).
+"""
+
 parts = [
     "# Supplementary Information\n\n*Verification and provenance auditing of an AI-drafted clinical rule base — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R6 (2026-10-27), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
     "## Supplementary Note 1 — Statistical analysis plan and amendments\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "SAP_Hemoglyph_v1.md")), flags=re.M).replace("\n## ", "\n### "),
@@ -94,7 +102,7 @@ parts = [
     S5,
     rd(os.path.join(SUP, "SUPPLEMENT_R1.md")).split("\n", 1)[1].strip(),
     addendum,
-    notes_9_12.replace("### Supplementary Note", "## Supplementary Note"),
+    notes_9_12.replace("### Supplementary Note", "## Supplementary Note").replace("\n## Supplementary Note 10", HYBRID + "\n## Supplementary Note 10", 1),
     FIGS,
 ]
 md = "\n\n".join(parts) + "\n"
