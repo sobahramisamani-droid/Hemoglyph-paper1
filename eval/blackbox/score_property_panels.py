@@ -26,9 +26,7 @@ P = lambda x: ast.literal_eval(x) if isinstance(x, str) else x
 
 # synonym map used for the LLM free-text names (same as b8_v7_cluster.SYN)
 _src = open(os.path.join(ROOT, "eval/baselines/b8_v7_cluster.py")).read()
-_ns = {}
-exec(_src[_src.index("SYN"):_src.index("def llm_ranks")], _ns)
-SYN = _ns["SYN"]
+from llm_zero_shot import SYN  # noqa: E402
 RENAL = {"acute_kidney_injury", "renal_impairment", "chronic_kidney_disease"}
 
 
@@ -56,6 +54,17 @@ def engine_groups(panel):
     return gr
 
 
+# conventional-unit twin of a perturbed panel, built with the generator's own unit logic (isolates the unit/presentation effect
+# from harness differences such as max_differential=40 and LAB-map units used in the original eICU run)
+_gen = open(os.path.join(HERE, "make_property_panels.py")).read()
+_gns = {"__file__": os.path.join(HERE, "make_property_panels.py")}
+exec(compile(_gen[:_gen.index("# P2 unit invariance")], "gen", "exec"), _gns)
+conv_panel = lambda stay: _gns["panel"](stay)
+
+# post-hoc (declared after first scoring run, 2026-10-27): analytes that carry the same information as the removed one
+REDUNDANT = {"hemoglobin": ["hematocrit"], "troponin_i": ["creatine_kinase_mb", "troponin_t"], "bicarbonate": ["anion_gap", "arterial_ph", "base_excess"]}
+
+
 def top5(gr):
     return {g for g, r in gr.items() if r <= 5}
 
@@ -79,22 +88,23 @@ def main():
     ns = {"__file__": os.path.join(ROOT, "eval/baselines/b8_v7_cluster.py")}
     exec(compile(_b, "b8", "exec"), ns)
     llm0 = {str(s[0]): llm_groups(s[3]) for s in ns["stays"]}
-    out = ["# Black-box property conformance — frozen engine v7 vs unnamed frontier LLM (identical perturbed panels)", ""]
+    out = ["# Black-box property conformance — engine under test (working tree) vs unnamed frontier LLM (identical perturbed panels)", ""]
     res = {}
 
     for name in ("P2_units", "P3_presentation"):
         panels = json.load(open(os.path.join(HERE, f"panels_{name}.json")))
         reads = load_reads(name)
-        je, jl, de, dl, n = [], [], [], [], 0
+        je, jl, de, dl, js, n = [], [], [], [], [], 0
         for p in panels:
-            s = p["stay"]; eg = engine_groups(p); eg0 = rows[s]["gr"]
-            je.append(jacc(top5(eg), top5(eg0)))
+            s = p["stay"]; eg = engine_groups(p); eg0 = engine_groups(conv_panel(s)); egs = rows[s]["gr"]
+            je.append(jacc(top5(eg), top5(eg0))); js.append(jacc(top5(eg), top5(egs)))
             lab = [g for g in rows[s]["coded"] if g in GROUPS and any(k in rows[s]["labs"] for k in GROUPS[g][2])]
             de.append(sum(eg.get(g, 99) <= 5 for g in lab) - sum(eg0.get(g, 99) <= 5 for g in lab))
             if reads and s in reads:
                 lg = llm_groups(reads[s]); lg0 = llm0[s]
                 jl.append(jacc(top5(lg), top5(lg0))); dl.append(sum(lg.get(g, 99) <= 5 for g in lab) - sum(lg0.get(g, 99) <= 5 for g in lab)); n += 1
         res[name] = {"engine_jaccard": sum(je) / len(je), "engine_identical": sum(j == 1.0 for j in je), "n_engine": len(je),
+                     "engine_jaccard_vs_stored_run": sum(js) / len(js), "engine_identical_vs_stored_run": sum(j == 1.0 for j in js),
                      "llm_jaccard": (sum(jl) / n) if n else None, "llm_identical": sum(j == 1.0 for j in jl), "n_llm": n,
                      "engine_label_delta": sum(de), "llm_label_delta": sum(dl)}
 
@@ -120,8 +130,13 @@ def main():
         l_un = None
         if reads and s in reads:
             lg = llm_groups(reads[s]); nl += 1; l_un = lg.get(g, 99) <= 5; ul += int(l_un)
-        detail.append((s, g, p["removed_analyte"], e_un, l_un))
-    res["P5_absent"] = {"engine_unsupported": ue, "n_engine": ne, "llm_unsupported": ul, "n_llm": nl}
+        present = {it["analyte"] for it in p["panel"]}
+        red = sorted(set(REDUNDANT.get(p["removed_analyte"], [])) & present)
+        detail.append((s, g, p["removed_analyte"], e_un, l_un, red))
+    strict = [d for d in detail if not d[5]]
+    res["P5_absent"] = {"engine_unsupported": ue, "n_engine": ne, "llm_unsupported": ul, "n_llm": nl,
+                        "posthoc_no_redundant_n": len(strict), "posthoc_engine_unsupported": sum(bool(d[3]) for d in strict),
+                        "posthoc_llm_unsupported": sum(bool(d[4]) for d in strict)}
 
     p6 = os.path.join(HERE, "panels_P6_healthy.json"); reads = load_reads("P6_healthy")
     if os.path.exists(p6) and json.load(open(p6)):
@@ -135,15 +150,32 @@ def main():
     out += ["| property | engine | LLM |", "|---|---|---|"]
     for k, v in res.items():
         if k.startswith("P2") or k.startswith("P3"):
-            out.append(f"| {k}: top-5 Jaccard vs original (identical/n) | {v['engine_jaccard']:.2f} ({v['engine_identical']}/{v['n_engine']}); label Δ {v['engine_label_delta']:+d} | "
+            out.append(f"| {k}: top-5 Jaccard vs original (identical/n) | {v['engine_jaccard']:.2f} ({v['engine_identical']}/{v['n_engine']}) live twin; {v['engine_jaccard_vs_stored_run']:.2f} ({v['engine_identical_vs_stored_run']}/{v['n_engine']}) vs stored run; label Δ {v['engine_label_delta']:+d} | "
                        + (f"{v['llm_jaccard']:.2f} ({v['llm_identical']}/{v['n_llm']}); label Δ {v['llm_label_delta']:+d}" if v["n_llm"] else "pending"))
         elif k == "P4_monotonic":
             out.append(f"| P4 monotonicity violations / ladders | {v['engine_violations']}/{v['n_engine']} | {v['llm_violations']}/{v['n_llm']} |")
         elif k == "P5_absent":
             out.append(f"| P5 unsupported assertions (target still at rank ≤ 5 without its analyte) | {v['engine_unsupported']}/{v['n_engine']} | {v['llm_unsupported']}/{v['n_llm']} |")
+            out.append(f"| P5 post hoc: panels with no redundant analyte left (n = {v['posthoc_no_redundant_n']}) | {v['posthoc_engine_unsupported']}/{v['posthoc_no_redundant_n']} | {v['posthoc_llm_unsupported']}/{v['posthoc_no_redundant_n']} |")
         else:
             out.append(f"| P6 healthy adults with ≥ 1 disease at rank ≤ 3 | {v['engine_false_alarm']}/{v['n_engine']} | {v['llm_false_alarm']}/{v['n_llm']} |")
-    out += ["", "## P5 detail (stay, target, removed analyte, engine unsupported, LLM unsupported)", ""]
+    out += ["", "## Notes", "",
+            "- Engine reference for P2/P3: live run on the conventional-unit twin built by the same generator (deterministic). "
+            "LLM reference: the original blind reading from a different session, so LLM Jaccard also contains session-to-session variability (κ 0.69).",
+            "- P4 LLM reads were produced with the creatinine ladder visible (the panel key carries the ladder), so 0/20 is not a blind test for the LLM; the engine was run on each panel independently.",
+            "- P5 post hoc row (declared after the first scoring run): excludes panels in which a redundant analyte (haematocrit for haemoglobin; CK-MB/troponin T for troponin I; anion gap/pH/base excess for bicarbonate) remained, because asserting the target from it is clinically supported.",
+            "- Engine arm = the working-tree engine (v8.1 at the first run; v8.2 after the alias-unit fix below). The first run (RESULTS_before_fix_v8.1.md) "
+            "found 4/40 P2 twins non-identical; all four traced to one defect: a record mirrored under an engine-internal legacy id "
+            "(bilirubin_total) kept its reported unit, so a normal bilirubin of 9 µmol/L was compared with the 8 mg/dL panic threshold "
+            "(false critical alert; cholestasis 0.49 -> 0.58). Fixed in v8.2 (alias ids resolve to registry metadata before canonicalisation); "
+            "regression test tests/test_properties.py::test_p2_unit_invariance_legacy_alias_ids fails before and passes after the fix; the 705-test suite passes. v7 frozen results are untouched.",
+            "- P3 residual (5/40): three stays where the generator's alias distractors (mcv 89, tsh 1.8) duplicated an analyte already present with a different value "
+            "(measured MCV 100.5; TSH 4.7/4.3), i.e. the perturbation was not value-preserving there; two stays with differentials shorter than five entries, where "
+            "0.15-probability items entered the top-5 set. No engine defect was identified in P3.",
+            "- P4 engine violations (2/20): in both, the renal cluster's best rank fell at the x2.0 step because the engine switched from 'reduced GFR, chronicity undetermined' "
+            "(anchor 0.92) to 'acute kidney injury' at a lower score; recorded as a candidate v9 item, not changed here.",
+            "- P6 (healthy adults) is not re-run here: the pre-existing blind B5 test on NHANES 2017-18 (40 guideline-healthy adults, same blind reader) already covers it: LLM 4/40 false assertions vs engine 0/40.",
+            "", "## P5 detail (stay, target, removed analyte, engine unsupported, LLM unsupported, redundant analytes present)", ""]
     out += [f"- {d}" for d in detail]
     txt = "\n".join(out); print(txt)
     open(os.path.join(HERE, "RESULTS.md"), "w").write(txt + "\n")

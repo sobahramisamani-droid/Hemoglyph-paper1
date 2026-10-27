@@ -1,0 +1,41 @@
+{
+ "P2_units": {
+  "engine_jaccard": 1.0,
+  "engine_identical": 40,
+  "n_engine": 40,
+  "engine_jaccard_vs_stored_run": 0.9457043650793651,
+  "engine_identical_vs_stored_run": 34,
+  "llm_jaccard": 0.7177579365079365,
+  "llm_identical": 8,
+  "n_llm": 40,
+  "engine_label_delta": 0,
+  "llm_label_delta": 3
+ },
+ "P3_presentation": {
+  "engine_jaccard": 0.9598809523809523,
+  "engine_identical": 35,
+  "n_engine": 40,
+  "engine_jaccard_vs_stored_run": 0.9139186507936508,
+  "engine_identical_vs_stored_run": 30,
+  "llm_jaccard": 0.7325892857142857,
+  "llm_identical": 10,
+  "n_llm": 40,
+  "engine_label_delta": 0,
+  "llm_label_delta": 3
+ },
+ "P4_monotonic": {
+  "engine_violations": 2,
+  "n_engine": 20,
+  "llm_violations": 0,
+  "n_llm": 20
+ },
+ "P5_absent": {
+  "engine_unsupported": 3,
+  "n_engine": 40,
+  "llm_unsupported": 14,
+  "n_llm": 40,
+  "posthoc_no_redundant_n": 29,
+  "posthoc_engine_unsupported": 1,
+  "posthoc_llm_unsupported": 4
+ }
+}

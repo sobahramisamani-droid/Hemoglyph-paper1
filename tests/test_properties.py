@@ -45,6 +45,21 @@ def test_p2_unit_invariance(feat, conv, si, unit_si):
     assert [x["disease_id"] for x in a[:10]] == [x["disease_id"] for x in b[:10]]
     assert all(abs(x["probability"] - y["probability"]) < 1e-3 for x, y in zip(a[:10], b[:10]))  # 16.65 mmol/L = 299.97 mg/dL; fuzzy memberships are continuous
 
+# v8.2 regression (black-box property benchmark, 2026-10-27): analytes that also exist under an engine-internal
+# legacy id (bilirubin_total, urea_nitrogen, phosphate_inorganic, mchc) must be unit-invariant too; before the fix a
+# normal bilirubin reported in µmol/L was mirrored with its raw value and scored as critically high (8 mg/dL panic).
+@pytest.mark.parametrize("feat,conv,unit_c,si,unit_si", [("total_bilirubin", 0.5, "mg/dL", 8.55, "umol/L"),
+                                                         ("total_bilirubin", 2.3, "mg/dL", 39.3, "umol/L"),
+                                                         ("blood_urea_nitrogen", 42, "mg/dL", 15.0, "mmol/L"),
+                                                         ("phosphate", 1.9, "mg/dL", 0.613, "mmol/L")])
+def test_p2_unit_invariance_legacy_alias_ids(feat, conv, unit_c, si, unit_si):
+    ra = E.interpret(panel({feat: (conv, unit_c), "alkaline_phosphatase": (153, "U/L")}), None, CTX).to_dict()
+    rb = E.interpret(panel({feat: (si, unit_si), "alkaline_phosphatase": (153, "U/L")}), None, CTX).to_dict()
+    a, b = ra["differential_diagnosis"], rb["differential_diagnosis"]
+    assert [x["disease_id"] for x in a[:10]] == [x["disease_id"] for x in b[:10]]
+    assert all(abs(x["probability"] - y["probability"]) < 1e-2 for x, y in zip(a[:10], b[:10]))
+    assert sorted(c["feature_id"] for c in ra["critical_alerts"]) == sorted(c["feature_id"] for c in rb["critical_alerts"])
+
 # ---- P3 ----
 MONO = [  # feature, unit, start, steps (further past threshold), entity ids
     ("potassium", "mmol/L", [5.6, 6.0, 6.5, 7.0], ("hyperkalemia",)),

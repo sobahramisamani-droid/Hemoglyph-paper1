@@ -1,0 +1,2522 @@
+{
+"1599068@1.0": [
+{
+"name": "prerenal azotemia (BUN 27)",
+"probability": 0.4
+},
+{
+"name": "mild high anion gap (16.5) - early metabolic acidosis / uremic",
+"probability": 0.35
+},
+{
+"name": "neutrophilia / infection",
+"probability": 0.3
+},
+{
+"name": "dehydration",
+"probability": 0.3
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.3
+},
+{
+"name": "subclinical hypothyroidism (TSH 4.34)",
+"probability": 0.25
+},
+{
+"name": "borderline thrombocytopenia (150)",
+"probability": 0.15
+},
+{
+"name": "sepsis",
+"probability": 0.15
+},
+{
+"name": "anemia (mild)",
+"probability": 0.1
+},
+{
+"name": "hyperkalemia",
+"probability": 0.05
+}
+],
+"1599068@1.5": [
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.6
+},
+{
+"name": "prerenal azotemia (BUN 27)",
+"probability": 0.4
+},
+{
+"name": "mild high anion gap (16.5) - early metabolic acidosis / uremic",
+"probability": 0.35
+},
+{
+"name": "neutrophilia / infection",
+"probability": 0.3
+},
+{
+"name": "dehydration",
+"probability": 0.3
+},
+{
+"name": "subclinical hypothyroidism (TSH 4.34)",
+"probability": 0.25
+},
+{
+"name": "borderline thrombocytopenia (150)",
+"probability": 0.15
+},
+{
+"name": "sepsis",
+"probability": 0.15
+},
+{
+"name": "anemia (mild)",
+"probability": 0.1
+},
+{
+"name": "hyperkalemia",
+"probability": 0.05
+}
+],
+"1599068@2.0": [
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.8
+},
+{
+"name": "prerenal azotemia (BUN 27)",
+"probability": 0.4
+},
+{
+"name": "mild high anion gap (16.5) - early metabolic acidosis / uremic",
+"probability": 0.35
+},
+{
+"name": "neutrophilia / infection",
+"probability": 0.3
+},
+{
+"name": "dehydration",
+"probability": 0.3
+},
+{
+"name": "subclinical hypothyroidism (TSH 4.34)",
+"probability": 0.25
+},
+{
+"name": "borderline thrombocytopenia (150)",
+"probability": 0.15
+},
+{
+"name": "sepsis",
+"probability": 0.15
+},
+{
+"name": "anemia (mild)",
+"probability": 0.1
+},
+{
+"name": "hyperkalemia",
+"probability": 0.05
+}
+],
+"1771521@1.0": [
+{
+"name": "heart failure (BNP 616)",
+"probability": 0.7
+},
+{
+"name": "severe hypoalbuminemia (2.5) / hypoproteinemia (4.3)",
+"probability": 0.7
+},
+{
+"name": "leukocytosis with lymphopenia - infection / sepsis",
+"probability": 0.6
+},
+{
+"name": "hypomagnesemia (1.4)",
+"probability": 0.55
+},
+{
+"name": "hypocalcemia (7.8, albumin-related)",
+"probability": 0.45
+},
+{
+"name": "malnutrition / protein-losing state",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia (112)",
+"probability": 0.35
+},
+{
+"name": "mild anemia (11.2)",
+"probability": 0.35
+},
+{
+"name": "hyperglycemia (150)",
+"probability": 0.3
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.15
+}
+],
+"1771521@1.5": [
+{
+"name": "heart failure (BNP 616)",
+"probability": 0.7
+},
+{
+"name": "severe hypoalbuminemia (2.5) / hypoproteinemia (4.3)",
+"probability": 0.7
+},
+{
+"name": "leukocytosis with lymphopenia - infection / sepsis",
+"probability": 0.6
+},
+{
+"name": "hypomagnesemia (1.4)",
+"probability": 0.55
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.5
+},
+{
+"name": "hypocalcemia (7.8, albumin-related)",
+"probability": 0.45
+},
+{
+"name": "malnutrition / protein-losing state",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia (112)",
+"probability": 0.35
+},
+{
+"name": "mild anemia (11.2)",
+"probability": 0.35
+},
+{
+"name": "hyperglycemia (150)",
+"probability": 0.3
+}
+],
+"1771521@2.0": [
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.75
+},
+{
+"name": "heart failure (BNP 616)",
+"probability": 0.7
+},
+{
+"name": "severe hypoalbuminemia (2.5) / hypoproteinemia (4.3)",
+"probability": 0.7
+},
+{
+"name": "leukocytosis with lymphopenia - infection / sepsis",
+"probability": 0.6
+},
+{
+"name": "hypomagnesemia (1.4)",
+"probability": 0.55
+},
+{
+"name": "hypocalcemia (7.8, albumin-related)",
+"probability": 0.45
+},
+{
+"name": "malnutrition / protein-losing state",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia (112)",
+"probability": 0.35
+},
+{
+"name": "mild anemia (11.2)",
+"probability": 0.35
+},
+{
+"name": "hyperglycemia (150)",
+"probability": 0.3
+}
+],
+"599651@1.0": [
+{
+"name": "hyperkalemia (5.8)",
+"probability": 0.8
+},
+{
+"name": "leukocytosis / infection",
+"probability": 0.5
+},
+{
+"name": "hyperoxia (pO2 465, ventilated)",
+"probability": 0.5
+},
+{
+"name": "metabolic alkalosis (bicarb 29) with respiratory compensation",
+"probability": 0.45
+},
+{
+"name": "hypocalcemia (7.9)",
+"probability": 0.45
+},
+{
+"name": "hyperglycemia / stress",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia",
+"probability": 0.35
+},
+{
+"name": "hyponatremia (mild)",
+"probability": 0.35
+},
+{
+"name": "hypophosphatemia (mild)",
+"probability": 0.25
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.15
+}
+],
+"599651@1.5": [
+{
+"name": "hyperkalemia (5.8)",
+"probability": 0.8
+},
+{
+"name": "leukocytosis / infection",
+"probability": 0.5
+},
+{
+"name": "hyperoxia (pO2 465, ventilated)",
+"probability": 0.5
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.5
+},
+{
+"name": "metabolic alkalosis (bicarb 29) with respiratory compensation",
+"probability": 0.45
+},
+{
+"name": "hypocalcemia (7.9)",
+"probability": 0.45
+},
+{
+"name": "hyperglycemia / stress",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia",
+"probability": 0.35
+},
+{
+"name": "hyponatremia (mild)",
+"probability": 0.35
+},
+{
+"name": "hypophosphatemia (mild)",
+"probability": 0.25
+}
+],
+"599651@2.0": [
+{
+"name": "hyperkalemia (5.8)",
+"probability": 0.8
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.75
+},
+{
+"name": "leukocytosis / infection",
+"probability": 0.5
+},
+{
+"name": "hyperoxia (pO2 465, ventilated)",
+"probability": 0.5
+},
+{
+"name": "metabolic alkalosis (bicarb 29) with respiratory compensation",
+"probability": 0.45
+},
+{
+"name": "hypocalcemia (7.9)",
+"probability": 0.45
+},
+{
+"name": "hyperglycemia / stress",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia",
+"probability": 0.35
+},
+{
+"name": "hyponatremia (mild)",
+"probability": 0.35
+},
+{
+"name": "hypophosphatemia (mild)",
+"probability": 0.25
+}
+],
+"2759105@1.0": [
+{
+"name": "neutrophilia with lymphopenia (89%/5%) - bacterial infection / sepsis",
+"probability": 0.65
+},
+{
+"name": "hepatocellular injury (ALT 85, AST 65)",
+"probability": 0.55
+},
+{
+"name": "hyperglycemia / diabetes (204)",
+"probability": 0.5
+},
+{
+"name": "hypoalbuminemia (3.1) / low total protein",
+"probability": 0.45
+},
+{
+"name": "hypocalcemia (7.9)",
+"probability": 0.4
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.35
+},
+{
+"name": "fatty liver / alcohol",
+"probability": 0.3
+},
+{
+"name": "pneumonia",
+"probability": 0.3
+},
+{
+"name": "ischemic hepatitis",
+"probability": 0.2
+},
+{
+"name": "dehydration",
+"probability": 0.2
+}
+],
+"2759105@1.5": [
+{
+"name": "neutrophilia with lymphopenia (89%/5%) - bacterial infection / sepsis",
+"probability": 0.65
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.65
+},
+{
+"name": "hepatocellular injury (ALT 85, AST 65)",
+"probability": 0.55
+},
+{
+"name": "hyperglycemia / diabetes (204)",
+"probability": 0.5
+},
+{
+"name": "hypoalbuminemia (3.1) / low total protein",
+"probability": 0.45
+},
+{
+"name": "hypocalcemia (7.9)",
+"probability": 0.4
+},
+{
+"name": "fatty liver / alcohol",
+"probability": 0.3
+},
+{
+"name": "pneumonia",
+"probability": 0.3
+},
+{
+"name": "ischemic hepatitis",
+"probability": 0.2
+},
+{
+"name": "dehydration",
+"probability": 0.2
+}
+],
+"2759105@2.0": [
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.85
+},
+{
+"name": "neutrophilia with lymphopenia (89%/5%) - bacterial infection / sepsis",
+"probability": 0.65
+},
+{
+"name": "hepatocellular injury (ALT 85, AST 65)",
+"probability": 0.55
+},
+{
+"name": "hyperglycemia / diabetes (204)",
+"probability": 0.5
+},
+{
+"name": "hypoalbuminemia (3.1) / low total protein",
+"probability": 0.45
+},
+{
+"name": "hypocalcemia (7.9)",
+"probability": 0.4
+},
+{
+"name": "fatty liver / alcohol",
+"probability": 0.3
+},
+{
+"name": "pneumonia",
+"probability": 0.3
+},
+{
+"name": "ischemic hepatitis",
+"probability": 0.2
+},
+{
+"name": "dehydration",
+"probability": 0.2
+}
+],
+"931776@1.0": [
+{
+"name": "hyperosmolar hyperglycemic state / severe hyperglycemia (534)",
+"probability": 0.8
+},
+{
+"name": "pseudohyponatremia (130)",
+"probability": 0.65
+},
+{
+"name": "prerenal azotemia / dehydration (BUN 26)",
+"probability": 0.5
+},
+{
+"name": "hypochloremia (93)",
+"probability": 0.4
+},
+{
+"name": "mild hyperlactatemia (2.2)",
+"probability": 0.35
+},
+{
+"name": "elevated alkaline phosphatase (153)",
+"probability": 0.3
+},
+{
+"name": "infection trigger",
+"probability": 0.3
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.25
+},
+{
+"name": "diabetic ketoacidosis (mild AG 13, bicarb 24 - unlikely)",
+"probability": 0.2
+},
+{
+"name": "hypercalcemia (borderline 10.1)",
+"probability": 0.15
+}
+],
+"931776@1.5": [
+{
+"name": "hyperosmolar hyperglycemic state / severe hyperglycemia (534)",
+"probability": 0.8
+},
+{
+"name": "pseudohyponatremia (130)",
+"probability": 0.65
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.6
+},
+{
+"name": "prerenal azotemia / dehydration (BUN 26)",
+"probability": 0.5
+},
+{
+"name": "hypochloremia (93)",
+"probability": 0.4
+},
+{
+"name": "mild hyperlactatemia (2.2)",
+"probability": 0.35
+},
+{
+"name": "elevated alkaline phosphatase (153)",
+"probability": 0.3
+},
+{
+"name": "infection trigger",
+"probability": 0.3
+},
+{
+"name": "diabetic ketoacidosis (mild AG 13, bicarb 24 - unlikely)",
+"probability": 0.2
+},
+{
+"name": "hypercalcemia (borderline 10.1)",
+"probability": 0.15
+}
+],
+"931776@2.0": [
+{
+"name": "hyperosmolar hyperglycemic state / severe hyperglycemia (534)",
+"probability": 0.8
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.8
+},
+{
+"name": "pseudohyponatremia (130)",
+"probability": 0.65
+},
+{
+"name": "prerenal azotemia / dehydration (BUN 26)",
+"probability": 0.5
+},
+{
+"name": "hypochloremia (93)",
+"probability": 0.4
+},
+{
+"name": "mild hyperlactatemia (2.2)",
+"probability": 0.35
+},
+{
+"name": "elevated alkaline phosphatase (153)",
+"probability": 0.3
+},
+{
+"name": "infection trigger",
+"probability": 0.3
+},
+{
+"name": "diabetic ketoacidosis (mild AG 13, bicarb 24 - unlikely)",
+"probability": 0.2
+},
+{
+"name": "hypercalcemia (borderline 10.1)",
+"probability": 0.15
+}
+],
+"2833949@1.0": [
+{
+"name": "metabolic alkalosis (bicarb 40) - contraction / diuretic / vomiting",
+"probability": 0.85
+},
+{
+"name": "severe hypophosphatemia (1.2)",
+"probability": 0.7
+},
+{
+"name": "hypoalbuminemia (2.4) / malnutrition",
+"probability": 0.65
+},
+{
+"name": "hypochloremia (90)",
+"probability": 0.6
+},
+{
+"name": "hyperglycemia / diabetes (249)",
+"probability": 0.55
+},
+{
+"name": "prerenal azotemia (BUN 35)",
+"probability": 0.5
+},
+{
+"name": "coagulopathy (INR 1.5) - liver / vitamin K",
+"probability": 0.45
+},
+{
+"name": "neutrophilia with lymphopenia - infection",
+"probability": 0.45
+},
+{
+"name": "refeeding syndrome",
+"probability": 0.35
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.3
+}
+],
+"2833949@1.5": [
+{
+"name": "metabolic alkalosis (bicarb 40) - contraction / diuretic / vomiting",
+"probability": 0.85
+},
+{
+"name": "severe hypophosphatemia (1.2)",
+"probability": 0.7
+},
+{
+"name": "hypoalbuminemia (2.4) / malnutrition",
+"probability": 0.65
+},
+{
+"name": "hypochloremia (90)",
+"probability": 0.6
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.6
+},
+{
+"name": "hyperglycemia / diabetes (249)",
+"probability": 0.55
+},
+{
+"name": "prerenal azotemia (BUN 35)",
+"probability": 0.5
+},
+{
+"name": "coagulopathy (INR 1.5) - liver / vitamin K",
+"probability": 0.45
+},
+{
+"name": "neutrophilia with lymphopenia - infection",
+"probability": 0.45
+},
+{
+"name": "refeeding syndrome",
+"probability": 0.35
+}
+],
+"2833949@2.0": [
+{
+"name": "metabolic alkalosis (bicarb 40) - contraction / diuretic / vomiting",
+"probability": 0.85
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.8
+},
+{
+"name": "severe hypophosphatemia (1.2)",
+"probability": 0.7
+},
+{
+"name": "hypoalbuminemia (2.4) / malnutrition",
+"probability": 0.65
+},
+{
+"name": "hypochloremia (90)",
+"probability": 0.6
+},
+{
+"name": "hyperglycemia / diabetes (249)",
+"probability": 0.55
+},
+{
+"name": "prerenal azotemia (BUN 35)",
+"probability": 0.5
+},
+{
+"name": "coagulopathy (INR 1.5) - liver / vitamin K",
+"probability": 0.45
+},
+{
+"name": "neutrophilia with lymphopenia - infection",
+"probability": 0.45
+},
+{
+"name": "refeeding syndrome",
+"probability": 0.35
+}
+],
+"2219934@1.0": [
+{
+"name": "anemia (Hb 10.6, RDW 19.3) - mixed / nutritional",
+"probability": 0.7
+},
+{
+"name": "hypocalcemia (7.6)",
+"probability": 0.5
+},
+{
+"name": "mild leukocytosis (12.6)",
+"probability": 0.4
+},
+{
+"name": "mild non-gap metabolic acidosis (bicarb 21) / hyperchloremia (111)",
+"probability": 0.4
+},
+{
+"name": "prolonged aPTT (37.4) - heparin / coagulopathy",
+"probability": 0.35
+},
+{
+"name": "iron deficiency / chronic disease anemia",
+"probability": 0.35
+},
+{
+"name": "hypoalbuminemia (inferred)",
+"probability": 0.3
+},
+{
+"name": "infection",
+"probability": 0.3
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.25
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.15
+}
+],
+"2219934@1.5": [
+{
+"name": "anemia (Hb 10.6, RDW 19.3) - mixed / nutritional",
+"probability": 0.7
+},
+{
+"name": "hypocalcemia (7.6)",
+"probability": 0.5
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.5
+},
+{
+"name": "mild leukocytosis (12.6)",
+"probability": 0.4
+},
+{
+"name": "mild non-gap metabolic acidosis (bicarb 21) / hyperchloremia (111)",
+"probability": 0.4
+},
+{
+"name": "prolonged aPTT (37.4) - heparin / coagulopathy",
+"probability": 0.35
+},
+{
+"name": "iron deficiency / chronic disease anemia",
+"probability": 0.35
+},
+{
+"name": "hypoalbuminemia (inferred)",
+"probability": 0.3
+},
+{
+"name": "infection",
+"probability": 0.3
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.25
+}
+],
+"2219934@2.0": [
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.75
+},
+{
+"name": "anemia (Hb 10.6, RDW 19.3) - mixed / nutritional",
+"probability": 0.7
+},
+{
+"name": "hypocalcemia (7.6)",
+"probability": 0.5
+},
+{
+"name": "mild leukocytosis (12.6)",
+"probability": 0.4
+},
+{
+"name": "mild non-gap metabolic acidosis (bicarb 21) / hyperchloremia (111)",
+"probability": 0.4
+},
+{
+"name": "prolonged aPTT (37.4) - heparin / coagulopathy",
+"probability": 0.35
+},
+{
+"name": "iron deficiency / chronic disease anemia",
+"probability": 0.35
+},
+{
+"name": "hypoalbuminemia (inferred)",
+"probability": 0.3
+},
+{
+"name": "infection",
+"probability": 0.3
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.25
+}
+],
+"276562@1.0": [
+{
+"name": "hypoglycemia (52 mg/dL)",
+"probability": 0.85
+},
+{
+"name": "anemia (Hb 7.8) - chronic blood loss / GI bleeding",
+"probability": 0.75
+},
+{
+"name": "neutrophilic leukocytosis (12.0, 83%)",
+"probability": 0.45
+},
+{
+"name": "gastrointestinal bleeding",
+"probability": 0.4
+},
+{
+"name": "insulin / sulfonylurea excess",
+"probability": 0.35
+},
+{
+"name": "iron deficiency anemia",
+"probability": 0.35
+},
+{
+"name": "hypocalcemia (8.1, mild)",
+"probability": 0.3
+},
+{
+"name": "sepsis",
+"probability": 0.25
+},
+{
+"name": "malnutrition / adrenal insufficiency",
+"probability": 0.25
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.2
+}
+],
+"276562@1.5": [
+{
+"name": "hypoglycemia (52 mg/dL)",
+"probability": 0.85
+},
+{
+"name": "anemia (Hb 7.8) - chronic blood loss / GI bleeding",
+"probability": 0.75
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.55
+},
+{
+"name": "neutrophilic leukocytosis (12.0, 83%)",
+"probability": 0.45
+},
+{
+"name": "gastrointestinal bleeding",
+"probability": 0.4
+},
+{
+"name": "insulin / sulfonylurea excess",
+"probability": 0.35
+},
+{
+"name": "iron deficiency anemia",
+"probability": 0.35
+},
+{
+"name": "hypocalcemia (8.1, mild)",
+"probability": 0.3
+},
+{
+"name": "sepsis",
+"probability": 0.25
+},
+{
+"name": "malnutrition / adrenal insufficiency",
+"probability": 0.25
+}
+],
+"276562@2.0": [
+{
+"name": "hypoglycemia (52 mg/dL)",
+"probability": 0.85
+},
+{
+"name": "anemia (Hb 7.8) - chronic blood loss / GI bleeding",
+"probability": 0.75
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.75
+},
+{
+"name": "neutrophilic leukocytosis (12.0, 83%)",
+"probability": 0.45
+},
+{
+"name": "gastrointestinal bleeding",
+"probability": 0.4
+},
+{
+"name": "insulin / sulfonylurea excess",
+"probability": 0.35
+},
+{
+"name": "iron deficiency anemia",
+"probability": 0.35
+},
+{
+"name": "hypocalcemia (8.1, mild)",
+"probability": 0.3
+},
+{
+"name": "sepsis",
+"probability": 0.25
+},
+{
+"name": "malnutrition / adrenal insufficiency",
+"probability": 0.25
+}
+],
+"2767923@1.0": [
+{
+"name": "hyperglycemia / uncontrolled diabetes",
+"probability": 0.8
+},
+{
+"name": "diabetic ketoacidosis (glucose 353, AG 20.3; bicarb 24 - early / partially treated)",
+"probability": 0.6
+},
+{
+"name": "hypokalemia (3.3)",
+"probability": 0.55
+},
+{
+"name": "high anion gap metabolic state",
+"probability": 0.5
+},
+{
+"name": "leukocytosis (14.3) - stress / infection",
+"probability": 0.45
+},
+{
+"name": "hypernatremia (borderline 145) / dehydration",
+"probability": 0.4
+},
+{
+"name": "hyperproteinemia / hemoconcentration",
+"probability": 0.3
+},
+{
+"name": "elevated alkaline phosphatase (134)",
+"probability": 0.2
+},
+{
+"name": "very low AST (6) - B6 deficiency / lab artefact",
+"probability": 0.15
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.1
+}
+],
+"2767923@1.5": [
+{
+"name": "hyperglycemia / uncontrolled diabetes",
+"probability": 0.8
+},
+{
+"name": "diabetic ketoacidosis (glucose 353, AG 20.3; bicarb 24 - early / partially treated)",
+"probability": 0.6
+},
+{
+"name": "hypokalemia (3.3)",
+"probability": 0.55
+},
+{
+"name": "high anion gap metabolic state",
+"probability": 0.5
+},
+{
+"name": "leukocytosis (14.3) - stress / infection",
+"probability": 0.45
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.45
+},
+{
+"name": "hypernatremia (borderline 145) / dehydration",
+"probability": 0.4
+},
+{
+"name": "hyperproteinemia / hemoconcentration",
+"probability": 0.3
+},
+{
+"name": "elevated alkaline phosphatase (134)",
+"probability": 0.2
+},
+{
+"name": "very low AST (6) - B6 deficiency / lab artefact",
+"probability": 0.15
+}
+],
+"2767923@2.0": [
+{
+"name": "hyperglycemia / uncontrolled diabetes",
+"probability": 0.8
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.7
+},
+{
+"name": "diabetic ketoacidosis (glucose 353, AG 20.3; bicarb 24 - early / partially treated)",
+"probability": 0.6
+},
+{
+"name": "hypokalemia (3.3)",
+"probability": 0.55
+},
+{
+"name": "high anion gap metabolic state",
+"probability": 0.5
+},
+{
+"name": "leukocytosis (14.3) - stress / infection",
+"probability": 0.45
+},
+{
+"name": "hypernatremia (borderline 145) / dehydration",
+"probability": 0.4
+},
+{
+"name": "hyperproteinemia / hemoconcentration",
+"probability": 0.3
+},
+{
+"name": "elevated alkaline phosphatase (134)",
+"probability": 0.2
+},
+{
+"name": "very low AST (6) - B6 deficiency / lab artefact",
+"probability": 0.15
+}
+],
+"2602775@1.0": [
+{
+"name": "diabetic ketoacidosis (glucose 559, bicarb 11, AG 26, pH 7.28)",
+"probability": 0.95
+},
+{
+"name": "high anion gap metabolic acidosis with respiratory compensation",
+"probability": 0.85
+},
+{
+"name": "severe hypophosphatemia (1.2)",
+"probability": 0.65
+},
+{
+"name": "leukocytosis (19.6) - stress / infection",
+"probability": 0.55
+},
+{
+"name": "hypomagnesemia (1.5)",
+"probability": 0.55
+},
+{
+"name": "hyperkalemia (5.1, acidosis shift)",
+"probability": 0.5
+},
+{
+"name": "dehydration / hemoconcentration",
+"probability": 0.45
+},
+{
+"name": "reactive thrombocytosis (428)",
+"probability": 0.3
+},
+{
+"name": "sepsis trigger",
+"probability": 0.3
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.15
+}
+],
+"2602775@1.5": [
+{
+"name": "diabetic ketoacidosis (glucose 559, bicarb 11, AG 26, pH 7.28)",
+"probability": 0.95
+},
+{
+"name": "high anion gap metabolic acidosis with respiratory compensation",
+"probability": 0.85
+},
+{
+"name": "severe hypophosphatemia (1.2)",
+"probability": 0.65
+},
+{
+"name": "leukocytosis (19.6) - stress / infection",
+"probability": 0.55
+},
+{
+"name": "hypomagnesemia (1.5)",
+"probability": 0.55
+},
+{
+"name": "hyperkalemia (5.1, acidosis shift)",
+"probability": 0.5
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.5
+},
+{
+"name": "dehydration / hemoconcentration",
+"probability": 0.45
+},
+{
+"name": "reactive thrombocytosis (428)",
+"probability": 0.3
+},
+{
+"name": "sepsis trigger",
+"probability": 0.3
+}
+],
+"2602775@2.0": [
+{
+"name": "diabetic ketoacidosis (glucose 559, bicarb 11, AG 26, pH 7.28)",
+"probability": 0.95
+},
+{
+"name": "high anion gap metabolic acidosis with respiratory compensation",
+"probability": 0.85
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.75
+},
+{
+"name": "severe hypophosphatemia (1.2)",
+"probability": 0.65
+},
+{
+"name": "leukocytosis (19.6) - stress / infection",
+"probability": 0.55
+},
+{
+"name": "hypomagnesemia (1.5)",
+"probability": 0.55
+},
+{
+"name": "hyperkalemia (5.1, acidosis shift)",
+"probability": 0.5
+},
+{
+"name": "dehydration / hemoconcentration",
+"probability": 0.45
+},
+{
+"name": "reactive thrombocytosis (428)",
+"probability": 0.3
+},
+{
+"name": "sepsis trigger",
+"probability": 0.3
+}
+],
+"2875586@1.0": [
+{
+"name": "microcytic anemia (Hb 10.1, MCV 80) - iron deficiency / chronic disease",
+"probability": 0.7
+},
+{
+"name": "hypocalcemia (7.4; ionized 1.09 low-normal)",
+"probability": 0.55
+},
+{
+"name": "hypermagnesemia (2.8)",
+"probability": 0.5
+},
+{
+"name": "iron deficiency anemia",
+"probability": 0.45
+},
+{
+"name": "hyperglycemia (157) / stress or diabetes",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia (111) / borderline hypernatremia (144)",
+"probability": 0.4
+},
+{
+"name": "elevated fibrinogen - acute phase / inflammation",
+"probability": 0.35
+},
+{
+"name": "hypoalbuminemia (inferred)",
+"probability": 0.3
+},
+{
+"name": "dehydration",
+"probability": 0.25
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.05
+}
+],
+"2875586@1.5": [
+{
+"name": "microcytic anemia (Hb 10.1, MCV 80) - iron deficiency / chronic disease",
+"probability": 0.7
+},
+{
+"name": "hypocalcemia (7.4; ionized 1.09 low-normal)",
+"probability": 0.55
+},
+{
+"name": "hypermagnesemia (2.8)",
+"probability": 0.5
+},
+{
+"name": "iron deficiency anemia",
+"probability": 0.45
+},
+{
+"name": "hyperglycemia (157) / stress or diabetes",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia (111) / borderline hypernatremia (144)",
+"probability": 0.4
+},
+{
+"name": "elevated fibrinogen - acute phase / inflammation",
+"probability": 0.35
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.35
+},
+{
+"name": "hypoalbuminemia (inferred)",
+"probability": 0.3
+},
+{
+"name": "dehydration",
+"probability": 0.25
+}
+],
+"2875586@2.0": [
+{
+"name": "microcytic anemia (Hb 10.1, MCV 80) - iron deficiency / chronic disease",
+"probability": 0.7
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.65
+},
+{
+"name": "hypocalcemia (7.4; ionized 1.09 low-normal)",
+"probability": 0.55
+},
+{
+"name": "hypermagnesemia (2.8)",
+"probability": 0.5
+},
+{
+"name": "iron deficiency anemia",
+"probability": 0.45
+},
+{
+"name": "hyperglycemia (157) / stress or diabetes",
+"probability": 0.4
+},
+{
+"name": "hyperchloremia (111) / borderline hypernatremia (144)",
+"probability": 0.4
+},
+{
+"name": "elevated fibrinogen - acute phase / inflammation",
+"probability": 0.35
+},
+{
+"name": "hypoalbuminemia (inferred)",
+"probability": 0.3
+},
+{
+"name": "dehydration",
+"probability": 0.25
+}
+],
+"2611440@1.0": [
+{
+"name": "hyponatremia (129) - SIADH / hypovolemia",
+"probability": 0.75
+},
+{
+"name": "mild non-gap metabolic acidosis (bicarb 21)",
+"probability": 0.4
+},
+{
+"name": "mild leukocytosis (11.8)",
+"probability": 0.4
+},
+{
+"name": "mild anemia (11.8)",
+"probability": 0.4
+},
+{
+"name": "hypochloremia (97)",
+"probability": 0.35
+},
+{
+"name": "hypomagnesemia (1.7)",
+"probability": 0.35
+},
+{
+"name": "infection / pneumonia (SIADH cause)",
+"probability": 0.35
+},
+{
+"name": "mild elevated alkaline phosphatase (118)",
+"probability": 0.25
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.2
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.1
+}
+],
+"2611440@1.5": [
+{
+"name": "hyponatremia (129) - SIADH / hypovolemia",
+"probability": 0.75
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.45
+},
+{
+"name": "mild non-gap metabolic acidosis (bicarb 21)",
+"probability": 0.4
+},
+{
+"name": "mild leukocytosis (11.8)",
+"probability": 0.4
+},
+{
+"name": "mild anemia (11.8)",
+"probability": 0.4
+},
+{
+"name": "hypochloremia (97)",
+"probability": 0.35
+},
+{
+"name": "hypomagnesemia (1.7)",
+"probability": 0.35
+},
+{
+"name": "infection / pneumonia (SIADH cause)",
+"probability": 0.35
+},
+{
+"name": "mild elevated alkaline phosphatase (118)",
+"probability": 0.25
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.2
+}
+],
+"2611440@2.0": [
+{
+"name": "hyponatremia (129) - SIADH / hypovolemia",
+"probability": 0.75
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.7
+},
+{
+"name": "mild non-gap metabolic acidosis (bicarb 21)",
+"probability": 0.4
+},
+{
+"name": "mild leukocytosis (11.8)",
+"probability": 0.4
+},
+{
+"name": "mild anemia (11.8)",
+"probability": 0.4
+},
+{
+"name": "hypochloremia (97)",
+"probability": 0.35
+},
+{
+"name": "hypomagnesemia (1.7)",
+"probability": 0.35
+},
+{
+"name": "infection / pneumonia (SIADH cause)",
+"probability": 0.35
+},
+{
+"name": "mild elevated alkaline phosphatase (118)",
+"probability": 0.25
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.2
+}
+],
+"741996@1.0": [
+{
+"name": "pancytopenia (WBC 2.2, Hb 8.7, platelets 111) - marrow suppression / chemotherapy",
+"probability": 0.8
+},
+{
+"name": "metabolic alkalosis (pH 7.47, bicarb 29.5, BE +5.7)",
+"probability": 0.65
+},
+{
+"name": "hypoalbuminemia (2.4) / malnutrition",
+"probability": 0.65
+},
+{
+"name": "prerenal azotemia (BUN 30)",
+"probability": 0.5
+},
+{
+"name": "neutropenic infection risk",
+"probability": 0.5
+},
+{
+"name": "hypocalcemia (7.9, albumin-related)",
+"probability": 0.45
+},
+{
+"name": "heart failure (BNP 246, mild)",
+"probability": 0.4
+},
+{
+"name": "anemia of chronic disease",
+"probability": 0.4
+},
+{
+"name": "mild hepatocellular injury (ALT 52)",
+"probability": 0.3
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.2
+}
+],
+"741996@1.5": [
+{
+"name": "pancytopenia (WBC 2.2, Hb 8.7, platelets 111) - marrow suppression / chemotherapy",
+"probability": 0.8
+},
+{
+"name": "metabolic alkalosis (pH 7.47, bicarb 29.5, BE +5.7)",
+"probability": 0.65
+},
+{
+"name": "hypoalbuminemia (2.4) / malnutrition",
+"probability": 0.65
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.55
+},
+{
+"name": "prerenal azotemia (BUN 30)",
+"probability": 0.5
+},
+{
+"name": "neutropenic infection risk",
+"probability": 0.5
+},
+{
+"name": "hypocalcemia (7.9, albumin-related)",
+"probability": 0.45
+},
+{
+"name": "heart failure (BNP 246, mild)",
+"probability": 0.4
+},
+{
+"name": "anemia of chronic disease",
+"probability": 0.4
+},
+{
+"name": "mild hepatocellular injury (ALT 52)",
+"probability": 0.3
+}
+],
+"741996@2.0": [
+{
+"name": "pancytopenia (WBC 2.2, Hb 8.7, platelets 111) - marrow suppression / chemotherapy",
+"probability": 0.8
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.75
+},
+{
+"name": "metabolic alkalosis (pH 7.47, bicarb 29.5, BE +5.7)",
+"probability": 0.65
+},
+{
+"name": "hypoalbuminemia (2.4) / malnutrition",
+"probability": 0.65
+},
+{
+"name": "prerenal azotemia (BUN 30)",
+"probability": 0.5
+},
+{
+"name": "neutropenic infection risk",
+"probability": 0.5
+},
+{
+"name": "hypocalcemia (7.9, albumin-related)",
+"probability": 0.45
+},
+{
+"name": "heart failure (BNP 246, mild)",
+"probability": 0.4
+},
+{
+"name": "anemia of chronic disease",
+"probability": 0.4
+},
+{
+"name": "mild hepatocellular injury (ALT 52)",
+"probability": 0.3
+}
+],
+"2728472@1.0": [
+{
+"name": "acute myocardial infarction / myocardial injury (troponin I 1.26)",
+"probability": 0.85
+},
+{
+"name": "severe thrombocytopenia (30)",
+"probability": 0.85
+},
+{
+"name": "hepatocellular injury (AST 228, ALT 112) - ischemic / alcoholic / congestive",
+"probability": 0.7
+},
+{
+"name": "hypoalbuminemia (2.4)",
+"probability": 0.6
+},
+{
+"name": "leukopenia (3.2) - marrow suppression / sepsis / hypersplenism",
+"probability": 0.6
+},
+{
+"name": "cirrhosis / alcohol-related liver disease (AST>ALT, low platelets, low albumin, macrocytosis)",
+"probability": 0.55
+},
+{
+"name": "metabolic alkalosis (bicarb 33)",
+"probability": 0.5
+},
+{
+"name": "hyperlactatemia (3.0) / hypoperfusion",
+"probability": 0.5
+},
+{
+"name": "hypocalcemia (7.8)",
+"probability": 0.4
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.05
+}
+],
+"2728472@1.5": [
+{
+"name": "acute myocardial infarction / myocardial injury (troponin I 1.26)",
+"probability": 0.85
+},
+{
+"name": "severe thrombocytopenia (30)",
+"probability": 0.85
+},
+{
+"name": "hepatocellular injury (AST 228, ALT 112) - ischemic / alcoholic / congestive",
+"probability": 0.7
+},
+{
+"name": "hypoalbuminemia (2.4)",
+"probability": 0.6
+},
+{
+"name": "leukopenia (3.2) - marrow suppression / sepsis / hypersplenism",
+"probability": 0.6
+},
+{
+"name": "cirrhosis / alcohol-related liver disease (AST>ALT, low platelets, low albumin, macrocytosis)",
+"probability": 0.55
+},
+{
+"name": "metabolic alkalosis (bicarb 33)",
+"probability": 0.5
+},
+{
+"name": "hyperlactatemia (3.0) / hypoperfusion",
+"probability": 0.5
+},
+{
+"name": "hypocalcemia (7.8)",
+"probability": 0.4
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.4
+}
+],
+"2728472@2.0": [
+{
+"name": "acute myocardial infarction / myocardial injury (troponin I 1.26)",
+"probability": 0.85
+},
+{
+"name": "severe thrombocytopenia (30)",
+"probability": 0.85
+},
+{
+"name": "hepatocellular injury (AST 228, ALT 112) - ischemic / alcoholic / congestive",
+"probability": 0.7
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.65
+},
+{
+"name": "hypoalbuminemia (2.4)",
+"probability": 0.6
+},
+{
+"name": "leukopenia (3.2) - marrow suppression / sepsis / hypersplenism",
+"probability": 0.6
+},
+{
+"name": "cirrhosis / alcohol-related liver disease (AST>ALT, low platelets, low albumin, macrocytosis)",
+"probability": 0.55
+},
+{
+"name": "metabolic alkalosis (bicarb 33)",
+"probability": 0.5
+},
+{
+"name": "hyperlactatemia (3.0) / hypoperfusion",
+"probability": 0.5
+},
+{
+"name": "hypocalcemia (7.8)",
+"probability": 0.4
+}
+],
+"350263@1.0": [
+{
+"name": "leukocytosis (17.4) - infection / stress / steroids",
+"probability": 0.65
+},
+{
+"name": "hypoalbuminemia (3.0)",
+"probability": 0.45
+},
+{
+"name": "bacterial infection / sepsis",
+"probability": 0.4
+},
+{
+"name": "inflammation",
+"probability": 0.35
+},
+{
+"name": "dehydration",
+"probability": 0.15
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.1
+},
+{
+"name": "myocardial injury (unlikely, troponin 0.02)",
+"probability": 0.05
+},
+{
+"name": "hyperglycemia",
+"probability": 0.05
+},
+{
+"name": "anemia",
+"probability": 0.05
+},
+{
+"name": "electrolyte disturbance",
+"probability": 0.05
+}
+],
+"350263@1.5": [
+{
+"name": "leukocytosis (17.4) - infection / stress / steroids",
+"probability": 0.65
+},
+{
+"name": "hypoalbuminemia (3.0)",
+"probability": 0.45
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.45
+},
+{
+"name": "bacterial infection / sepsis",
+"probability": 0.4
+},
+{
+"name": "inflammation",
+"probability": 0.35
+},
+{
+"name": "dehydration",
+"probability": 0.15
+},
+{
+"name": "myocardial injury (unlikely, troponin 0.02)",
+"probability": 0.05
+},
+{
+"name": "hyperglycemia",
+"probability": 0.05
+},
+{
+"name": "anemia",
+"probability": 0.05
+},
+{
+"name": "electrolyte disturbance",
+"probability": 0.05
+}
+],
+"350263@2.0": [
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.7
+},
+{
+"name": "leukocytosis (17.4) - infection / stress / steroids",
+"probability": 0.65
+},
+{
+"name": "hypoalbuminemia (3.0)",
+"probability": 0.45
+},
+{
+"name": "bacterial infection / sepsis",
+"probability": 0.4
+},
+{
+"name": "inflammation",
+"probability": 0.35
+},
+{
+"name": "dehydration",
+"probability": 0.15
+},
+{
+"name": "myocardial injury (unlikely, troponin 0.02)",
+"probability": 0.05
+},
+{
+"name": "hyperglycemia",
+"probability": 0.05
+},
+{
+"name": "anemia",
+"probability": 0.05
+},
+{
+"name": "electrolyte disturbance",
+"probability": 0.05
+}
+],
+"350551@1.0": [
+{
+"name": "chronic hypercapnic respiratory failure with metabolic alkalosis (pCO2 52, bicarb 35.5, pH 7.45) - COPD / post-hypercapnic",
+"probability": 0.8
+},
+{
+"name": "hypernatremia (149) / dehydration",
+"probability": 0.65
+},
+{
+"name": "microcytic/hypochromic anemia (Hb 9.6, RDW 17) - iron deficiency / chronic disease",
+"probability": 0.65
+},
+{
+"name": "infection / inflammation (CRP 20)",
+"probability": 0.6
+},
+{
+"name": "prerenal azotemia (BUN 33)",
+"probability": 0.5
+},
+{
+"name": "hypoxemia (pO2 69)",
+"probability": 0.45
+},
+{
+"name": "reactive thrombocytosis (362)",
+"probability": 0.3
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.3
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.25
+},
+{
+"name": "eosinophilia (5%)",
+"probability": 0.2
+}
+],
+"350551@1.5": [
+{
+"name": "chronic hypercapnic respiratory failure with metabolic alkalosis (pCO2 52, bicarb 35.5, pH 7.45) - COPD / post-hypercapnic",
+"probability": 0.8
+},
+{
+"name": "hypernatremia (149) / dehydration",
+"probability": 0.65
+},
+{
+"name": "microcytic/hypochromic anemia (Hb 9.6, RDW 17) - iron deficiency / chronic disease",
+"probability": 0.65
+},
+{
+"name": "infection / inflammation (CRP 20)",
+"probability": 0.6
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.6
+},
+{
+"name": "prerenal azotemia (BUN 33)",
+"probability": 0.5
+},
+{
+"name": "hypoxemia (pO2 69)",
+"probability": 0.45
+},
+{
+"name": "reactive thrombocytosis (362)",
+"probability": 0.3
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.25
+},
+{
+"name": "eosinophilia (5%)",
+"probability": 0.2
+}
+],
+"350551@2.0": [
+{
+"name": "chronic hypercapnic respiratory failure with metabolic alkalosis (pCO2 52, bicarb 35.5, pH 7.45) - COPD / post-hypercapnic",
+"probability": 0.8
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.8
+},
+{
+"name": "hypernatremia (149) / dehydration",
+"probability": 0.65
+},
+{
+"name": "microcytic/hypochromic anemia (Hb 9.6, RDW 17) - iron deficiency / chronic disease",
+"probability": 0.65
+},
+{
+"name": "infection / inflammation (CRP 20)",
+"probability": 0.6
+},
+{
+"name": "prerenal azotemia (BUN 33)",
+"probability": 0.5
+},
+{
+"name": "hypoxemia (pO2 69)",
+"probability": 0.45
+},
+{
+"name": "reactive thrombocytosis (362)",
+"probability": 0.3
+},
+{
+"name": "hyperglycemia (mild)",
+"probability": 0.25
+},
+{
+"name": "eosinophilia (5%)",
+"probability": 0.2
+}
+],
+"2787684@1.0": [
+{
+"name": "hypernatremia (148) / hyperchloremia (113) - dehydration",
+"probability": 0.7
+},
+{
+"name": "prerenal azotemia (BUN 69, BUN:Cr high)",
+"probability": 0.7
+},
+{
+"name": "volume depletion",
+"probability": 0.65
+},
+{
+"name": "mild anemia (11.4)",
+"probability": 0.45
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.4
+},
+{
+"name": "gastrointestinal bleeding (high BUN with mild anemia)",
+"probability": 0.35
+},
+{
+"name": "borderline thrombocytopenia (146)",
+"probability": 0.2
+},
+{
+"name": "mild high anion gap (13.6)",
+"probability": 0.2
+},
+{
+"name": "infection",
+"probability": 0.2
+},
+{
+"name": "heart failure",
+"probability": 0.1
+}
+],
+"2787684@1.5": [
+{
+"name": "hypernatremia (148) / hyperchloremia (113) - dehydration",
+"probability": 0.7
+},
+{
+"name": "prerenal azotemia (BUN 69, BUN:Cr high)",
+"probability": 0.7
+},
+{
+"name": "volume depletion",
+"probability": 0.65
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.65
+},
+{
+"name": "mild anemia (11.4)",
+"probability": 0.45
+},
+{
+"name": "gastrointestinal bleeding (high BUN with mild anemia)",
+"probability": 0.35
+},
+{
+"name": "borderline thrombocytopenia (146)",
+"probability": 0.2
+},
+{
+"name": "mild high anion gap (13.6)",
+"probability": 0.2
+},
+{
+"name": "infection",
+"probability": 0.2
+},
+{
+"name": "heart failure",
+"probability": 0.1
+}
+],
+"2787684@2.0": [
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.85
+},
+{
+"name": "hypernatremia (148) / hyperchloremia (113) - dehydration",
+"probability": 0.7
+},
+{
+"name": "prerenal azotemia (BUN 69, BUN:Cr high)",
+"probability": 0.7
+},
+{
+"name": "volume depletion",
+"probability": 0.65
+},
+{
+"name": "mild anemia (11.4)",
+"probability": 0.45
+},
+{
+"name": "gastrointestinal bleeding (high BUN with mild anemia)",
+"probability": 0.35
+},
+{
+"name": "borderline thrombocytopenia (146)",
+"probability": 0.2
+},
+{
+"name": "mild high anion gap (13.6)",
+"probability": 0.2
+},
+{
+"name": "infection",
+"probability": 0.2
+},
+{
+"name": "heart failure",
+"probability": 0.1
+}
+],
+"688938@1.0": [
+{
+"name": "severe hyponatremia (114; osm 251) - hypotonic",
+"probability": 0.95
+},
+{
+"name": "acute decompensated heart failure (BNP 10512)",
+"probability": 0.9
+},
+{
+"name": "acute respiratory acidosis / hypercapnic respiratory failure (pCO2 64, pH 7.28)",
+"probability": 0.8
+},
+{
+"name": "myocardial injury (troponin I 0.47)",
+"probability": 0.65
+},
+{
+"name": "severe hypochloremia (77) - diuretic / vomiting",
+"probability": 0.6
+},
+{
+"name": "hypomagnesemia (1.1)",
+"probability": 0.6
+},
+{
+"name": "microcytic anemia / iron deficiency (MCV 76, MCH 23.4)",
+"probability": 0.55
+},
+{
+"name": "hyperkalemia (5.1, mild)",
+"probability": 0.35
+},
+{
+"name": "neutrophilia / infection",
+"probability": 0.35
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.1
+}
+],
+"688938@1.5": [
+{
+"name": "severe hyponatremia (114; osm 251) - hypotonic",
+"probability": 0.95
+},
+{
+"name": "acute decompensated heart failure (BNP 10512)",
+"probability": 0.9
+},
+{
+"name": "acute respiratory acidosis / hypercapnic respiratory failure (pCO2 64, pH 7.28)",
+"probability": 0.8
+},
+{
+"name": "myocardial injury (troponin I 0.47)",
+"probability": 0.65
+},
+{
+"name": "severe hypochloremia (77) - diuretic / vomiting",
+"probability": 0.6
+},
+{
+"name": "hypomagnesemia (1.1)",
+"probability": 0.6
+},
+{
+"name": "microcytic anemia / iron deficiency (MCV 76, MCH 23.4)",
+"probability": 0.55
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.45
+},
+{
+"name": "hyperkalemia (5.1, mild)",
+"probability": 0.35
+},
+{
+"name": "neutrophilia / infection",
+"probability": 0.35
+}
+],
+"688938@2.0": [
+{
+"name": "severe hyponatremia (114; osm 251) - hypotonic",
+"probability": 0.95
+},
+{
+"name": "acute decompensated heart failure (BNP 10512)",
+"probability": 0.9
+},
+{
+"name": "acute respiratory acidosis / hypercapnic respiratory failure (pCO2 64, pH 7.28)",
+"probability": 0.8
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.7
+},
+{
+"name": "myocardial injury (troponin I 0.47)",
+"probability": 0.65
+},
+{
+"name": "severe hypochloremia (77) - diuretic / vomiting",
+"probability": 0.6
+},
+{
+"name": "hypomagnesemia (1.1)",
+"probability": 0.6
+},
+{
+"name": "microcytic anemia / iron deficiency (MCV 76, MCH 23.4)",
+"probability": 0.55
+},
+{
+"name": "hyperkalemia (5.1, mild)",
+"probability": 0.35
+},
+{
+"name": "neutrophilia / infection",
+"probability": 0.35
+}
+],
+"308316@1.0": [
+{
+"name": "severe anemia (Hb 7.2) - gastrointestinal bleeding (BUN 27)",
+"probability": 0.8
+},
+{
+"name": "respiratory alkalosis (pH 7.52, pCO2 31) with metabolic alkalosis",
+"probability": 0.65
+},
+{
+"name": "hypokalemia (3.0)",
+"probability": 0.65
+},
+{
+"name": "hypocalcemia (7.5)",
+"probability": 0.45
+},
+{
+"name": "hypochloremia (95)",
+"probability": 0.4
+},
+{
+"name": "mild hyperlactatemia (2.1)",
+"probability": 0.35
+},
+{
+"name": "mild coagulopathy (INR 1.25)",
+"probability": 0.3
+},
+{
+"name": "leukocytosis (11.4)",
+"probability": 0.3
+},
+{
+"name": "hypoxemia (pO2 73)",
+"probability": 0.3
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.25
+}
+],
+"308316@1.5": [
+{
+"name": "severe anemia (Hb 7.2) - gastrointestinal bleeding (BUN 27)",
+"probability": 0.8
+},
+{
+"name": "respiratory alkalosis (pH 7.52, pCO2 31) with metabolic alkalosis",
+"probability": 0.65
+},
+{
+"name": "hypokalemia (3.0)",
+"probability": 0.65
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.6
+},
+{
+"name": "hypocalcemia (7.5)",
+"probability": 0.45
+},
+{
+"name": "hypochloremia (95)",
+"probability": 0.4
+},
+{
+"name": "mild hyperlactatemia (2.1)",
+"probability": 0.35
+},
+{
+"name": "mild coagulopathy (INR 1.25)",
+"probability": 0.3
+},
+{
+"name": "leukocytosis (11.4)",
+"probability": 0.3
+},
+{
+"name": "hypoxemia (pO2 73)",
+"probability": 0.3
+}
+],
+"308316@2.0": [
+{
+"name": "severe anemia (Hb 7.2) - gastrointestinal bleeding (BUN 27)",
+"probability": 0.8
+},
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.8
+},
+{
+"name": "respiratory alkalosis (pH 7.52, pCO2 31) with metabolic alkalosis",
+"probability": 0.65
+},
+{
+"name": "hypokalemia (3.0)",
+"probability": 0.65
+},
+{
+"name": "hypocalcemia (7.5)",
+"probability": 0.45
+},
+{
+"name": "hypochloremia (95)",
+"probability": 0.4
+},
+{
+"name": "mild hyperlactatemia (2.1)",
+"probability": 0.35
+},
+{
+"name": "mild coagulopathy (INR 1.25)",
+"probability": 0.3
+},
+{
+"name": "leukocytosis (11.4)",
+"probability": 0.3
+},
+{
+"name": "hypoxemia (pO2 73)",
+"probability": 0.3
+}
+],
+"166853@1.0": [
+{
+"name": "heart failure (BNP 332)",
+"probability": 0.55
+},
+{
+"name": "hyperglycemia / diabetes (240)",
+"probability": 0.55
+},
+{
+"name": "myocardial injury (troponin I 0.08)",
+"probability": 0.5
+},
+{
+"name": "acute coronary syndrome",
+"probability": 0.4
+},
+{
+"name": "polycythemia / hemoconcentration (Hb 15.8, Hct 46.8)",
+"probability": 0.35
+},
+{
+"name": "monocytosis (13%)",
+"probability": 0.25
+},
+{
+"name": "COPD / chronic hypoxemia",
+"probability": 0.25
+},
+{
+"name": "dehydration",
+"probability": 0.2
+},
+{
+"name": "mild hyperkalemia (4.8, high-normal)",
+"probability": 0.1
+},
+{
+"name": "renal impairment / early acute kidney injury (creatinine borderline)",
+"probability": 0.1
+}
+],
+"166853@1.5": [
+{
+"name": "heart failure (BNP 332)",
+"probability": 0.55
+},
+{
+"name": "hyperglycemia / diabetes (240)",
+"probability": 0.55
+},
+{
+"name": "myocardial injury (troponin I 0.08)",
+"probability": 0.5
+},
+{
+"name": "acute kidney injury (creatinine rise, KDIGO stage 1)",
+"probability": 0.45
+},
+{
+"name": "acute coronary syndrome",
+"probability": 0.4
+},
+{
+"name": "polycythemia / hemoconcentration (Hb 15.8, Hct 46.8)",
+"probability": 0.35
+},
+{
+"name": "monocytosis (13%)",
+"probability": 0.25
+},
+{
+"name": "COPD / chronic hypoxemia",
+"probability": 0.25
+},
+{
+"name": "dehydration",
+"probability": 0.2
+},
+{
+"name": "mild hyperkalemia (4.8, high-normal)",
+"probability": 0.1
+}
+],
+"166853@2.0": [
+{
+"name": "acute kidney injury (creatinine ~2x baseline, KDIGO stage 2)",
+"probability": 0.7
+},
+{
+"name": "heart failure (BNP 332)",
+"probability": 0.55
+},
+{
+"name": "hyperglycemia / diabetes (240)",
+"probability": 0.55
+},
+{
+"name": "myocardial injury (troponin I 0.08)",
+"probability": 0.5
+},
+{
+"name": "acute coronary syndrome",
+"probability": 0.4
+},
+{
+"name": "polycythemia / hemoconcentration (Hb 15.8, Hct 46.8)",
+"probability": 0.35
+},
+{
+"name": "monocytosis (13%)",
+"probability": 0.25
+},
+{
+"name": "COPD / chronic hypoxemia",
+"probability": 0.25
+},
+{
+"name": "dehydration",
+"probability": 0.2
+},
+{
+"name": "mild hyperkalemia (4.8, high-normal)",
+"probability": 0.1
+}
+]
+}

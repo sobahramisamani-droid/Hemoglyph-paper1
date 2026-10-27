@@ -12606,6 +12606,28 @@ class ClinicalRuleEngine:
             return False
         return not self._critical_meghdar(feature_id, a)
 
+    def _feature_meta_resolved(self, feature_id):
+        """Registry metadata for ``feature_id``; engine-internal legacy ids
+        (``bilirubin_total``, ``urea_nitrogen``, ``phosphate_inorganic`` ...)
+        that only exist as mirrors of a registry feature resolve to the
+        metadata of that feature. v8.2 (2026-10-27, black-box property test P2):
+        without this, a mirrored record kept its reported unit, so a normal
+        bilirubin of 9 µmol/L was compared with the 8 mg/dL panic threshold and
+        scored as critically high by the fuzzy and Bayesian layers."""
+        return self._feature_resolved(feature_id)[1]
+
+    def _feature_resolved(self, feature_id):
+        meta = self.registry.features.get(feature_id)
+        if meta:
+            return feature_id, meta
+        for group in EQUIVALENT_FEATURE_GROUPS:
+            if feature_id in group:
+                for alt in group:
+                    meta = self.registry.features.get(alt)
+                    if meta:
+                        return alt, meta
+        return feature_id, {}
+
     def _coerce_canonical(self, feature_id, value, unit):
         """FIX A23: critical/panic thresholds are stored in canonical units,
         so convert the observed value before any comparison. Falls back to
@@ -12614,10 +12636,10 @@ class ClinicalRuleEngine:
         if val is None:
             return None
         try:
-            meta = self.registry.features.get(feature_id) or {}
+            rid, meta = self._feature_resolved(feature_id)
             canon = (meta.get("units") or {}).get("canonical")
             if canon and unit:
-                return convert_unit(val, unit, canon, feature_id)
+                return convert_unit(val, unit, canon, rid)
         except Exception:
             pass
         return val
@@ -13944,7 +13966,7 @@ class ClinicalRuleEngine:
         _canon_obs: dict[str, ObservationRecord] = {}
         for _fid, _rec in observations.items():
             try:
-                _meta = self.registry.features.get(_fid) or {}
+                _meta = self._feature_meta_resolved(_fid)
                 _canon_unit = (_meta.get("units") or {}).get("canonical")
                 _raw = _float(_rec.value)
                 if _canon_unit and _rec.unit and _raw is not None \
