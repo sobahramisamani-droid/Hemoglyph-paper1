@@ -16,3 +16,17 @@
 | Declaration of competing interest, funding, GenAI, CRediT | in manuscript | ready; **co-author confirmation pending** |
 | Data statement (Option: public repositories + GitHub; Zenodo DOI before publication) | in manuscript | ready; Zenodo DOI to add if available |
 | Co-author approval of the submitted version | — | **pending (Z.T., E.B.S.)** |
+
+
+## Package contents (2026-10-27, after step 2)
+
+| File | Status |
+|---|---|
+| `Paper1_Hemoglyph_CMPB_EN_v7_R6.docx` (manuscript, double spaced, 34 refs, main text 3,814 w) | ready |
+| `TITLE_PAGE.md` | needs phone/postal address, Z.T. affiliation, ORCIDs |
+| `highlights.txt` (5 × ≤ 85 chars) | ready |
+| `Figure_1.png … Figure_7.png` (Fig1, Fig3, Fig4, Fig5, Fig6, Fig7_llm_v7, Fig8_calibration_dca; 1,360–2,080 px wide, tagged 300 dpi) | ready; if EM flags resolution, re-export from the matplotlib scripts at dpi=600 |
+| `Supplementary_Information_R6.docx` (Notes 1–12, Tables S1–S16, TRIPOD+AI, ~30k words) | ready |
+| `Supplementary_Data_1_sources_13.4.1.xlsx` (in `docs/paper1/supplement/`) | upload as Supplementary Data 1 |
+| `COVER_LETTER_CMPB.md` | ready (fill the corresponding-author block) |
+| `EXEMPLARS_CMPB.md` | internal, do not upload |

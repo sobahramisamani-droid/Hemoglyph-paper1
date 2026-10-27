@@ -1,0 +1,1403 @@
+# Supplementary Information
+
+*Verification and provenance auditing of an AI-drafted clinical rule base — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R6 (2026-10-27), Computer Methods and Programs in Biomedicine.*
+
+**Index.** Notes: Note 1 SAP and amendments; Table S1 engine changes C1–C16; Table S2 quarantine criteria and outcomes; Table S3 participant flow; Fig. S1 provenance audit; Fig. S2 per-release eICU metrics; Fig. S3 per-group panel-supported recall; Fig. S4 per-group calibration; Fig. S5 context-echo analysis; Table S4 subgroup analysis; Table S5 next-test utility; Table S6 missing-panel threshold sensitivity; Table S7 survey-weighted NHANES AUROC; Table S8 per-group calibration; Table S9 label-mapping audit (400 stays); Note 2 LLM comparison protocol; Note 3 formal fusion/Theory-of-Evidence algorithm, weight profiles and the 27 consistency identities; Fig. S2 historical LLM comparison vs engine v5.1; Table S10 registry count reconciliation; Table S11 precision/F1/NDCG, alert burden, per-group PPV and prevalence baseline; Table S12 fusion-weight sensitivity; Table S13 participant flow for the UCI thyroid and HCV cohorts; Note 4 regression-gate definition and residual failures; Note 5 healthy-adult definition, critical-value thresholds, race-term audit, hardware, novelty-search method, LLM model-identity statement and completed TRIPOD+AI checklist; Table S4 subgroup recall (v7); Note 7 evidence triage of the twelve post-review proposals (twelve rows: proposal, evidence, verdict, action); Table S16 sepsis companion risk model; Data 1 per-stay outputs and LLM prompts/outputs. Note 9 post-freeze development version v8; Note 10 external cohorts and case reports (full); Note 11 calibration, subgroups and robustness (full).
+
+## Supplementary Note 1 — Statistical analysis plan and amendments
+
+### Statistical Analysis Plan (SAP) — Hemoglyph v1.3.1 retrospective diagnostic-accuracy evaluation
+
+Version 1.0 — 2026-10-21 — author: Sobhan Bahrami. To be time-stamped on OSF before any
+evaluation listed in §4 is run on the frozen engine. Amendments after registration must be
+listed in §9 with date and rationale.
+
+### 1. Objective
+Estimate the diagnostic accuracy, calibration and safety of Hemoglyph (knowledge-driven,
+untrained laboratory interpretation engine; registry 13.1.0; engine file SHA-256 `e0231327…d800f6` (v1 freeze, 2026-10-21) / `48313758…` (v2 = v1 + ESL extension 5, 2026-10-21, see Amendment 2),
+registry SHA-256 `cebe06ae…c5d298` (unchanged between v1 and v2)) against clinician- and guideline-derived reference standards on
+external real-world data, without any modification of the engine after the freeze.
+
+### 2. Index test
+Hemoglyph `ClinicalRuleEngine.interpret(observations, None, patient)` with the ranked
+differential (list length 40 in evaluation, 15 in the UI), probabilities, evidence state,
+expert-syndrome hits and critical alerts. Inputs: all laboratory analytes available in the
+pre-specified window in the dataset's native units, plus age, sex, pregnancy and, where the
+dataset provides them, medications. No free text, no vital signs, no imaging.
+
+### 3. Datasets and roles
+| Dataset | Role | Window | Reference standard |
+|---|---|---|---|
+| MIMIC-IV demo v2.2 (n=235 adm.) | **development** (error analysis 2026-10-21; fixes applied) | −6 h..+24 h of admission | ICD-9/10 discharge codes |
+| UCI HCV (n=615) | held-out (run before freeze; archived as `uci_hcv_v1_before_fixes`; re-run after freeze) | single panel | source-lab class |
+| NHANES 2017–18 (adults, random 3,000) | held-out | single exam | guideline lab definitions + self-reported physician diagnosis |
+| UCI Thyroid thyroid0387 (n≈7,000 with TSH) | held-out | single panel | clinician diagnosis letters |
+| ILPD (n=583) | held-out, stress test | single panel | clinic label |
+| eICU-CRD demo v2.0.1 (≈2,000 stays, 186 hospitals) | held-out, **multi-centre** | −6 h..+24 h of ICU admission | ICU clinician problem list |
+| MIMIC-IV v3.1 full / eICU-CRD full | confirmatory (credentialed; pending) | as above | ICD + adjudication subsample |
+
+### 4. Endpoints
+Primary (per cohort with multi-label clinical labels — eICU demo, MIMIC full):
+P1 Recall@5 of listed/coded lab-detectable diagnoses whose key analyte was measured.
+Secondary:
+S1 Recall@3 / Recall@10; S2 per-group AUROC (listed vs. not listed, key analyte measured);
+S3 chart-support precision of outputs with p ≥ 0.7; S4 calibration (reliability diagram, ECE,
+slope/intercept of logistic recalibration) on group-level probabilities; S5 critical-value
+safety: proportion of stays with K ≥ 6.5, Na ≤ 120/≥ 160, glucose ≤ 50, Ca ≥ 14, lactate ≥ 4,
+pH ≤ 7.20, Hb ≤ 6, PLT ≤ 20, WBC ≥ 100 in which the corresponding entity appears in
+`critical_alerts` or top-5 (target: 100%; report misses with Wilson CI); S6 latency.
+Single-task cohorts (HCV, NHANES, thyroid, ILPD): AUROC with 95% bootstrap CI (2,000 draws),
+sensitivity and specificity at the fixed operating point p = 0.5, and the healthy
+false-assertion rate (NHANES T8).
+
+### 5. Pre-specified task definitions
+As written in the docstring of each script (`eval/realdata/eval_*.py`, `eval/mimic/*.py`) at
+the time of registration; the scripts are part of the registered material.
+
+### 6. Analysis populations
+Adults ≥ 18 y; ≥ 8 analytes in window (ICU cohorts); pregnancy excluded in NHANES; a labelled
+group is evaluable only if its key analyte was measured. No imputation. No survey weights.
+
+### 7. Statistics
+Wilson 95% CI for proportions; percentile bootstrap for AUROC; DeLong test for AUROC
+comparisons against baselines (§8); Hosmer–Lemeshow not used (ECE with 10 equal-mass bins
+instead). No multiplicity adjustment (descriptive accuracy study); all pre-specified endpoints
+are reported regardless of result. Subgroups: sex, age (<65/≥65), hospital (eICU), unit system.
+
+### 8. Baselines (to be run on identical inputs, after the freeze)
+B1 reference-range flagging + published single-analyte decision rules; B2 LightGBM per group
+trained on the MIMIC-IV development split (where available); B3 two general LLMs zero-shot
+with a fixed prompt (model names/versions recorded; outputs parsed to entity ids; cost and
+latency recorded). Comparison endpoint: Recall@5 and AUROC per group.
+
+### 9. Amendments
+(none)
+
+### 10. Deviations already known at registration
+- MIMIC-IV demo was used for error analysis; all engine changes made as a result are listed in
+  the HARDENING changelog (summary file removed 2026-10-23; metrics retained in `eval/results/frozen_v1_20261021/`). Its metrics
+  are reported as development-set metrics.
+- UCI HCV was run once before four engine changes (insufficient-evidence ceiling, ESL
+  primary protection, ESL mild-tier removal, list-length parameter); both runs are reported.
+
+
+### Amendment 2 (2026-10-21) — ESL extension 5 after held-out error analysis
+
+The v1 engine (hash above) was frozen on 2026-10-21 and run unchanged on eICU-CRD demo,
+UCI HCV, ILPD, UCI thyroid0387 and NHANES 2017–18.  Error analysis of those **held-out** runs
+(not of the development set) identified five safety/coverage defects:
+
+1. platelets ≤ 20 ×10⁹/L in top-5 only 25 % (eICU S5);
+2. WBC 470 ×10⁹/L → `nephrotic_syndrome` top-1 (no hyperleukocytosis anchor);
+3. Hb 4.1 g/dL absent from top-5; INR 8.5 absent from top-5 (no coagulopathy anchor);
+4. pH 7.18 with HCO₃ 34 (acute hypercapnic acidaemia) absent from top-5;
+5. overt hyperthyroidism reported with *total* T4 (UCI thyroid0387) scored ≤ 0.44; urate > 7 mg/dL
+   (NHANES) scored ≤ 0.34.
+
+These were fixed by one additive change (`eval/patches/esl_ext5_20261021.py`: 20 severity-tiered
+syndromes, two new group keys `tt4`/`tt3`, no change to rules, weights, registries or thresholds).
+Evaluator label maps were also extended with existing registry ids that had been omitted
+(`leukocytosis_pattern`, `elevated_inr_pattern`, `pancytopenia`, liver/vitamin-K coagulopathy ids).
+
+**Reporting rule:** every held-out table in the manuscript reports **both** v1 (pre-specified,
+frozen) and v2 (post-hoc, after one round of error analysis) side by side; v2 is labelled as
+post-hoc and the datasets used for the error analysis are named.  No further engine change will
+be made after the v2 freeze without a new amendment.  v1 outputs are archived under
+`eval/results/frozen_v1_20261021/` and `eval/results/eicu_demo_v1_frozen_origmap/`.
+
+### Amendment 3 — engine v3 (ESL extension 6 + clinical-salience re-ranking), 2026-10-21
+
+**Trigger.** A blind zero-shot LLM baseline (B3, n = 100 eICU-demo stays, same stays scored for the engine)
+reached recall@5 66.0 % vs 48.9 % for the pre-specified v1 engine. Error analysis of the 21 LLM-only hits
+showed that in 19/21 the correct entity was already present in the engine's differential at rank 6–15; the
+top-5 was occupied by family duplicates, derived `co_*` pair patterns, flat single-electrolyte findings, or
+anchors firing in the wrong context. One real value (HCO3 1.7 mmol/L) was rejected by the plausibility floor.
+**The guideline registry was not changed**; the amendment is confined to the expert-syndrome layer and the
+ordering of the differential.
+
+**Changes (all in `eval/patches/esl_ext6_ranking_20261021.py`, applied to `analyse_gidlines.py`):**
+1. `ABSOLUTE_LIMITS["bicarbonate"]` lower bound 2.0 → 0.5 mmol/L.
+2. Exclusions added: Gilbert anchor (glucose > 250, pH < 7.30, WBC > 15, lactate > 4, CRP > 50, Cr > 2.0, HCO3 < 15);
+   RTA-4 anchor (Cr > 1.8, BUN > 40, lactate > 4, glucose > 400); toxic-alcohol anchor (glucose > 300).
+3. New syndromes: `mi_massive_troponin` (cTn > 5000 ng/L, no CK veto), `renal_failure_marked` (Cr ≥ 2.0) and
+   `renal_failure_moderate`, `sepsis_bandemia`, `sepsis_marked_leukocytosis_organ`, `sepsis_sirs_two_organ`
+   (pattern strength), `dka_mild_ketones_unmeasured` (ADA/EASD 2024 mild tier), `acute_hepatocellular_injury`
+   (pattern; vetoed by aetiology-specific serology), guards `ck_elevation_no_context_guard` and
+   `pseudohypocalcemia_guard`; `hyperuricemia_female` now requires adult age + one co-finding.
+4. Renal chronicity: two chronicity markers transfer the renal signal to CKD instead of capping AKI at 0.75 × a
+   low CKD score (which deleted the renal entry altogether).
+5. Clinical-salience re-ranking of the differential (probabilities unchanged): tier 0 diseases/syndromes
+   (p ≥ 0.5); tier 1 low-salience single-analyte findings (p 0.5–0.75); tier 2 p < 0.5; tier 3 `co_*` pairs and
+   intra-family duplicates (child id = parent id + suffix; `*_support_pattern` next to its base entity).
+6. eICU label map: `heart_failure` group now also accepts the plain `heart_failure`, `acute_heart_failure`,
+   `chronic_heart_failure`, `cardiorenal_syndrome` identifiers (previously only BNP-pattern ids).
+
+**Status.** Post-hoc. v3 was developed after inspection of eICU-demo outputs (4 index stays and per-group counts
+on the 100 B3 stays); eICU-demo recall for v3 is therefore an optimistically biased estimate and is reported
+side by side with v1, never in its place. NHANES, UCI thyroid, UCI HCV and ILPD were not inspected when v3 was
+designed and remain held-out with respect to ext 6, although the ext 5 changes (Amendment 2) had used them.
+
+**Regression before release of v3:** pytest 598 passed (586 + 12 new in `tests/test_esl_ext6_20261021.py`;
+one ext-5 test re-pinned for the female urate tier); engine 50/50; hard 151/151; hard2 124/124; hard3 78/78;
+adversarial 86/86; healthy sweep 300/300 clean. Freeze: `FREEZE_v3_20261021_sha256.txt`.
+Quick look on the 100 B3 stays (same stays, coded labels incl. non-lab-detectable): recall@5 v1 43.4 % → v3 54.7 %
+(LLM 66.0 %); remaining misses are dominated by heart failure without BNP (8/9 absent) and sepsis without
+infection markers — categories the labs cannot support.
+
+**Amendment 3b (same day).** `eval/patches/esl_ext6b_20261021.py`: stem-based family dedup in the re-ranking
+(severity/acuity prefixes, pattern suffixes) and two Sepsis-3 operational screens at pattern strength
+(`sepsis_lactate_organ`, `sepsis_leukocytosis_one_organ`). Regression unchanged (598 pytest, all batteries 100 %).
+Held-out check B4 (60 new stays, LLM answers fixed before engine run): LLM 58.7 % vs v1 50.0 % vs v3 58.7 %.
+
+**Amendment 3c (same day) — anti-overclaim ceilings.** `eval/patches/esl_ext6c_20261021.py`: three dx-less guards
+capping entities that laboratory data cannot establish — thyroid storm / thyrotoxic AF without systemic markers
+(Burch-Wartofsky), any "shock" label without hypotension or vasopressor context (Sepsis-3), and PE / aortic
+dissection / DVT on an isolated D-dimer (ESC 2019) — at 0.40–0.49; ceilings lift when context (`heart_rate`,
+`systolic_bp`, `vasopressor_required`, conditions, medications) or corroborating labs are present. New ESL
+context predicates `attr_true`, `attr_lt`, `attr_gt`. Regression: 601 pytest, all batteries 100 %.
+
+**Amendment 3d (same day) — post-hoc fixes after the blind NHANES specificity test (B5).**
+`eval/patches/esl_ext6d_20261021.py`: (i) metabolic syndrome accepts only *fasting* glucose ≥ 100 or A1c ≥ 5.7 as
+the third harmonised criterion (random glucose, urate and ALT removed); a two-criteria guard caps it at 0.45
+without BMI/waist/BP context; (ii) new computed key `egfr_c` (reported eGFR, else CKD-EPI 2021 from creatinine +
+age + sex, adults only) with KDIGO CKD syndromes: G3+ & A2+ (strong), G3b (pattern), G3a + one corroborating
+marker (pattern); an expert-anchored CKD is no longer capped beneath a prior-driven AKI in `_apply_renal_chronicity`.
+B5 was run with ext 6c first (engine 1/40 false, CKD 9/18); ext 6d results (0/40, 15/18) are therefore **in-sample
+for B5** and are reported next to the pre-fix numbers. Regression: 606 pytest, all five batteries 100 %.
+Test anchors B5–B7 results are in `eval/results/nhanes_2017/` and `eval/results/eicu_demo/b7_critical_values.md`; the LLM reader in all of
+them is the Arena agent (disclosed).
+
+### Amendment 4 (2026-10-22) — engine v4 (ESL extension 7/7b) and evaluation-mapping clarification
+
+**Scope.** All changes were motivated by inspection of eICU-demo stays 0–1200 (development split) and the NHANES T8 healthy-adult audit; stays 1200–2314 were not inspected before the clean-split check. No parameter was fitted to outcome labels. Fusion weights were *not* changed: a five-configuration sweep on 300 development stays (`eval/results/run_20261022_v4/weight_sweep_n300.md`) spanned recall@5 69.6–70.8 % and mean AUROC .841–.845, i.e. the weight vector is not a lever and the pre-specified default was retained.
+
+**Engine changes (v3 → v4), all guideline-backed and mirrored in `eval/patches/esl_ext7_20261022.py`:** liver R-ratio requires ALT or ALP above ULN; nephrotic/HHS/DKA definition guards; non-specific-only ceiling (.35); CKD chronicity logic (KDIGO 2024: eGFR <60 with ≥2 chronicity markers or single-value G3b/G4 → CKD listed alongside AKI when chronicity is undetermined; AKI no longer capped beneath an anchored CKD); `ckd_anemia` requires normocytic indices and excludes rhabdomyolysis/lactic acidosis; fuzzy defining-feature gate for measured-but-normal defining analytes (7b). Regression gate: pytest 620, scripted batteries 489/489, healthy sweep 200 → 0 false assertions.
+
+**Pre-specified vs post-hoc reporting.** Paper tables report v1 (frozen 2026-10-21, pre-specified) and v4 side by side on every dataset; v4 numbers on eICU-demo are development-set numbers and are labelled as such. Clean-split delta (stays 1200–1800, not inspected): recall@5 62.6 % → 63.7 %; CKD recall@5 5/26 → 16/26; diabetes 34/68 → 30/68 (displaced from rank 5 by CKD, documented).
+
+**UCI thyroid H2 mapping.** The pre-specified positive set for H2 counted every entity whose id contains "hyperthyroid", including `subclinical_hyperthyroidism`. The thyroid0387 classes A–D denote overt hyperthyroidism; suppressed TSH with normal FT4/T3 in "no comment" records is therefore scored as a false positive under that mapping. H2 is retained unchanged; an additional row **H2c (overt entities only)** is reported, with the subclinical-rate shown separately as a label-semantics note. The v1 archive (`eval/results/frozen_v1_20261021/`) stores only `top3` per record, so v1 H2c is approximated from `top3` and flagged as such.
+
+### Amendment 5 (2026-10-22) — structured error audit and subgroup analysis (added post hoc, taxonomy fixed before execution)
+
+**Error audit.** Population = all (stay, clinician-listed group) pairs on eICU-CRD demo with the key analyte measured and the group absent from the top-5. Sample = 200 pairs, `random.Random(20261022)`. Taxonomy (deterministic, coded in `eval/error_audit.py`, written before the first run and not changed after seeing results): A no laboratory signature (SAP guideline thresholds per group); B listed with p ≥ 0.5, rank 6–25; C1 signature present, entity absent; C2 signature present, entity present with p < 0.5; D synonymous entity in top-5 not in SAP id list (reported, never credited). Run on v3 (ext6c) outputs and repeated unchanged on v4 outputs.
+
+**Subgroups (TRIPOD+AI 19).** Strata: sex, age band (<45, 45–64, 65–79, ≥80), eICU `ethnicity`, `unittype`, hospital (top 8), panel size (≤10, 11–20, >20 analytes). Metrics: pooled recall@5 (1,000 stay-level bootstrap CI), recall@10, chart support at p ≥ 0.7, AUROC for the four largest groups. A stratum with ≥ 40 stays deviating by > 10 percentage points in recall@5 is flagged and discussed; no stratum-specific tuning is permitted. Script `eval/subgroup_fairness.py`.
+
+### Amendment 6 (2026-10-22) — next-test layer (ESL extension 8) and the next-test-utility metric (post hoc, exploratory)
+
+Motivation: 60 % of top-5 misses carry no laboratory signature of the listed condition (Amendment 5, category A). For those, a laboratory-only engine should name the test that would settle the question rather than guess. Extension 8 adds a cited confirmatory-test library (SSC 2021, ADA 2024, KDIGO 2012/2024, ESC HF 2021, BSH, ISTH, ACG 2017/2024, Spasovski 2014, Fourth UDMI) keyed by entities already in the differential plus one value-level trigger (random glucose 140–199 mg/dL → HbA1c). It changes no probability or ranking. Metric: among category-A misses whose discriminating test is distinct from the measured key analyte, the proportion for which `next_tests` or per-entity `recommended_tests` names that test. Reported as exploratory; not part of the pre-specified endpoints.
+
+### Amendment 7 (2026-10-23) — ranking-hygiene layer (ESL ext 9) and scoring-map synonyms
+*Post hoc, after the v4 error audit.* (1) Engine: three display-order rules (synonym families; aetiology-beneath-finding when its confirmatory marker is unmeasured and it does not out-score the finding; organising-diagnosis precedence for creatinine-defined renal failure, DKA and HHS) — probabilities and all threshold-based metrics (AUROC, sensitivity/specificity at 0.5, calibration) are unchanged by construction; only rank-based metrics (recall@k) can move. (2) Scoring map: `alcoholic_liver_disease`, `alcoholic_liver_pattern` (alcohol / cirrhosis groups) and `septic_shock_support_pattern`, `septic_shock_severe_lactic_acidosis` (sepsis) added as synonyms found in the D-category audit. Frozen v1/v3/v4 result files are not re-scored; v5 is reported alongside them. Pre-registered v1 remains the primary analysis.
+
+### Amendment 8 (2026-10-23) — two additional eICU input arms (ESL extension 11: temporal module and clinical-context layer)
+*Post hoc; added after the v5.1 scorecard. The primary labs-only protocol (Section 4) is unchanged and remains the headline result.*
+
+**Motivation.** 67 % of residual top-5 misses on eICU v5.1 are category A (no laboratory signature of the listed condition); the two largest remediable sources are (i) chronicity / trajectory information discarded by the "first value per analyte" protocol and (ii) documented comorbidity that the labs-only arm never sees.
+
+**Engine (ext 11, optional, inert when the data are absent).** (T) An observation may carry `series: [{t_hours, value}]`; the ESL reduces each series to trajectory keys and ten constellations implement KDIGO 2012 dynamic AKI criteria (≥ 0.3 mg/dL / 48 h or ≥ 1.5×, with peak ≥ 1.0 mg/dL), 4th-UDMI acute (≥ 20 %/≥ 50 % delta with a value > 99th percentile) vs chronic (flat) myocardial injury, lactate clearance (Jones 2010), Hb fall ≥ 2 g/dL / 24 h, > 50 % platelet fall (HIT only with documented heparin; DIC with a coagulation abnormality), and the ESE 2014 sodium over-correction warning (guard, no diagnosis). (C) `known_conditions` / `current_medications` map to registry entities by a fixed, conservative phrase table; a documented diagnosis with laboratory support on the panel is listed as established (0.80), without support at 0.49 (`documented_history`, below the operating point); documented CKD resolves renal chronicity; warfarin, metformin and statin constellations are ordinary ESL entries gated on the medication. No prior is injected.
+
+**Evaluation arms (eICU-CRD demo, same 2,314 stays, same labels, same scoring map).** Arm A = labs only (primary). Arm B = labs + `pastHistory` (all entries except "Performed"/"Not Obtainable"/"No Health Problems", organ-system path retained) + `medication` rows with `drugstartoffset ≤ 0` (started at or before ICU admission). `admissionDx` is excluded as label leakage. Arm C = labs + all values of each analyte within −6 h…+24 h as a series (scalar = first value, as in Arm A). Arm B+C combined.
+
+**Pre-specified reporting for Arm B.** Recall is reported separately for labels whose group is already *named* in the supplied history/medications (context echo) and for labels that are not; only the latter is interpretable as diagnostic gain. For Arm C the count of stays with ≥ 1 series and the firing count per temporal constellation are reported.
+
+**Outputs.** `eval/results/run_20261023_v5/eicu_report_v5_2_{ctx,tmp,ctx_tmp}.md`, per-stay JSONs, `gate_ext11.txt`; tests `tests/test_esl_ext11_20261023.py` (22); patcher `eval/patches/esl_ext11_20261023.py`.
+
+
+### Amendment 9 (2026-10-23) — reporting additions, label-map audit, human-validation instruments, provenance inputs
+*Post hoc additions motivated by the literature review of CDSS-vs-LLM comparisons (Riches 2024/2025; Bhasuran 2025; Bond 2012). None changes the primary endpoint or the label map used for v5.x.*
+
+1. **Rank-based secondary metrics** for the blinded LLM comparison: recall@1/3/10, mean reciprocal rank, rank-bin distribution, "not listed" rate; bootstrap CI of the MRR difference (`eval/baselines/b8_rank_metrics.py` → `rank_metrics_n400.md`). Pre-specified interpretation: recall@5 remains primary; recall@10 and "absent" structurally favour the engine (25 vs 10 slots) and are reported with that caveat.
+2. **LLM test–retest**: 40 of the 240 B8 panels (seed 20261024) re-read blind by the same agent model class; agreement reported as label-level κ, Jaccard of top-5 group sets, Spearman ρ of shared group ranks. Engine determinism is reported as 100 % by construction (byte-identical per-stay files across freezes).
+3. **Label-map audit** (`eval/results/eicu_demo/label_audit_n100.md`): 100 random held-out stays, 3,100 stay×group cells; study regex vs a deliberately liberal second coder; all 23 disagreements adjudicated by reading the diagnosis strings. Result: 0 false-positive labels, 2 definite misses (sensitivity 98.7 %), 2 ambiguous. The two missed patterns ("hematological effect of infection|thrombocytopenia", "drug withdrawal|alcohol withdrawal") are **not** changed for v5.2 so that all v5.x arms share one map; they are scheduled for the next protocol version.
+4. **Human-validation instruments** (to be completed by an independent physician; results reported whatever they show): Form A1 — 100 executable rules, 60 from the operational set (186 diseases surfaced in any eICU top-5) + 40 from the whole registry, stratified by rule type, 3-level verdict + severity A–D; error rate with Wilson CI by stratum. Form B1 — the same 40 B8 panels as item 2, read blind with labs + age/sex only, ≤10 ranked diagnoses, scored with the identical keyword map → three-arm physician/LLM/engine comparison. Files in `eval/human/`; scorer `eval/human/score_forms.py`.
+5. **Participant flow** (TRIPOD+AI 14) regenerated from raw files: `supplement/TABLE_S1_cohort_flow.md`, `figures/figS1_participant_flow.png`. eICU: 2,520 stays → 2,512 adults → 2,314 with ≥8 mapped analytes; 2,707 coded labels of which 2,432 scorable.
+6. **Input provenance**: OCR-detected specimen flags (haemolysis / lipaemia / icterus, clotted, recollect; EN+FA with negation handling), specimen type, collection time and smear-morphology comments are now extracted (`ocr.detect_preanalytical`) and passed to the engine's existing `preanalytical_gate` through the clinical context (`AnalysisService._merge_preanalytical`); clinician entries override. Covered by `tests/test_preanalytical_provenance.py` (9 tests). This affects the application path only; evaluation cohorts carry no specimen flags, so no evaluation number changes. Documented in `supplement/INPUT_SCHEMA_v1.md`.
+7. **Engineering**: `eval_eicu.py` now checkpoints every 200 stays and resumes (deterministic engine → identical results); Sepsis-2019 subsample fetched in 10 resumable parts.
+8. **External case-vignette probe (B6, exploratory, pre-specified key)**: the 50 PMC-Patients case reports of Bhasuran et al. (npj Digit Med 2025;8:159; GitHub `balubhasuran/DDx_CaseReports`, ESM `sd_1.xlsx`). Only the "Lab Tests" paragraph plus age/sex is given to the engine; the Symptoms and Case Report columns are never used. Scoring key (`eval/realdata/pmc_cases/scoring_key_prespecified.json`) was written per case **before** any run: *specific* = the published final diagnosis; *syndrome* = the laboratory syndrome that contains it; `lab_detectable=false` for 3 cases (thallium poisoning, AMAN-GBS, lymphomatoid papulosis). Two arms, same key: (a) **parser arm**, free text → Hemoglyph prose parser → engine, no human in the loop; (b) **manual arm**, the author transcribed each paragraph into analyte/value/unit before seeing engine output (`panel_overrides.json`, every imputation flagged in `_note`; 2 cases have 0 numeric analytes and are scored as misses). Results (`eval/results/pmc_cases/report.md`): parser arm, all 50 — specific top‑1/5/10 = 2/10/12 %, syndrome 28/44/46 %; manual arm — specific 16/26/26 %, syndrome **40/68/70 %** (lab‑detectable n=47: 43/72/72 %). Pre-specified interpretation: the manual arm bounds what the laboratory paragraph alone carries; the parser arm shows that the application's prose parser (built for tabular reports) is the weakest link on narrative input, not the reasoning engine. The published GPT‑4 figures on the same 50 cases (top‑1 60 %, top‑5 81 %, top‑10 83 %) used the **full vignette** with lenient clinician scoring and are reported as context, not as a head‑to‑head comparison. Error-audit items opened from this probe: `ebola`/`lassa_fever` surfacing in top‑3 of two mild-transaminitis cases with negative viral serology (33365209, 30235756); apixaban INR 27 case (35844332) not mapped to an anticoagulant-effect syndrome (no drug context given); DILI entity never surfaces without drug context (expected by design — drug exposure is a context field, see Amendment 8).
+
+### Amendment 10 (2026-10-23) — registry patch 13.2.0: pathogen-specific entities gated on exposure context
+
+**Trigger.** B6 error audit (Amendment 9, item 8): `ebola` and `lassa_fever` in the top-3 of two mild-transaminitis vignettes with negative viral serology. Root cause: their only proposing rules were AST > 40 / ALT > 50 (/ platelets < 150), weight 0.3 — demoted in registry passes 9.3/9.4 but still surfacing whenever competition is thin. A registry scan (`eval/patches/registry_v13_2_0_exposure_gate.py`, `ROUTINE` set) found **76 infectious clinical entities whose screening/diagnostic rules use only routine chemistry/CBC analytes** — the same defect class.
+
+**Change (registry content only; `analyse_gidlines.py` untouched).** (i) 53 pathogen-specific entities (viral haemorrhagic fevers, rickettsioses, zoonoses, helminths, endemic mycoses, organism-named bacterial infections): every leaf of their routine-only proposing rules gains `context: {exposure_history: true}` (135 rules). Through the engine's existing context mechanism the rule is *unknown* (not proposing) unless the clinician supplies `exposure_history: true` (travel / vector / animal / outbreak / occupational exposure) — a new optional context field documented in `INPUT_SCHEMA_v1.md`. (ii) 9 "*_pattern" entities whose only rule was CRP: rule retired (`retired_v13_2_nonspecific_single_marker`). (iii) 23 qualitative-positive specific-marker rules added where the feature registry already had an unambiguous test (PCR / antigen / IgM / culture → diagnostic_criterion weight 6; IgG-only serology or KOH → screening weight 3, `diagnosis_allowed: false`); no numeric threshold invented. Syndromic entities (sepsis patterns, pneumonia, cellulitis, osteomyelitis, cholangitis, gastroenteritis, tuberculosis) and ESL-driven, engine-guarded entities (leptospirosis, scrub typhus, PCP) are not gated.
+
+**Pre-activation verification** (`eval/patches/test_registry_v13_2_0.py` → `eval/patches/cand/test_registry_v13_2_0.md`; `tests/test_registry_v13_2_exposure_gate.py`, 5 tests): target vignettes clean; gate opens with `exposure_history: true`; hantavirus IgM still proposes hantavirus at rank 2; healthy panel empty; **B8 240 blind panels: recall@5 293/456 before and after, 0 label-level changes**; PMC manual arm 34/50 before and after, 0 rank changes; pathogen entities in any eICU/PMC top-10 after patch: 0 (one legitimate strongyloidiasis with IgE 3770 + eosinophilia remains).
+
+**Activation rule.** The patch is **not** applied while the v5.2 three-arm eICU chain is running (all v5.x arms must share registry 13.1.0). It is applied immediately after `FREEZE_v5.2` is written, becomes registry 13.2.0, and the affected evaluations are re-run as v5.3 with the 13.2.0 hash in a separate freeze file; the paper reports v5.2 (13.1.0) as primary and v5.3 as the post-audit correction, with this amendment cited. This is the first worked example of the "errors found by audit are corrected in the next registry release with a changelog" policy stated in the Limitations.
+
+
+### Amendment 11 (2026-10-23) — pre-registered findings from the v5.2 context-arm review and sex-gap anatomy
+
+Source: `eval/results/eicu_demo/deep_review_20261023.md`, written before the v5.2 freeze; no code or registry changed.
+
+1. **Context arm is largely a context echo.** Same labels, ctx vs labs-only: NOT named in history (n=2,467) +0.9 points recall@5; named in history (n=240) +23.3 points. Documented-only entries consume ranking slots and reduce recall for AKI (−5.0), hyperkalaemia (−6.1), coagulopathy (−6.1). **Reporting rule:** the context arm's headline number in the paper is recall@5 on NOT-named labels; the all-label number is given with the echo decomposition. **v5.3 design change (pre-registered):** `listed_documented` entities are shown in a separate "documented problems" block and excluded from the ranked differential that recall@k is computed on.
+2. **Sex gap is within-group, not case-mix.** Direct standardisation: female label mix at male per-group rates = 57.9 % vs observed 55.7 % (male 58.5 %). Largest female deficits: AKI −14, GI bleeding −13, AMI −12, renal impairment −9 points. Root cause located in the registry: AKI screening uses creatinine > 1.3 mg/dL for all sexes while the feature registry carries sex-specific ranges (F 0.5–1.1); troponin I has a single cut-off (0.04 ng/mL) without sex-specific 99th percentiles. **v13.3 corrections (pre-registered):** sex-specific creatinine thresholds in AKI/CKD screening rules; sex-specific troponin limits for hs-assays (ESC 2020 / 4th UDMI); before/after reported on the same frozen cohorts and in the fairness table.
+3. **Mislabelled rule class:** `acute_myocardial_infarction` carries risk-factor rules (total cholesterol ≥ 200, LDL ≥ 115, hs-CRP > 3) typed as screening for an acute event. These will be re-homed to risk entities in v13.3 and are added to the A1 physician audit sample as a "wrong entity" exemplar.
+
+### Amendment 12 (2026-10-23) — registry patch 13.3.0: systematic defect-class repair (pre-registered before any evaluation on the patched registry)
+
+**Trigger.** A read-only defect scanner (`eval/registry_defect_scan.py`, ten classes D1–D10) was run on registry 13.1.0 (34,005 executable rules, 6,750 entities) after the Amendment-11 review. Output: `eval/results/registry_defect_scan_13.1.0.md/.json`.
+
+**Findings (13.1.0, after manual triage of scanner output).** D1 sex-blind thresholds on sex-dimorphic analytes: 800 flagged, of which 197 rules carried `_male_`/`_female_` in their id but `population.sex = all`, and ≈350 proposing rules on creatinine/Hb/Hct/RBC/ALT/AST/urate used the male or mixed limit for both sexes (ferritin and serum iron flags are false positives: WHO cut-offs are sex-independent). D2 unit/scale: hs-troponin I/T leaves declared in ng/mL with values 14–50 (ng/L values mislabelled; 67 leaves) and 13 sperm-morphology leaves > 100 %. D3: six risk-factor rules (lipids, hs-CRP) typed as screening for acute entities (AMI ×3, ischaemic stroke, acute pericarditis ×2). D5: 100 etiologic clinical entities proposable from routine analytes alone, of which 63 are non-syndromic (sarcomas, lymphomas, vasculitides, ALS, aortic dissection, upper-respiratory infections, 30+ infections not covered by 13.2.0) and 18 are genuine laboratory syndromes kept unchanged (DIC, TMA, warfarin over-anticoagulation, biliary obstruction, cholecystitis, contrast nephropathy, kwashiorkor, NEC, GSD-1, hypophosphatasia, lymphangiectasia, chylomicronaemia, pyloric stenosis, PROM, biliary atresia, hypothermia, heat stroke, pattern 026). D7: 511 rules applied adult thresholds (creatinine ≥ 1.0, Hb ≤ 11, ALP ≥ 130, bilirubin ≥ 1.2, eGFR ≤ 60, urate ≥ 6) to neonates/infants. D8: 57 single-routine-analyte diagnostic rules on clinical entities claimed `specificity: specific` (e.g. procalcitonin → appendicitis). D4/D6/D9/D10 (impossible values, undefined features, dangling sources, single-analyte diagnosis_allowed): 0.
+
+**Repair (`eval/patches/registry_v13_3_0_quality.py`, stacked on the 13.2.0 candidate; registry content only, engine untouched).** D1a: `population.sex` set from the rule id (197). D1b: 350 rules split into a male rule (original threshold) and a female rule `<id>_f13_3` whose threshold is the female reference limit from the feature registry (Tietz/KDIGO/WHO) when the original equalled the male limit, otherwise scaled by the limit ratio; urate thresholds < 7.0 (solubility limit 6.8) are not split; with sex unknown both variants are evaluated (the more sensitive one governs — documented behaviour). D2: 67 troponin leaves relabelled ng/L; 13 sperm-morphology rules retired. D3: six rules re-homed to `atherosclerotic_cardiovascular_risk_lipid_pattern` as non-specific screening, `diagnosis_allowed: false`. D5: 63 entities gated — infectious ones on `exposure_history: true`, all others on a new optional context key `clinical_suspicion: true` (same engine mechanism; entity is never proposed from routine analytes without it). D7: neonate/infant (and child for ALP) removed from the population of 511 rules; no paediatric thresholds invented; neonatal entities untouched. D8: 57 rules downgraded to `non_specific`, `diagnosis_allowed: false`. Executable rules after patch: 34,356 (+350 female variants, −13 retired).
+
+**Verification.** Scanner re-run on the candidate: D3/D4/D6/D7/D8/D9/D10 = 0; D1 residue = ferritin/iron (documented), staging/component rules and one dengue Hct warning-sign rule; D5 residue = the KEEP list exactly. Structural tests `tests/test_registry_v13_3_quality.py` (9) pass. Functional regression (`eval/patches/test_registry_v13_3_0.py`, B8 240 panels and PMC manual arm, plus sex-specific probes) is reported in `eval/patches/cand/test_registry_v13_3_0.md`.
+
+**Pre-registered expectations and reporting rule.** 13.2.0 + 13.3.0 are activated together after the v5.2 freeze and produce v5.3. Primary pre-registered hypotheses: (H1) female−male recall@5 gap on the eICU held-out cohort narrows from −2.8 points (v5.1) to within ±1.5; (H2) no decrease > 1 point in overall recall@5; (H3) B8 recall@5 ≥ 293/456 − 5. v5.3 is reported next to v5.2 on the same cohort with per-group deltas; failure of H2/H3 leads to reverting the specific class responsible, not to silent re-tuning. The residual limitation stands: the repair was AI-executed from reference-range tables, logged per rule, and remains subject to the A1 physician audit.
+
+**Amendment 12, addendum (same day, second scanner wave, before any v5.3 evaluation).** Four further classes were found and folded into the same 13.3.0 candidate: D12 — 282 rules applied adult creatinine/eGFR/ALP thresholds to the *child* age group (child creatinine ULN ≈ 0.3–0.7 mg/dL; CKD-EPI is adult-only): child removed from their population. D13 — 6 exact duplicate executable rules (same entity, type and expression; evidence counted twice): older copy retired. **D17 — domain-template broadcast:** five haematology screening rules (platelets ≥ 450, Hb < 13, platelets < 100, ferritin < 15, TSAT < 20) had been attached to *every* haematology entity (195 entities, including thrombophilias, haemophilia, PE/DVT, ITP, polycythaemia), six endocrine screens (low/high fT4, hypo/hyper-TSH, glucose < 55, morning cortisol) to all 31 endocrine entities (e.g. PCOS, Paget's, pheochromocytoma) and three renal screens to 24–36 renal entities; 940 of these 1,192 rules were retired using a per-template compatibility pattern recorded in `TEMPLATE_COMPAT` (kept only where the analyte change is part of the entity's known laboratory picture). **D18 — placeholder entities:** 90 entities named "Expanded laboratory pattern 001–090" carry no clinical identity (templated rules plus one "analyte > 0" rule); all their rules were retired and the entities flagged `placeholder_retired_v13_3_0`. Consequently the registry entity count quoted in the manuscript (6,750) must be reported as 6,660 clinically named entities (+90 retired placeholders), and a number of alias entities (e.g. `acute_myeloid_leukemia` / `acute_myeloid_leukemia_aml`) are now gated on `clinical_suspicion` because their only remaining rules are routine-analyte templates (D5 re-run after D17: 87 entities gated in total). Executable rules after the full patch: 33,230 (from 34,005). The pre-registered hypotheses H1–H3 above apply unchanged; D17 is the class most likely to move overall recall and is therefore reported separately (ablation: 13.3.0 with and without D17) if H2 fails.
+
+**Amendment 12, activation record (2026-10-23 21:03–21:25 UTC).** Activation requires copying the candidate to *both* `HEMOGLYPH_GUIDELINE_REGISTRY.json.br` and the engine default `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br`; the first attempt updated only the former, so the runs produced 19:43–21:00 UTC are void (`run_20261023_v53/invalid_ran_on_13_1_0/`). Two corrections were made on the real 13.3.0 gate, both recorded here before any held-out result was examined: (i) D8 had wrongly downgraded single-analyte diagnostic rules of laboratory-finding entities (`*_pattern`, -emia/-penia/-cytosis/-uria) — e.g. `hypertriglyceridemia_pattern` — which the engine merges into the parent entity; D8 now excludes finding entities (57 → 12 downgrades) and the engine battery returned to 50/50. (ii) `test_profound_neutropenia_named_and_cultures_requested` previously required `severe_neutropenia` at rank 1 for a pancytopenic panel (WBC 0.2, platelets 19, Hb 6.7); that rank depended on the D17 template rules (Hb < 13, platelets < 100 voting for neutropenia entities), which are clinically unjustified. The test now requires severe_neutropenia within the top 4 with p ≥ 0.6 plus cultures/lactate in next tests; the ranking among three co-true findings is reported as a known behavioural change, not corrected by re-adding rules.
+
+### Amendment 13 (2026-10-24, 11:40 UTC) — POST-HOC concurrent-diagnosis analysis of Sepsis-2019 (declared after the pre-registered result was known)
+
+**Status.** Exploratory. The pre-registered Sepsis-2019 analysis (prediction of Sepsis-3 onset at any hour from the first-24-h laboratory panel; `eval/realdata/eval_sepsis2019.py`) was run on registry 13.3.0 and gave AUROC 0.593 (0.570–0.617) against a supervised logistic baseline of 0.689. **That result is final and is reported unchanged in the main text.** This amendment adds a second analysis of the same file that matches the task the engine was designed for (recognition of a concurrent diagnosis, as in eICU) and tests the optional vital-signs context; it was written and dated *before* the new analysis was run, but *after* the pre-registered result was known, and is therefore labelled post-hoc wherever it is reported.
+
+**Design (fixed; engine and registry unchanged — registry 13.3.0 is loaded explicitly although 13.4.2 is live).** Cases: all sepsis patients; window ICULOS ∈ [t_L, t_L + 12] where t_L is the first labelled hour (the challenge label precedes clinical onset by 6 h, so the window is ≈ onset − 6 … + 6 h). Controls: 1,500 non-sepsis patients drawn with seed 20261024, each given a 12-h window whose start is drawn (same seed) from the empirical distribution of case t_L and clipped to the stay, so ICU dwell time is matched. Inclusion ≥ 3 laboratory analytes in the window (vitals and temperature do not count). Arm A: labs + temperature (as pre-registered). Arm B: labs + HR, SBP, MAP, respiratory rate, temperature as observations and as patient context. Score, metrics, bootstrap and supervised baseline exactly as in the pre-registered analysis; baseline B adds the vitals.
+
+**Pre-stated interpretation rules.** (i) Neither arm replaces the pre-registered number; both are tabulated with it. (ii) An engine AUROC in arm A of ≥ 0.70 would support the claim that the 0.59 reflects the prediction framing rather than an inability to recognise the septic panel; < 0.65 would indicate the engine's sepsis group is genuinely weak and this is stated in Limitations. (iii) Arm B − arm A is reported as the contribution of vital signs; no threshold is attached because the context module is optional. (iv) Known biases stated with the result: label-anchored windows are not operational; cases are sampled more densely around onset (the ≥ 3-lab filter retains a larger share of cases than controls); Sepsis-3 labels are themselves algorithmic.
+
+**Outputs.** `eval/results/sepsis2019/concurrent_report.md`, `concurrent_summary.json`, `concurrent_per_patient.json`; reported in the Supplement (Table S-Sepsis) and one sentence of the Results paragraph, flagged post-hoc.
+
+
+**Outcome (recorded 2026-10-24 after execution).** 388 cases / 772 controls. Arm A AUROC 0.534 (0.508–0.561); arm B 0.534 (identical in all 1,160 windows — no 13.3.0 sepsis rule consumes vital signs); logistic baseline 0.667 / 0.703; recall@5 21.6 %; flag rate 14.8 %. Rule (iii) applies: < 0.65 → the laboratory-only sepsis group is genuinely weak on real ICU data; stated in Results and Limitations; Supplementary Table S12. Mechanism: no PCT/CRP in the file, lactate in 37 % / 22 % of windows, sepsis probability 0 in 74 % of cases. No rule or weight changed.
+
+---
+
+### Amendment 14 — Registry 14.0 / engine v6 development with a quarantined external validation (dated 2026-10-24, written BEFORE any change)
+
+**Why.** Pre-registered and post-hoc analyses (Amendments 1–13) exposed four mechanistic weaknesses: (a) laboratory findings displace causal diagnoses from the top ranks; (b) the sepsis group is anchored on PCT/CRP and ignores clinical signs; (c) CKD is asserted from a single creatinine (KDIGO requires chronicity); (d) `all`-type criteria are silenced by one unmeasured analyte. We now fix these **by design, from guideline sources**, not by fitting to outcomes.
+
+**Data roles (fixed now).** *Development (may be inspected freely):* eICU-CRD demo, Sepsis-2019 set A, NHANES 2017–18 (J), the existing PMC case set, UCI/ILPD. *Quarantined validation (`eval/quarantine/`, not opened by any script or person until FREEZE_v14):* Sepsis-2019 **set B (hospital B)**, NHANES **2013–14 (H)**, **MIMIC-IV demo (all admissions)**, and **50 new PMC case reports** collected after the freeze by the fixed query recorded in `eval/realdata/eval_pmc_cases.py`. Caveat: 30 MIMIC-IV demo admissions were used in a 2026-10-21 smoke test (`eval/results/mimic_demo/`); no 14.0 change is derived from them.
+
+**Changes allowed (closed list).** C1 two-tier output (`kind ∈ diagnosis | laboratory_finding | syndrome`; top-k scored on diagnoses; findings always reported). C2 syndrome layer: SIRS, qSOFA, SOFA sub-scores from Sepsis-3 (Singer 2016) and SSC 2021, as `syndrome` rules; sepsis asserted only as syndrome + lab support, otherwise `hyperlactataemia, cause undetermined`; `not_assessable` status when a group's anchor analytes are absent. C3 KDIGO chronicity: single creatinine → `renal_impairment (chronicity undetermined)`; CKD requires >90-day persistence or chronicity markers; AKI requires KDIGO delta. C4 `n_of` operator and absent≠normal handling in `all` criteria. C5 missing guideline patterns: alcohol-related liver pattern, R-ratio cholestatic/hepatocellular, bilirubin classification, septic shock, toxic alcohol (osmolal gap), MASLD/FIB-4, PSGN — each with a source located by direct web lookup. C6 label-audit-driven fixes for hypoglycaemia/hypocalcaemia only if the audit of 20 missed cases shows an engine error (threshold/unit/albumin-corrected calcium); malnutrition moved to `requires clinical data` per GLIM. **Not allowed:** weights tuned to a dataset; rules written for a specific missed case; thresholds without a source.
+
+**Development gate (per change, on development data).** pytest full; hard batteries 1–3 no regression; eICU labs-only top-1/3/5 not worse than 13.4.2 (49.3/63.7/76.9) and healthy-panel false flags 0/40; fuzz 0 false-fires/1000.
+
+**Pre-stated success criteria on the quarantined set (one run, registry frozen, no re-tuning after):**
+1. MIMIC-IV demo, labs-only, lab-detectable groups: top-5 ≥ 65 %, top-1 ≥ 45 %. (Primary.)
+2. Sepsis-2019 set B, concurrent framing as Amendment 13, arm B (labs + vitals): AUROC ≥ 0.65; flag rate in non-sepsis windows ≤ 20 %. (Primary for C2.)
+3. NHANES H: diabetes, CKD, anaemia, iron deficiency AUROC each within 0.03 of the NHANES J values for 13.3.0; CKD false-positive rate not higher than 13.3.0 on the same file.
+4. New PMC cases: top-5 ≥ 60 %.
+5. Safety: healthy-panel false flags 0/40; fuzz 0/1000.
+**Interpretation rule:** every criterion met → 14.0 reported as "improved and externally validated"; any primary criterion missed → reported verbatim as a failure of that component, 13.3.0 remains the headline, no further tuning on the validation data. Both 13.3.0 (pre-registered) and 14.0 (this amendment) appear in the paper, labelled.
+
+**Expected effect sizes (for honesty, recorded now):** C1 eICU top-1 +5–8 points; C2 set B AUROC 0.65–0.72; C3 CKD false positives 76 → < 30 on the dev file.
+
+**Development log (recorded 2026-10-24 during execution; quarantined data still unopened).**
+*Build.* Registry 14.0.0 = 13.4.2 + 2 sources + 4 entities (SIRS, qSOFA — syndromes; septic shock; reduced GFR, chronicity undetermined — finding) + 8 guideline-anchored rules; engine v6 (`eval/results/gate_14_0_0/ENGINE_CHANGES_v6.md`).
+*Defect found during the gate.* The feature registry's canonical unit for arterial pO2/pCO2 is UCUM `mm[Hg]` whereas the evaluation scripts (and HL7 inputs) supply `mmHg`; before the v6 unit-alias fix these analytes were **silently dropped in every 13.x eICU run** (and all blood pressures in the Amendment 13 arm B). The 13.4.2 reference numbers were therefore computed without blood gases.
+*Attribution (eICU demo, 2,314 stays, labs-only, `compare_arms.py`):* 13.4.2 original 49.3/63.7/76.9 % (top-3/5/10, flat); v14 + legacy units 44.4/59.5/74.8; v6 engine + registry 13.4.2 + fixed units 47.4/60.9/75.5; v14 + fixed units 43.8/58.4/73.8. Two-tier top-5 (C1 metric) 72.2–72.7 % in all three v6 arms. Unit fix ≈ −1.3 pt, engine ≈ −1.5 pt, registry ≈ −2.7 pt on the flat metric; the loss is slot crowding by entities that are true statements about the panel but are not problem-list labels (reduced GFR 614 top-5 slots, myocardial injury +315, hypoxaemia 209, hypercapnia 202, SIRS 51) and the KDIGO-correct withdrawal of single-eGFR CKD assertions (CKD recall@5 64.9 → 30.4 %; renal union 79.8 → 84.0 %).
+*Gate status.* pytest 689/689, hard batteries 151/151, 124/124, 77/78 (pre-existing miss). **The development-gate clause "flat top-3/5 not worse than 13.4.2" is NOT met** and is recorded as such; the C1-specified ranking (top-k on the structured output) is reported with two metrics — two-tier rank and grouped rank (entries nested under the diagnosis that explains them). No threshold or weight was changed in response to label outcomes; every engine change is listed with its guideline source in `ENGINE_CHANGES_v6.md`. Decision on which registry is shipped as "live" is deferred to the quarantined run; 13.4.2 remains the paper's primary.
+*Development-log continuation (2026-10-25).* eICU grouped-rank metric (engine attribution; defined before this run): top-1 32.9 %, top-5 68.6 %, top-10 78.6 %; a same-metric 13.4.2 control run is required before any comparison is drawn. NHANES J (community encounter): all nine AUROCs within 0.02 of the 13.3.0 values (diabetes .945, CKD .958, anaemia .973, iron deficiency .990, ALT .721); healthy-adult false assertion 1/160. The Sepsis-2019 set A concurrent script failed on a duplicated `SaO2` column (software defect introduced by the v14 unit pass; corrected and re-run — no result had been produced). Quarantined data remain unopened.
+*Development-log continuation 2 (2026-10-25).* Sepsis-2019 set A concurrent (v14, before change C7): labs-only AUROC .559, labs + vitals .590 (13.3.0: .534/.534), recall@5 42.6 % (21.6 %), control flag rate 26.1 % (14.8 %) — the flag-rate limit (≤20 %) was exceeded. Diagnosis: the SIRS-based screening syndrome asserted sepsis at p≈0.72. Change C7: screening hits are capped at 0.45 ("possible", non-anchoring), per SSC 2021 (screen = prompt for evaluation) and Sepsis-3 (SIRS not definitional); hypotension added as organ-dysfunction support for lactate-based sepsis. We state openly that the trigger for this change was a development-set operating characteristic; the rule content is guideline-derived and the single confirmatory test remains set B. All development evaluations (eICU, NHANES J, set A) are being re-run with the final engine.
+*Development-log continuation 3 (2026-10-25, final dev numbers, all re-run with the final engine).* eICU flat 43.8/58.4/73.8 (criterion "not worse than 13.4.2" not met); two-tier@5 72.2 = same-engine 13.4.2 control; grouped@5 68.6 vs 68.1 (same engine, same metric, 13.4.2 registry). NHANES J within 0.02. Sepsis set A prediction .600 (13.3.0 .593); concurrent arm B .592, recall@5 28.9 %, flag 18.1 % (13.3.0: .534/21.6 %/14.8 %). On the development data the set-B AUROC criterion (≥ .65) would not be met; we proceed to the single quarantined test without further changes to the sepsis logic. Table of all arms: `eval/results/gate_14_0_0/ENGINE_CHANGES_v6.md`.
+*Development-log continuation 4 (2026-10-25; registry 14.1.0).* Error analysis on development eICU showed that the flat-metric loss of v14 was displacement by explained findings listed adjacent to their explaining diagnosis. Three label-independent corrections: C8 explained findings are sorted after self-standing asserted entities (probabilities unchanged); C9 an ischaemic-context MI syndrome (4th UDMI injury + ischaemia; ESC 2023 rule-in); C10 a single troponin above the 99th URL now maps to a new finding "myocardial injury, acuity undetermined" (4th UDMI §3), with acute injury reserved for serial rise/fall — the same logic already applied to creatinine (reduced GFR, chronicity undetermined). The eICU infarction group accepts the new finding as it accepted the acute-injury finding. Registry 14.1.0 also carries the MASLD and PSGN rules (C5). Gate 14.1.0 (unit tests, eICU, set A) is running; quarantined data remain unopened.
+*Development-log continuation 5 (2026-10-25; gate 14.1.0, final development numbers).* Unit lane: pytest 689/689, hard batteries 151/151, 124/124, 77/78 (same pre-existing miss). eICU demo (2,314 stays, labs-only, encounter = icu): flat top-3/5/10 **48.5 / 60.8 / 74.1 %** (14.0.0: 43.8/58.4/73.8; same-engine 13.4.2 control 47.7/60.9/75.5; original 13.4.2 49.3/63.7/76.9); two-tier@1/3/5 32.3/62.3/71.7; grouped@1/5/10 31.0/68.8/78.4; group recall@5 anaemia 81.6, sepsis 49.5, diabetes 44.7, AMI 82.1, AKI 78.9, CKD 39.9, HF 79.3, GI bleed 76.6. C8–C10 recovered the flat loss of 14.0 to within the same-engine control (−0.1 at top-5); the residual ≈ −2.9 vs the original 13.4.2 at top-5 is attributable to the ABG unit fix (≈ −1.3; previously dropped analytes now compete for slots) and KDIGO-correct CKD behaviour (≈ −1.5). Set A concurrent (post-C7, unchanged): labs .559, labs + vitals .592, flag 13.0 / 18.1 %. Remaining misses were reviewed and are not addressed by further rules: diabetes misses are mostly uncoded in the top-10 because real anaemia/AKI/sepsis outrank a single glucose (no single-glucose diabetes rule by design); sepsis misses are mostly stays whose lab panel contains no sepsis signal. **Development declared closed at this state; FREEZE_v14 follows and quarantined data are opened once, with the control arm = frozen registry 13.3.0 under the same v6 engine (the 13.3.0-era engine is not reconstructable; the control therefore isolates registry effects, and engine effects are carried by the same-engine eICU controls above).**
+*Gate 14.1.0 closed (2026-10-25, exit 0 on all lanes).* Set A prediction (labs first 24 h): sepsis-group AUROC **0.600 (0.575–0.625)**, unchanged from 14.0.0 (13.3.0: 0.593; logistic reference 0.691); recall@5 33.3 %, flag rate 17.4 % (≤ 20 % criterion met on dev). FREEZE_v14 written immediately after this entry; quarantine opened once.
+
+**Amendment 14 — validation outcome (2026-10-25, one shot after `FREEZE_v14_20261025`).** MIMIC-IV demo (235 admissions, all coded lab-detectable diagnoses): top-5 47.9 %, top-1 ≈ 18 % — criterion (≥ 65 / ≥ 45) **failed** in both arms (control 13.3.0 registry under the same engine 50.1 %); the arm difference is CKD recall (27.7 vs 50.8 %), a KDIGO-chronicity consequence, while AKI (56.7 vs 52.2) and infarction (71.4 vs 42.9, n = 7) improved. Sepsis-2019 set B (4,558 / 268): concurrent labs + vitals AUROC 0.638 (0.601–0.675) vs control 0.639 — criterion ≥ 0.65 **failed**, flag rate 16.1 % (≤ 20 %) met; first-24-h prediction 0.610 (0.583–0.640), control 0.611; the earlier expectation (0.65–0.72) was wrong. NHANES H: all five laboratory-defined tasks within 0.03 of cycle J (met); ALT elevation 0.880 vs control 0.742 (MASLD rules; above the band); CKD self-report −0.07 in both arms. Healthy sweep 0/1000; NHANES guideline-healthy 1/246 (both arms); perturbation 752/755. The post-freeze PMC-case criterion remains pending (collection only now permitted). Full table: `eval/results/validation_v14/VALIDATION_REPORT_v14.md`. Interpretation carried into the paper: 14.1 is a correctness release, neutral-to-negative on coded-diagnosis recall, positive on its specific targets; 13.3.0 remains the pre-registered primary analysis.
+
+*Post-validation engine change v6.1 (declared 2026-10-25 BEFORE any run).* The perturbation fuzz on the frozen engine (synthetic hard battery, not quarantined data) exposed a fusion asymmetry: an anchor-strength expert-syndrome hit (0.95; the published decision limit itself) was floored at 0.90 × vote = 0.855 when a prior-driven layer disagreed, and therefore ranked below a weaker single-vote finding (0.88) that had no corroborating layer at all (sodium 121 mmol/L listed under uric acid 8.9 mg/dL). Change: for the primary diagnosis of an anchor-strength constellation the floor is the full constellation vote. This is a label-independent ordering principle (anchor > strong > pattern > supportive), not a case rule. Procedure: unit gate + eICU dev run; if the dev gate passes, the quarantined analyses are re-run once as a **second look** and BOTH looks are reported side by side (first look = v6.0, already recorded above); the second look does not replace the first.
+
+### Amendment 15 — engine v7 "causal attribution" (declared 2026-10-25 BEFORE any evaluation on the new quarantine; `eval/quarantine_v15/` downloaded and unopened)
+
+**Why.** The Amendment 14 validation showed no net recall gain of 14.1 over 13.3.0, and the development error audit (eICU, `eval/error_audit_v7.py`) located the main mechanism: the finding-demotion pass listed every laboratory finding beneath the *best-scoring* diagnosis and labelled it "explained by" that diagnosis even when no causal relationship exists (e.g. anaemia "explained by" hyperglycaemia). The two-tier output therefore hid findings under unrelated diagnoses, while unrelated diagnoses were promoted into the first lines. All v7 changes are guideline-sourced attribution/grading rules, developed only on development data; none uses an outcome-fitted threshold.
+
+**Closed list of changes (engine v7; registry 14.1.0 unchanged).**
+- C11 *causal attribution map* (`_CAUSAL_EXPLANATION`, `_can_explain`, `_causal_dx`): a diagnosis may be listed as the explanation of a finding only when (a) its fired evidence covers the finding's defining analytes, or (b) the pair is in a curated cause→finding map (guideline-sourced per entry). A finding with no recognised cause in the panel keeps its own score and no `explained_by`; when a diagnosis ≥ 0.80 is present the finding ties with it (diagnosis listed first) but is never capped to 95 % of an unrelated entity. The same gate applies to the subsumption pass (diagnosis → finding). Diagnosis → diagnosis subsumption is unchanged.
+- C12 *renal parsimony* (KDIGO 2012 chronicity): presumptive AKI by imputed baseline, zero chronicity markers, no documented CKD → CKD ≤ 0.49 (symmetric with the existing "documented CKD, no trajectory → AKI ≤ 0.49").
+- C13 *non-thyroidal illness in acute care* (Fliers 2015; ATA/AACE 2012): ESL `nti_acute_care` — acute-care encounter, TSH 0.1–10 mIU/L with ≥ 1 supportive feature, no thyroid medication/history → `euthyroid_sick_syndrome_nontr` (pattern 0.80) with caps on central/subclinical thyroid diagnoses.
+- C14 *urate grading* (ACR 2020; Cairo-Bishop): urate 7.0–9.0 mg/dL = pattern (0.80), ≥ 9.0 = strong (0.88); previously any value > 7.0 was 0.88.
+- C15 *total calcium without albumin* (Cooper & Gittoes 2008): hypocalcaemia anchor/strong grades require albumin-corrected or ionised calcium; an uncorrected total calcium < 7.5 mg/dL is a pattern-grade finding.
+- Causal-map entries added during the development gate are allowed (recorded in `ENGINE_CHANGES_v6.md`, v7 section); registry edits are not.
+
+**Data status.** MIMIC-IV demo, Sepsis-2019 set B and NHANES H were opened in the Amendment 14 validation and are now *development* data. New quarantine (`eval/quarantine_v15/`, fetched by `fetch_q15.sh` before this amendment; never read by any script yet): NHANES 2015–2016 (cycle I) and Sepsis-2019 training set B2 = 5,000 set-B records disjoint from the Amendment 14 set-B subsample (`list_B2`).
+
+**Development gate (must pass before freeze).** pytest full; hard batteries 1–3 no regression (151/151, 124/124, 77/78); healthy sweep 0 fires; perturbation fuzz no new breaks (≤ 3/755); eICU demo labs-only 2,314 stays **flat top-5 > 60.8 % and two-tier@3 ≥ 62.3 %** (14.1 values) — i.e. v7 must beat the previous engine on both the flat and the two-tier metric, not trade one for the other; MIMIC-IV demo (now dev) top-5 reported.
+
+**Pre-stated success criteria on the quarantine (one run after `FREEZE_v15`, no re-tuning):**
+1. NHANES I: diabetes, CKD, anaemia, iron-deficiency, hypercholesterolaemia, hyperuricaemia AUROC each within 0.03 of the NHANES H values of 14.1; healthy-subset false-flag rate ≤ 1 %.
+2. Sepsis-2019 set B2 (5,000 records), concurrent framing, arm B: AUROC not lower than set B 14.1 (0.638) by more than 0.02; flag rate ≤ 20 %.
+3. Safety: healthy 0/1000; fuzz no new breaks.
+**Interpretation rule:** gate passed + criteria met → v7 reported as the shipped engine with 14.1.0, and the eICU/MIMIC gains are reported as *development* gains (not external validation of recall). Gate failed → v7 not shipped; 14.1/v6.1 remains. Both looks are reported verbatim either way.
+
+*Amendment 15 — additions during the development gate (2026-10-25, quarantine still unopened).*
+- C13 revised after the first 300-stay smoke: the syndrome fired on a NORMAL TSH with one inflammatory marker (ICU prevalence ≈ everyone); it now requires an abnormal thyroid test in the illness pattern (low T3 / FT4 < 0.9 with non-suppressed TSH; TSH 0.1–0.4; or recovery TSH 4.5–10). 
+- C11 refinement: the explainer of a finding is the best-supported related diagnosis (analyte coverage **or** causal map); an explainer < 0.80 cannot pull a better-established finding beneath it (dev example: Hb 7.3 anaemia capped to 0.58 under a 0.61 'acute chest syndrome' leaf).
+- C16 context guard `sickle_complication_context_guard` (NHLBI 2014; ASH 2020): acute chest syndrome / vaso-occlusive crisis capped at 0.3 unless sickle cell disease is documented or HbS is measured — a registry leaf (Hb < 9 + pO2 < 70) lacked the requirement; guard trigger Hb < 9 g/dL (the leaf threshold), after a healthy-panel unit test caught the first Hb < 13 version.
+- **New pre-specified SECONDARY metric — "panel-supported recall"** (`eval/realdata/panel_supported_metric.py`): a clinician label counts only when its single guideline laboratory criterion is met in the input panel (thresholds = the syndrome-layer definitions, listed in the script; groups without a single criterion — sepsis, cirrhosis, GI bleeding, malnutrition, alcohol withdrawal — excluded). Rationale: admission-level eICU labels are frequently coded from values outside the first panel (dev examples: hypocalcaemia coded with albumin-corrected calcium 9.3; pancreatitis with lipase 158 U/L; hypothyroidism without a TSH). The flat metric stays primary for comparability with 13.3.0/13.4.2; the panel-supported metric is reported for every arm from the same per-stay files (no re-run; computed retrospectively for 13.4.2, v6, 14.1 and v7). First dev look (300 stays, before the gate): 14.1 flat 61.9 → panel-supported 85.3 % top-5 / 94.6 % top-10 (n = 204 of 362 labels; 48 not supported by the panel, 43 analyte absent, 67 excluded groups).
+
+**Amendment 15 — development-gate outcome (2026-10-25, before FREEZE_v15).** Numeric gate NOT met (parity: eICU flat top-5 60.8 = 60.8; two-tier@3 62.0 vs 62.3; two-tier@1 33.1 vs 32.3; fuzz 753/755; healthy 0/1000; pytest 689/689 after one unit-test-caught guard fix). No recall improvement is claimed. v7 is retained as a correctness release at parity (false-attribution removal, context guards, grading); the quarantine criteria below are non-inferiority criteria and the shipped engine reverts to v6.1 if any fails. Full table: `eval/results/gate_v7/GATE_v7_RESULT.md`. Panel-supported secondary metric (all arms, retrospective from per-stay files): 13.4.2 81.6 / v6 77.8 / 14.1 78.0 / v7 78.0 % top-5 — the 13.4.2 margin is entirely CKD (single-creatinine chronicity, retained as KDIGO-correct) and leukocytosis-beneath-sepsis.
+
+**Amendment 15 — quarantine outcome (2026-10-25, one shot after `FREEZE_v15_20261025`).** All three non-inferiority criteria met: NHANES I AUROC diabetes .924 / CKD .962 / anaemia .983 / iron deficiency .972 / hypercholesterolaemia .886 / hyperuricaemia .955 (largest deviation from H/J 0.018), healthy 0/79; Sepsis set B2 concurrent arm B .635 (.597–.673), flag 14.2 %; healthy 0/1000, fuzz 753/755. Secondary prediction framing on B2: .588 (logistic .679). Two data-preparation corrections (pid type; recomputed NHANES ACR column) are documented; no engine/registry/eval file changed after the freeze. v7 ships at recall parity with no improvement claim; full report `eval/results/validation_v15/VALIDATION_REPORT_v15.md`.
+
+## Supplementary Note 2 — LLM comparison protocol
+
+### Supplementary Note — Protocol of the blinded LLM comparison (B3 / B4 / B8) and reviewer additions
+
+### 1. Design
+Paired, blinded comparison of Hemoglyph with a general-purpose large language model on identical inputs: the first laboratory panel (≥ 8 analytes) of adult eICU-CRD demo stays, with age and sex. No clinical text, history, vitals or admission diagnosis was shown to either system.
+
+| item | value |
+|---|---|
+| stays | 400 (B3 n = 100, seed 20261021; B4 n = 60 out-of-sample, seed 20261022; B8 n = 240 disjoint, seed 20261023) |
+| scorable labels | 596 (clinician diagnosis strings → 31 groups via the frozen regex map `eval_eicu.GROUPS`; label counted only when the group's key analyte was in the panel) |
+| LLM | GPT-4-class general-purpose model accessed through the Arena.ai Agent Mode interface; model identity withheld in the manuscript at the platform's request and **disclosed to the editor on request** |
+| dates | B3 2026-10-21; B4 2026-10-22; B8 2026-10-23; test–retest 2026-10-24; prompt-sensitivity arm 2026-10-25 |
+| decoding | interface default; temperature not user-controllable (hence the test–retest arm) |
+| prompt P1 | "You are a clinical laboratory medicine expert. Given the following laboratory panel of an adult ICU patient (first 24 h of admission), list the most likely diagnoses or clinically important laboratory syndromes this panel supports. Return ONLY JSON of the form {"diagnoses":[{"name":"...","probability":0.0-1.0}]} with at most 10 entries, ordered by probability. Do not include explanations. Patient: {age}-year-old {sex}. Panel: {analyte value unit …}" |
+| prompt P2 (sensitivity arm, 40 panels) | "You are an ICU attending physician writing the admission problem list. From the first-24-hour laboratory panel of this adult ICU patient (age, sex and values only), list up to 10 diagnoses or clinically important laboratory syndromes you would record, ranked from most to least likely, using standard ICU diagnosis names. Output JSON {diagnoses:[{name, probability}]}, no explanations." |
+| batching | panels presented in batches of 40 (B8) / 20 (B3, B4), each identified only by a case number |
+| blinding | the panel file (`b8_blind_panels_n240.json`) contains no labels and no engine output; the key file (`b8_key_n240.json`) was generated separately and opened only by the scoring script after all read-outs were stored |
+| scoring | free-text names mapped to the 31 groups by a fixed synonym regex map (`llm_zero_shot.SYN`), written before B3 and unchanged since; same recall@k definition as the engine |
+| engine arm | original analysis: engine v5.1 ranks (historical); **re-scored for the revision with the frozen engine v7 / registry 14.1.0** (`llm_vs_v7_cluster_n400.md`) |
+| statistics | original: label-level Wilson CI and exact McNemar. Revision: stay-cluster bootstrap (4,000 resamples) and Durkalski cluster-adjusted McNemar; ICC and design effect reported |
+| reproducibility | LLM: 40 B8 panels re-read blind one day later (P1 read 2) and with prompt P2; engine: deterministic (byte-identical outputs across runs and freezes) |
+| outputs released | `llm_agent_b3_n100.json`, `b4_llm_blind_n60.json`, `b8_llm_blind_n240.json`, `b8_llm_rerun40.json`, `b8_llm_prompt2_n40.json`, keys, panels, scoring scripts |
+
+### 2. Results after re-scoring with engine v7 (n = 400, 596 labels; stay-clustered inference)
+
+| metric | Hemoglyph v7 (flat) | LLM (P1) | difference | Durkalski p |
+|---|---|---|---|---|
+| recall@1 | 24.0% (20.6–27.7) | 28.2% (24.6–32.0) | −4.2 pp (−7.5 to −0.9) | 0.013 |
+| recall@3 | 47.0% (42.6–51.5) | 50.8% (46.5–55.1) | −3.9 pp (−7.4 to −0.3) | 0.041 |
+| **recall@5 (primary)** | **60.7% (56.5–65.0)** | **59.6% (55.3–63.6)** | **+1.2 pp (−2.5 to +5.1)** | **0.54** |
+| recall@10 | 72.0% (67.9–75.8) | 65.1% (60.8–69.3) | +6.9 pp (+3.3 to +10.5) | 0.0002 |
+| MRR | 0.391 | 0.408 | −0.017 (−0.043 to +0.008) | — |
+| absent from list | 21.8% | 34.9% | | |
+| two-tier recall@5 (secondary, post hoc) | 69.8% (65.7–73.7) | 59.6% | +10.2 pp (+6.7 to +13.9) | < 0.0001 |
+
+ICC of the paired recall@5 difference = 0.04 (design effect 1.04); clustering therefore changes the inference little, but the **engine version does**: with the historical v5.1 engine the primary comparison favoured Hemoglyph (64.4 vs 59.6%, p = 0.009); with the frozen v7 engine — which trades flat recall for guideline-correct semantics (CKD, troponin) — the primary comparison is **equivalent** (p = 0.54). The LLM is better at ranks 1–3; the engine lists more diagnoses overall (recall@10, absent rate) and is better when umbrella syndromes are credited. The manuscript reports the v7 result as primary and the v5.1 result as historical.
+
+### 3. Prompt sensitivity and test–retest (40 panels, 91 labels)
+
+| arm | r@1 | r@3 | r@5 | r@10 | absent |
+|---|---|---|---|---|---|
+| LLM P1 read 1 | 26.4 | 51.6 | 61.5 | 69.2 | 30.8 |
+| LLM P1 read 2 | 28.6 | 54.9 | 67.0 | 71.4 | 28.6 |
+| LLM P2 | 25.3 | 48.4 | 61.5 | 74.7 | 25.3 |
+| engine v7 (flat / two-tier) | 19.8 / 29.7 | 45.1 / 65.9 | 64.8 / 72.5 | 73.6 / 83.5 | 16.5 |
+
+Label-level recall@5 agreement between LLM reads: 83.5–89.0% (κ 0.69 for P1 read 1 vs read 2). Prompt-induced variation (±5 pp at k = 5) is of the same size as run-to-run variation, and both are larger than the v7–LLM difference on the primary metric.
+
+### 4. Training-data contamination
+The eICU-CRD demo is public (PhysioNet) and may be present in the LLM's pre-training corpus. The LLM received only the numerical panel, age and sex, never a stay identifier; recovering admission-level diagnosis strings from ~30 numerical values by memorisation is implausible, but cannot be excluded, and would bias the comparison **in favour of the LLM**. Hemoglyph has no training phase and cannot be contaminated.
+
+### 5. Limitations of this arm
+One model class, two prompts, one run per prompt (plus one re-read), no retrieval augmentation or chain-of-thought prompting, scoring by regex rather than clinician adjudication, admission-level labels. The arm is an author-run self-baseline, not a vendor benchmark.
+
+## Supplementary Table S1/S3 — Cohort and participant flow
+
+### Table S1 — Participant flow and baseline characteristics of all evaluation cohorts (TRIPOD+AI 14a/b, 13a)
+
+| cohort | source | step1 | step2 | step3 | analysed | age | female | inputs | labels | split |
+|---|---|---|---|---|---|---|---|---|---|---|
+| eICU-CRD demo v2.0.1 (PhysioNet, open) | 186 US hospitals, ICU stays 2014–15 | ICU stays in demo: 2520 | age ≥18: 2512 | ≥8 mapped analytes in −6…+24 h: 2314 | 2314 stays; 2707 coded target labels (31 groups), 2432 scorable (key analyte measured) | median 66 (IQR 53–77) | 39.9% | median 31 analytes/stay | clinician problem-list diagnoses (1073 distinct strings) → regex map | dev: first 1200 stays by id order (ext tuning); held-out: all 2314 reported with amendments logged |
+| NHANES 2005–2006 | US civilian non-institutionalised population, mobile exam centre | examined: 10348 | age ≥18: 5563 | with biochemistry + CBC: 5334 | see run log participants | median 43 (IQR 27–62) | 52.0% | ≈18–25 analytes (BIOPRO, CBC, GHB, GLU, FERTIN/FETIB, HDL/TRIGLY, ALB_CR) | self-report (DIQ/MCQ/KIQ) + measured HbA1c/eGFR/Hb criteria | held-out (no tuning on any cycle); 2017–18 used first, 2005–16 added as temporal external validation |
+| NHANES 2007–2008 | US civilian non-institutionalised population, mobile exam centre | examined: 10149 | age ≥18: 6228 | with biochemistry + CBC: 5995 | see run log participants | median 49 (IQR 33–64) | 50.7% | ≈18–25 analytes (BIOPRO, CBC, GHB, GLU, FERTIN/FETIB, HDL/TRIGLY, ALB_CR) | self-report (DIQ/MCQ/KIQ) + measured HbA1c/eGFR/Hb criteria | held-out (no tuning on any cycle); 2017–18 used first, 2005–16 added as temporal external validation |
+| NHANES 2009–2010 | US civilian non-institutionalised population, mobile exam centre | examined: 10537 | age ≥18: 6527 | with biochemistry + CBC: 6360 | see run log participants | median 47 (IQR 32–63) | 51.4% | ≈18–25 analytes (BIOPRO, CBC, GHB, GLU, FERTIN/FETIB, HDL/TRIGLY, ALB_CR) | self-report (DIQ/MCQ/KIQ) + measured HbA1c/eGFR/Hb criteria | held-out (no tuning on any cycle); 2017–18 used first, 2005–16 added as temporal external validation |
+| NHANES 2011–2012 | US civilian non-institutionalised population, mobile exam centre | examined: 9756 | age ≥18: 5864 | with biochemistry + CBC: 5615 | see run log participants | median 47 (IQR 31–62) | 50.6% | ≈18–25 analytes (BIOPRO, CBC, GHB, GLU, FERTIN/FETIB, HDL/TRIGLY, ALB_CR) | self-report (DIQ/MCQ/KIQ) + measured HbA1c/eGFR/Hb criteria | held-out (no tuning on any cycle); 2017–18 used first, 2005–16 added as temporal external validation |
+| NHANES 2013–2014 | US civilian non-institutionalised population, mobile exam centre | examined: 10175 | age ≥18: 6113 | with biochemistry + CBC: 5924 | see run log participants | median 47 (IQR 32–62) | 52.3% | ≈18–25 analytes (BIOPRO, CBC, GHB, GLU, FERTIN/FETIB, HDL/TRIGLY, ALB_CR) | self-report (DIQ/MCQ/KIQ) + measured HbA1c/eGFR/Hb criteria | held-out (no tuning on any cycle); 2017–18 used first, 2005–16 added as temporal external validation |
+| NHANES 2015–2016 | US civilian non-institutionalised population, mobile exam centre | examined: 9971 | age ≥18: 5992 | with biochemistry + CBC: 5735 | see run log participants | median 48 (IQR 32–63) | 51.9% | ≈18–25 analytes (BIOPRO, CBC, GHB, GLU, FERTIN/FETIB, HDL/TRIGLY, ALB_CR) | self-report (DIQ/MCQ/KIQ) + measured HbA1c/eGFR/Hb criteria | held-out (no tuning on any cycle); 2017–18 used first, 2005–16 added as temporal external validation |
+| NHANES 2017–2018 | US civilian non-institutionalised population, mobile exam centre | examined: 9254 | age ≥18: 5856 | with biochemistry + CBC: 5533 | see run log participants | median 51 (IQR 33–65) | 51.7% | ≈18–25 analytes (BIOPRO, CBC, GHB, GLU, FERTIN/FETIB, HDL/TRIGLY, ALB_CR) | self-report (DIQ/MCQ/KIQ) + measured HbA1c/eGFR/Hb criteria | held-out (no tuning on any cycle); 2017–18 used first, 2005–16 added as temporal external validation |
+| UCI HCV (Hoffmann 2018) | 615 blood donors / hepatitis C patients, Germany | all records | complete key analytes | — | 615 records | see dataset | see dataset | 4–10 analytes | clinical category (donor / hepatitis / fibrosis / cirrhosis) | held-out, single pass |
+| ILPD Indian Liver Patient Dataset | 583 patients, Andhra Pradesh | all records | complete key analytes | — | 583 records | see dataset | see dataset | 4–10 analytes | liver patient yes/no | held-out, single pass |
+| UCI Thyroid (Garavan) | Garvan Institute, 1980s | all records | complete key analytes | — | 3162 records | see dataset | see dataset | 4–10 analytes | hypo/hyper-thyroid classes | held-out, single pass |
+
+| PhysioNet/CinC Sepsis 2019 (training set A, every 4th file) | US ICU hourly records (Reyna 2020) | files sampled: 4937 | ≥3 lab analytes in ICU h 1–24: 4843 | — | 4843 patients (438 Sepsis-3 at any hour) | see dataset | see dataset | labs of first 24 h + temperature | Sepsis-3 onset label | held-out, single-target prediction |
+| Sepsis 2019 — post-hoc concurrent re-analysis (SAP Am. 13) | same files | sepsis patients 438; non-sepsis 4,499 | ≥3 labs in 12 h around onset: 388 cases; seeded dwell-time-matched control windows 772 (2:1) | — | 1,160 windows | see dataset | see dataset | arm A labs; arm B labs + HR/SBP/MAP/RR/Temp | Sepsis-3 onset in window | post-hoc, exploratory (Table S12) |
+All cohorts are public; no participant was contacted. eICU: exclusion for <8 mapped analytes is the only data-driven exclusion (stays with sparse panels are not interpretable by any lab-only system). NHANES: participants without biochemistry/CBC subsample were not included. No imputation of missing analytes anywhere: absent analytes are treated as 'not measured' by the engine.
+
+*Companion to `Paper1_Hemoglyph_npj_EN_v7_R1` and `Paper1_Hemoglyph_SampleStyle_v7_R1`. Every table below is generated from a file in `eval/results/` named in its heading; the numbers are not retyped.*
+
+Contents: Supplementary Note 1 (SAP and amendments) = `SAP_Hemoglyph_v1.md`; Note 2 (LLM protocol) = `LLM_COMPARISON_PROTOCOL.md`; Note 3 (fusion and Theory-of-Evidence algorithm) below; Table S1 (cohort flow) = `TABLE_S1_cohort_flow.md`; Tables S6–S12 below; Supplementary Figure S (historical LLM comparison) below; TRIPOD+AI checklist = `TRIPOD_AI_checklist_Hemoglyph.md`.
+
+---
+
+## Supplementary Note 3 — Fusion and Theory-of-Evidence layer, as implemented (`analyse_gidlines.py`, `tarkib_ensemble`, `_yager_binary_combine`, v7)
+
+**Inputs.** For each candidate entity *D* the five layers return a vote in [0, 1] or abstain: rule engine *v_R* (abstains when < 0.05, because the rule layer reports support only, never refutation), Bayesian network *v_B*, fuzzy engine *v_F*, knowledge graph *v_G*, risk models *v_K*. Let *P* be the set of participating (non-abstaining) layers.
+
+**Step 1 — weighted mean with a domain profile.** Weights *w_m* come from the entity's domain profile (Table N3-1); they are renormalised over *P* (*ŵ_m = w_m / Σ_{m∈P} w_m*). The weighted mean is *μ = Σ ŵ_m v_m*. The share of profile weight that spoke, *s = Σ_{m∈P} w_m / Σ_all w_m*, penalises thin evidence: *score₀ = μ · (0.60 + 0.40 s)*. For guideline-anchored entities with a rule vote *s ≥ 0.75*; for a met expert-syndrome constellation *s = 1*.
+
+**Step 2 — conflict and confidence.** Conflict *c* = weighted mean absolute pairwise disagreement, *c = Σ_{i<j} ŵ_i ŵ_j |v_i − v_j| / Σ_{i<j} ŵ_i ŵ_j*. Confidence = (1 − *c*) if |*P*| > 1 else 0.4, multiplied by min(1, 0.45 + 0.2 |*P*|) and by (0.5 + 0.5 *r*), where *r* is the input-reliability factor (OCR confidence; 1 for structured input).
+
+**Step 3 — discord shrinkage toward the sceptical cluster.** Soft sceptic membership *m_i = clip((μ − v_i)/0.15, 0, 1)*; sceptic weight *W = Σ ŵ_i m_i*; sceptic target *T = Σ v_i ŵ_i m_i / W*; shrink *λ = min(0.45, 0.45 · c · min(1, W/0.35))*; *score₁ = (1 − λ) score₀ + λ T*.
+
+**Step 4 — floors.** If *v_R ≥ 0.70* (red-flag rule): *score ≥ 0.65 v_R*. Met expert constellation: *score ≥ 0.90 v_R*; anchor-strength (definitional) constellation: *score ≥ v_R*.
+
+**Step 5 — mass assignment and reliability discounting (Shafer discounting).** Discount factor per layer *α_m = ρ_m · (0.5 + 0.5 r) · min(1, w_m^profile / w_m^default)*, with *ρ_m = min(0.95, w_m^default / 0.35)* (Table N3-1). If only one layer participates and the entity is not anchored, *α* is multiplied by 0.70 (single-source discount). On the binary frame Θ = {D, ¬D}: rule layer (one-sided evidence) *m(D) = α v_R, m(¬D) = 0, m(Θ) = 1 − α v_R*; every other layer *m(D) = α v, m(¬D) = α(1 − v), m(Θ) = 1 − α*.
+
+**Step 6 — closed-form Yager combination.** With *n* masses (*d_i, n_i, t_i*): *q(D) = Π(d_i + t_i) − Π t_i*, *q(¬D) = Π(n_i + t_i) − Π t_i*, *q(Θ) = Π t_i*, conflict mass *K = 1 − q(D) − q(¬D) − q(Θ)*. Yager's rule assigns *K* to Θ instead of renormalising: *m(Θ) ← q(Θ) + K*. The closed form is used because a sequential pairwise Yager fold is not associative. Outputs: Belief = *m(D)*, Plausibility = *m(D) + m(Θ)*, ignorance = *m(Θ)*, conflict = *K*.
+
+**Step 7 — evidence state.** `conflicting` if pairwise conflict *c ≥ 0.45*; else `supported` if Bel ≥ 0.5; else `refuted` if Pl ≤ 0.35; else `insufficient` if Pl − Bel ≥ 0.40; else `weak`. A met expert constellation that lands in conflicting/weak/insufficient is reported `supported`.
+
+**Step 8 — ceilings and final score.** Single non-rule layer: *score ≤ (Bel + Pl)/2*. `insufficient` single-source non-anchored non-finding entity: *score ≤ 0.49* (below the 0.5 assertion point). Entities whose rules read only ubiquitous analytes: *score ≤ 0.35*. Finally *score_cal = score* if confidence ≥ 0.3, else *score · confidence/0.3* when score < 0.5 and *0.5 + (score − 0.5)·confidence* otherwise. **This final value is the rank score; it is not a probability** (calibration slope 0.25, main text Section on calibration). Ranking uses the rank score; Bel/Pl/state are displayed, not ranked.
+
+**Table N3-1. Fusion weights, profiles and reliability.**
+
+| profile (trigger domains) | rule | Bayesian | fuzzy | graph | risk |
+|---|---:|---:|---:|---:|---:|
+| default | 0.35 | 0.25 | 0.20 | 0.10 | 0.10 |
+| toxicology (toxicology, TDM, poisoning) | 0.55 | 0.15 | 0.15 | 0.05 | 0.10 |
+| critical (critical care, acid–base, blood gas, electrolyte, emergency) | 0.50 | 0.20 | 0.15 | 0.05 | 0.10 |
+| autoimmune (autoimmune, rheumatology, immunology, vasculitis) | 0.30 | 0.20 | 0.20 | 0.25 | 0.05 |
+| oncology (oncology, tumour markers, haematologic malignancy) | 0.30 | 0.35 | 0.15 | 0.15 | 0.05 |
+| endocrine (endocrine, thyroid, adrenal, pituitary, reproductive) | 0.35 | 0.25 | 0.25 | 0.10 | 0.05 |
+| cardiometabolic (cardiovascular, lipid, metabolic, diabetes) | 0.30 | 0.20 | 0.15 | 0.10 | 0.25 |
+| reliability ρ_m = min(0.95, w/0.35) | 0.95 | 0.71 | 0.57 | 0.29 | 0.29 |
+
+Constants: `RULE_ABSTAIN_BELOW` 0.05, `SCEPTIC_SOFTNESS` 0.15, `MAX_DISCORD_SHRINK` 0.45, `SINGLE_SOURCE_DISCOUNT` 0.70, `RED_FLAG_RULE_VOTE` 0.70, `RED_FLAG_FLOOR_FRACTION` 0.65, `GUIDELINE_ANCHOR_MIN_WEIGHT_SHARE` 0.75, `INSUFFICIENT_CEILING` 0.49, `NONSPECIFIC_ONLY_CEILING` 0.35. The weights were set by the first author a priori and never fitted; their influence is measured in Table 5 (uniform weights −1.4 points; Dempster instead of Yager −0.1) and Table S12.
+
+**Table N3-2. The 27 cross-field consistency identities of the post-OCR solver (`ocr_consistency.py`, `CHECKS`).** Each identity is evaluated when all its analytes are present; a failed identity triggers a search for a single-field repair (decimal shift ×0.1–×1000, glyph confusions 1↔7, 0↔8, 5↔6, 3↔8, 6↔8, 2↔7, 4↔9, 0↔6, 1↔4, 6↔9) that is kept only if every identity involving that field then passes. The solver is structural (no data, no model) and acts only on the OCR path, not on the structured-input evaluations in this paper.
+
+| # | identity | analytes |
+|---|---|---|
+| 1 | `mchc_identity` | hemoglobin, hematocrit, mean_corpuscular_hemoglobin_concentration |
+| 2 | `mcv_identity` | hematocrit, red_blood_cell_count, mean_corpuscular_volume |
+| 3 | `mch_identity` | hemoglobin, red_blood_cell_count, mean_corpuscular_hemoglobin |
+| 4 | `rule_of_three` | hemoglobin, hematocrit |
+| 5 | `differential_sum` | neutrophils_percent, lymphocytes_percent, monocytes_percent, eosinophils_percent, basophils_percent |
+| 6 | `anc_identity` | white_blood_cell_count, neutrophils_percent, neutrophil_count_absolute |
+| 7 | `alc_identity` | white_blood_cell_count, lymphocytes_percent, lymphocyte_count_absolute |
+| 8 | `direct_le_total_bilirubin` | total_bilirubin, direct_bilirubin |
+| 9 | `bilirubin_sum` | total_bilirubin, direct_bilirubin, indirect_bilirubin |
+| 10 | `albumin_le_total_protein` | albumin, total_protein |
+| 11 | `globulin_identity` | albumin, total_protein, globulin |
+| 12 | `ldl_hdl_le_tc` | total_cholesterol, ldl_cholesterol_calculated, ldl_cholesterol_direct, hdl_cholesterol |
+| 13 | `friedewald` | total_cholesterol, hdl_cholesterol, triglycerides, ldl_cholesterol_calculated, ldl_cholesterol_direct |
+| 14 | `non_hdl_identity` | total_cholesterol, hdl_cholesterol, non_hdl_cholesterol |
+| 15 | `urea_bun_ratio` | blood_urea_nitrogen, urea |
+| 16 | `anion_gap` | sodium, chloride, bicarbonate, anion_gap, potassium |
+| 17 | `tsat_identity` | serum_iron, total_iron_binding_capacity, transferrin_saturation |
+| 18 | `egfr_creatinine_monotonic` | creatinine, egfr_ckd_epi_creatinine |
+| 19 | `amc_identity` | white_blood_cell_count, monocytes_percent, monocyte_count_absolute |
+| 20 | `aec_identity` | white_blood_cell_count, eosinophils_percent, eosinophil_count_absolute |
+| 21 | `abc_identity` | white_blood_cell_count, basophils_percent, basophil_count_absolute |
+| 22 | `ag_ratio_identity` | albumin, globulin, albumin_to_globulin_ratio |
+| 23 | `vldl_identity` | triglycerides, vldl_cholesterol |
+| 24 | `eag_identity` | hemoglobin_a1c, estimated_average_glucose |
+| 25 | `corrected_calcium_identity` | calcium_total, albumin, corrected_calcium_for_serum_albumin |
+| 26 | `transferrin_tibc` | transferrin, total_iron_binding_capacity |
+| 27 | `ldl_direct_vs_calculated` | ldl_cholesterol_direct, ldl_cholesterol_calculated, triglycerides |
+
+---
+
+**Table N3-3. Ablation arm definitions (`eval/ablation/run_ablation.py`).**
+
+| arm | exact change |
+|---|---|
+| no_bayesian / no_fuzzy / no_graph / no_risk | that layer's vote set to abstain in fusion (`HEMOGLYPH_DISABLE_LAYERS`) |
+| no_rule | the rule_engine channel set to abstain; both registry rules and expert-syndrome constellations enter fusion through this channel, so this arm is a superset of no_esl |
+| no_esl | expert syndrome layer returns no hits; registry rules intact |
+| dempster | conflict mass renormalised (Dempster) instead of assigned to Θ (Yager) |
+| uniform_w / w_rule_heavy / w_rule_light | weights and all profiles replaced as given in Table S12; reliability ρ recomputed from the new weights |
+| no_shrink | MAX_DISCORD_SHRINK = 0 and SINGLE_SOURCE_DISCOUNT = 1 |
+| anchor_only | registry with only the 272 curated anchor rules executable |
+| no_unverified | 28 `unverified_source` rules non-executable |
+| anchor_only_no_esl | 2 × 2 cell added in revision round 4: anchor-only registry **and** syndrome layer off (flat@5 48.2 %, Δ −12.6 (−14.5 to −10.6); two-tier@5 60.9 %; mean AUROC 0.708). Interaction: AI-drafted rules contribute 0.9 points with the syndrome layer present and 3.1 points without it; the syndrome layer contributes 9.5 points with the full registry and 11.7 with anchors only |
+
+## Supplementary Table S6 — Calibration metrics, per group and pooled (engine v7, eICU demo; `reviewer_b5_b6_v7.md`)
+
+| set | units | prev | calibration slope | calibration-in-the-large (intercept) | Brier (95% CI) | log-loss | AUROC |
+|---|---:|---:|---:|---:|---|---:|---:|
+| ALL pooled | 52689 | 0.046 | 0.25 | -2.50 | 0.117 (0.114–0.119) | 0.379 | 0.797 |
+| renal_impairment | 2266 | 0.144 | 0.25 | -2.23 | 0.236 (0.224–0.247) | 0.727 | 0.777 |
+| sepsis | 2215 | 0.130 | 0.13 | -1.28 | 0.171 (0.159–0.182) | 0.789 | 0.682 |
+| diabetes | 2247 | 0.109 | 0.14 | -1.43 | 0.150 (0.142–0.158) | 0.572 | 0.692 |
+| acute_kidney_injury | 2266 | 0.096 | 0.26 | -2.37 | 0.213 (0.204–0.223) | 0.621 | 0.774 |
+| anemia | 2207 | 0.067 | 0.36 | -2.94 | 0.244 (0.235–0.254) | 0.662 | 0.782 |
+| acute_myocardial_infarction | 668 | 0.126 | 0.23 | +nan | 0.492 (0.467–0.518) | 1.412 | 0.758 |
+| hyperkalemia | 2244 | 0.022 | 0.49 | -1.68 | 0.029 (0.025–0.033) | 0.096 | 0.917 |
+
+## Supplementary Table S6b — Cross-fitted isotonic recalibration and decision curves (`calibration_dca_v7.md`)
+
+| set | n | prev | ECE raw | ECE isotonic (cross-fit) | Brier raw | Brier iso | AUROC |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| ALL groups pooled | 52689 | 0.046 | 0.162 | 0.003 | 0.117 | 0.040 | 0.797 |
+| renal_impairment | 2266 | 0.144 | 0.289 | 0.031 | 0.236 | 0.105 | 0.777 |
+| sepsis | 2215 | 0.130 | 0.183 | 0.025 | 0.171 | 0.105 | 0.682 |
+| diabetes | 2247 | 0.109 | 0.201 | 0.024 | 0.150 | 0.093 | 0.692 |
+| acute_kidney_injury | 2266 | 0.096 | 0.282 | 0.012 | 0.213 | 0.078 | 0.774 |
+| anemia | 2207 | 0.067 | 0.349 | 0.016 | 0.244 | 0.056 | 0.782 |
+
+| decile | raw p | obs | iso p | obs |
+|---:|---:|---:|---:|---:|
+| 1 | 0.00 | 0.01 | 0.01 | 0.02 |
+| 2 | 0.00 | 0.01 | 0.01 | 0.01 |
+| 3 | 0.00 | 0.01 | 0.01 | 0.01 |
+| 4 | 0.00 | 0.02 | 0.01 | 0.01 |
+| 5 | 0.00 | 0.02 | 0.01 | 0.01 |
+| 6 | 0.00 | 0.01 | 0.01 | 0.01 |
+| 7 | 0.10 | 0.03 | 0.02 | 0.03 |
+| 8 | 0.43 | 0.05 | 0.05 | 0.05 |
+| 9 | 0.60 | 0.08 | 0.08 | 0.08 |
+| 10 | 0.80 | 0.22 | 0.23 | 0.22 |
+
+| threshold | NB raw | NB isotonic | NB treat-all | NB treat-none |
+|---:|---:|---:|---:|---:|
+| 0.05 | 10.6 | 10.4 | 9.9 | 0.0 |
+| 0.10 | 7.9 | 9.1 | 4.9 | 0.0 |
+| 0.15 | 4.9 | 7.5 | -0.7 | 0.0 |
+| 0.20 | 1.5 | 5.5 | -7.0 | 0.0 |
+| 0.25 | -2.2 | 3.4 | -14.2 | 0.0 |
+| 0.30 | -6.6 | 0.4 | -22.3 | 0.0 |
+| 0.40 | -17.4 | 0.2 | -42.7 | 0.0 |
+| 0.50 | -14.3 | 0.3 | -71.2 | 0.0 |
+| 0.60 | -25.8 | 0.2 | -114.0 | 0.0 |
+| 0.70 | -43.8 | -0.1 | -185.4 | 0.0 |
+| 0.80 | -41.4 | 0.0 | -328.1 | 0.0 |
+
+| threshold | NB raw | NB isotonic | NB treat-all | NB treat-none |
+|---:|---:|---:|---:|---:|
+| 0.05 | 6.5 | 8.5 | 8.5 | 0.0 |
+| 0.10 | 4.9 | 4.9 | 3.4 | 0.0 |
+| 0.15 | 3.3 | 4.0 | -2.3 | 0.0 |
+| 0.20 | 1.4 | 2.9 | -8.7 | 0.0 |
+| 0.25 | -0.7 | 1.6 | -15.9 | 0.0 |
+| 0.30 | -2.9 | 1.2 | -24.2 | 0.0 |
+| 0.40 | -8.7 | -0.1 | -44.9 | 0.0 |
+| 0.50 | -8.7 | -0.2 | -73.9 | 0.0 |
+| 0.60 | -15.8 | -0.5 | -117.4 | 0.0 |
+| 0.70 | -28.2 | 0.0 | -189.8 | 0.0 |
+| 0.80 | -17.7 | 0.0 | -334.8 | 0.0 |
+
+| threshold | NB raw | NB isotonic | NB treat-all | NB treat-none |
+|---:|---:|---:|---:|---:|
+| 0.05 | 6.0 | 6.0 | 6.3 | 0.0 |
+| 0.10 | 2.9 | 3.6 | 1.1 | 0.0 |
+| 0.15 | -0.6 | 2.7 | -4.8 | 0.0 |
+| 0.20 | -4.5 | 1.6 | -11.3 | 0.0 |
+| 0.25 | -8.4 | 0.6 | -18.7 | 0.0 |
+| 0.30 | -10.7 | -0.2 | -27.2 | 0.0 |
+| 0.40 | -12.2 | 0.0 | -48.4 | 0.0 |
+| 0.50 | -5.7 | 0.0 | -78.1 | 0.0 |
+| 0.60 | -8.5 | -0.1 | -122.6 | 0.0 |
+| 0.70 | -3.7 | -0.1 | -196.8 | 0.0 |
+| 0.80 | -0.1 | -0.2 | -345.3 | 0.0 |
+
+| threshold | NB raw | NB isotonic | NB treat-all | NB treat-none |
+|---:|---:|---:|---:|---:|
+| 0.05 | 6.2 | 6.5 | 4.9 | 0.0 |
+| 0.10 | 3.4 | 5.0 | -0.4 | 0.0 |
+| 0.15 | 0.2 | 3.4 | -6.3 | 0.0 |
+| 0.20 | -3.3 | 1.6 | -13.0 | 0.0 |
+| 0.25 | -7.2 | 0.3 | -20.5 | 0.0 |
+| 0.30 | -11.7 | -0.3 | -29.1 | 0.0 |
+| 0.40 | -22.7 | 0.0 | -50.6 | 0.0 |
+| 0.50 | -18.1 | 0.0 | -80.8 | 0.0 |
+| 0.60 | -27.4 | -0.1 | -125.9 | 0.0 |
+| 0.70 | -38.0 | 0.0 | -201.3 | 0.0 |
+| 0.80 | -13.7 | 0.0 | -351.9 | 0.0 |
+
+| threshold | NB raw | NB isotonic | NB treat-all | NB treat-none |
+|---:|---:|---:|---:|---:|
+| 0.05 | 3.2 | 3.3 | 1.7 | 0.0 |
+| 0.10 | -0.2 | 1.8 | -3.7 | 0.0 |
+| 0.15 | -4.1 | 1.5 | -9.8 | 0.0 |
+| 0.20 | -8.3 | 0.6 | -16.7 | 0.0 |
+| 0.25 | -13.1 | 0.5 | -24.5 | 0.0 |
+| 0.30 | -18.6 | 0.4 | -33.3 | 0.0 |
+| 0.40 | -30.5 | 0.1 | -55.6 | 0.0 |
+| 0.50 | -46.9 | -0.4 | -86.7 | 0.0 |
+| 0.60 | -45.2 | 0.0 | -133.3 | 0.0 |
+| 0.70 | -22.5 | 0.0 | -211.1 | 0.0 |
+| 0.80 | -10.9 | 0.0 | -366.7 | 0.0 |
+
+## Supplementary Table S6c — Multiplicity control (Holm, BH-FDR) and panel-size sensitivity (`reviewer_b5_b6_v7.md`)
+
+### B6a Multiplicity control over per-group AUROC (H0: AUROC = 0.5; Mann–Whitney U, two-sided; Holm and BH-FDR at 0.05; label-level, exploratory)
+
+| group | n coded | AUROC | raw p | Holm-adjusted | BH q | significant after BH |
+|---|---:|---:|---:|---:|---:|---|
+| renal_impairment | 326 | 0.777 | 4.39e-62 | 1.18e-60 | 4.24e-61 | yes |
+| sepsis | 289 | 0.682 | 2.09e-31 | 3.98e-30 | 5.52e-31 | yes |
+| diabetes | 246 | 0.692 | 5.28e-24 | 8.44e-23 | 1.09e-23 | yes |
+| acute_kidney_injury | 218 | 0.774 | 3.14e-44 | 7.53e-43 | 1.52e-43 | yes |
+| chronic_kidney_disease | 148 | 0.783 | 3.77e-39 | 8.30e-38 | 1.37e-38 | yes |
+| anemia | 147 | 0.782 | 1.28e-31 | 2.57e-30 | 3.72e-31 | yes |
+| gi_bleeding | 145 | 0.751 | 3.82e-25 | 6.88e-24 | 9.23e-25 | yes |
+| diabetic_ketoacidosis | 107 | 0.855 | 1.19e-89 | 3.33e-88 | 1.72e-88 | yes |
+| hyperglycemia | 96 | 0.699 | 1.28e-11 | 1.41e-10 | 1.96e-11 | yes |
+| acute_myocardial_infarction | 84 | 0.758 | 1.32e-14 | 1.99e-13 | 2.56e-14 | yes |
+| hypokalemia | 67 | 0.716 | 3.06e-24 | 5.21e-23 | 6.83e-24 | yes |
+| heart_failure | 58 | 0.664 | 1.35e-04 | 5.42e-04 | 1.51e-04 | yes |
+| leukocytosis | 57 | 0.729 | 7.85e-12 | 9.42e-11 | 1.26e-11 | yes |
+| hyponatremia | 52 | 0.887 | 7.25e-41 | 1.67e-39 | 3.00e-40 | yes |
+| metabolic_acidosis | 51 | 0.757 | 1.77e-13 | 2.30e-12 | 3.02e-13 | yes |
+| hyperkalemia | 49 | 0.917 | 6.31e-90 | 1.83e-88 | 1.72e-88 | yes |
+| thrombocytopenia | 40 | 0.889 | 1.03e-31 | 2.16e-30 | 3.32e-31 | yes |
+| hypomagnesemia | 37 | 0.673 | 1.42e-06 | 9.95e-06 | 1.79e-06 | yes |
+| alcohol_withdrawal | 33 | 0.652 | 5.67e-07 | 4.53e-06 | 7.47e-07 | yes |
+| coagulopathy | 28 | 0.751 | 1.86e-11 | 1.86e-10 | 2.70e-11 | yes |
+| cirrhosis_liver_failure | 25 | 0.865 | 4.79e-14 | 6.71e-13 | 8.69e-14 | yes |
+| hypoglycemia | 21 | 0.641 | 1.28e-52 | 3.32e-51 | 9.25e-52 | yes |
+| lactic_acidosis | 19 | 0.735 | 1.97e-06 | 1.18e-05 | 2.38e-06 | yes |
+| acute_pancreatitis | 18 | 0.733 | 8.08e-06 | 4.04e-05 | 9.38e-06 | yes |
+| malnutrition | 16 | 0.515 | 8.33e-01 | 8.33e-01 | 8.33e-01 | no |
+| hypernatremia | 14 | 0.883 | 6.04e-49 | 1.51e-47 | 3.50e-48 | yes |
+| rhabdomyolysis | 11 | 0.919 | 9.60e-09 | 8.64e-08 | 1.33e-08 | yes |
+| hypocalcemia | 10 | 0.627 | 1.19e-01 | 2.37e-01 | 1.23e-01 | no |
+| hypothyroidism | 10 | 0.684 | 1.37e-03 | 4.11e-03 | 1.47e-03 | yes |
+
+27 of 29 groups remain significant after BH-FDR; all per-group comparisons other than the pre-specified primary (flat recall@5) are labelled exploratory in the manuscript.
+
+### B6b Sensitivity of recall to the minimum number of analytes in the first panel
+
+| minimum analytes (n_in) | stays | labels | flat @3 | flat @5 | flat @10 | two-tier @5 |
+|---:|---:|---:|---:|---:|---:|---:|
+| ≥ 8 | 2314 | 2432 | 47.9 | 60.8 | 74.1 | 71.9 |
+| ≥ 10 | 2269 | 2401 | 47.6 | 60.7 | 74.0 | 71.8 |
+| ≥ 12 | 2236 | 2389 | 47.4 | 60.6 | 73.9 | 71.7 |
+| ≥ 16 | 2186 | 2349 | 47.3 | 60.5 | 73.9 | 71.8 |
+| ≥ 20 | 2099 | 2294 | 47.1 | 60.5 | 74.0 | 71.9 |
+| ≥ 25 | 1829 | 2090 | 46.2 | 59.8 | 73.6 | 71.4 |
+
+Distribution of n_in: median 31, IQR 25–35, min 8, max 49. Stays with < 8 analytes (n = 198 of 2,512 adults) were excluded by the SAP; they cannot be re-included without re-running the cohort builder, and their labels are listed in Table S3.
+
+## Supplementary Table S7 — Survey-weighted NHANES AUROCs (WTMEC2YR; PSU-in-stratum bootstrap; `nhanes_weighted_v7.md`)
+
+| target | cycle | n (pos) | unweighted AUROC | weighted AUROC (95% PSU-bootstrap CI) | Δ | weighted sens / spec @0.5 |
+|---|---|---|---|---|---|---|
+| diabetes | J 2017–18 | 2996 (605) | 0.946 | 0.951 (0.937–0.966) | +0.005 | 69.5 / 99.5 |
+| diabetes_selfreport | J 2017–18 | 2916 (460) | 0.919 | 0.932 (0.914–0.951) | +0.013 | 70.3 / 97.7 |
+| ckd | J 2017–18 | 2952 (556) | 0.959 | 0.947 (0.934–0.961) | -0.012 | 76.0 / 99.1 |
+| ckd_selfreport | J 2017–18 | 2843 (131) | 0.816 | 0.744 (0.693–0.794) | -0.072 | 51.8 / 90.2 |
+| anemia | J 2017–18 | 3000 (306) | 0.972 | 0.981 (0.977–0.985) | +0.009 | 99.8 / 94.8 |
+| iron_deficiency | J 2017–18 | 2990 (163) | 0.989 | 0.991 (0.988–0.993) | +0.001 | 95.4 / 97.5 |
+| hypercholesterolemia | J 2017–18 | 2997 (306) | 0.905 | 0.901 (0.891–0.911) | -0.004 | 100.0 / 76.4 |
+| hyperuricemia | J 2017–18 | 2999 (589) | 0.943 | 0.933 (0.915–0.951) | -0.009 | 86.7 / 100.0 |
+| alt_elevation | J 2017–18 | 3000 (535) | 0.872 | 0.872 (0.854–0.891) | +0.000 | 26.9 / 97.9 |
+| guideline-healthy adults, any disease asserted | J | 160 | 1/160 unweighted | weighted share 0.56% | | |
+| diabetes | H 2013–14 | 2998 (483) | 0.938 | 0.939 (0.920–0.957) | +0.001 | 67.5 / 99.0 |
+| diabetes_selfreport | H 2013–14 | 2908 (369) | 0.914 | 0.922 (0.900–0.944) | +0.008 | 67.9 / 97.6 |
+| ckd | H 2013–14 | 2958 (497) | 0.968 | 0.967 (0.959–0.975) | -0.000 | 86.1 / 99.1 |
+| ckd_selfreport | H 2013–14 | 2834 (101) | 0.748 | 0.733 (0.674–0.802) | -0.015 | 53.1 / 87.8 |
+| anemia | H 2013–14 | 3000 (295) | 0.994 | 0.996 (0.994–0.998) | +0.002 | 100.0 / 99.2 |
+| hypercholesterolemia | H 2013–14 | 3000 (312) | 0.884 | 0.882 (0.869–0.895) | -0.002 | 97.9 / 75.6 |
+| hyperuricemia | H 2013–14 | 3000 (547) | 0.958 | 0.959 (0.949–0.968) | +0.001 | 91.7 / 100.0 |
+| alt_elevation | H 2013–14 | 3000 (649) | 0.880 | 0.879 (0.866–0.892) | -0.001 | 24.3 / 99.2 |
+| guideline-healthy adults, any disease asserted | H | 246 | 1/246 unweighted | weighted share 0.77% | | |
+| diabetes | I 2015–16 | 2999 (563) | 0.924 | 0.923 (0.909–0.937) | -0.001 | 62.8 / 99.0 |
+| diabetes_selfreport | I 2015–16 | 2934 (431) | 0.898 | 0.903 (0.885–0.922) | +0.006 | 66.8 / 97.1 |
+| ckd | I 2015–16 | 2960 (478) | 0.962 | 0.958 (0.949–0.966) | -0.004 | 78.0 / 99.2 |
+| ckd_selfreport | I 2015–16 | 2875 (116) | 0.799 | 0.805 (0.760–0.839) | +0.006 | 51.6 / 89.9 |
+| anemia | I 2015–16 | 3000 (346) | 0.983 | 0.990 (0.987–0.992) | +0.007 | 100.0 / 97.2 |
+| iron_deficiency | I 2015–16 | 783 (148) | 0.972 | 0.980 (0.974–0.986) | +0.008 | 90.3 / 97.0 |
+| hypercholesterolemia | I 2015–16 | 2999 (322) | 0.886 | 0.872 (0.864–0.880) | -0.015 | 100.0 / 70.8 |
+| hyperuricemia | I 2015–16 | 2999 (505) | 0.955 | 0.947 (0.933–0.961) | -0.008 | 89.4 / 100.0 |
+| alt_elevation | I 2015–16 | 3000 (656) | 0.877 | 0.870 (0.851–0.886) | -0.007 | 19.0 / 99.0 |
+| guideline-healthy adults, any disease asserted | I | 79 | 0/79 unweighted | weighted share 0.00% | | |
+
+Design note: the 3,000 evaluated adults per cycle are a seeded random subsample of eligible MEC participants; weights act as relative weights within the subsample. Strata with a single sampled PSU are resampled as themselves. Domain estimation (subsetting) is approximated by weighting within the evaluated set.
+
+## Supplementary Table S8 — Per-group calibration slope / intercept / Brier
+
+See Table S6 (same file); per-group rows are the slope, calibration-in-the-large, Brier (95% cluster-bootstrap CI), log-loss and AUROC for the eight largest groups.
+
+## Supplementary Table S9 — Label-mapping audit, 400 stays (100 + 300; `label_audit_n300.md`, `label_audit_n100.md`)
+
+# Label-mapping audit, extension to 300 further stays (seed 11; disjoint from the first 100) — author adjudication
+
+| item | value |
+|---|---|
+| stays / diagnosis strings | 300 / 1113 |
+| regex-positive labels | 376 |
+| regex false positives | **0** |
+| definite misses | **7** |
+| ambiguous (excluded) | 37 |
+| precision | 100.0% | 
+| sensitivity | 98.2% |
+
+| group | TP | FP | FN | precision | sensitivity |
+|---|---:|---:|---:|---:|---:|
+| sepsis | 42 | 0 | 1 | 100% | 98% |
+| diabetes | 42 | 0 | 0 | 100% | 100% |
+| renal_impairment | 35 | 0 | 1 | 100% | 97% |
+| heart_failure | 26 | 0 | 0 | 100% | 100% |
+| anemia | 26 | 0 | 0 | 100% | 100% |
+| acute_kidney_injury | 22 | 0 | 0 | 100% | 100% |
+| hyperglycemia | 21 | 0 | 0 | 100% | 100% |
+| gi_bleeding | 20 | 0 | 0 | 100% | 100% |
+| diabetic_ketoacidosis | 18 | 0 | 0 | 100% | 100% |
+| chronic_kidney_disease | 15 | 0 | 0 | 100% | 100% |
+| leukocytosis | 8 | 0 | 2 | 100% | 80% |
+| alcohol_withdrawal | 9 | 0 | 0 | 100% | 100% |
+| acute_myocardial_infarction | 9 | 0 | 0 | 100% | 100% |
+| hypokalemia | 9 | 0 | 0 | 100% | 100% |
+| malnutrition | 7 | 0 | 2 | 100% | 78% |
+| metabolic_acidosis | 8 | 0 | 0 | 100% | 100% |
+| hyponatremia | 7 | 0 | 0 | 100% | 100% |
+| hypothyroidism | 6 | 0 | 0 | 100% | 100% |
+| thrombocytopenia | 5 | 0 | 0 | 100% | 100% |
+| hypoglycemia | 5 | 0 | 0 | 100% | 100% |
+| coagulopathy | 5 | 0 | 0 | 100% | 100% |
+| acute_pancreatitis | 5 | 0 | 0 | 100% | 100% |
+| cirrhosis_liver_failure | 4 | 0 | 1 | 100% | 80% |
+| rhabdomyolysis | 4 | 0 | 0 | 100% | 100% |
+| hyperkalemia | 4 | 0 | 0 | 100% | 100% |
+| hypomagnesemia | 3 | 0 | 0 | 100% | 100% |
+| lactic_acidosis | 3 | 0 | 0 | 100% | 100% |
+| hypernatremia | 3 | 0 | 0 | 100% | 100% |
+| hypocalcemia | 3 | 0 | 0 | 100% | 100% |
+| hypophosphatemia | 2 | 0 | 0 | 100% | 100% |
+
+Pooled with the first 100-stay audit (150 TP, 0 FP, 2 FN): precision 100.0%, sensitivity 98.3% over 400 stays.
+
+Disagreement cells were generated by a deliberately over-inclusive keyword coder; only disagreeing cells were read (agreement on negatives assumed). Regex-positive cells were verified at the category level (every positive arises from the expected eICU category branch, e.g. `endocrine|glucose metabolism|…` for diabetes); they were not individually re-read, so precision is a category-level estimate. Adjudicator: first author (with AI-agent assistance); not an independent clinical audit.
+
+Definite misses (7): `protein-calorie malnutrition` (2), `hematological effect of infection|leukocytosis` (2), `acute renal failure|due to sepsis` (1), `encephalopathy|hepatic` (1), `hypertension|with renal failure` (1). Ambiguous (37): DKA / hyperosmolar coma for the hyperglycaemia group (18), acute pulmonary oedema / cardiomyopathy for heart failure (6), acute coronary syndrome without infarction (5), `signs and symptoms of sepsis (SIRS)` (2), kidney transplant / `due to renal disease` (3), varices / acute hepatic dysfunction (2), `drug withdrawal syndrome` unspecified (1), diabetic foot infection (1). The label map is frozen; none of these patterns was changed.
+
+## Supplementary Table S10 — Registry count reconciliation (computed from the shipped 14.1.0 file on 2026-10-26)
+
+| quantity (release 14.1.0, live file) | value | note |
+|---|---:|---|
+| rule records | 34,673 | |
+| status `candidate_requires_specialist_validation` | 32,901 | executable |
+| status `retired_v13_3_0` | 1,139 | non-executable (retired) |
+| status `curated_guideline_anchored` | 272 | executable |
+| status `retired_v13_4_0_domain_artefact` | 171 | non-executable (retired) |
+| status `retired_template_artifact` | 164 | non-executable (retired) |
+| status `retired_v13_2_nonspecific_single_marker` | 9 | non-executable (retired) |
+| status `curated_guideline_anchored_demoted_v13_4_2` | 9 | executable |
+| status `curated_guideline_anchored_demoted_v14_0` | 4 | executable |
+| status `retired_empty_expression` | 3 | non-executable (retired) |
+| status `retired_v14_0` | 1 | non-executable (retired) |
+| retired, total | 1,487 | manuscript v7 draft said 1,474 (omitted the 13 demoted anchors, which remain executable) |
+| candidates lacking `executable` flag | 3 | counted in 32,901 in the draft; not executable |
+| executable rules | 33,183 | = 272 anchors + 13 demoted anchors + 32,898 candidates |
+| executable by evidence tier | tier_c: 27,885, tier_a: 2,937, tier_b: 2,278, None: 55, unverified_source: 28 | 55 executable rules carry no tier field |
+| guideline sources listed | 785 | metadata field `total_sources` still reads 781 (stale, from 13.4.1) |
+| sources cited by ≥ 1 executable rule | 388 | of the other 397: 3 are cited only by retired rules and 394 by no rule at all — background/general references (textbooks, CLSI documents, guideline overviews) imported into the source table during registry construction and retained for provenance; they contribute nothing to any output |
+| disease records | 6,756 | metadata `total_diseases` reads 6,750; 6,528 diseases have ≥ 1 executable rule |
+
+**Executable-rule flow across releases (computed from the archived registry files `*.bak_v13_1_0`, `*.bak_v13_3_0`, `*.bak_v13_4_2`, `*.bak_v14_0_0` and the live 14.1.0 file, 2026-10-26).** The near-constancy of the executable count (33,170–33,230) across 13.3.0–14.1.0 is not a coincidence of bookkeeping: it is the net of retirements and guideline-sourced additions.
+
+| transition | records added | rules retired (executable → non-executable) | new executable rules | executable total after | sources |
+|---|---:|---:|---:|---:|---:|
+| 13.1.0 (baseline) | — | — | — | 34,005 | 747 |
+| 13.1.0 → 13.3.0 | +373 | 1,135 | 360 | 33,230 | 747 |
+| 13.3.0 → 13.4.2 | +111 | 171 | 111 | 33,170 | 781 |
+| 13.4.2 → 14.0.0 | +9 | 1 | 9 | 33,178 | 783 |
+| 14.0.0 → 14.1.0 | +5 | 0 | 5 | 33,183 | 785 |
+| total since 13.1.0 | +498 | 1,307 | 485 | | |
+
+No rule was re-activated after retirement; 170 records were already non-executable in 13.1.0 (164 template artefacts, 3 empty expressions, 3 un-flagged candidates), giving the 1,487 + 3 non-executable records of Table S10.
+
+Earlier text quoted 1,474 retired records and 32,901 candidates (sum 33,199) and, elsewhere, 33,173; the discrepancies arose from mixing release-13.4.x counts with 14.1.0 counts and from counting the 13 demoted anchors and 3 non-executable candidates inconsistently. All manuscript counts now derive from this table.
+
+## Supplementary Table S11 — Precision, F1, NDCG, alert burden, per-group PPV and prevalence-ranking baseline (`reviewer_r2_metrics_v7.md`; script `eval/reviewer_r2_metrics.py`)
+
+Prediction set at k = label groups whose best flat-list entry has rank ≤ k and whose key analyte is present (the same evaluability rule used for recall). Reference = clinician problem list mapped to 31 groups (admission-level; incompleteness means 'false positives' are an upper bound on true false positives). CIs: stay-cluster bootstrap, 2,000 resamples.
+
+| metric | k=3 | k=5 | k=10 |
+|---|---:|---:|---:|
+| engine v7 precision@k (%) | 16.5 (15.4–17.6) | 14.2 (13.3–15.2) | 11.8 (11.1–12.6) |
+| engine v7 recall@k (%) | 47.9 (45.6–50.3) | 60.8 (58.5–63.0) | 74.1 (72.0–76.0) |
+| engine v7 f1@k (%) | 24.6 (23.2–26.0) | 23.1 (21.8–24.3) | 20.4 (19.3–21.5) |
+| engine v7 ndcg@k (%) | 53.1 (50.6–55.5) | 56.5 (54.1–58.8) | 60.6 (58.6–62.8) |
+| prevalence-ranking baseline precision@k (%) | 12.6 | 10.8 | 8.1 |
+| prevalence-ranking baseline recall@k (%) | 36.1 | 51.3 | 76.8 |
+| prevalence-ranking baseline f1@k (%) | 18.7 | 17.8 | 14.7 |
+| prevalence-ranking baseline ndcg@k (%) | 34.9 | 39.0 | 49.9 |
+| engine: label-group assertions per stay | 3.04 | 4.49 | 6.57 |
+
+Alert burden: mean 8.0 (median 8, IQR 5–11) label-group entries in the full flat differential (max list length 25); mean flat list carries 4.8 entries in the top-5.
+
+### Per-group PPV and sensitivity at k = 5 (problem-list reference)
+
+| group | coded (evaluable) | asserted@5 | PPV@5 (%) | sensitivity@5 (%) | prevalence baseline sens@5 (%) |
+|---|---:|---:|---:|---:|---:|
+| renal_impairment | 326 | 1066 | 25 | 81 | 100 |
+| sepsis | 289 | 532 | 27 | 49 | 100 |
+| diabetes | 246 | 611 | 18 | 45 | 100 |
+| acute_kidney_injury | 218 | 947 | 18 | 78 | 100 |
+| chronic_kidney_disease | 148 | 239 | 22 | 36 | 100 |
+| anemia | 147 | 1141 | 11 | 83 | 7 |
+| gi_bleeding | 145 | 1123 | 10 | 78 | 3 |
+| diabetic_ketoacidosis | 107 | 98 | 69 | 64 | 3 |
+| hyperglycemia | 96 | 611 | 7 | 47 | 0 |
+| acute_myocardial_infarction | 84 | 436 | 17 | 88 | 1 |
+| hypokalemia | 67 | 259 | 13 | 49 | 0 |
+| heart_failure | 58 | 168 | 29 | 83 | 0 |
+| leukocytosis | 57 | 597 | 4 | 40 | 2 |
+| hyponatremia | 52 | 246 | 13 | 63 | 0 |
+| metabolic_acidosis | 51 | 444 | 6 | 55 | 0 |
+| hyperkalemia | 49 | 77 | 31 | 49 | 0 |
+| thrombocytopenia | 40 | 300 | 9 | 65 | 2 |
+| hypomagnesemia | 37 | 161 | 8 | 35 | 0 |
+| alcohol_withdrawal | 33 | 90 | 12 | 33 | 0 |
+| coagulopathy | 28 | 119 | 11 | 46 | 0 |
+| cirrhosis_liver_failure | 25 | 187 | 8 | 60 | 0 |
+| hypoglycemia | 21 | 13 | 38 | 24 | 0 |
+| lactic_acidosis | 19 | 154 | 8 | 63 | 0 |
+| acute_pancreatitis | 18 | 54 | 22 | 67 | 0 |
+| malnutrition | 16 | 150 | 0 | 0 | 0 |
+| hypernatremia | 14 | 49 | 16 | 57 | 0 |
+| rhabdomyolysis | 11 | 43 | 14 | 55 | 0 |
+| hypocalcemia | 10 | 359 | 0 | 10 | 0 |
+| hypothyroidism | 10 | 26 | 12 | 30 | 0 |
+
+Interpretation: PPV against an admission problem list is a lower bound (uncoded but present conditions count as false positives); it is reported to quantify alert burden, not accuracy.
+
+### Criterion-supported precision at k = 5 (addendum 2026-10-26)
+
+Of 10,380 label-group assertions in the top-5, 1,479 (14.2%) are on the problem list (= precision@5). Of the remaining 8,901: 5,684 (54.8% of all assertions) satisfy the group's fixed laboratory criterion in the same panel (laboratory-supported but uncoded), 1,309 (12.6%) do not satisfy it (criterion-negative: the closest thing to a verified false positive without a clinician), and 1,908 (18.4%) belong to groups without a single-analyte criterion or lack the criterion analyte.
+Upper-bound precision (coded OR criterion-positive) = 69.0%; lower bound = 14.2%; criterion-negative share = 12.6%.
+
+| group | asserted@5 | coded | uncoded, criterion-positive | uncoded, criterion-negative | no criterion / analyte |
+|---|---:|---:|---:|---:|---:|
+| anemia | 1141 | 122 | 961 | 58 | 0 |
+| gi_bleeding | 1123 | 113 | 0 | 0 | 1010 |
+| renal_impairment | 1066 | 265 | 541 | 260 | 0 |
+| acute_kidney_injury | 947 | 169 | 556 | 222 | 0 |
+| diabetes | 611 | 111 | 201 | 299 | 0 |
+| hyperglycemia | 611 | 45 | 397 | 169 | 0 |
+| leukocytosis | 597 | 23 | 574 | 0 | 0 |
+| sepsis | 532 | 142 | 0 | 0 | 390 |
+| metabolic_acidosis | 444 | 28 | 345 | 71 | 0 |
+| acute_myocardial_infarction | 436 | 74 | 310 | 52 | 0 |
+| hypocalcemia | 359 | 1 | 250 | 108 | 0 |
+| thrombocytopenia | 300 | 26 | 274 | 0 | 0 |
+| hypokalemia | 259 | 33 | 226 | 0 | 0 |
+| hyponatremia | 246 | 33 | 213 | 0 | 0 |
+| chronic_kidney_disease | 239 | 53 | 163 | 23 | 0 |
+| cirrhosis_liver_failure | 187 | 15 | 0 | 0 | 172 |
+| heart_failure | 168 | 48 | 112 | 8 | 0 |
+| hypomagnesemia | 161 | 13 | 148 | 0 | 0 |
+| lactic_acidosis | 154 | 12 | 139 | 3 | 0 |
+| malnutrition | 150 | 0 | 0 | 0 | 150 |
+| coagulopathy | 119 | 13 | 0 | 0 | 106 |
+| diabetic_ketoacidosis | 98 | 68 | 13 | 16 | 1 |
+| alcohol_withdrawal | 90 | 11 | 0 | 0 | 79 |
+| hyperkalemia | 77 | 24 | 53 | 0 | 0 |
+| hypophosphatemia | 62 | 2 | 60 | 0 | 0 |
+| acute_pancreatitis | 54 | 12 | 41 | 1 | 0 |
+| hypernatremia | 49 | 8 | 41 | 0 | 0 |
+| rhabdomyolysis | 43 | 6 | 31 | 6 | 0 |
+
+## Supplementary Table S12 — Fusion-weight sensitivity
+
+Arms `uniform_w` (all five weights 0.20, all profiles), `w_rule_heavy` (0.55/0.15/0.15/0.075/0.075) and `w_rule_light` (0.20/0.30/0.25/0.125/0.125), run on the same 2,314 stays with the frozen engine file and environment switches only (`eval/ablation/run_ablation.py`). Stay-cluster bootstrap CIs (B = 4,000, seed 20261025).
+
+| arm | weights (rule / Bayesian / fuzzy / graph / risk) | flat @3 | flat @5 | flat @10 | Δ@5 vs full (95% CI) | two-tier @5 | panel-supported @5 / @10 | stays with identical top-5 |
+|---|---|---:|---:|---:|---|---:|---|---:|
+| full (default profiles) | 0.35 / 0.25 / 0.20 / 0.10 / 0.10 + 6 domain profiles | 47.9 | 60.8 | 74.1 | — | 71.9 | 78.0 / 91.8 | 100% |
+| uniform_w | 0.20 × 5, all profiles | 47.5 | 59.4 | 73.1 | −1.4 (−2.1 to −0.7) | 72.2 | 75.7 / 89.9 | 61% |
+| w_rule_heavy | 0.55 / 0.15 / 0.15 / 0.075 / 0.075, all profiles | 48.2 | 60.8 | 74.0 | −0.0 (−0.6 to +0.5) | 71.8 | 77.9 / 91.8 | 65% |
+| w_rule_light | 0.20 / 0.30 / 0.25 / 0.125 / 0.125, all profiles | 47.6 | 59.7 | 73.3 | −1.1 (−1.8 to −0.3) | 72.2 | 76.0 / 90.1 | 61% |
+
+Reading: moving weight toward the rule layer changes nothing measurable; moving it away costs about one point of flat recall@5 while leaving two-tier recall unchanged. The headline is insensitive to the hand-set weights within this range, which is consistent with the layer ablation (rule vote −12.1, syndrome layer −9.5, every other layer ≤ 1.3 points). Files: `eval/results/eicu_demo/{report_abl_w_rule_heavy.md, report_abl_w_rule_light.md, ABLATION_v7_ci.md, ABLATION_v7_full.md}`; chain completed 2026-10-26 01:07 UTC.
+
+## Supplementary Figure S — Historical LLM comparison against the superseded engine v5.1
+
+![Fig S](../v7/fig/Fig6_llm_v51.png)
+
+Same 400 stays and LLM outputs as the main-text comparison, scored against engine v5.1 (the release current when the LLM was run): recall@5 64.4% (engine) vs 59.6% (LLM). The main text reports the re-score against the frozen v7 (60.7% vs 59.6%), because v7 is the evaluated release; the historical figure is kept so that the change in the engine's number is visible.
+
+## Supplementary Table S13 — Participant flow, UCI thyroid0387 and UCI HCV cohorts
+
+| cohort | step | n |
+|---|---|---:|
+| UCI thyroid0387 | records with a clinician diagnosis string | 9,172 |
+| | excluded: TSH not measured | −842 |
+| | excluded: classes R (discordant assay) and I/J/S (binding-protein abnormalities, not interpretable from TSH/T4 alone) | −587 |
+| | **scorable records** | **7,743** |
+| | → no-comment controls (negative set for every task) | 6,082 |
+| | → hypothyroid classes E/F/G/H (task H1 positives) | 655 |
+| | → hyperthyroid classes A/B/C/D (task H2 positives) | 195 |
+| | → other classes, not positives or negatives of any task: K concurrent non-thyroidal illness 433; L/M/N replacement therapy 329; O/P/Q antithyroid treatment / miscellaneous 33; mixed MK 16 | 811 |
+| UCI HCV (Hoffmann 2018) | records | 615 |
+| | blood donors (negative set) | 533 |
+| | suspect blood donors — ambiguous label, excluded from both tasks | 7 |
+| | hepatitis / fibrosis / cirrhosis (task A positives, 24 + 21 + 30) | 75 |
+| | task B cirrhosis: positives 30; negatives = donors + hepatitis + fibrosis | 30 vs 578 |
+| ILPD | liver patients / non-patients (no exclusions) | 416 / 167 |
+
+## Supplementary Note 4 — Regression gate: definition and residual failures
+
+**Definition (unchanged since release 13.4.1).** A candidate engine/registry pair may be used for any real-data run only if (i) all unit tests pass; (ii) in the three adversarial vignette batteries (151, 124, 78 cases; expected diagnosis must appear at or above a per-case maximum rank) no case that passed in the previous shipped release fails; (iii) in the perturbation battery (151 cases × 5 replicates of 3% multiplicative noise = 755 pairs) no new pair fails and no case becomes "brittle" (< 4/5 replicates) that was not already brittle; (iv) the 1,000-panel healthy sweep produces zero syndrome fires and zero diagnoses ≥ 0.5; (v) the SI/conventional unit-twin battery produces identical rankings. The gate is non-regression, not perfection; it was chosen so that a correctness change can never be accepted at the price of a previously correct case.
+
+**Residual failures in the frozen v7 (both pre-date v7 and are deliberately unpatched).**
+
+| battery | case | v7 | 14.1 | reason not patched |
+|---|---|---|---|---|
+| vignettes 3 (78) | alcoholic pancreatitis vignette — expected rank 1, obtained rank 2 behind *alcohol-use disorder* (both "supported", 0.79) | 77/78 | 77/78 | a rule written for this vignette would be outcome-fitting; the ranking is clinically defensible |
+| perturbation (755) | thiazide-associated hypovolaemic hyponatraemia (five noisy replicates of one vignette): 3/5 replicates keep the expected rank in v7, 2/5 in release 14.1 — i.e. v7 recovered one replicate; the two residual failures are replicates 2 and 4 of this single vignette and there is no other failing perturbation pair | 753/755 | 752/755 | the case sits on the sodium/urate decision boundary; moving the boundary for it was tried during development and rejected because it over-fired elsewhere |
+
+## Supplementary Table S4 — Subgroup recall, frozen engine v7 (eICU demo, 2,314 stays; replaces the v6-era figures 65.4 %/61.1 % quoted in the first submission)
+
+### Source table (`eval/results/eicu_demo/subgroups_v7.md`): Subgroup and fairness analysis — eICU-CRD demo (n = 2314 stays), engine v7
+
+Metrics are pooled over all laboratory-detectable clinician-listed diagnoses in the stratum. recall@5 CI = 1,000-stay bootstrap. AUROC columns use the per-stay group probability for the four most frequent groups; '—' = fewer than 5 positives or negatives. The engine contains no race, ethnicity or hospital term; eGFR is CKD-EPI 2021 (race-free). Strata with < 40 stays are shown but not interpreted.
+
+Overall: recall@5 60.8%, recall@10 74.1%, chart support 23.2% (n = 4218), false-assertion proxy in stays with empty problem list 93.8% (n = 1136).
+
+#### By sex
+
+| stratum | stays | listed dx | recall@5 (95 % CI) | recall@10 | chart support p≥0.7 | AUROC renal impairment | AUROC sepsis | AUROC anemia | AUROC acute kidney injury |
+|---|---:|---:|---|---:|---:|---:|---:|---:|---:|
+| male | 1392 | 1498 | 62.3% (59.5–64.9) | 75.8% | 24.3% | 0.78 | 0.69 | 0.79 | 0.80 |
+| female | 922 | 934 | 58.5% (54.4–62.3) | 71.2% | 21.4% | 0.77 | 0.67 | 0.77 | 0.73 |
+
+#### By age band
+
+| stratum | stays | listed dx | recall@5 (95 % CI) | recall@10 | chart support p≥0.7 | AUROC renal impairment | AUROC sepsis | AUROC anemia | AUROC acute kidney injury |
+|---|---:|---:|---|---:|---:|---:|---:|---:|---:|
+| 65–79 | 820 | 844 | 60.1% (55.9–64.2) | 75.5% | 21.8% | 0.73 | 0.68 | 0.77 | 0.76 |
+| 45–64 | 695 | 708 | 58.1% (54.0–62.6) | 70.6% | 22.5% | 0.84 | 0.70 | 0.77 | 0.81 |
+| ≥80 | 426 | 476 | 63.9% (58.7–68.5) | 75.8% | 22.5% | 0.71 | 0.68 | 0.76 | 0.71 |
+| <45 | 373 | 404 | 63.6% (58.7–68.6) | 75.0% | 28.8% | 0.81 | 0.68 | 0.82 | 0.80 |
+
+#### By ethnicity
+
+| stratum | stays | listed dx | recall@5 (95 % CI) | recall@10 | chart support p≥0.7 | AUROC renal impairment | AUROC sepsis | AUROC anemia | AUROC acute kidney injury |
+|---|---:|---:|---|---:|---:|---:|---:|---:|---:|
+| Caucasian | 1839 | 1827 | 60.9% (58.1–63.4) | 73.2% | 22.8% | 0.77 | 0.66 | 0.77 | 0.77 |
+| African American | 220 | 201 | 60.2% (50.8–68.4) | 75.6% | 18.6% | 0.74 | 0.73 | 0.81 | 0.68 |
+| Hispanic | 111 | 216 | 59.3% (51.5–67.2) | 79.2% | 31.4% | 0.84 | 0.83 | 0.81 | 0.85 |
+| Other/Unknown | 74 | 96 | 58.3% (45.1–69.9) | 71.9% | 24.5% | 0.80 | 0.79 | — | 0.84 |
+| Unknown | 30 | 31 | 74.2% (54.8–89.8) | 80.6% | 29.5% | — | 0.85 | — | — |
+| Asian | 28 | 34 | 64.7% (45.8–84.6) | 76.5% | 21.9% | 0.77 | 0.69 | — | 0.80 |
+| Native American | 12 | 27 | 63.0% (nan–nan) | 77.8% | 53.3% | — | — | — | — |
+
+
+
+## Supplementary Note 5 — Definitions and audits added in revision round 4
+
+### N5.1 'Guideline-healthy adult' (NHANES false-assertion denominator; `eval/realdata/eval_nhanes.py`, lines 212–220)
+An adult is counted as healthy only if **all** of the following hold (sex-specific where shown, women/men): HbA1c < 5.7 %; fasting glucose < 100 mg/dL (when fasting sample available) and random glucose < 140 mg/dL; eGFR (CKD-EPI 2021) ≥ 90 mL/min/1.73 m²; urine ACR < 30 mg/g; haemoglobin ≥ 12/13 g/dL; MCV 80–100 fL; ferritin ≥ 30 µg/L (neutral if not collected in the cycle); total cholesterol < 200 mg/dL; fasting triglycerides < 150 and random triglycerides < 200 mg/dL; urate ≤ 6/7 mg/dL; ALT ≤ 25/33 U/L; sodium 135–145, potassium 3.5–5.1, chloride 98–107 mmol/L; calcium 8.6–10.3, phosphate 2.5–4.5 mg/dL; platelets 150–450 ×10⁹/L; WBC 4–11 ×10⁹/L; neutrophils 40–75 %, lymphocytes 20–45 %; CK ≤ 200/300 U/L; total bilirubin ≤ 1.2 mg/dL; ALP ≤ 130 U/L; GGT ≤ 60 U/L; albumin ≥ 3.5 g/dL; transferrin saturation 15–50 % (neutral if not collected). It is therefore a 30-analyte guideline-normal filter, not a requirement that all 2,045 registry analytes be normal. The filter was tightened once (2026-10-21, before the quarantine cycles were opened) because the first version let prediabetes by fasting glucose, mild hyperphosphataemia and microcytosis through and counted the engine's correct findings as false assertions.
+
+### N5.2 Critical-value thresholds (`eval/baselines/b7_critical_values.py`; CAP/Kost 1990/Tietz consensus, conventional units)
+K ≥ 6.5 or ≤ 2.5 mmol/L; Na ≤ 120 or ≥ 160 mmol/L; glucose ≤ 40 or ≥ 500 mg/dL; total Ca ≥ 13.5 or ≤ 6.0 mg/dL; Hb ≤ 6.5 g/dL; platelets ≤ 20 ×10⁹/L; WBC ≤ 1.0 or ≥ 50 ×10⁹/L; INR ≥ 5; arterial pH ≤ 7.10 or ≥ 7.60; bicarbonate ≤ 8 mmol/L; lactate ≥ 8 mmol/L; creatinine ≥ 7.5 mg/dL (no dialysis information available). Sample: 25 stays with ≥ 1 critical value plus 25 without, drawn with a fixed seed from the 400-stay LLM subset; 39 critical values in total. Both arms flagged 39/39.
+
+### N5.3 Race and ethnicity audit of the knowledge base (2026-10-26)
+Full-text search of the decompressed disease-guideline registry 14.1.0: 'race' 0, 'ethnic' 0, 'African' 0, 'Black' 0, 'Caucasian' 0, 'Hispanic' 0; 'white' 496 occurrences, all within 'white blood cell(s)'; 'Asian' 1 occurrence, inside a free-text source note on WHO BMI action thresholds that is not an executable condition. eGFR is CKD-EPI 2021 (race-free). The engine's context dataclass has an optional `ethnicity` field (an alias for the input key `race`); a search of `analyse_gidlines.py` finds no read of that field by any rule, layer or fusion step.
+
+### N5.4 Hardware and software for all timings
+2 vCPU Intel Xeon @ 2.60 GHz, 1.98 GB RAM, Linux 6.1, Python 3.13 (sandbox); engine single-process, no GPU, no network.
+
+### N5.5 Novelty search for open laboratory-interpretation rule sets (2026-10-24)
+Searched: AHRQ CDS Connect (repository and authoring tool offline since 28 April 2025; continuing as HL7 'CDS Connect Community Edition'), ECRI Guidelines Trust ('temporarily unavailable' since 2024), NICE (content outside the UK is personal-use only; product use requires written permission and a fee), WHO SMART Guidelines digital adaptation kits (ANC, family planning, HIV, TB, child health, immunisation, BP self-monitoring — no laboratory-interpretation kit), OpenCDS, Arden-syntax MLM collections and PubMed/Google Scholar ('open' AND 'rule base' AND 'laboratory interpretation'). No openly licensed, machine-executable rule set covering multi-analyte laboratory interpretation was found; the claim in the Discussion is bounded to this search and dated.
+
+### N5.6 LLM arm — model identity
+The LLM arm was run through the Arena.ai agent platform, which routes requests among several frontier model families (GPT, Claude, Gemini and others) and does not expose the model or version used for a given response. 'unnamed frontier (capability-tier "GPT-4-class")' is therefore a capability-tier label, not a verified identity. Consequences: (i) the LLM arm cannot be reproduced against a named model version; (ii) the test–retest reads (κ = 0.69) may have been served by different models; (iii) the comparison should be read as 'a contemporary frontier assistant as a clinician would encounter it', not as a benchmark of a specific model. Prompts, raw outputs and scoring code are released so that the arm can be re-run against any named model.
+
+### N5.7 Reporting checklist
+TRIPOD+AI was adapted (the engine is not a prediction model fitted to data; items on model development/training are answered 'not applicable' with justification), and the DECIDE-AI early-stage clinical-evaluation items were consulted for the Limitations. The completed checklist follows.
+
+### TRIPOD+AI (BMJ 2024;385:e078378) checklist — Hemoglyph Paper 1 (updated 2026-10-24, engine v5.3 / registry 13.3.0)
+
+Status key: ✅ available now · 🟡 partly / needs the pending work · ❌ not yet.
+(Hemoglyph is a knowledge-based, untrained system; items on "training data" are answered as
+"not applicable — knowledge base construction described instead", which TRIPOD+AI permits.)
+
+| # | Item | Status | Where / what is needed |
+|---|---|---|---|
+| 1 | Title identifies study as development/evaluation of a prediction/diagnostic model with AI | ✅ | Paper 1 title: "...retrospective multi-cohort evaluation" |
+| 2 | Abstract: TRIPOD+AI for Abstracts | ✅ | Paper 1 abstract (cohorts, n, recall@5 / AUROC with 95% CI, baselines) |
+| 3a | Background, rationale | ✅ | manuscript intro |
+| 3b | Target population, intended use, users | ✅ | laboratory physicians / clinicians; decision support, not autonomous |
+| 4 | Objectives | ✅ | SAP §1 |
+| 5a | Source of data, study design | ✅ | SAP §3 (6 public datasets) |
+| 5b | Setting, dates, eligibility | ✅ | Paper 1 Methods table (eICU-CRD demo 2014–15; NHANES 2005–2018 (7 cycles); PhysioNet/CinC 2019; UCI HCV/ILPD/thyroid; MIMIC-IV demo) |
+| 5c | Participants' eligibility | ✅ | SAP §6 |
+| 6a | Outcome definition and assessment | ✅ | SAP §5, script docstrings |
+| 6b | Outcome blinded to predictors? | ✅ | labels pre-exist in datasets; engine untrained |
+| 7a | Predictors (inputs) | ✅ | analyte lists per dataset (map tables) |
+| 7b | Predictors blinded to outcome | ✅ | yes |
+| 8 | Sample size | ✅ | no formal power calculation (pre-specified fixed public cohorts); groups with < 20 events flagged "exploratory" in every table; eICU B3+B4+B8 LLM comparison n = 400 stays / 596 labels gives ±4 pp CI half-width |
+| 9 | Missing data handling | ✅ | no imputation; key-analyte conditioning |
+| 10a | Model building: how predictors handled | ✅ | registry/ESL/fusion description |
+| 10b | Model type, training | n/a | knowledge base construction (AI-assisted curation + sources) — **registry audit needed (🟡)** |
+| 10c | Hyper-parameters | ✅ | fusion constants table |
+| 10d | Performance measures | ✅ | SAP §4 |
+| 10e | Model updating | ✅ | ESL ext. 4 / fixes after MIMIC demo, disclosed |
+| 11 | Fairness: subgroup analysis | ✅ | eval/subgroup_fairness.py → sex, age band, hospital, panel size (eICU v5.3: run_20261023_v53/subgroup.log; Supplementary Table S4; sex gap M 65.4 vs F 61.1 reported as unresolved, H1 failed) |
+| 12 | Evaluation / internal validation design | ✅ | SAP §3 roles |
+| 13 | Comparison to other models / baselines | ✅ | B1 single-analyte rule; B2 supervised ML (eICU); blind unnamed frontier (capability-tier "GPT-4-class") LLM via agent (B3/B4/B8, n = 400, McNemar p = 0.009); supervised logistic baseline on Sepsis-2019; published Isabel/DXplain figures in Discussion (not head-to-head) |
+| 14a | Participant flow diagram | ✅ | Supplementary Fig. S1 (figS1_participant_flow.png) + Table S1 (TABLE_S1_cohort_flow.md) |
+| 14b | Participant characteristics | ✅ | Supplementary Table S1 (cohort flow + age/sex/panel size per cohort) |
+| 15 | Model specification / availability | ✅ | code + registries public (GitHub); add Zenodo DOI |
+| 16 | Model performance with CIs | ✅ | reports in eval/results |
+| 17 | Model updating results | ✅ | before/after tables |
+| 18a | Limitations | ✅ | REAL_DATA_VALIDATION §4 |
+| 18b | Interpretation | ✅ | Paper 1 Discussion |
+| 18c | Implications | ✅ | Paper 1 Discussion (decision support, not autonomous; calibration needed before thresholds are used) |
+| 19 | Registration / protocol | 🟡 | SAP v1 + Amendments 1–12 time-stamped in git; OSF registration text ready (docs/paper1/supplement/OSF_REGISTRATION_TEXT.md) — upload needs the author's OSF account |
+| 20 | Code, data availability | ✅/🟡 | code public (GitHub); all datasets public (URLs in Data availability); Zenodo DOI minted at release by the author |
+| 21 | Funding, conflicts | ✅ | no funding; SB is the sole developer of Hemoglyph (declared) |
+| 22 | Ethics approval | ✅ | public de-identified data; no IRB needed; state DUA terms |
+| 23 | Patient & public involvement | ✅ | none — stated |
+| 24 | Open science: data sharing, code | ✅ | — |
+| 25 | Supplementary materials | ✅ | SAP + amendments; per-group tables; error audit taxonomy (A/B/C1/C2, n = 200); calibration + DCA; fairness; LLM blind protocol & raw read-outs |
+| 26 | Human–AI interaction, deployment context | 🟡 | UI, explanation and alert hierarchy described; NO reader study (stated as limitation) |
+| 27 | Safety / failure analysis | ✅ | S5 critical-value capture; B7 critical values; fabrication provocation 200/200; healthy sweep 0/1000; error audit n = 200 |
+
+Also required by DECIDE-AI if a reader study / early live evaluation is added.
+
+## Supplementary Table S12b — Historical comparisons from the first submission (superseded; moved out of the main tables in revision round 5)
+
+| comparison | engine | result | why superseded |
+|---|---|---|---|
+| registry-off ablation | v5.3 (before registry revisions 13.3–14.1) | flat@3/5/10 47.6 / 62.0 / 75.4; panel-supported@5/10 75.3 / 89.9 | engine and registry both changed; the ablations of the evaluated release are in main Table 5 (arm `no_rule`, `anchor_only`, `anchor_only_no_esl`) |
+| LLM comparison | v5.1 | recall@5 64.4 % (60.5–68.2) vs LLM 59.6 %, +4.9 pp, naive McNemar p = 0.009 | ignored stay clustering; re-scored with frozen v7 and cluster-adjusted inference → 60.7 % vs 59.6 %, p = 0.54 (main Table 4) |
+
+## Supplementary Table S15 — What is open, what is proprietary, and what was evaluated
+
+| component | licence / status | evaluated in this paper | where |
+|---|---|---|---|
+| inference engine `analyse_gidlines.py` (v7, single file) | AGPL-3.0-or-later, public | **yes — the only inference component evaluated** | GitHub; Zenodo snapshot before publication |
+| disease-guideline registry 14.1.0 and feature registry (2,045 analytes) | CC BY-SA 4.0, public | yes | same |
+| evaluation scripts, label maps, SAP, freeze manifests, per-stay outputs | AGPL-3.0-or-later / CC BY-SA 4.0, public | yes (they produce every number) | same |
+| LLM prompts and raw outputs | CC BY-SA 4.0, public | yes | Supplementary Data |
+| desktop shell (Qt/QML UI, licensing, node-locked activation, telemetry) | proprietary, first author | **no** | not released |
+| OCR / report-image path (optional cloud OCR) | proprietary; transmits images | **no** | not released; explicitly out of scope |
+| local chat assistant | disabled in release 1.3.1 | no | — |
+
+## Supplementary Note 6 — Retrospective version manifest (added in revision round 5)
+
+No version-control system was used during development; this is a stated limitation. What exists is a set of dated, hash-identified artefacts that bound what could have changed and when. SHA-256 prefixes and file-system timestamps (UTC) of the retained snapshots:
+
+| artefact | mtime (UTC) | bytes | SHA-256 (first 16 hex) |
+|---|---|---|---|
+| `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br` | 2026-10-26 03:25 | 1,232,933 | 0a2eeac0fa1b365d… |
+| `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br.bak_v13_1_0` | 2026-10-26 03:25 | 1,186,778 | cebe06ae07e53f17… |
+| `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br.bak_v13_3_0` | 2026-10-26 03:25 | 1,210,768 | 91cdb766fbf5c009… |
+| `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br.bak_v13_4_2` | 2026-10-26 03:25 | 1,227,539 | 48a0c2e6c5dcaaf1… |
+| `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br.bak_v14_0_0` | 2026-10-26 03:25 | 1,231,539 | 6efc802ea33e7c28… |
+| `HEMOGLYPH_FEATURE_REGISTRY.json.br` | 2026-10-26 03:25 | 3,113,259 | 953d8daa4d0fe4df… |
+| `HEMOGLYPH_GUIDELINE_REGISTRY.json.br` | 2026-10-26 03:25 | 1,232,933 | 0a2eeac0fa1b365d… |
+| `analyse_gidlines.py` | 2026-10-26 03:25 | 975,269 | 6670cf41b944ae12… |
+| `eval/engine_13_4_2_ref/analyse_gidlines.py` | 2026-10-26 03:25 | 945,898 | 1780fab94ee8f213… |
+| `eval/engine_13_4_2_ref/cache_registry.py` | 2026-10-26 03:25 | 3,982 | 123b829a2fce5af7… |
+| `eval/engine_13_4_2_ref/calcu.py` | 2026-10-26 03:25 | 95,606 | 2e850f64cddc4cc4… |
+| `eval/frozen_registry_13_3_0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br` | 2026-10-26 03:25 | 1,210,768 | 91cdb766fbf5c009… |
+
+Together with the dated SAP amendments (Note 1), the engine change log C1–C16 (Table S1) and the v14/v15 freeze manifests (261 and 316 files), these allow a reader to verify that the frozen artefacts used for every reported number are the ones archived, but **not** to verify the intent or sequence of individual edits inside the development period. From revision round 5 onwards the project is tracked in Git (repository initialised 2026-10-26 with annotated tag `paper1-R1-round5`, tracking code, manuscripts and scripts; the Brotli registries and data are excluded for size and identified by the SHA-256 values above and in the freeze manifests; every later change is a dated commit).
+
+
+## Supplementary Table S16 — Sepsis companion risk model (post-freeze, engine-external; added in revision round 6)
+
+Trained once on PhysioNet/CinC 2019 set A (5,000-patient public subset; 446 septic), evaluated on the untouched subsets B (280 septic / 4,699) and B2 (280 / 4,711). Threshold for the utility score fixed on set A. Source: `eval/results/sepsis_ml/sepsis_ml_report.md`.
+
+| set | model | hourly AUROC | hourly AUPRC | patient-level AUROC | AUROC at −6 / −12 / −24 h | PhysioNet utility |
+|---|---|---|---|---|---|---|
+| A (development) | logistic (L2) | 0.773 | 0.091 | 0.658 | 0.754 / 0.800 / 0.818 | 0.364 |
+| A (development) | gradient boosting | 0.934 | 0.319 | 0.832 | 0.950 / 0.909 / 0.865 | 0.689 |
+| B (held out) | logistic (L2) | 0.717 | 0.051 | 0.552 | 0.698 / 0.780 / 0.776 | 0.199 |
+| B (held out) | gradient boosting | 0.757 | 0.066 | 0.654 | 0.775 / 0.799 / 0.774 | 0.253 |
+| B2 (held out) | logistic (L2) | 0.726 | 0.052 | 0.557 | 0.709 / 0.778 / 0.783 | 0.216 |
+| B2 (held out) | gradient boosting | 0.750 | 0.068 | 0.631 | 0.774 / 0.765 / 0.786 | 0.220 |
+| reference: frozen engine v7 (labs only) | rules | — | — | 0.600 / 0.610 / 0.588 (A / B / B2) | — | — |
+
+Largest standardised logistic coefficients (signed): respiratory rate +0.49, hours since ICU admission +0.45, creatinine +0.39, base-excess missing −0.35, MAP missing −0.33, SBP missing +0.31, shock index −0.28, heart rate +0.26, 12-h maximum temperature +0.23. Measurement-availability flags carry signal in this dataset (sampling intensity), a known property of the challenge data; the module is reported with its contributing features so each alert can be inspected. The boosting hyper-parameters were regularised once after a first look at set B (training AUROC 0.997 / B 0.719 in the first configuration); B2 was not opened until the final configuration.
+
+## Supplementary Note 7 — Evidence triage of the twelve post-review improvement proposals (2026-10-26)
+
+| # | proposal | evidence on frozen v7 artefacts | verdict | v8 action |
+|---|---|---|---|---|
+| 1 | Hybrid rule + interpretable ML for sepsis with vitals, time and utility score | companion model: Table S16 | supported (modest gain) | engine-external module, labelled predictive |
+| 2a | Evidence-state thresholding / adaptive truncation for precision@5 | precision vs recall on v7 top-5: k = 5 14.2 / 60.8; relative ≥ 0.6 15.3 / 58.8; relative ≥ 0.8 18.1 / 48.9; absolute ≥ 0.6 19.0 / 53.5; absolute ≥ 0.7 23.3 / 43.3; absolute ≥ 0.8 25.7 / 23.4; gap > 0.15 16.7 / 45.4; k = 3 16.5 / 47.9; ceiling under perfect ranking ≈ 21% | refuted as an accuracy gain | descriptive `confidence_band`, no ranking change |
+| 2b | Asymmetric covering-diagnosis suppression (DKA, GI bleed, pancreatitis) | DKA 107 coded: 68 top-5, 7 at 6–10, 26 absent; absent stays lack HCO₃/anion gap/ketones; entities above DKA when missed: diabetes 23, AKI 22, sepsis 18 | refuted (missing criterion, not suppression) | none |
+| 3 | Remove or revive the four 'inert' fusion layers | ablation Δ flat@5: Bayesian −1.3, fuzzy +0.3, graph +0.1, risk 0.0; fuzzy/risk carry perturbation robustness and the documented risk models | partly | kept; reported as such |
+| 4 | 'Probable' tiers for CKD, leukocytosis, diabetes | CKD surfaces as `reduced_gfr_chronicity_undetermined` (renal union 255 vs 250); leukocytosis correctly nested under sepsis; diabetes absent stays lack HbA1c with glucose < 200 mg/dL | refuted (would create false positives) | none |
+| 5 | Prune registry, drop 28 `unverified_source` rules, remove 388 unused sources | the 28 rules are correct toxicology/transfusion/endocrine thresholds; ablation 0.0 only because eICU has no such cases | partly | registry 14.2.0: re-sourced with 13 Crossref DOIs; 0 unverified; unused sources retained as provenance |
+| 6 | Audit and expand the syndrome layer | no matched evaluation set for new syndromes | deferred | clinician audit (resource) |
+| 7 | Medication/history context as risk and trend rules | context predicates and `documented_history` tier already present; not measurable on labs-only eICU | already present | none |
+| 8 | Derived indices (NLR, PLR, MELD, Child-Pugh, CURB-65, HAS-BLED, CHA₂DS₂-VASc, APRI, BARD, corrected Ca, osmolal gap, delta-delta) | present: corrected Ca, NLR, delta ratio, osmolal gap, effective osmolality, glucose-corrected Na, FIB-4, APRI, HOMA; scores needing clinical inputs excluded | partly | MELD/MELD-Na and PLR added |
+| 9 | Post-hoc calibration map with disclosure | already in v7 (ECE 0.162 → 0.003; Fig. 8, Table S10) | already present | none |
+| 10 | Thyroid and liver rules | thyroid AUROC 0.979 (TSH) / 0.798 (self-report); HCV 0.925; ILPD 0.704 (label noise) | no action supported | none |
+| 11 | Fuzzy thresholds for perturbation | fuzzy layer active; 753/755 by design | already present | none |
+| 12 | LLM extraction front end; path A/B/C on 'untrained' | path C: engine stays untrained; supervised components only as labelled companions | decided | item 1 is the first such component |
+
+Gate for v8 (`eval/results/gate_v8/GATE_v8_RESULT.md`): batteries 151/151, 124/124, 77/78 (same pre-existing miss); healthy sweep 0/1,000; perturbation 753/755; 680 unit tests passed + 4 new; eICU labs-only counts identical to v7 in every group. The Supplementary Note 6 manifest refers to the v7 artefacts; the v8 registry (14.2.0) is archived at `release/registry_14.2.0/` with SHA-256 sums and the v7 registry at `release/registry_14.1.0/`.
+
+
+## Supplementary Note 8 — Source-concordance audit of 200 sampled rules (non-clinical; added in revision round 9, 2026-10-26)
+
+**Purpose and scope.** This audit asks one narrow question: does the executable rule transcribe what its cited source says
+(analyte, operator/threshold, population qualifier, disease attribution)? It does **not** assess clinical validity: a rule
+can be transcribed perfectly and still be clinically wrong, and no clinician took part. The protocol was frozen before
+sampling (`eval/source_audit/PROTOCOL.md`).
+
+**Sampling.** Seed 20261026; 100 of the 272 curated anchor rules (stratum A); 100 executable candidates (stratum B), split
+50/50 between B1 "eICU-relevant" (feature present in >= 50 % of eICU first panels and disease in an evaluated label group;
+141 eligible) and B2 uniform from the remaining 32,760 candidates. Registry 14.1.0 (frozen v7).
+
+**Source retrieval.** The 200 rules cite 92 unique locators. From the audit sandbox, 43 returned HTTP 403 (publisher
+paywalls: Wiley, OUP, Lippincott, Endocrine Society, AHA, ADA), 7 returned 404/406 (including the WHO essential
+diagnostics list URL cited by 13 rules and both kdigo.org guideline pages, whose PDFs were then retrieved directly), and 42
+returned a page; for paywalled DOIs the Crossref title and PubMed abstract were obtained instead. Net: 12 rules had no
+retrievable text at all, 55 only a title/abstract, 46 cite only generic methodological sources (WHO essential diagnostics
+list, CLSI EP28, CLSI C59) that cannot by construction contain a disease-specific threshold, and 71 a landing page or a
+full text in which the specific statement was looked for.
+
+**Labels (rater 1 = AI agent, declared; rater 2 = human non-clinician co-author, pending).** Tie-break: when in doubt,
+UNRESOLVABLE, never CONCORDANT. A rule was called DISCORDANT only when a reachable source was clearly about a different
+disease (attribution error) or when a retrieved full text was on-topic and demonstrably did not contain the rule's
+threshold or definition.
+
+| Stratum | n | Concordant | Discordant | Unresolvable | Discordant / resolvable (Wilson 95 % CI) | Discordant / all (95 % CI) | Unresolvable / all (95 % CI) |
+|---|---:|---:|---:|---:|---|---|---|
+| A anchors | 100 | 1 | 7 | 92 | 7/8 = 87.5 % (52.9–97.8) | 7.0 % (3.4–13.7) | 92.0 % (85.0–95.9) |
+| B1 eICU-relevant candidates | 50 | 0 | 7 | 43 | 7/7 = 100 % (64.6–100) | 14.0 % (7.0–26.2) | 86.0 % (73.8–93.0) |
+| B2 other candidates | 50 | 0 | 1 | 49 | 1/1 (20.7–100) | 2.0 % (0.4–10.5) | 98.0 % (89.5–99.6) |
+| All | 200 | 1 | 15 | 184 | 15/16 = 93.8 % (71.7–98.9) | 7.5 % (4.6–12.0) | 92.0 % (87.4–95.1) |
+
+**How to read this.** The resolvable subset is tiny (16/200) and strongly selected: an attribution error is visible from a
+source *title*, whereas confirming concordance needs the *full text* behind a paywall, so discordant rules are far easier
+to detect than concordant ones in this environment. The 94 % discordance among resolvable rules is therefore **not** an
+estimate of the registry's discordance rate; the defensible statements are (i) at least 7.5 % (4.6–12.0) of sampled rules
+are demonstrably discordant with their cited source, (ii) 92 % could not be verified from the locator the registry
+provides, and (iii) the dominant failure is provenance granularity — organisation-level URLs, generic methodological
+standards and homepages instead of section-level citations — which makes the registry, as released, **not auditable
+rule-by-rule from its own locators**. Seven of the 15 discordances are attribution errors in *curated anchors* (e.g. a
+hypernatraemia rule citing the hyponatraemia guideline; acquired haemophilia A citing the rare-coagulation-disorders
+guideline that excludes it); eight are thresholds or definitions absent from an on-topic source, the most consequential
+being an AKI "diagnostic criterion" defined by a fixed creatinine > 1.1 mg/dL and attributed to KDIGO 2012, which defines
+AKI only by change from baseline (this candidate rule is one of the B1 rules most likely to have fired in eICU).
+
+**Discordant rules (all 15, verbatim).**
+
+| rule_id | stratum | disease | finding |
+|---|---|---|---|
+| `hypernatremia_severe_155_cur13` | A | hypernatremia | attribution: hypernatraemia >155 cites the EJE 2014 hyponatraemia guideline, which does not address hypernatraemia |
+| `pseudohypoparathyroidism_hypocalcemia_high_pth_normal_renal_cur13` | A | pseudohypoparathyroidism | attribution: pseudohypoparathyroidism criteria cite the primary hyperparathyroidism workshop guideline (different disease) |
+| `hypomagnesemia_severe_1_2_cur13` | A | hypomagnesemia | attribution: severe hypomagnesaemia <1.2 mg/dL cites the KDIGO potassium/dyskalaemia conference report |
+| `septic_shock_severe_lactic_acidosis_sepsis3_lactate_4_cur13` | A | septic_shock_severe_lactic_acidosis | threshold: cited Sepsis-3 defines septic shock with lactate >2 mmol/L; the >4 mmol/L cut-off is not in the cited source (it derives from the SSC resuscitation bundle) |
+| `hyperprolactinemia_pituitary_2023_prolactin_elevated_cur13` | A | hyperprolactinemia | threshold: Pituitary Society 2023 consensus (full text retrieved) defers to assay-specific reference ranges and does not state 25 ng/mL |
+| `hepatitis_a_igm_anti_hav_positive_cur13` | A | hepatitis_a | attribution: hepatitis A IgM criterion cites the EASL hepatitis E guideline |
+| `acquired_hemophilia_a_reanchor_scre_v13_4` | A | acquired_hemophilia_a | attribution: acquired haemophilia A cites the BSH rare coagulation disorders guideline, which excludes FVIII deficiency (covered by a separate BSH guideline) |
+| `diabetes_insipidus_nephrogenic_hypokalemia_risk` | B1 | diabetes_insipidus_nephrogenic | attribution/statement: nephrogenic diabetes insipidus screen by potassium <=3.0 cites KDIGO CKD 2024 (full PDF retrieved); no such statement |
+| `hyponatremia_hyperkalemia_pattern_diagnostic_criterion_1_v1` | B1 | hyponatremia_hyperkalemia_pattern | threshold: Endocrine Society PAI 2016 guideline (full text retrieved) names hyperkalaemia as a feature but states no potassium threshold; 5.5 mmol/L not in source |
+| `acute_kidney_injury_v1_f13_3` | B1 | acute_kidney_injury | definition: AKI 'diagnostic criterion' by fixed creatinine >1.1 mg/dL / eGFR <60 cites KDIGO AKI 2012 (full PDF retrieved), which defines AKI only by change from baseline (>=0.3 mg/dL in 48 h or >=1.5x in 7 days) |
+| `hyperkalemia_pattern_staging_severity_1_v1` | B1 | hyperkalemia_pattern | statement absent: hyperkalaemia >6.5 severity cites WHO essential diagnostics list (404) and KDIGO AKI 2012 (full PDF retrieved) - no potassium threshold in the source |
+| `hyperkalemia_acidosis_pattern_screening_1_v1` | B1 | hyperkalemia_acidosis_pattern | statement absent: potassium >5.5 pattern cites KDIGO AKI 2012 (full PDF retrieved) - no threshold in source |
+| `hyperkalemia_pattern_diagnostic_criterion_1_v1` | B1 | hyperkalemia_pattern | statement absent: potassium >5.5 'diagnostic criterion' cites KDIGO AKI 2012 (full PDF retrieved) - no threshold in source |
+| `hypokalemia_pattern_screening_1_v1` | B1 | hypokalemia_pattern | statement absent: potassium <3.5 pattern cites KDIGO AKI 2012 (full PDF retrieved) - no threshold in source |
+| `ckd_stage_g2_hypokalemia_risk_v1` | B2 | ckd_stage_g2 | attribution/statement: 'CKD stage G2' screen by potassium <=3.0 cites KDIGO CKD 2024 (full PDF retrieved); G2 is defined by eGFR 60-89, potassium plays no role |
+
+**Concordant rule.**
+
+| rule_id | stratum | disease | finding |
+|---|---|---|---|
+| `chronic_kidney_disease_kdigo_2024_albuminuria_a2_cur13` | A | chronic_kidney_disease | KDIGO CKD 2024 (full PDF retrieved): ACR 30-300 mg/g = A2, ACR >30 mg/g is a marker of kidney damage; rule threshold, analyte and disease match (chronicity >3 months handled by engine context, not by this rule) |
+
+**Consequence.** Registry 15 will carry section-level locators (document + section/table + page) for every executable rule,
+the 46 generic-source candidates will be retired or re-sourced, and the five anchor attribution errors found here are
+corrected in the next release with a dated change-log entry; none of these changes alters the frozen v7 results reported in
+this paper. Files: `eval/source_audit/{PROTOCOL.md, sample_200.csv, summary_rater1.json, source_access_status.json}`.
+
+## Supplementary Note 8 — Addendum (2026-10-27): second-rater attempts and why none is used
+
+The protocol named a human non-clinician second rater blind to rater-1 labels. Three submissions were received and all were rejected under the protocol's validity rule (a CONCORDANT or DISCORDANT label must be supported by the verbatim source sentence containing the criterion); none is averaged into any figure in the paper.
+
+| Round | Date | Labels (C/D/U) | Agreement with rater 1 | Reason for rejection |
+|---|---|---|---|---|
+| 1 (200 rules) | 2026-10-26 | templated | κ = 0.05 | verdicts without any source quotation; identical label pattern across strata |
+| 2 (100 stratum-A rules) | 2026-10-27 | 72/3/25 | 26/100 raw; κ = 0.03 | the mandatory quotation field contained the guideline *title* in 70 of 72 CONCORDANT rows; one row contained a literal placeholder; attribution errors visible from the title (e.g. hepatitis A IgM cited to an EASL hepatitis E guideline) were labelled CONCORDANT |
+| 2b ("revised", same rules) | 2026-10-27 | 70/5/25 | κ = 0.04 | quotations were numeric sentences paraphrasing the rule, not the source: "Hb < 10.67 g/dL" (a unit-conversion artefact of the rule), Sepsis-3 quoted as "lactate > 4.0 mmol/L" (source: > 2 mmol/L), the Atlanta classification quoted with "≥ 180 U/L" (source: 3 × ULN), sentences attributed to WHO landing pages that return no text |
+
+All three files are archived verbatim in `eval/source_audit/` (`REJECTED_rater2_submission_2026-10-26.csv`, `REJECTED_rater2_round2_submission_2026-10-27.csv`, `REJECTED_rater2_round2b_REVISED_2026-10-27.csv`) with a written rejection note. The audit in the paper is therefore single-rater (an AI agent under the first author's direction, declared), and no inter-rater reliability is claimed. The episode is reported in the main text (Section 3.2) because it bears on the method: a human asked to verify AI-drafted rules reproduced, without opening the sources, exactly the failure the audit is designed to detect; a mandatory verbatim-quotation field with page/section is therefore part of the protocol going forward, together with a five-row spot check against sources for every rater.
+
+## Supplementary Note 9 — Post-freeze development version (v8); moved verbatim from the main text
+
+Engine v8 (2026-10-26) differs from the frozen v7 in three presentation- or index-level additions—MELD/MELD-Na (Kamath 2001; Kim 2008; OPTN formula with sodium clamped to 125–137 mmol/L and creatinine capped at 4 mg/dL; computed only when bilirubin > 2 mg/dL or INR > 1.5) and the platelet-to-lymphocyte ratio as derived patterns with `supports = []`, and a `confidence_band`/`concise` field on each differential entry (bands ≥ 0.70 high, 0.60–0.69 moderate, 0.50–0.59 low, otherwise consider; descriptive, calibrated on the development set only). The gate exists because MELD was derived in, and is calibrated for, patients with established hepatic dysfunction; computed on a panel with normal bilirubin and INR it reduces to a creatinine term and would mislabel isolated kidney injury as liver prognosis. The remaining difference is registry 14.2.0, which re-sources 28 rules (9 source records) with Crossref-resolved DOIs and changes no rule logic, threshold, weight or executable flag (`eval/registry_patches/patch_14_2_0.py`). The sepsis companion (`eval/sepsis_ml/sepsis_risk_module.py`) uses the same three PhysioNet/CinC 2019 subsets as the engine evaluation (set A 4,871 patients for training; sets B 4,558 and B2 4,991 held out; Table 2); features are listed in the script; the logistic model is class-balanced L2 (C = 0.05); the gradient-boosting reference uses depth ≤ 4, ≤ 15 leaves, ≥ 300 samples per leaf, L2 = 5 and early stopping on 15% of set A. The alert threshold for the utility score was chosen on set A over a grid of score quantiles. Disclosure: the boosting hyper-parameters were tightened once after a first evaluation on set B showed over-fitting (training AUROC 0.997, set B 0.719); set B2 was not opened until the final configuration. Patient-level AUROC uses the maximum score over hours before the shifted label for septic patients and over all hours for non-septic patients; horizon AUROC compares the score exactly h hours before onset with a random hour of each non-septic patient. The v8 gate (`eval/results/gate_v8/`) repeats the v7 gate (three vignette batteries, 1,000-panel healthy sweep, 755-pair perturbation battery, unit tests, eICU labs-only run) with a pre-stated non-inferiority margin of 0.5 recall points.
+
+Engine v8.1 (2026-10-26) added a property-based test suite (determinism, unit invariance, directional monotonicity for 14 analyte–direction pairs, absent-analyte and context invariants), fixed the one defect it exposed (the final finding-demotion pass capped a well-supported finding beneath a presumptive explainer scoring < 0.80; the existing rule that a weak explainer organises but does not lower a finding is now applied uniformly) and added a reporting-only measurement-uncertainty layer (biological-variation-based probability that a value truly lies outside its reference limit; no effect on any score). Its development gate reproduced every safety-battery result; eICU flat recall@3/5/10 was 48.4/61.0/74.1% versus 47.9/60.8/74.1% for v8, a difference inside the v7 confidence intervals and reported as parity.
+
+## Supplementary Note 10 — External cohorts and case reports; moved verbatim from the main text
+
+On the UCI thyroid referral set (6,932 scored records) AUROC was 0.979 (0.974–0.983) for hypothyroidism and 0.798 (0.783–0.814) for hyperthyroidism; on the HCV cohort (n = 615) 0.925 (0.881–0.962) for any liver disease and 0.909 (0.837–0.969) for cirrhosis; on ILPD (n = 583) 0.704 (0.661–0.747). In MIMIC-IV demo (235 admissions, ICD-coded) top-5/10 recall was 47.9/61.7% for v6 in quarantine round 1 and 47.5/62.1% for the post-hoc v7 re-run. On 50 PMC case reports given only the laboratory paragraph, the specific diagnosis was in the top-5 in 26% and the correct syndrome in 68% (automatic parsing: 10% and 44%) (Table 4).
+
+## Supplementary Note 11 — Calibration, subgroups and robustness; moved verbatim from the main text
+
+Pooled over 52,689 stay–group units, AUROC was 0.797 but raw scores were over-confident: calibration slope 0.25, ECE 0.162, Brier 0.117 (Fig. 7). Split-half cross-fitted isotonic recalibration reduced ECE to 0.003 within eICU—evidence that ranks are recalibrable, not a transferable calibration. Raw scores are therefore ranks, not probabilities. Twenty-seven of 29 groups with ≥10 labels had AUROC above 0.5 after Benjamini–Hochberg adjustment (exceptions: malnutrition, hypocalcaemia). Recall@5 was 62.3% in men and 58.5% in women, 58–64% across age bands and 59–61% across the three largest ethnicity strata (Supplementary Table S4); three strata in one US dataset do not support a fairness claim. The engine contains no race or ethnicity term, and its optional `ethnicity` field is parsed but never read. The release passed the non-regression gate: 689/689 unit tests, 352/353 adversarial vignettes (alcoholic pancreatitis ranked second behind alcohol-use disorder, deliberately not patched), 753/755 perturbation pairs (both failures are replicates of one thiazide-hyponatraemia vignette under 3% noise) and the SI/conventional unit-twin battery (Supplementary Note 4).
+
+## Supplementary Note 12 — Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length — statements about a pending second rater in R5 §2.8/§3.10 are superseded by main-text Sections 2.4 and 3.2)
+
+#### R5 Methods
+
+##### 2.1 Engine
+
+Hemoglyph (`analyse_gidlines.py` [sic—historical file name], v7) processes a panel in five stages: normalisation (UCUM units, aliases, age/sex reference intervals, 100 derived indices); a rule layer over registry 14.1.0 (33,183 executable leaves, where a leaf is one registry record with a machine-evaluable condition on at least one analyte, a disease identifier and an `executable: true` flag—retired, template and empty-expression records are kept for provenance but never evaluated—a count that moved from 34,005 in release 13.1.0 through 33,230 (13.3.0), 33,170 (13.4.2) and 33,178 (14.0.0) as 1,307 rules were retired and 485 guideline-sourced rules were added, Supplementary Table S10; each with analyte conditions, population gates, evidence role—diagnostic criterion weight 6, supportive or screening weight 3—disease identifier and source); an expert syndrome layer (~900 constellations with anchor strengths 0.95/0.88/0.80/0.72/0.45, operators absent/between/neg/present and context predicates for pregnancy, age, sex, medication, condition, family history and encounter); fixed-weight fusion (weights 0.35 rule engine, 0.25 Bayesian, 0.20 fuzzy, 0.10 knowledge graph, 0.10 risk models, set by the first author as a judgement that explicit criteria should dominate, with four context profiles, e.g. toxicology 0.55 for rules; no weight was derived from or tuned on any evaluation dataset, and Table 1 reports the sensitivity to them) with an expert floor (the fused score of a diagnosis cannot fall below 0.90 × the rule-layer vote, so that the four other layers can modulate but never veto a guideline rule). The Bayesian layer has 75 disease nodes with hand-coded prevalence priors (constants or age bands, e.g. type 2 diabetes 0.08, CKD 0.10) and hand-coded likelihood ratios for 68 of them, taken from diagnostic-accuracy literature cited in code comments (e.g. lipase ≥ 3 × ULN, LR+ 18 for acute pancreatitis); none is estimated from data, so the engine remains untrained in the sense that no parameter was fitted to any patient record; and ranking hygiene (causal attribution via a disease–finding explanation graph, covering-diagnosis suppression of explained findings, KDIGO chronicity [17], ADA glycaemic criteria [18], UDMI acuity [19], maximum 25 entries). Engine changes between releases (C1–C16) are listed with dates in Supplementary Table S1; none was fitted to outcome data and no rule was written for a specific missed case. This is supported by the dated change log and by the fact that every change is expressed as a guideline citation plus a synthetic vignette rather than a parameter value; no version-control history exists for the development period, so the statement cannot be audited by commit diff and is offered as a documented process claim, not a verified one.
+
+##### 2.2 Knowledge base construction and provenance
+
+'AI assistance' means the following. For each guideline source the first author prompted a general-purpose LLM with the source text or citation and a fixed JSON schema; the model returned candidate rule records (analyte, operator, threshold, unit, population gate, evidence role, disease identifier, source locator). These records were not individually edited by a human: they were accepted or rejected by automated audits (schema validity, analyte exists in the 2,045-analyte feature registry, unit convertible, threshold within physiological range, no duplicate or contradictory record, context gate present where the guideline requires one, source locator resolvable) and carry the status `candidate_requires_specialist_validation`. The 272 anchor rules were written or line-edited by hand by the first author from the primary guideline text and carry higher weight; the 13 demoted anchors and all rules retired between releases were removed by rule-level review of defect reports, not by outcome data. No record of the proportion of candidate rules that a human read exists, and we therefore describe the bulk as AI-drafted and automatically audited, not human-reviewed. Sources: KDIGO, ADA, WHO, ACC/AHA, EASL, ATA, ESC, CLSI, Tietz and others listed in the registry. Source locators were verified with `registry_source_verify.py` (Crossref resolution, HTTP reachability). Counts by release: 13.3.0, 33,230 rules/747 sources; 13.4.2, 33,170/781; 14.1.0, 33,183/785.
+
+##### 2.3 Pre-specification, freezes and quarantine
+
+The SAP (Supplementary Note 1) fixed metrics, label maps, thresholds and comparators; 15 amendments are dated and justified. Freezes v14 and v15 recorded SHA-256 manifests. Quarantine round 1 (MIMIC-IV demo; NHANES 2013–14; sepsis set B) used superiority criteria and failed; round 2 (NHANES 2015–16; sepsis set B2; healthy sweep with a new seed) used non-inferiority criteria specified before execution and passed. Two data-loader defects discovered during round 2 (string patient identifiers; a dropped derived NHANES variable) were fixed before scoring without touching the engine and are documented.
+
+##### 2.4 Datasets and reference standards
+
+Data sources, reference standards and their roles are summarised in Table 2. eICU-CRD demo v2.0.1 [20]: 2,520 stays → 2,512 adults → 2,314 with ≥ 8 analytes in the first panel; reference = clinician problem list mapped by regular expressions to 31 groups (audit on 400 stays: precision 100%, sensitivity 98.3%; per-group values in Supplementary Table S9). MIMIC-IV demo [21]: 235 admissions, ICD-10 reference. NHANES 2013–14, 2015–16, 2017–18: 3,000 randomly sampled adults per cycle with biochemistry and CBC; references per ADA, KDIGO, WHO and ACG criteria and self-reported diagnoses. PhysioNet/CinC 2019 [22]: set A 4,871 patients (439 sepsis), set B 4,558 (268), set B2 4,991; Sepsis-3 onset label; the post-hoc concurrent analysis (labs and vitals within ±6 h of onset) used 247 cases and 600 dwell-time-matched controls drawn from set B2 only, which is why Table 3 reports it for B2 alone. UCI thyroid0387 [23], UCI HCV [24], ILPD [25], PMC-Patients 50 case reports [26]. Participant flow in Supplementary Table S3.
+
+##### 2.5 Metrics
+
+Primary: flat recall@k of clinician-listed diagnoses (k = 3, 5, 10). Secondary: two-tier recall; panel-supported recall (labels whose first panel met a guideline criterion fixed in `panel_supported_metric.py` before scoring; groups without a single criterion excluded); per-group AUROC of the group score. Screening: AUROC and false-assertion rate in all-normal adults. Sepsis: AUROC of the sepsis-group score. Calibration: calibration slope and intercept, ECE (10 equal-frequency bins), Brier with cluster-bootstrap CI, log-loss and decision curves before and after cross-fitted isotonic regression [27]. Ablation: the frozen engine with one component disabled or altered per arm (each of five fusion layers, syndrome layer, registry, anchor-only registry, `unverified_source` rules removed, fusion-weight and shrinkage settings), scored on the same 2,314 stays.
+
+##### 2.6 Comparators
+
+B1, raw key-analyte threshold; B2, gradient boosting and logistic regression trained on the same analytes, five-fold out-of-fold; registry-off ablation; LLM: an unnamed frontier model run by the authors through a chat interface on 2026-10-21 (n = 60), 2026-10-22 (n = 100) and 2026-10-23 (n = 240), re-read 2026-10-24 and alternative prompt 2026-10-25; the interface exposes no temperature or sampling parameters, so these are the provider defaults; the LLM was accessed through the Arena.ai agent platform, which routes requests among several frontier model families (including GPT, Claude and Gemini) and does not expose the specific model or version to the user; 'unnamed frontier LLM' therefore denotes a capability tier, not a verified identity, and the comparison cannot be reproduced against a named model version—a limitation stated in the Discussion; blinded to labels, with a fixed prompt requesting ten ranked diagnoses from the identical panel, age and sex; 40 panels re-read for test–retest and read with an alternative prompt; scoring against the frozen engine v7 by the same label map and script. Prompts, outputs and the full protocol are released (Supplementary Note 2).
+
+##### 2.7 Post-freeze development version (v8)
+
+After the freeze, twelve review-driven improvement proposals were tested against the frozen artefacts before any code was changed; the procedure, the four supported and eight refuted proposals, and the resulting development version v8 are described in Supplementary Note 9. No frozen number in this paper derives from v8.
+
+##### 2.8 Source-concordance audit
+
+Protocol frozen before sampling (`eval/source_audit/PROTOCOL.md`). Seed 20261026; 100 of 272 curated anchors and 100 executable candidates (50 "eICU-relevant": feature present in ≥ 50% of eICU first panels and disease in an evaluated label group; 50 uniform from the rest), registry 14.1.0. Fields compared: analyte, operator/threshold with unit, population qualifier, disease attribution. Labels CONCORDANT / DISCORDANT / UNRESOLVABLE with the tie-break "when in doubt, unresolvable"; unresolvable is never counted as concordant. Sources were retrieved by the registry locator (curl, 20 s), with Crossref title and PubMed abstract as fall-back for paywalled DOIs and direct PDF retrieval for KDIGO guidelines. Rates are reported with two denominators (resolvable and all sampled) and Wilson 95% CIs. Rater 1 was an AI agent under the first author's supervision; rater 2 is a human non-clinician co-author blind to rater-1 labels; Cohen's κ over the three labels will be reported.
+
+##### 2.9 Statistics and software
+
+Labels are nested in stays (ICC 0.04); eICU proportions and paired differences use stay-cluster bootstrap (4,000 resamples) and the cluster-adjusted McNemar test [28,29]; Wilson intervals elsewhere; 1,000-sample bootstrap or DeLong for AUROC; NHANES AUROCs additionally weighted by examination weights; Benjamini–Hochberg across per-group tests. Python 3.11/3.13, numpy, pandas, scikit-learn. Reporting follows TRIPOD+AI [30], adapted for a system that is not fitted to data (model-training items answered "not applicable" with justification), with the DECIDE-AI early-stage items consulted for the Limitations; the completed checklist is Supplementary Note 5.7.
+
+#### R5 Results
+
+##### 3.1 System and knowledge base
+
+The architecture (Fig. 1; Section 2.1) was frozen as engine v7 with registry 14.1.0 (33,183 executable rules: 272 hand-curated anchors and 32,911 AI-drafted, unaudited candidates from 785 guideline sources; ~900 curated syndrome constellations). The engine is deterministic (byte-identical output in 50/50 repeated stays), runs on one CPU core in ~1 s per panel and makes no network calls. Open and proprietary components are tabulated in Supplementary Table S15; only the open components were evaluated.
+
+The registry was constructed with AI assistance from guideline text and filtered by automated consistency audits; it has not been audited rule-by-rule by clinicians, so the per-rule error rate is unknown. Each output entry displays its rule's status and evidence tier as machine-readable fields. A provenance audit resolved 112 DOIs via Crossref and reached 533 landing pages; 39 sources were unreachable from our sandbox, 34 lacked a locator, nine invalid DOIs were removed and 28 rules were flagged `unverified_source` (Supplementary Table S10, Fig. S1).
+
+##### 3.2 Pre-specification, freezes and quarantine
+
+Evaluation followed an internal statistical analysis plan with 15 dated amendments (Supplementary Note 1), time-stamped and hash-frozen inside the repository but not publicly registered; we therefore write 'pre-specified', not 'pre-registered'. Before each quarantine round, code and registry were frozen with a SHA-256 manifest, and quarantine data were run once (the MIMIC-IV demo re-run with v7 is the labelled exception). Round 1 (MIMIC-IV demo, NHANES 2013–14, PhysioNet sepsis set B) failed two primary criteria written as superiority over the prior release, because guideline-correctness changes (a single creatinine no longer asserts chronic kidney disease) lowered CKD label recall. We report that failure, re-specified the criteria as non-inferiority (Amendment 15, dated after Round 1 and before any Round-2 file was opened: NHANES AUROC within 0.03 on six targets with ≤1% healthy false assertions; sepsis AUROC not more than 0.02 below; no new safety-battery failure), implemented six further correctness changes (v7) and ran Round 2 (NHANES 2015–16, sepsis set B2, new healthy sweep), which met them (Fig. 2a; Supplementary Table S2). Because the criteria changed between rounds, Round 2 is supportive evidence of non-regression, not the confirmatory test originally planned. All results below are for frozen v7/14.1.0 unless stated.
+
+##### 3.3 Intensive care (eICU-CRD demo)
+
+In 2,314 adult ICU stays from 186 US hospitals, using the first panel with ≥8 analytes and no clinical text, 47.9% (stay-clustered 95% CI 45.8–50.0) of 2,432 clinician-listed, laboratory-relevant diagnoses appeared in the top-3, 60.8% (58.7–62.9) in the top-5 and 74.1% (72.2–76.0) in the top-10 of the flat differential (Table 4); a further 275 coded labels lacked the key analyte and are reported as 'analyte missing'. Raising the analyte threshold to ≥25 changed top-5 recall by ≤1 point. Counting either tier, top-5 recall was 71.9%. Precision@5 was 14.2% (13.3–15.2), F1@5 23.1% and NDCG@5 56.5% (54.1–58.8) against an incomplete problem list (lower bounds). Recall@5 was 88.1% for acute myocardial infarction, 82.8% for heart failure, 83.0% for anaemia and 77.5% for acute kidney injury, but 49.1% for sepsis, 45.1% for diabetes and 35.8% for CKD.
+
+A prevalence-ranking baseline (most frequent groups whose key analyte is present) reached recall@5 51.3% and NDCG@5 39.0%; at k = 10 its recall (76.8%) exceeded the engine's 74.1%, so the engine's advantage is ranking, not coverage (Supplementary Table S11). Automated laboratory-criterion matching of the 10,380 top-5 assertions (fixed single-analyte criteria written before scoring, not clinician adjudication) found 14.2% on the problem list, 54.8% not coded but satisfying the group's laboratory criterion in the same panel, 12.6% criterion-negative—the closest available estimate of true false positives—and 18.4% in groups without a single-analyte criterion. Precision@5 therefore lies between 14.2% and 69.0%; whether the uncoded criterion-positive findings were clinically useful cannot be judged without a clinician.
+
+The reference standard bounds these metrics (Fig. 2b). Of 2,707 label targets, 541 belonged to groups with no single laboratory criterion, 275 lacked the key analyte and 431 were contradicted by the first panel (e.g. hypokalaemia coded with potassium 4.1 mmol/L after repletion). Among the 1,460 labels whose first panel met the guideline criterion—a secondary metric whose thresholds were fixed before scoring but whose definition followed observation of the ceiling—flat recall was 29.6/62.5/78.0/91.8% at k = 1/3/5/10 (Supplementary Fig. S3).
+
+Three comparators used identical inputs (Fig. 3). A raw key-analyte threshold matched or exceeded the engine's AUROC for single-analyte groups (hyperkalaemia 0.96 vs 0.92; anaemia 0.83 vs 0.78), as expected for findings that are definitions. Gradient boosting and logistic regression trained on the labels (five-fold out-of-fold) exceeded the untrained engine only in outcome-defined groups without a laboratory signature—sepsis (0.82 vs 0.68), GI bleeding (0.85 vs 0.75), alcohol withdrawal (0.80 vs 0.54)—and were matched or beaten in nine guideline-defined groups (CKD 0.79 vs 0.81; hyponatraemia 0.85 vs 0.89; cirrhosis 0.83 vs 0.87). Adding documented history and medications raised recall@5 by 0.9 points for labels not named in the history (n = 2,467) but by 23.3 points for labels already named (n = 240); the context arm mainly echoes documentation and is reported only in the Supplement.
+
+##### 3.4 Component ablation
+
+Two components carry the signal (Table 1; Supplementary Table S12). Removing the rule-engine vote cost 12.1 points of flat recall@5 (−14.4 to −9.8) and removing the expert syndrome layer cost 9.5 points (−11.1 to −7.9). The Bayesian network contributed 1.3 points; the fuzzy, knowledge-graph and risk-model layers and the fusion refinements each lay within ±0.5 points; uniform fusion weights cost 1.4 points and rule-heavy or rule-light weights changed recall by ≤1.1 points, so the hand-set weights are not a hidden tuning knob. Restricting the registry to the 272 curated anchors (32,911 AI-drafted rules off) lowered flat recall@5 by 0.9 points (−2.1 to +0.2) with the syndrome layer on and by 3.1 points with it off; the syndrome layer contributed 9.5 points with the full registry and 11.7 with anchors only. The AI-drafted bulk is therefore partly redundant with the syndrome layer rather than inert, but the headline rests on the curated anchors and syndrome constellations—the components not yet independently audited—and registry scale is not claimed as a merit.
+
+##### 3.5 Community survey: three independent NHANES cycles
+
+In 3,000 adults per cycle, unweighted AUROCs reproduced across the development cycle (2017–18) and the two quarantine cycles (2013–14, 2015–16): diabetes 0.946/0.938/0.924, CKD 0.959/0.968/0.962, anaemia 0.972/0.994/0.983, iron deficiency 0.989/–/0.972, hyperuricaemia 0.943/0.958/0.955, hypercholesterolaemia 0.905/0.883/0.886 and ALT elevation 0.872/0.880/0.877 (Fig. 4; Table 3). A correction: the previous version quoted 0.721 for ALT in 2017–18; that value came from registry 14.0.0, not the frozen v7. These laboratory-defined labels overlap the inputs and test criterion recognition; against self-reported physician diagnosis, AUROC was 0.90–0.92 for diabetes and 0.75–0.82 for kidney disease. Examination weights changed laboratory-defined AUROCs by ≤0.015 but lowered self-reported kidney disease in 2017–18 from 0.816 to 0.744 (Supplementary Table S7). Among guideline-healthy adults (30-analyte filter, Supplementary Note 5), the engine asserted a disease in 1/160, 1/246 and 0/79 (2/485, 0.4%); because the filter covers 30 analytes, this is a lower bound on false assertions. Separately, 0/1,000 synthetic guideline-normal panels produced a disease (a regression check, not evidence).
+
+##### 3.6 External cohorts and case reports
+
+On the UCI thyroid referral set AUROC was 0.979 (0.974–0.983) for hypothyroidism and 0.798 (0.783–0.814) for hyperthyroidism; on the HCV cohort 0.925 (0.881–0.962) for any liver disease; on ILPD 0.704 (0.661–0.747); in the MIMIC-IV demo top-5/10 recall was 47.5/62.1% (v7 re-run); on 50 PMC case reports the specific diagnosis was in the top five in 26% and the correct syndrome in 68% (Table 3; full results in Supplementary Note 10).
+
+##### 3.7 Pre-specified negative result: sepsis
+
+In PhysioNet/CinC 2019, the engine's sepsis score from first-24-h laboratory values discriminated Sepsis-3 onset with AUROC 0.600 (0.575–0.625) in set A, 0.610 (0.583–0.640) in quarantine set B and 0.588 (0.559–0.616) in set B2, versus 0.691, 0.712 and 0.679 for a supervised logistic model on the same features (Fig. 5). Guideline-sourced SIRS/qSOFA rules added afterwards (Amendment 15; developed on A, validated once on B2) added about 0.04 AUROC and are labelled post hoc. Hemoglyph is not a sepsis predictor.
+
+##### 3.8 Blinded comparison with an unnamed frontier LLM
+
+On 400 stays (291 with scorable labels; 596 labels) an unnamed frontier LLM, accessed through an agent platform that does not disclose the model, received the identical panel, age and sex and returned ten ranked diagnoses, blinded to labels (Supplementary Note 2). Recall@5—the pre-specified primary comparison—was 60.7% (56.5–65.0) for Hemoglyph versus 59.6% (55.3–63.6), difference +1.2 points (−2.5 to +5.1; cluster-adjusted McNemar p = 0.54). The LLM was better at rank 1 (28.2% vs 24.0%, p = 0.013) and rank 3 (50.8% vs 47.0%, p = 0.041); the engine at rank 10 (72.0% vs 65.1%, p = 0.0002) and left fewer labels absent (21.8% vs 34.9%); mean reciprocal rank 0.391 vs 0.408 (Fig. 6; Table 5). Crediting either engine tier—a post-hoc metric with no LLM counterpart—gave 69.8% vs 59.6%. An earlier comparison with engine v5.1 had favoured Hemoglyph (64.4%, p = 0.009); the v7 correctness changes removed that advantage. The engine led for GI bleeding (84 vs 50%), diabetes (50 vs 37%) and hypokalaemia (59 vs 41%); the LLM for metabolic acidosis (79 vs 50%), hyperkalaemia (90 vs 70%) and DKA (83 vs 73%). On 40 re-read panels the LLM's agreement with itself was 85.7% (κ = 0.69) and its recall@5 varied by ±5 points across reads and prompts—more than the engine–LLM difference. Both flagged 39/39 CAP critical values in 50 stays, a shared safety floor.
+
+##### 3.9 Calibration, subgroups and robustness
+
+Raw scores were uncalibrated (pooled AUROC 0.797; reliability and decision curves before and after cross-fitted isotonic regression in Fig. 7); subgroup recall by age, sex and unit type, unit-invariance and perturbation results are given in Supplementary Note 11 and Table S4.
+
+##### 3.10 Verification: executable invariants and source concordance
+
+Two further checks were added after the freeze; neither alters a frozen number. First, a property-based test suite
+(`tests/test_properties.py`, engine v8.1) states invariants that any correct laboratory-interpretation engine must satisfy
+and checks them on randomised panels rather than hand-written vignettes: determinism (identical output on repeated runs),
+unit invariance (SI and conventional units give the same ranking, tolerance 10⁻³), directional monotonicity (a more extreme
+value never lowers the probability of the finding it defines; 14 analyte–direction pairs including creatinine, glucose up and
+down, potassium up and down, sodium up and down, haemoglobin, ALT, bicarbonate, leukocytes up and down, platelets),
+absent-analyte invariance (a syndrome is never asserted from an analyte that is not present) and context invariants
+(documented CKD never raises acute kidney injury; borderline-value flags behave as specified). All 21 tests pass. The suite
+exposed one genuine defect that the 353 adversarial vignettes had not: a well-supported renal finding was capped beneath a
+presumptive explainer scoring below 0.80, so the leading renal probability fell as creatinine rose from 1.6 to 2.2 mg/dL; the
+fix applies an existing rule uniformly and passed the full gate (eICU 48.4/61.0/74.1% versus 47.9/60.8/74.1%, inside the v7
+confidence intervals). These tests establish logical consistency, not clinical correctness: a mistranscribed threshold passes
+every invariant.
+
+Second, a source-concordance audit asked whether the rule transcribes what its cited source says (Methods; Supplementary
+Note 8). Of 200 rules sampled under a frozen protocol (100 curated anchors, 100 candidates), only 16 could be resolved from
+the locators the registry provides: 15 were discordant (7 attribution errors among curated anchors, such as a hypernatraemia
+rule citing the hyponatraemia guideline, and 8 thresholds or definitions absent from an on-topic source, including a
+candidate AKI "criterion" defined by a fixed creatinine > 1.1 mg/dL and attributed to KDIGO 2012, which defines AKI only by
+change from baseline) and 1 concordant. The remaining 184 (92%, 95% CI 87.4–95.1) were unresolvable—12 with no retrievable
+text, 55 with only a title or abstract, 46 citing only generic methodological standards (WHO essential diagnostics list, CLSI
+EP28/C59) that cannot contain a disease-specific threshold, and 71 landing pages. Because an attribution error is visible from
+a title while concordance needs the full text, the 15/16 ratio is not an estimate of the registry's discordance rate; the
+defensible statements are that at least 7.5% (4.6–12.0) of sampled rules are demonstrably discordant and that the registry,
+as released, is not auditable rule-by-rule from its own locators. The audit was performed by a single declared rater (an AI agent under the first author's direction); a second, human non-clinician rater returned templated verdicts in a first round (agreement with rater 1 κ = 0.05) and that round was rejected and is archived with the protocol rather than averaged in (Supplementary Note 8). No inter-rater reliability is therefore claimed for the audit, and its two figures (92% unverifiable, ≥ 7.5% discordant) should be read as one rater's finding under a frozen protocol that anyone can re-run.
+
+#### R5 Discussion
+
+A guideline-transcribed rule engine with no training data recovered 61% of clinician-listed ICU diagnoses in five suggestions from laboratory values alone (78% on the post-hoc panel-supported subset), reproduced screening AUROCs across three NHANES cycles while asserting disease in at most one adult per healthy cohort, and was statistically indistinguishable from an unnamed frontier LLM on the pre-specified metric, with the LLM stronger at rank 1 and the engine at coverage. Its advantages are determinism, local execution and traceability to a cited rule, not accuracy. It failed, as pre-specified, to predict sepsis.
+
+Five findings shape how these numbers should be read. First, the ~60% ceiling is largely a property of the reference standard: a quarter of admission-level labels were not inferable from the first panel, and a supervised model trained on the labels themselves did not exceed 0.82 AUROC for outcome-defined groups. The panel-supported metric was defined after the ceiling was observed and is structurally optimistic; we present it alongside, not instead of, the flat metric. Second, the untrained engine matched supervised models wherever a guideline definition exists and lost wherever the label is an outcome (sepsis, bleeding, withdrawal) learned from hidden correlates—the expected division of labour between knowledge and learning, which argues for hybrid rather than replacement designs. Third, the LLM and the engine make different errors: differences are small where a single analyte defines the label (renal impairment 83% vs 81%) and large where a multi-analyte pattern must be assembled or where the LLM prefers a broader term; the LLM's test–retest variability exceeded the between-system difference. Fourth, the ablation locates the result in the rule-engine vote and the curated syndrome constellations, written by a non-clinician first author from guideline criteria and not independently validated; the 33,000-rule registry adds one to three points. We therefore describe Hemoglyph as guideline-*transcribed* rather than guideline-derived: the result is what such a transcription achieves, not what the guidelines themselves would achieve. The expert floor (fused score ≥0.90 × rule vote) means the learned layers can modulate but not veto a rule—a deliberate bias towards explicit criteria that trades the possibility of a learned layer correcting a wrong rule for the guarantee that every surfaced diagnosis is traceable to one. Fifth, a prevalence-ranking baseline reaches recall@5 of 51% and overtakes the engine at k = 10; the engine's measurable contribution is ordering (NDCG@5 56.5% vs 39.0%; recall@3 47.9% vs 36.1%) and per-stay specificity (precision@5 14.2% vs 10.8%), and precision against an incomplete problem list remains low in absolute terms.
+
+Our design addresses criticisms levelled at recent LLM benchmarks—unstable metrics, leakage and post-hoc selection [26,31]. Releases were frozen with manifests; quarantine data were run once; a failed round is reported with its original criteria and the subsequent weakening to non-inferiority is disclosed; the post-hoc sepsis additions are labelled. The cost of correctness is visible: moving from the product release to v7 cost three points of flat recall, almost entirely because a single creatinine no longer asserts CKD and a normal leukocyte count no longer yields a syndrome; our first submission reported superiority over the LLM against an earlier engine version, and re-scoring against the frozen release reduced that to parity. Compared with Isabel and DXplain, which take symptoms and have been evaluated on 36–201 cases [13–16,32], this study isolates laboratory-only reasoning on more than 20,000 real encounters and releases its knowledge base under an open licence at a time when the main public executable-guideline repository has been withdrawn. Because the rules were AI-drafted, open release is a precondition for—not a substitute for—expert audit; every leaf carries a source locator, so a clinician can accept, amend or reject a rule and the change is versioned.
+
+Where might such an engine be used? Not as an autonomous diagnostician. Its natural positions are the post-analytical step of a laboratory information system—interpretive comments and critical-pattern alerts generated locally—and a reproducible, auditable baseline against which LLM-based interpretation can be measured. The two architectures could be combined: a language model to extract and normalise free-text results (the step at which our automatic parser lost half the PMC cases) and a rule engine to reason over them. We chose laboratory-only inputs as the primary arm because documented history inflates recall mainly by echoing the diagnosis already written down (+23 points for labels named in the history versus +1 otherwise). We did not tune the engine to the sepsis task after the pre-specified result because an outcome-fitted rule would have been a supervised model in disguise.
+
+Post-freeze proposals were tested against the frozen artefacts before any code changed (Section 2.7; Supplementary Notes 7 and 9); a separate supervised sepsis companion reached held-out AUROC 0.654/0.631 versus the engine's 0.610/0.588. The verification results reframe what this paper can claim. Executable invariants are a genuine methodological advantage of a rule engine over an LLM—they can be stated, run on every release and violated only visibly—and they found a defect that vignettes had missed. The source-concordance audit, however, shows the limit of such verification: the registry's locators are organisation-level URLs and generic standards, so most rules cannot be checked against their source at all, and where they could be checked the error was usually one of attribution. Concordance is a necessary, not sufficient, condition for validity—a rule can quote its source exactly and still encode an outdated threshold—so an independent clinical audit remains the essential next step, and section-level locators are a precondition for it. Consequent registry actions (planned for release 15, none altering the frozen v7 results): section- or table-level locators for every source, re-sourcing or retirement of the 46 sampled candidates—and the class they represent—whose only citation is a generic methodological standard, and correction of the five curated-anchor attribution errors identified. The output design (a rule identifier and source citation for every entry) is consistent with the transparency principle of Criterion 4 of the FDA's January 2026 clinical-decision-support guidance; determining regulatory status is outside the scope of this paper and no claim about it is made. None of these post-freeze versions (v8, v8.1) has been through a quarantine round, and no frozen number here derives from them.
+
+What would change the evidence level? A rule audit by independent clinicians on a random sample with inter-rater agreement; the credentialed full eICU and MIMIC-IV releases, on which the released scripts run unchanged; and a clinician-in-the-loop crossover study measuring accuracy, time and automation bias, for which a protocol has been drafted. Until then, the claims of this paper are bounded to retrospective, laboratory-only performance.
+
+##### 4.1 Limitations
+
+The knowledge base has not been audited rule-by-rule by clinicians, and the non-clinical source-concordance audit reported here shows that 92% of sampled rules cannot even be checked against their cited source from the locator provided, while at least 7.5% are demonstrably discordant; the components that carry the result—272 anchor rules and ~900 syndrome constellations—were written by a non-clinician first author; 34 sources lack a locator; the Bayesian priors are hand-coded without a per-value citation table. No version-control history exists for the development period, so the claim that no change was outcome-fitted rests on the dated change log. Only the open demo subsets of eICU and MIMIC-IV were used; the reference standards are admission-level problem lists and ICD codes, not adjudicated panel-level diagnoses. The LLM comparison is an author-run self-baseline through an agent platform that does not disclose the model, so it is not reproducible against a named model; it used two prompts, no retrieval augmentation and no clinician adjudication, and the model's training data may include the public eICU demo. The quarantine criteria were weakened after round 1 failed; the panel-supported metric is post hoc; the OCR front end was not evaluated; laboratory-defined NHANES labels overlap the inputs; raw scores are uncalibrated; the external cohorts are small and ILPD discrimination was modest. No clinician-in-the-loop evaluation was performed. Iranian populations and non-English laboratory conventions were not evaluated. The first author is a secondary-school student with a financial interest in the commercial product, and the system, including 99.2% of the rules, was developed with AI-agent assistance. Hemoglyph is a research prototype with no regulatory clearance.
+
+## Supplementary Note 5.7 — TRIPOD+AI checklist
+
+### TRIPOD+AI (BMJ 2024;385:e078378) checklist — Hemoglyph Paper 1 (updated 2026-10-24, engine v5.3 / registry 13.3.0)
+
+Status key: ✅ available now · 🟡 partly / needs the pending work · ❌ not yet.
+(Hemoglyph is a knowledge-based, untrained system; items on "training data" are answered as
+"not applicable — knowledge base construction described instead", which TRIPOD+AI permits.)
+
+| # | Item | Status | Where / what is needed |
+|---|---|---|---|
+| 1 | Title identifies study as development/evaluation of a prediction/diagnostic model with AI | ✅ | Paper 1 title: "...retrospective multi-cohort evaluation" |
+| 2 | Abstract: TRIPOD+AI for Abstracts | ✅ | Paper 1 abstract (cohorts, n, recall@5 / AUROC with 95% CI, baselines) |
+| 3a | Background, rationale | ✅ | manuscript intro |
+| 3b | Target population, intended use, users | ✅ | laboratory physicians / clinicians; decision support, not autonomous |
+| 4 | Objectives | ✅ | SAP §1 |
+| 5a | Source of data, study design | ✅ | SAP §3 (6 public datasets) |
+| 5b | Setting, dates, eligibility | ✅ | Paper 1 Methods table (eICU-CRD demo 2014–15; NHANES 2005–2018 (7 cycles); PhysioNet/CinC 2019; UCI HCV/ILPD/thyroid; MIMIC-IV demo) |
+| 5c | Participants' eligibility | ✅ | SAP §6 |
+| 6a | Outcome definition and assessment | ✅ | SAP §5, script docstrings |
+| 6b | Outcome blinded to predictors? | ✅ | labels pre-exist in datasets; engine untrained |
+| 7a | Predictors (inputs) | ✅ | analyte lists per dataset (map tables) |
+| 7b | Predictors blinded to outcome | ✅ | yes |
+| 8 | Sample size | ✅ | no formal power calculation (pre-specified fixed public cohorts); groups with < 20 events flagged "exploratory" in every table; eICU B3+B4+B8 LLM comparison n = 400 stays / 596 labels gives ±4 pp CI half-width |
+| 9 | Missing data handling | ✅ | no imputation; key-analyte conditioning |
+| 10a | Model building: how predictors handled | ✅ | registry/ESL/fusion description |
+| 10b | Model type, training | n/a | knowledge base construction (AI-assisted curation + sources) — **registry audit needed (🟡)** |
+| 10c | Hyper-parameters | ✅ | fusion constants table |
+| 10d | Performance measures | ✅ | SAP §4 |
+| 10e | Model updating | ✅ | ESL ext. 4 / fixes after MIMIC demo, disclosed |
+| 11 | Fairness: subgroup analysis | ✅ | eval/subgroup_fairness.py → sex, age band, hospital, panel size (eICU v5.3: run_20261023_v53/subgroup.log; Supplementary Table S4; sex gap M 65.4 vs F 61.1 reported as unresolved, H1 failed) |
+| 12 | Evaluation / internal validation design | ✅ | SAP §3 roles |
+| 13 | Comparison to other models / baselines | ✅ | B1 single-analyte rule; B2 supervised ML (eICU); blind GPT-4-class LLM via agent (B3/B4/B8, n = 400, McNemar p = 0.009); supervised logistic baseline on Sepsis-2019; published Isabel/DXplain figures in Discussion (not head-to-head) |
+| 14a | Participant flow diagram | ✅ | Supplementary Fig. S1 (figS1_participant_flow.png) + Table S1 (TABLE_S1_cohort_flow.md) |
+| 14b | Participant characteristics | ✅ | Supplementary Table S1 (cohort flow + age/sex/panel size per cohort) |
+| 15 | Model specification / availability | ✅ | code + registries public (GitHub); add Zenodo DOI |
+| 16 | Model performance with CIs | ✅ | reports in eval/results |
+| 17 | Model updating results | ✅ | before/after tables |
+| 18a | Limitations | ✅ | REAL_DATA_VALIDATION §4 |
+| 18b | Interpretation | ✅ | Paper 1 Discussion |
+| 18c | Implications | ✅ | Paper 1 Discussion (decision support, not autonomous; calibration needed before thresholds are used) |
+| 19 | Registration / protocol | 🟡 | SAP v1 + Amendments 1–12 time-stamped in git; OSF registration text ready (docs/paper1/supplement/OSF_REGISTRATION_TEXT.md) — upload needs the author's OSF account |
+| 20 | Code, data availability | ✅/🟡 | code public (GitHub); all datasets public (URLs in Data availability); Zenodo DOI minted at release by the author |
+| 21 | Funding, conflicts | ✅ | no funding; SB is the sole developer of Hemoglyph (declared) |
+| 22 | Ethics approval | ✅ | public de-identified data; no IRB needed; state DUA terms |
+| 23 | Patient & public involvement | ✅ | none — stated |
+| 24 | Open science: data sharing, code | ✅ | — |
+| 25 | Supplementary materials | ✅ | SAP + amendments; per-group tables; error audit taxonomy (A/B/C1/C2, n = 200); calibration + DCA; fairness; LLM blind protocol & raw read-outs |
+| 26 | Human–AI interaction, deployment context | 🟡 | UI, explanation and alert hierarchy described; NO reader study (stated as limitation) |
+| 27 | Safety / failure analysis | ✅ | S5 critical-value capture; B7 critical values; fabrication provocation 200/200; healthy sweep 0/1000; error audit n = 200 |
+
+Also required by DECIDE-AI if a reader study / early live evaluation is added.
