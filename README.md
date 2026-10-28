@@ -13,7 +13,7 @@ Research prototype. Not a medical device; not approved or intended for clinical 
 | Component | Path | Licence |
 |---|---|---|
 | Inference engine (single file, no training, no network) | `analyse_gidlines.py` (+ `calcu.py`, `cache_registry.py`) | AGPL-3.0-or-later |
-| Rule registries, release 14.1.0 (33,183 executable rules, 785 sources; 99.2 % AI-drafted, status `candidate_requires_specialist_validation`) | `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br`, `HEMOGLYPH_GUIDELINE_REGISTRY.json.br` | CC BY-SA 4.0 |
+| Rule registries: 14.1.0 (frozen with engine v7; 33,183 executable rules, 785 sources; 99.2 % AI-drafted, status `candidate_requires_specialist_validation`) and 15.1.0–15.3.0 | `release/registry_<version>/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br`; the root `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br` / `HEMOGLYPH_GUIDELINE_REGISTRY.json.br` are the live copies (bytes of 15.3.0) that the engine loads | CC BY-SA 4.0 |
 | Verification method 1 — property-based invariant suite (25 tests) | `tests/test_properties.py`, `tests/test_bayes_properties.py` | AGPL-3.0 |
 | Safety and regression batteries | `tests/hard_battery.py`, `hard_battery2.py`, `hard_battery3.py`, `tests/healthy_sweep.py`, `tests/perturbation_fuzz.py` | AGPL-3.0 |
 | Verification method 2 — source-concordance protocol and frozen sample | `eval/source_audit/PROTOCOL.md`, `eval/source_audit/sample_200.csv`, `eval/registry_source_verify.py` | CC BY-SA 4.0 |
@@ -44,6 +44,10 @@ python examples_quickstart.py                       # one panel in, cited differ
 The mapping from every table and figure to its script, input data and engine version is the *Reproducibility map* at the end of the Supplementary Information (`docs/paper1/v7/submission_CMPB/Supplementary_Information_R8.md`); `reproduce.sh` automates the frozen-engine steps. Public inputs: eICU-CRD demo v2.0.1 and MIMIC-IV demo (PhysioNet, credential-free), NHANES 2013–14 / 2015–16 / 2017–18 (CDC), PhysioNet/CinC 2019, UCI thyroid0387, UCI HCV, ILPD, PMC-Patients. Download helpers are in `eval/realdata/`. The 400 blinded LLM prompts and raw outputs are frozen artefacts under `eval/results/eicu_demo/` and are re-scored, never regenerated.
 
 Full run on one core: about 10 h. `eval/realdata/eval_eicu.py --encounter icu` alone reproduces Table 3 in about 40 min.
+
+## A note on file names
+
+Several module names are romanised Persian (`analyse_gidlines.py`, `calcu.py`, `naam_haye_vizhegi.py`, `sarvis_tahlil.py`, `br.py`) and `analyse_gidlines` keeps its original spelling. They are left as they are because the freeze manifests, the git tags (`engine-v7-frozen`) and the manuscript all refer to these exact names; renaming would break every recorded hash. The OCR and service modules (`ocr*.py`, `sarvis_tahlil.py`) carry Persian user-facing strings because the engine was built for Persian-language laboratory reports; they are not used by any evaluation in the paper.
 
 ## What is not here
 

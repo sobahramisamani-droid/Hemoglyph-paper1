@@ -34,4 +34,6 @@ __pycache__/
 *.log
 *.json.br
 !/HEMOGLYPH_FEATURE_REGISTRY.json.br
+!/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br
+!/HEMOGLYPH_GUIDELINE_REGISTRY.json.br
 *.tar.xz
