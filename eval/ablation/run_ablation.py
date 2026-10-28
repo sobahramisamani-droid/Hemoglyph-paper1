@@ -43,7 +43,7 @@ def patch(arm, ag):
                 p_dt *= (d2 + t2); p_nt *= (n2 + t2); p_t *= t2
             d = max(0.0, p_dt - p_t); n = max(0.0, p_nt - p_t); k = max(0.0, 1.0 - d - n - p_t)
             s = d + n + p_t
-            if s > 0: d, n, t = d / s, n / s, p_t / s   # Dempster: renormalise, conflict discarded
+            if s > 0: d, n, t = d / s, n / s, p_t / s
             else: d, n, t = 0.0, 0.0, 1.0
             return d, d + t, t, min(1.0, k)
         ag._yager_binary_combine = _dempster
@@ -75,7 +75,6 @@ def run(arm):
     import eval_eicu
     sys.argv = ["eval_eicu.py", "--encounter", "icu", "--suffix", f"_abl_{arm}"]
     eval_eicu.main()
-    # strip per-stay output
     for cand in (f"per_stay_abl_{arm}.json.gz", f"per_stay_abl_{arm}.json"):
         p = os.path.join(OUT, cand)
         if os.path.exists(p):
@@ -106,7 +105,6 @@ def summarise():
             res[tier] = {k: 100 * cnt[k] / tot for k in cnt}; res["n"] = tot
         ps, ex, un, mi = score(list(F.values()), "gr"); res["ps5"] = 100 * ps[5][0] / ps[5][1]; res["ps10"] = 100 * ps[10][0] / ps[10][1]
         return res
-    # per-group recall@5 (flat)
     def pg(F):
         d = {}
         for r in F.values():
@@ -125,7 +123,7 @@ def summarise():
         if not os.path.exists(p): L.append(f"| {arm} | not run | | | | | | | | |"); continue
         F = load(p)
         for s_, r_ in F.items():
-            if "vals" not in r_ and s_ in base:  # panels identical across arms; per-arm files are stripped -> restore inputs (vals, age, sex...) from base
+            if "vals" not in r_ and s_ in base:
                 for k_, v_ in base[s_].items():
                     if k_ not in ("gr", "gr2", "gr3", "gp", "top5"): r_.setdefault(k_, v_)
         m = metrics(F); same = sum(1 for s in F if s in base and [x[0] for x in (F[s].get('top5') or [])] == [x[0] for x in (base[s].get('top5') or [])])

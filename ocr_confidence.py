@@ -38,16 +38,13 @@ from __future__ import annotations
 import math
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
-PRIOR = 0.85                      # a typical extracted row is right ~85 % of the time
+PRIOR = 0.85
 
-# name-match similarity -> LLR, linear in similarity around NAME_PIVOT
 NAME_SLOPE = 8.0
 NAME_PIVOT = 0.88
-# engine confidence -> LLR, shrunk logit around ENGINE_PIVOT (engines are over-confident)
 ENGINE_SHRINK = 0.8
 ENGINE_PIVOT = 0.75
 
-# categorical evidence terms (log-likelihood ratios, natural log)
 LLR: dict[str, float] = {
     "unit_consistent": +0.5,
     "unit_inconsistent": -2.5,
@@ -55,19 +52,17 @@ LLR: dict[str, float] = {
     "value_missing": -3.0,
     "alias_unambiguous": +0.3,
     "alias_ambiguous": -2.8,
-    # panel arithmetic (ocr_consistency)
-    "identity_corroborated": +1.0,        # per passing identity, capped by CORROBORATION_CAP
-    "identity_culprit": -5.0,             # a digit-level repair of THIS value restores every identity
-    "identity_unresolved": -2.5,          # took part in a failed identity nobody can explain
-    "identity_exonerated": +0.4,          # failed identity explained by another value
-    "implausible_value": -6.0,            # outside physiological limits
-    "flag_mismatch": -1.5,                # printed H/L flag contradicts value vs printed interval
+    "identity_corroborated": +1.0,
+    "identity_culprit": -5.0,
+    "identity_unresolved": -2.5,
+    "identity_exonerated": +0.4,
+    "implausible_value": -6.0,
+    "flag_mismatch": -1.5,
     "duplicate_conflict": -1.0,
-    # multi-pass vision agreement
     "vision_agree": +0.7,
     "vision_disagree": -2.2,
-    "censored_value": -0.3,               # "<0.5": the number is a bound
-    "scale_mismatch_vs_reference": -3.0,  # value a power of ten outside the row's own printed interval
+    "censored_value": -0.3,
+    "scale_mismatch_vs_reference": -3.0,
     "column_shift_corrected": -0.8,
 }
 CORROBORATION_CAP = 2.0
@@ -167,9 +162,6 @@ def explain(record: Mapping[str, Any]) -> str:
     return "; ".join(parts) + f" -> {record.get('confidence')}"
 
 
-# --------------------------------------------------------------------------- #
-# Calibration hook: fit the LLR table from labelled rows.
-# --------------------------------------------------------------------------- #
 def _features(evidence: Sequence[Mapping[str, Any]], terms: Sequence[str]) -> list[float]:
     x = [0.0] * len(terms)
     idx = {t: i for i, t in enumerate(terms)}

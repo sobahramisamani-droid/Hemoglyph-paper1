@@ -43,7 +43,6 @@ DATA = os.path.join(HERE, f"nhanes_{_CYC[_cyc]}")
 OUT = os.path.join(ROOT, "eval", "results", f"nhanes_{_CYC[_cyc]}")
 _SFX = "_" + _cyc
 
-# NHANES variable -> (feature_id, unit)
 MAP = {
     "LBXSNASI": ("sodium", "mmol/L"), "LBXSKSI": ("potassium", "mmol/L"), "LBXSCLSI": ("chloride", "mmol/L"),
     "LBXSC3SI": ("bicarbonate", "mmol/L"), "LBXSBU": ("blood_urea_nitrogen", "mg/dL"), "LBXSCR": ("creatinine", "mg/dL"),
@@ -64,7 +63,6 @@ MAP = {
     "LBXFER": ("ferritin", "ng/mL"), "LBDTIB": ("total_iron_binding_capacity", "ug/dL"), "LBDPCT": ("transferrin_saturation", "%"),
     "LBXGH": ("hemoglobin_a1c", "%"), "LBXTC": ("total_cholesterol", "mg/dL"), "LBDHDD": ("hdl_cholesterol", "mg/dL"),
     "URXUMA": ("urine_albumin", "mg/L"), "URXUCR": ("urine_creatinine", "mg/dL"), "URDACT": ("urine_albumin_to_creatinine_ratio", "mg/g"),
-    # fasting subsample
     "LBXGLU": ("fasting_plasma_glucose", "mg/dL"), "LBXTR": ("triglycerides", "mg/dL"), "LBDLDL": ("ldl_cholesterol_calculated", "mg/dL"),
 }
 
@@ -75,7 +73,7 @@ GROUPS = {
     "ckd": lambda d: d.startswith("ckd_g") or d in ("chronic_kidney_disease", "diabetic_kidney_disease", "albuminuria",
                                                    "moderately_increased_albuminuria", "severely_increased_albuminuria",
                                                    "microalbuminuria", "macroalbuminuria", "renal_impairment",
-                                                   "acute_kidney_injury", "renal_insufficiency", "elevated_creatinine", "reduced_gfr_chronicity_undetermined",  # v14: NHANES CKD label is itself single-visit
+                                                   "acute_kidney_injury", "renal_insufficiency", "elevated_creatinine", "reduced_gfr_chronicity_undetermined",
                                                    "elevated_urine_albumin_to_creatinine_ratio", "kidney_disease"),
     "anemia": lambda d: d.endswith("anemia") or d.endswith("anaemia") or d in ("anemia", "anemia_of_chronic_disease",
                                                                               "anemia_of_chronic_inflammation",
@@ -116,7 +114,6 @@ def auroc(y, s):
     order = np.argsort(np.concatenate([pos, neg]), kind="mergesort")
     ranks = np.empty(len(order)); ranks[order] = np.arange(1, len(order) + 1)
     allv = np.concatenate([pos, neg])
-    # average ranks for ties
     _, inv, cnt = np.unique(allv, return_inverse=True, return_counts=True)
     sums = np.zeros(len(cnt)); np.add.at(sums, inv, ranks); ranks = sums[inv] / cnt[inv]
     return (ranks[: len(pos)].sum() - len(pos) * (len(pos) + 1) / 2) / (len(pos) * len(neg))
@@ -154,7 +151,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     def rd(f):
         f = f[:-2] + _SFX
-        fp = os.path.join(DATA, f + ".xpt"); fc = os.path.join(DATA, f + ".csv.gz")  # column-trimmed copy (workspace size)
+        fp = os.path.join(DATA, f + ".xpt"); fc = os.path.join(DATA, f + ".csv.gz")
         if os.path.exists(fc):
             return pd.read_csv(fc)
         if not os.path.exists(fp):
@@ -173,13 +170,12 @@ def main():
     diq = rd("DIQ_J")[["SEQN", "DIQ010"]]; kiq = rd("KIQ_U_J")[["SEQN", "KIQ022"]]
     df = df.merge(diq, on="SEQN", how="left").merge(kiq, on="SEQN", how="left")
     df = df[(df.RIDAGEYR >= 18) & df.LBXSCR.notna() & df.LBXHGB.notna() & df.LBXSATSI.notna()].copy()
-    df = df[df.RIDEXPRG.fillna(0) != 1]  # exclude pregnant
+    df = df[df.RIDEXPRG.fillna(0) != 1]
     n_elig = len(df)
     if len(df) > a.n_max:
         df = df.sample(n=a.n_max, random_state=a.seed)
     df = df.reset_index(drop=True)
     female = df.RIAGENDR == 2
-    # reference standards
     egfr = np.array([egfr_ckdepi2021(c, ag_, f) for c, ag_, f in zip(df.LBXSCR, df.RIDAGEYR, female)])
     ref = {
         "diabetes": ((df.LBXGH >= 6.5) | (df.LBXGLU >= 126) | (df.DIQ010 == 1)).astype(int),
@@ -192,7 +188,7 @@ def main():
         "hyperuricemia": np.where(female, df.LBXSUA > 6.0, df.LBXSUA > 7.0).astype(int),
         "alt_elevation": np.where(female, df.LBXSATSI > 25, df.LBXSATSI > 33).astype(int),
     }
-    avail = {  # whether the reference analyte was measured
+    avail = {
         "diabetes": df.LBXGH.notna(), "diabetes_selfreport": df.DIQ010.isin([1, 2]), "ckd": df.URDACT.notna(),
         "ckd_selfreport": df.KIQ022.isin([1, 2]), "anemia": df.LBXHGB.notna(), "iron_deficiency": df.LBXFER.notna(),
         "hypercholesterolemia": df.LBXTC.notna(), "hyperuricemia": df.LBXSUA.notna(), "alt_elevation": df.LBXSATSI.notna(),
@@ -200,11 +196,8 @@ def main():
     task_group = {"diabetes": "diabetes", "diabetes_selfreport": "diabetes", "ckd": "ckd", "ckd_selfreport": "ckd",
                   "anemia": "anemia", "iron_deficiency": "iron_deficiency", "hypercholesterolemia": "hypercholesterolemia",
                   "hyperuricemia": "hyperuricemia", "alt_elevation": "alt_elevation"}
-    # healthy definition (core analytes within reference)
     # Amendment 2026-10-21 (after first run, before re-run): the first definition let
-    # participants with FPG 100-125, phosphate > 4.5, TG >= 150, CK > ULN, MCV < 80 or
     # lymphocytes > 45 % through, so true guideline findings (prediabetes by FPG, mild
-    # hyperphosphataemia, microcytosis) were counted as "false" assertions.
     _dfh = df.copy()
     for _c, _neutral in (("LBXFER", 100.0), ("LBDPCT", 30.0)):
         if _dfh[_c].isna().all():  # analyte not collected in this cycle: do not let it veto 'healthy'
@@ -233,7 +226,6 @@ def main():
     any_dx50 = np.zeros(len(df), bool); n_in = []; lat = []; top1 = []
     per_subject = []
     t_start = time.time()
-    # checkpoint/resume (sandbox resets): per_subject rows are flushed every 50 participants and restored on restart;
     # df order is deterministic (seeded sample), so positional alignment holds.
     _ckpt = os.path.join(OUT, f"per_subject{a.suffix}.partial_n{a.n_max}.json")
     _done = json.load(open(_ckpt)) if os.path.exists(_ckpt) else []
@@ -249,7 +241,7 @@ def main():
             v = row.get(var)
             if v is None or (isinstance(v, float) and math.isnan(v)):
                 continue
-            if fid in obs:  # LBXTC preferred over LBXSCH; fasting TG over random TG
+            if fid in obs:
                 continue
             obs[fid] = {"value": float(v), "unit": unit}
         n_in.append(len(obs))

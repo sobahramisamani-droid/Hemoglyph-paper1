@@ -13,10 +13,8 @@ FONT = "Vazirmatn"; CODE = "Consolas"; NAVY = RGBColor(0x1F, 0x3A, 0x5F)
 FA = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
 
 def fa_digits(t):
-    # convert digits only when not adjacent to Latin letters / path chars (keeps v7, B2, S1, 2019 in dataset names mixed Latin)
     def rep(m): return m.group(0).translate(FA)
     t = re.sub(r"(?<![A-Za-z0-9_/\.\-@#])\d+(?:[\.,]\d+)*(?![A-Za-z_/\-])", lambda m: rep(m), t)
-    # Persian decimal / thousands separators for converted numbers
     t = re.sub(r"(?<=[۰-۹])\.(?=[۰-۹])", "٫", t)
     t = re.sub(r"(?<=[۰-۹]),(?=[۰-۹]{3})", "٬", t)
     return t
@@ -105,7 +103,6 @@ def add_field(p, instr):
     r = p.add_run("…"); style_run(r)
     r = p.add_run(); f3 = OxmlElement("w:fldChar"); f3.set(qn("w:fldCharType"), "end"); r._r.append(f3)
 
-# ---------- cover page ----------
 lines = open("PROJECT_FULL_FA.md", encoding="utf-8").read().split("\n")
 title = lines[0][2:].strip()
 for _ in range(6): doc.add_paragraph()
@@ -117,22 +114,18 @@ p = doc.add_paragraph(); rtl_par(p, WD_ALIGN_PARAGRAPH.CENTER); style_run(p.add_
 p = doc.add_paragraph(); rtl_par(p, WD_ALIGN_PARAGRAPH.CENTER); style_run(p.add_run("دبیرستان علامه حلی ۱۰ (سمپاد)، تهران"), size=11)
 p = doc.add_paragraph(); rtl_par(p, WD_ALIGN_PARAGRAPH.CENTER); style_run(p.add_run("آبان ۱۴۰۵ / اکتبر ۲۰۲۶"), size=11)
 doc.add_page_break()
-# auto TOC
 p = doc.add_paragraph(); rtl_par(p, WD_ALIGN_PARAGRAPH.RIGHT); style_run(p.add_run("فهرست مطالب (خودکار؛ در Word با F9 به‌روز می‌شود)"), bold=True, size=14, color=NAVY)
 p = doc.add_paragraph(); rtl_par(p, WD_ALIGN_PARAGRAPH.RIGHT); add_field(p, 'TOC \\o "1-2" \\h \\z \\u')
 doc.add_page_break()
 
-# ---------- header / footer ----------
 sec = doc.sections[0]
 hp = sec.header.paragraphs[0]; rtl_par(hp, WD_ALIGN_PARAGRAPH.RIGHT); style_run(hp.add_run("هموگلیف — سند جامع پروژه"), size=9, color=RGBColor(0x66, 0x66, 0x66))
 fp = sec.footer.paragraphs[0]; rtl_par(fp, WD_ALIGN_PARAGRAPH.CENTER); style_run(fp.add_run("صفحهٔ "), size=9); add_field(fp, "PAGE")
 
-# ---------- body ----------
 i = 1; skip_manual_toc = False
 while i < len(lines):
     l = lines[i]
     if l.startswith("## فهرست مطالب"):
-        # skip manual TOC block (auto TOC already inserted)
         i += 1
         while i < len(lines) and not lines[i].startswith("## "): i += 1
         continue
@@ -159,10 +152,8 @@ while i < len(lines):
     else: para(l)
     i += 1
 
-# document-level: default RTL for List Bullet style
 try:
     lb = doc.styles["List Bullet"]; lb.font.name = FONT; set_font(lb.element.get_or_add_rPr())
 except KeyError: pass
-# set document default rtl via settings
 doc.save("PROJECT_FULL_FA.docx")
 print("ok", os.path.getsize("PROJECT_FULL_FA.docx") // 1024, "KB")

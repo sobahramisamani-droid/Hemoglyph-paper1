@@ -22,7 +22,7 @@ import os, sys, json, time, random, argparse, re, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, os.path.join(ROOT, "eval", "realdata"))
 
-SYN = {  # group -> regex over the LLM's diagnosis name
+SYN = {
     "acute_kidney_injury": r"acute kidney|acute renal|\bAKI\b", "chronic_kidney_disease": r"chronic kidney|\bCKD\b|end.stage renal|ESRD",
     "renal_impairment": r"kidney|renal|azotemia|uremia", "diabetes": r"diabetes(?! insipidus)", "hyperglycemia": r"hyperglyc",
     "diabetic_ketoacidosis": r"ketoacidosis|\bDKA\b", "hypoglycemia": r"hypoglyc", "hypokalemia": r"hypokal", "hyperkalemia": r"hyperkal",

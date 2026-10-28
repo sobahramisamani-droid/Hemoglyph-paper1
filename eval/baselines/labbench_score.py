@@ -34,7 +34,6 @@ def main():
         n_cases += 1
         for g in c["coded"]:
             rx = SYN.get(g)
-            # label counted only when its key analyte was measured (identical rule to b8_score.py)
             if not rx or g not in GROUPS or not any(k in labs.get(c["case"], ()) for k in GROUPS[g][2]): continue
             r = next((i for i, nm in enumerate(lst[:10], 1) if re.search(rx, str(nm), re.I)), None)
             ranks.append(r)

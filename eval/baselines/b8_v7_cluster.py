@@ -29,7 +29,7 @@ llm8 = {c["case"]: c["llm"] for c in json.load(open(os.path.join(R, "b8_llm_blin
 b3 = json.load(open(os.path.join(R, "llm_agent_b3_n100.json")))
 b4s = json.load(open(os.path.join(R, "b4_oos_n60_vs_v3.json"))); b4l = json.load(open(os.path.join(R, "b4_llm_blind_n60.json")))
 
-stays = []  # (stay, labs, coded, llm_entries)
+stays = []
 for k in key: stays.append((k["stay"], list(panels[k["case"]]["labs"]), k["coded"], llm8[k["case"]]))
 for r in b3: stays.append((r["stay"], r["labs"], r["coded"], r["llm"]))
 for r in b4s: stays.append((r["stay"], r["labs"], r["coded"], [{"name": n, "probability": p} for n, p in b4l[str(r["stay"])]]))
@@ -61,7 +61,7 @@ def cluster_boot(T, k, B=4000, seed=7):
         smp = [S[rnd.randrange(len(S))] for _ in S]
         re_, rl = recall(T, 1, k, smp), recall(T, 2, k, smp); e.append(re_); l.append(rl); d.append(re_ - rl)
     q = lambda v: (sorted(v)[int(0.025 * B)], sorted(v)[int(0.975 * B)])
-    pd = 2 * min(sum(x <= 0 for x in d), sum(x >= 0 for x in d)) / B  # bootstrap two-sided p for difference
+    pd = 2 * min(sum(x <= 0 for x in d), sum(x >= 0 for x in d)) / B
     return q(e), q(l), q(d), min(1.0, pd)
 
 def durkalski(T, k):
@@ -114,7 +114,6 @@ def main():
         L.append(f"| label absent from list | {100*ab_e:.1f}% | {100*ab_l:.1f}% | | | | |")
         icc, deff, _, K = icc_design(T, 5); res["icc_recall5_diff"] = icc; res["design_effect"] = deff
         L += ["", f"Clustering: {K} stays, {N/K:.2f} labels per stay; ICC of the paired recall@5 difference = {icc:.3f}; design effect = {deff:.2f}.", ""]
-        # per group (n >= 10)
         pg = collections.defaultdict(lambda: [0, 0, 0])
         for v in T.values():
             for g, e, l in v: pg[g][0] += 1; pg[g][1] += hit(e, 5); pg[g][2] += hit(l, 5)

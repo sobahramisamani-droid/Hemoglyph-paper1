@@ -30,7 +30,6 @@ for r in rows.values():
     for k in ("vals", "labs", "coded", "gp", "gr"):
         r[k] = P(r[k])
 
-# the 400 stays read blind by the LLM
 R = os.path.join(ROOT, "eval/results/eicu_demo")
 key = json.load(open(os.path.join(R, "b8_key_n240.json")))
 b3 = json.load(open(os.path.join(R, "llm_agent_b3_n100.json")))
@@ -39,7 +38,7 @@ read_stays = [str(k["stay"]) for k in key] + [str(r["stay"]) for r in b3] + [str
 read_stays = [s for s in read_stays if s in rows]
 assert len(read_stays) == 400, len(read_stays)
 
-UNITS = {  # analyte: (conventional unit, SI unit, factor conv→SI)
+UNITS = {
     "creatinine": ("mg/dL", "µmol/L", 88.4), "glucose": ("mg/dL", "mmol/L", 0.0555), "blood_urea_nitrogen": ("mg/dL", "mmol/L", 0.357),
     "total_bilirubin": ("mg/dL", "µmol/L", 17.1), "direct_bilirubin": ("mg/dL", "µmol/L", 17.1), "calcium_total": ("mg/dL", "mmol/L", 0.2495),
     "hemoglobin": ("g/dL", "g/L", 10.0), "albumin": ("g/dL", "g/L", 10.0), "total_protein": ("g/dL", "g/L", 10.0),
@@ -69,9 +68,7 @@ def panel(stay, vals=None, order=None, si=False):
     return {"stay": stay, "age": r["age"], "sex": r["sex"], "panel": items}
 
 
-# P2 unit invariance
 p2 = [panel(s, si=True) for s in stays40]
-# P3 presentation invariance
 p3 = []
 for s in stays40:
     vals = dict(rows[s]["vals"]); order = list(vals); rng.shuffle(order)
@@ -79,7 +76,6 @@ for s in stays40:
         if a not in vals:
             vals[a] = v; order.append(a)
     rng.shuffle(order); p3.append(panel(s, vals=vals, order=order))
-# P4 monotonicity (creatinine ladder) — panels with creatinine present and no AKI/CKD already at rank 1
 cands = [s for s in read_stays if "creatinine" in rows[s]["vals"] and 0.6 <= rows[s]["vals"]["creatinine"] <= 1.3]
 rng.shuffle(cands); stays20 = cands[:20]
 p4 = []
@@ -87,7 +83,6 @@ for s in stays20:
     for f in (1.0, 1.5, 2.0):
         vals = dict(rows[s]["vals"]); vals["creatinine"] = round(vals["creatinine"] * f, 2)
         d = panel(s, vals=vals); d["ladder"] = f; p4.append(d)
-# P5 absent-analyte: remove defining analyte of a criterion-met label group that the engine ranked ≤ 3
 p5 = []
 for s in read_stays:
     r = rows[s]
@@ -103,7 +98,6 @@ for s in read_stays:
             break
     if len(p5) == 40:
         break
-# P6 healthy NHANES adults: taken from the engine's healthy sweep file if available, else left for the NHANES script
 p6_src = os.path.join(ROOT, "eval/results/nhanes_2015/healthy_panels.json")
 p6 = json.load(open(p6_src))[:50] if os.path.exists(p6_src) else []
 

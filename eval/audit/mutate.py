@@ -90,7 +90,7 @@ def main():
     base = {rid: aud.run_rule(rid, R[rid]) for rid in seeds}
     fp = {rid: f for rid, f in base.items() if f}
     res = {"seeds": len(seeds), "baseline_flags": fp, "mutants": []}
-    tab = collections.defaultdict(lambda: [0, 0, 0, collections.Counter()])  # applicable, detected_expected, detected_any
+    tab = collections.defaultdict(lambda: [0, 0, 0, collections.Counter()])
     for rid in seeds:
         rule = R[rid]; paths = numeric_leaf_paths(rule["expression"]); leaf = paths[0]
         for op in ("M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8"):
@@ -98,7 +98,6 @@ def main():
             if m is None: continue
             mr, expected, note = m
             orig = R[rid]; R[rid] = mr
-            # rebuild cached entity context for this rule's entity only if the mutation changed it (M1/M3 touch dirs/scr)
             a2 = aud if op not in ("M1", "M3") else Audit(reg, feats)
             flags = a2.run_rule(rid, mr); R[rid] = orig
             new = {d: w for d, w in flags.items() if d not in base[rid]}   # only flags not already present on the seed

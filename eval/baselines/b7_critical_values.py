@@ -17,7 +17,6 @@ CRIT = {"potassium": lambda v: v >= 6.5 or v <= 2.5, "sodium": lambda v: v <= 12
         "arterial_ph": lambda v: v <= 7.10 or v >= 7.60, "bicarbonate": lambda v: v <= 8, "lactate": lambda v: v >= 8, "creatinine": lambda v: v >= 7.5}
 AB = {"potassium": "K", "sodium": "Na", "glucose": "Glu", "calcium_total": "Ca", "hemoglobin": "Hb", "platelet_count": "Plt", "white_blood_cell_count": "WBC",
       "international_normalized_ratio": "INR", "arterial_ph": "pH", "bicarbonate": "HCO3", "lactate": "Lac", "creatinine": "Cr"}
-# words in an engine alert that identify the analyte (Persian/English report strings)
 ALERT_KEYS = {"potassium": ("پتاسیم", "potassium", "kalem"), "sodium": ("سدیم", "sodium", "natrem"), "glucose": ("گلوکز", "glucose", "glyc"),
               "calcium_total": ("کلسیم", "calcium", "calcem"), "hemoglobin": ("هموگلوبین", "hemoglobin", "anemi", "آنمی"), "platelet_count": ("پلاکت", "platelet", "thrombocytop"),
               "white_blood_cell_count": ("گلبول سفید", "wbc", "leuko", "لکو", "neutropen", "نوتروپنی"), "international_normalized_ratio": ("inr", "prothrombin", "انعقاد", "coagul"),

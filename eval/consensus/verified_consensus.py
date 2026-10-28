@@ -10,7 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.pat
 sys.path.insert(0, os.path.join(ROOT, "eval", "realdata")); sys.path.insert(0, os.path.join(ROOT, "eval", "baselines")); sys.path.insert(0, os.path.join(ROOT, "eval", "verifier"))
 from eval_eicu import GROUPS
 from panel_supported_metric import CRIT
-import verify_llm_output as V  # re-runs the verifier deterministically (≈40 s) and exposes rows, reads, verdicts
+import verify_llm_output as V
 
 rows, reads = V.rows, V.reads
 ent = json.load(open(os.path.join(ROOT, "eval", "verifier", "entry_verdicts.json")))
@@ -53,19 +53,16 @@ def boot(a, b, k, B=4000, seed=7):
     d.sort(); p = 2 * min(sum(x <= 0 for x in d), sum(x >= 0 for x in d)) / B
     return d[int(0.025 * B)], d[int(0.975 * B)], min(1.0, p)
 
-# unsupported rate of each arm's top-5 (criterion groups only), same verifier
 def unsup(arm):
     u = n = 0
     for s in reads:
         for g, rk in arm[s].items():
             if rk <= 5 and CRIT.get(g): n += 1; u += V.verdict(g, rows[s]) in V.UNSUP
     return u, n
-# provenance: F top-5 groups that are in the engine list (rule-traceable directly) vs admitted via B' only (traceable via the criterion)
 src = collections.Counter()
 for s in reads:
     for g, rk in arms["F_rrf_verified"][s].items():
         if rk <= 5: src["engine_list" if g in rows[s]["gr"] else "llm_supported_only"] += 1
-# where does F gain? per stratum of the verifier-criterion status of the label
 strata = collections.defaultdict(lambda: collections.Counter())
 for s in reads:
     for g in labels(s):

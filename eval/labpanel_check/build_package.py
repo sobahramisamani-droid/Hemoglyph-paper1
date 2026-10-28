@@ -50,7 +50,6 @@ def put(pid, rec, **meta):
 def entries(x):
     return [{"name": str(d.get("name", "")), "probability": float(d.get("probability", 0.0))} for d in x]
 
-# P2 / P3 and their shared conventional reference
 p2 = json.load(open(os.path.join(BB, "panels_P2_units.json")))
 p3 = json.load(open(os.path.join(BB, "panels_P3_presentation.json")))
 r2 = json.load(open(os.path.join(BB, "reads_llm_P2_units.json")))
@@ -63,19 +62,16 @@ for p in p2:
 for p in p3:
     s = p["stay"]; put(f"P3:{s}", p, property="P3", source="eICU-CRD demo v2.0.1", reference=f"REF:{s}"); llm[f"P3:{s}"] = entries(r3[s])
 
-# P4 ladders
 p4 = json.load(open(os.path.join(BB, "panels_P4_monotonic.json"))); r4 = json.load(open(os.path.join(BB, "reads_llm_P4_monotonic.json")))
 for p in p4:
     s, lad = p["stay"], p["ladder"]; pid = f"P4:{s}:{lad:.1f}"
     put(pid, {k: v for k, v in p.items() if k != "ladder"}, property="P4", source="eICU-CRD demo v2.0.1", ladder=lad, ladder_id=f"P4:{s}")
     llm[pid] = entries(r4[f"{s}@{lad}"])
 
-# P5 absent analyte
 p5 = json.load(open(os.path.join(BB, "panels_P5_absent.json"))); r5 = json.load(open(os.path.join(BB, "reads_llm_P5_absent.json")))
 for p in p5:
     s = p["stay"]; put(f"P5:{s}", p, property="P5", source="eICU-CRD demo v2.0.1"); llm[f"P5:{s}"] = entries(r5[s])
 
-# P6 healthy / reference-positive NHANES adults (B5 blind test)
 hid = json.load(gzip.open(os.path.join(ROOT, "eval/results/nhanes_2017/b5_hidden.json.gz"), "rt"))
 r6 = json.load(open(os.path.join(ROOT, "eval/results/nhanes_2017/b5_llm_blind.json")))
 for h in hid:
@@ -86,7 +82,6 @@ for h in hid:
     put(pid, rec, property="P6", source="NHANES 2017-18", healthy=bool(h["healthy"]), reference_positive=pos)
     llm[pid] = [{"name": str(n), "probability": float(p)} for n, p in r6.get(str(h["idx"]), [])]
 
-# ---- label map (black-box vocabulary)
 label_map = {
     "groups": {g: {"entities": sorted(ents), "regex": SYN.get(g, "(?!)")} for g, (_, ents, _, _) in GROUPS.items()},
     "renal_union": ["acute_kidney_injury", "renal_impairment", "chronic_kidney_disease"],
@@ -97,7 +92,6 @@ label_map = {
 }
 assert all(g in SYN for g in GROUPS), [g for g in GROUPS if g not in SYN]
 
-# ---- engine reference readings (live, working-tree engine)
 import analyse_gidlines as ag  # noqa: E402
 E = ag.ClinicalRuleEngine()
 eng = {}
@@ -112,7 +106,7 @@ for pid, rec in panels.items():
 def dump(name, obj):
     path = os.path.join(HERE, name)
     if name.endswith(".gz"):
-        with gzip.GzipFile(path, "wb", mtime=0) as f:  # mtime=0 -> byte-reproducible archive
+        with gzip.GzipFile(path, "wb", mtime=0) as f:
             f.write(json.dumps(obj, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8"))
     else:
         json.dump(obj, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1, sort_keys=True)

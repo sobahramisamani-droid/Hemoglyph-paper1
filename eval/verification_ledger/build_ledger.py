@@ -35,9 +35,8 @@ J = lambda *p: os.path.join(ROOT, *p)
 rd_br = lambda p: json.loads(brotli.decompress(open(p, "rb").read()))
 rd_gz = lambda p: json.load(gzip.open(p, "rt", encoding="utf-8"))
 
-# ---- registries ------------------------------------------------------------------------------------------------------
 R14 = rd_br(J("release/registry_14.1.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))
-R15 = rd_br(J("release/registry_15.2.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))  # the ledger is a 15.2.0 snapshot
+R15 = rd_br(J("release/registry_15.2.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))
 assert R15["registry_metadata"]["version"].startswith("15.2.0"), R15["registry_metadata"]["version"]
 R151 = rd_br(J("release/registry_15.1.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))
 rules14, rules15, rules151 = R14["rules"], R15["rules"], R151["rules"]
@@ -47,20 +46,18 @@ ex15 = {k for k, r in rules15.items() if r.get("executable")}
 srcmeta = R15["guideline_sources"]
 srcmeta = {s.get("source_id", i): s for i, s in (srcmeta.items() if isinstance(srcmeta, dict) else enumerate(srcmeta))}
 
-# ---- sets --------------------------------------------------------------------------------------------------------------
-anchors = {k for k in ex14 if rules14[k].get("status") == "curated_guideline_anchored"}                    # 272
-curated_any = {k for k in ex14 if str(rules14[k].get("status", "")).startswith("curated")}                 # 285
-core = rd_gz(J("eval/provenance/core_rules.json.gz"))                                                     # 364 (14.2.0 ids)
-hot = {k for k, v in core.items() if v["contrib10"] >= 10}                                                 # 174
+anchors = {k for k in ex14 if rules14[k].get("status") == "curated_guideline_anchored"}
+curated_any = {k for k in ex14 if str(rules14[k].get("status", "")).startswith("curated")}
+core = rd_gz(J("eval/provenance/core_rules.json.gz"))
+hot = {k for k, v in core.items() if v["contrib10"] >= 10}
 core_arm = {k for k in ex151 if str(rules151[k].get("status", "")).startswith("curated")
             or (rules151[k].get("provenance") or {}).get("verified_quote")
-            or (rules151[k].get("source_ids") or [""])[0] == "reference_interval_convention"}              # 335
+            or (rules151[k].get("source_ids") or [""])[0] == "reference_interval_convention"}
 convention = {k for k in ex15 if (rules15[k].get("source_ids") or [""])[0] == "reference_interval_convention"}
 assert len(anchors) == 272 and len(curated_any) == 285 and len(core) == 364 and len(hot) == 174 and len(core_arm) == 335, \
     (len(anchors), len(curated_any), len(core), len(hot), len(core_arm))
 scope = sorted(curated_any | set(core) | core_arm)
 
-# ---- activity (pooled over eICU + NHANES I + NHANES J, as in core_analysis.py) --------------------------------------------
 pooled = collections.defaultdict(lambda: [0, 0, 0])
 for p in ("activity_eicu.json.gz", "activity_nhanes_I.json.gz", "activity_nhanes_J.json.gz"):
     a = rd_gz(J("eval/provenance", p))
@@ -69,7 +66,6 @@ for p in ("activity_eicu.json.gz", "activity_nhanes_I.json.gz", "activity_nhanes
 for rid, v in core.items():
     assert pooled[rid][0] == v["fired"] and pooled[rid][1] == v["contrib10"], rid
 
-# ---- locator class (Fig. S1 classes; identical logic to eval/provenance/core_analysis.py) ---------------------------------
 srcver = {s["source_id"]: s for s in rd_gz(J("eval/results/source_verification_13.4.1.json.gz"))["sources"]}
 def loc_class(rule):
     sid = (rule.get("source_ids") or [None])[0]
@@ -85,12 +81,10 @@ def loc_class(rule):
     return v or "other"
 core_loc = json.load(open(J("eval/provenance/core_locators.json")))
 
-# ---- concordance verdicts -------------------------------------------------------------------------------------------------
 n8 = {r["rule_id"]: r for r in csv.DictReader(open(J("eval/source_audit/sample_200.csv"), encoding="utf-8"))}
 n15 = {r["rule_id"]: r for r in csv.DictReader(open(J("eval/provenance/phase_c_sample_100.csv"), encoding="utf-8"))}
 assert len(n8) == 200 and len(n15) == 100
 
-# ---- static detectors -----------------------------------------------------------------------------------------------------
 sys.path.insert(0, J("eval/audit"))
 import audit as AUD  # noqa: E402
 feats = rd_br(J("HEMOGLYPH_FEATURE_REGISTRY.json.br"))["features"]
@@ -133,7 +127,6 @@ def invariant_coverage(rule):
         if feat == "creatinine": cov.add("creatinine_ladder")
     return sorted(cov)
 
-# ---- release patches ------------------------------------------------------------------------------------------------------
 touched = collections.defaultdict(list)
 for ver in ("15_0_0", "15_1_0", "15_2_0"):
     rv = json.load(open(J(f"eval/registry_patches/review_{ver}.json")))
@@ -144,8 +137,6 @@ for ver in ("15_0_0", "15_1_0", "15_2_0"):
     for rid, why in (rv.get("retired_reason") or {}).items():
         touched[rid].append(f"{ver.replace('_', '.')}:retired")
 
-# ---- status precedence ----------------------------------------------------------------------------------------------------
-# verified by reading the 15.2.0 text against the recorded finding: the prediabetes rule got '>=' but never the 6.4 % upper bound
 STILL_OPEN_AFTER_PATCH = {"prediabetes_hba1c_pattern_screening_1_v1"}
 PRECEDENCE = ["retired", "discordant_open", "discordant_corrected", "quote_verified", "flagged_open", "source_reachable_unverified", "unresolvable"]
 def decide(rec):
@@ -165,7 +156,6 @@ def decide(rec):
     if rec["locator_class"] in ("doi_resolved", "landing_page"): return "source_reachable_unverified"
     return "unresolvable"
 
-# ---- build ---------------------------------------------------------------------------------------------------------------
 ledger = []
 for rid in scope:
     r14 = rules14.get(rid) or {}; r15 = rules15.get(rid) or rules151.get(rid) or r14
@@ -198,7 +188,6 @@ for rid in scope:
     rec["verification_status"] = decide(rec)
     ledger.append(rec)
 
-# ---- summary ---------------------------------------------------------------------------------------------------------------
 def count(pred):
     return collections.Counter(r["verification_status"] for r in ledger if pred(r))
 SETS = [("curated anchors (272, 14.1.0)", lambda r: r["sets"]["curated_anchor"]),

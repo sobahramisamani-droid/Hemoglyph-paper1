@@ -29,7 +29,7 @@ ap.add_argument("--groups", default="renal_impairment,sepsis,diabetes,acute_kidn
 a = ap.parse_args()
 import gzip
 rows = json.load(gzip.open(a.per_stay, 'rt') if a.per_stay.endswith('.gz') else open(a.per_stay))
-units = []  # (stay_idx, group, p, y)
+units = []
 for i, r in enumerate(rows):
     for g, (_, ids, keys, _) in GROUPS.items():
         if not any(k in r["labs"] for k in keys): continue

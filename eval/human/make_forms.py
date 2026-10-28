@@ -39,15 +39,11 @@ def shade(cell, hexcolor):
     tcPr = cell._tc.get_or_add_tcPr(); shd = OxmlElement("w:shd"); shd.set(qn("w:val"), "clear"); shd.set(qn("w:fill"), hexcolor); tcPr.append(shd)
 
 
-# ---------------------------------------------------------------- A1 rule audit
 def build_a1():
     reg = json.loads(brotli.decompress(open(os.path.join(ROOT, "HEMOGLYPH_GUIDELINE_REGISTRY.json.br"), "rb").read()))
     rules = list(reg["rules"].values()); dis = reg["diseases"]; src = reg["guideline_sources"]
     dis = {(v.get("identity", {}).get("disease_id") or k): v for k, v in dis.items()}
     exe = [r for r in rules if r.get("executable")]
-    # Two strata (reported separately): S1 = 60 rules of the OPERATIONAL knowledge base, i.e. diseases that surfaced
-    # in any top-5 differential on the eICU v5.1 held-out run (186 diseases, 851 executable rules); S2 = 40 rules drawn
-    # uniformly from ALL executable rules (34k, dominated by auto-generated biomarker_pattern entities).
     top = set()
     for r in json.load(open(os.path.join(ROOT, "eval/results/run_20261023_v5/eicu_per_stay_v5_1.json"))):
         top.update(x[0] for x in r["top5"])
@@ -102,7 +98,6 @@ def build_a1():
     return quota
 
 
-# ---------------------------------------------------------------- B1 blind panel reading
 AB = {"troponin_i": "Troponin I (ng/mL)", "troponin_t": "Troponin T (ng/mL)", "mean_corpuscular_volume": "MCV (fL)", "mean_platelet_volume": "MPV (fL)", "hemoglobin": "Hb (g/dL)", "red_blood_cell_count": "RBC (10^6/µL)", "hematocrit": "Hct (%)", "white_blood_cell_count": "WBC (10^3/µL)", "platelet_count": "Platelets (10^3/µL)", "glucose": "Glucose (mg/dL)", "alkaline_phosphatase": "ALP (U/L)", "mean_corpuscular_hemoglobin": "MCH (pg)", "creatinine": "Creatinine (mg/dL)", "total_bilirubin": "Total bilirubin (mg/dL)", "direct_bilirubin": "Direct bilirubin (mg/dL)", "potassium": "K (mEq/L)", "mean_corpuscular_hemoglobin_concentration": "MCHC (g/dL)", "blood_urea_nitrogen": "BUN (mg/dL)", "total_protein": "Total protein (g/dL)", "thyroid_stimulating_hormone": "TSH (mIU/L)", "sodium": "Na (mEq/L)", "chloride": "Cl (mEq/L)", "calcium_total": "Calcium (mg/dL)", "calcium_ionized": "Ionized Ca (as reported)", "aspartate_aminotransferase": "AST (U/L)", "bicarbonate": "HCO3 (mEq/L)", "albumin": "Albumin (g/dL)", "alanine_aminotransferase": "ALT (U/L)", "basophils_percent": "Basophils (%)", "eosinophils_percent": "Eosinophils (%)", "neutrophils_percent": "Neutrophils (%)", "lymphocytes_percent": "Lymphocytes (%)", "monocytes_percent": "Monocytes (%)", "band_neutrophils_percent": "Bands (%)", "creatine_kinase_total": "CK (U/L)", "creatine_kinase_mb": "CK-MB (ng/mL)", "arterial_po2": "paO2 (mmHg)", "arterial_ph": "pH", "arterial_pco2": "paCO2 (mmHg)", "base_excess": "Base excess (mEq/L)", "magnesium": "Mg (mg/dL)", "phosphate": "Phosphate (mg/dL)", "anion_gap": "Anion gap", "lactate": "Lactate (mmol/L)", "prothrombin_time": "PT (s)", "international_normalized_ratio": "INR", "activated_partial_thromboplastin_time": "aPTT (s)", "red_cell_distribution_width_cv": "RDW (%)", "uric_acid": "Uric acid (mg/dL)", "serum_osmolality": "Osmolality (mOsm/kg)", "b_type_natriuretic_peptide": "BNP (pg/mL)", "ammonia": "Ammonia (µg/dL)", "amylase": "Amylase (U/L)", "lipase": "Lipase (U/L)", "triglycerides": "Triglycerides (mg/dL)", "total_cholesterol": "Total cholesterol (mg/dL)", "lactate_dehydrogenase": "LDH (U/L)"}
 
 

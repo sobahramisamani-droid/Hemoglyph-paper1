@@ -22,7 +22,6 @@ rows = {str(r["stay"]): r for r in json.load(gzip.open(os.path.join(R, "per_stay
 for r in rows.values():
     for k in ("gr", "gp", "coded", "labs", "vals"): r[k] = P(r[k])
 
-# the 400 blind LLM readings, loaded exactly as in b8_v7_cluster.py
 key = json.load(open(os.path.join(R, "b8_key_n240.json")))
 llm8 = {c["case"]: c["llm"] for c in json.load(open(os.path.join(R, "b8_llm_blind_n240.json")))["cases"]}
 b3 = json.load(open(os.path.join(R, "llm_agent_b3_n100.json")))
@@ -37,8 +36,6 @@ def groups_of(name):
     return [g for g, rx in SYN.items() if re.search(rx, str(name), re.I)]
 
 def crit_vals(v):
-    # key alias only: CRIT's coagulopathy function reads "inr"; the panel stores "international_normalized_ratio".
-    # Threshold unchanged. (The same alias gap makes the published panel-supported metric treat every coagulopathy
     # label as "analyte missing"; recorded in RESULTS.md, frozen numbers not re-run.)
     v = dict(v)
     if "inr" not in v and "international_normalized_ratio" in v: v["inr"] = v["international_normalized_ratio"]
@@ -96,7 +93,6 @@ for s, ents in reads.items():
     arms["B_llm_demoted"][s] = ranks_from_entries([a[0] for a in keep + dem])
     arms["C_llm_removed"][s] = ranks_from_entries([a[0] for a in keep])
     arms["D_engine_v7"][s] = row["gr"]
-    # E: engine's own top-5 through the verifier (groups with a criterion only)
     for g, rk in row["gr"].items():
         if rk <= 5 and CRIT.get(g):
             top5_unsup["engine"][1] += 1; top5_unsup["engine"][0] += verdict(g, row) in UNSUP
@@ -121,7 +117,6 @@ res = {"n_stays": 400, "n_labels": nlab, "entry_verdicts": dict(stats), "top5_un
        "paired_C_minus_A": {k: boot_diff(arms["C_llm_removed"], arms["A_llm_raw"], k) for k in (1, 3, 5, 10)},
        "demoted_label_entries": demoted_labels, "n_demoted_entries": stats["contradicted"] + stats["absent"],
        "verdict_agreement_criterion_vs_engine": {f"crit_{a}_engine_{b}": n for (a, b), n in agree.items()}}
-# unsupported rate after demotion (top-5 of arm B)
 u = [0, 0]
 for s, ents in reads.items():
     ann = [(d, entry_verdict(d.get("name", ""), rows[s])[0]) for d in ents]
@@ -130,11 +125,8 @@ for s, ents in reads.items():
         if v != "out_of_vocabulary": u[1] += 1; u[0] += v in UNSUP
 res["top5_unsupported"]["llm_after_demotion"] = u
 # post-hoc sensitivity (declared after the first run, 2026-10-27): the frozen synonym map sends any "acidosis" to the
-# metabolic-acidosis group, so respiratory-acidosis entries are scored "contradicted" by the bicarbonate criterion.
-# Count LLM top-5 unsupported entries whose name contains "respiratory"; they are mapping artefacts, not LLM errors.
 resp = sum(1 for e in per_entry if e["rank"] <= 5 and e["verdict"] in UNSUP and "respiratory" in str(e["name"]).lower())
 res["top5_unsupported"]["llm_excluding_respiratory_names"] = [top5_unsup["llm"][0] - resp, top5_unsup["llm"][1]]
-# engine top-5 unsupported by group (why the engine fails its own proxy criteria)
 eg = collections.Counter(); et = collections.Counter()
 for s in reads:
     row = rows[s]

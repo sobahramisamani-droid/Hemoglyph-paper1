@@ -11,7 +11,6 @@ pretending it was processed.
 """
 from typing import Optional
 
-# canonical id -> aliases
 _ALIASES: dict[str, tuple[str, ...]] = {
     "thyroid_stimulating_hormone": ("tsh", "thyrotropin", "s_tsh"),
     "free_thyroxine": ("ft4", "free_t4", "t4_free", "freet4"),
@@ -83,7 +82,6 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "body_mass_index": ("bmi",),
     "uric_acid": ("ua", "urate"),
     "25_hydroxy_vitamin_d": ("vitamin_d", "vit_d", "25_oh_vitamin_d", "vitamin_d_25oh", "vitd", "25_oh_d", "calcidiol"),
-    # --- endocrine ---
     "morning_cortisol": ("cortisol", "am_cortisol", "cortisol_am", "serum_cortisol", "cortisol_8am_serum"),
     "salivary_cortisol_late_night": ("late_night_salivary_cortisol", "midnight_salivary_cortisol", "lnsc"),
     "cortisol_after_dexamethasone": ("dexamethasone_suppression_cortisol", "dst_cortisol", "post_dex_cortisol", "overnight_dst"),
@@ -111,7 +109,6 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "1_25_dihydroxy_vitamin_d": ("calcitriol", "1_25_oh2_d", "active_vitamin_d"),
     "human_chorionic_gonadotropin_quantitative": ("hcg", "beta_hcg", "b_hcg", "serum_hcg", "quantitative_hcg"),
     "anti_glutamic_acid_decarboxylase_65": ("gad65", "anti_gad", "gad_antibody", "gada"),
-    # --- cardiac / muscle ---
     "troponin_i": ("troponin", "tni", "ctni", "trop_i", "cardiac_troponin_i"),
     "troponin_t": ("tnt", "ctnt", "trop_t", "cardiac_troponin_t"),
     "high_sensitivity_troponin_i": ("hs_tni", "hs_troponin_i", "hstni", "hs_ctni"),
@@ -119,7 +116,6 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "nt_probnp": ("n_terminal_pro_b_type_natriuretic_peptide", "ntprobnp", "nt_pro_bnp", "pro_bnp"),
     "b_type_natriuretic_peptide": ("bnp", "brain_natriuretic_peptide"),
     "myoglobin": ("serum_myoglobin",),
-    # --- haematology ---
     "red_blood_cell_count": ("rbc", "rbc_count", "erythrocytes", "red_cell_count"),
     "mean_corpuscular_hemoglobin_concentration": ("mchc",),
     "mean_platelet_volume": ("mpv",),
@@ -150,7 +146,6 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "total_immunoglobulin_a": ("iga", "immunoglobulin_a"),
     "total_immunoglobulin_m": ("igm", "immunoglobulin_m"),
     "total_immunoglobulin_e": ("ige", "immunoglobulin_e", "total_ige"),
-    # --- chemistry / renal / gas ---
     "chloride": ("cl",),
     "total_protein": ("tp", "protein_total", "serum_total_protein"),
     "globulin": ("glob", "serum_globulin"),
@@ -174,7 +169,6 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "glucose_random": ("rbs", "random_blood_sugar", "random_blood_glucose", "rpg"),
     "glucose_2_hour_postprandial": ("2hpp", "ppbs", "postprandial_glucose", "2h_glucose", "ogtt_2h"),
     "total_carbon_dioxide": ("tco2", "carbon_dioxide"),
-    # --- inflammation / immunology / infection ---
     "antinuclear_antibody_screen": ("ana", "ana_screen", "antinuclear_antibody"),
     "double_stranded_dna_antibody": ("anti_dsdna", "dsdna", "ds_dna"),
     "rheumatoid_factor": ("rf", "ra_factor", "rheumatoid_factor_igm"),
@@ -194,7 +188,6 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "helicobacter_pylori_igg_antibody": ("h_pylori_igg", "h_pylori_antibody"),
     "epstein_barr_vca_igm_antibody": ("ebv_vca_igm", "ebv_igm"),
     "cytomegalovirus_igm_antibody": ("cmv_igm",),
-    # --- tumour markers / toxicology / nutrition ---
     "total_prostate_specific_antigen": ("psa", "total_psa", "prostate_specific_antigen"),
     "free_prostate_specific_antigen": ("free_psa", "fpsa"),
     "carcinoembryonic_antigen": ("cea",),
@@ -226,12 +219,10 @@ _ALIASES: dict[str, tuple[str, ...]] = {
 }
 
 
-# flat alias -> canonical, built once
 _LOOKUP: dict[str, str] = {}
 for _canon, _alts in _ALIASES.items():
     _LOOKUP[_canon] = _canon
     for _a in _alts:
-        # a collision would silently reroute a feature, so fail loudly here
         if _a in _LOOKUP and _LOOKUP[_a] != _canon:
             raise ValueError(f"alias {_a!r} claimed by two features")
         _LOOKUP[_a] = _canon
@@ -248,7 +239,7 @@ def _key(name: str) -> str:
 
 
 _REGISTRY_LOOKUP: Optional[dict[str, str]] = None
-_MIN_REGISTRY_TOKEN = 5  # short tokens (hb, ca, k) are too ambiguous in the AI-built synonym lists
+_MIN_REGISTRY_TOKEN = 5
 
 
 def _registry_lookup() -> dict[str, str]:

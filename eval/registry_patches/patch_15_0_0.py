@@ -19,9 +19,7 @@ ROOT = "/home/user/Hemoglyph"
 TODAY = "2026-10-27"
 VER = "15.0.0"
 
-# ----------------------------------------------------------------------------------------------
 # Verified statements (verbatim, retrieved 2026-10-27). key -> (source_id, locator, quote)
-# ----------------------------------------------------------------------------------------------
 VERIFIED = {
  "who24_tab2": ("who_anaemia_2024", "https://iris.who.int/server/api/core/bitstreams/f9f74397-1440-478d-a63c-26f29a01552f/content (Table 2)",
     "Haemoglobin cut-offs (g/L) to define anaemia: children 6-23 months <105; 24-59 months <110; 5-11 years <115; 12-14 years <120; non-pregnant women 15-65 years <120; men 15-65 years <130; pregnancy first trimester <110, second trimester <105, third trimester <110."),
@@ -73,7 +71,6 @@ VERIFIED = {
     "A decrease in any 1, 2, or 3 of serum phosphorus, potassium, and/or magnesium levels by 10%-20% (mild), 20%-30% (moderate), or >30% and/or organ dysfunction resulting from a decrease in any of these."),
 }
 
-# Locators that resolve (checked 2026-10-27) but whose threshold text could NOT be retrieved (abstract only /
 # publisher blocked). Rules citing them keep the source; evidence_tier is left unchanged and a note is written.
 LOCATOR_ONLY = {
  "ese_hyponatremia_2014": "10.1530/EJE-13-1020", "kdigo_potassium_2020": "10.1016/j.kint.2019.09.018",
@@ -83,9 +80,7 @@ LOCATOR_ONLY = {
  "ncep_atp3_2005": "10.1161/CIRCULATIONAHA.105.169404", "ata_hypothyroid_2012": "10.1089/thy.2012.0205",
 }
 
-# ----------------------------------------------------------------------------------------------
 # Source records (new or repaired)
-# ----------------------------------------------------------------------------------------------
 NEW_SOURCES = {
  "generated_pair_pattern": dict(
     organization="Hemoglyph registry build pipeline (synthetic)", year=2025,
@@ -159,9 +154,6 @@ REPAIR_SOURCES = {
  "ncep_atp3_2005": dict(doi="10.1161/CIRCULATIONAHA.105.169404", evidence_status="locator_verified_pubmed__threshold_text_not_retrieved", verified_at=TODAY),
 }
 
-# ----------------------------------------------------------------------------------------------
-# R2a - nonspecific single-marker rules (entity cannot be supported by this analyte alone)
-# ----------------------------------------------------------------------------------------------
 R2A_IDS = """
 mcardle_disease_screening_1_v1 mcardle_disease_staging_severity_1_v1 serotonin_syndrome_screening_1_v1
 serotonin_syndrome_diagnostic_criterion_1_v1 pompe_disease_ck_pattern_v1 pompe_disease_ck_urgent_v1
@@ -197,7 +189,6 @@ copd_staging_severity_1_v1 burkitt_lymphoma_diagnostic_criterion_1_v1_f13_3 acut
 immune_thrombocytopenia_thrombocytopenia_bleeding_risk_v1 acute_myocardial_infarction_hs_crp_cardiovascular_risk_v1
 anemia_of_chronic_disease_hb_male_anemia anemia_of_chronic_disease_transferrin_saturation_low
 """.split()
-# Diseases whose remaining non-core single-leaf rules on ubiquitous analytes are retired under the same class
 R2A_DISEASES = {"mcardle_disease","serotonin_syndrome","pompe_disease","amyotrophic_lateral_sclerosis","tetanus","trichinellosis",
  "polymyositis","rhabdomyosarcoma","neuroleptic_malignant_syndrome","siadh","addison_disease","cystic_fibrosis","pyloric_stenosis",
  "acute_gastroenteritis","hepatic_abscess","ascending_cholangitis","acute_cholangitis","gilbert_syndrome","paget_disease",
@@ -331,7 +322,6 @@ R4_TOPICAL = {"hyponatremia_v1": "ese_hyponatremia_2014", "severe_hyponatremia_v
  "hyperkalemia_v1": "kdigo_potassium_2020", "severe_hyperkalemia_v1": "kdigo_potassium_2020",
  "hypokalemia_v1": "kdigo_potassium_2020", "severe_hypokalemia_v1": "kdigo_potassium_2020"}
 
-# R5 - logic corrections (closed list)
 def r5(rules, log):
     def note(rid, text, keys):
         r = rules[rid]; r["curation_note"] = f"15.0.0 R5: {text}"; r["curated_on"] = TODAY; r["curation_version"] = VER
@@ -344,7 +334,7 @@ def r5(rules, log):
     r["population"]["age_groups"] = ["child"]; r["expression"]["value"] = 11.5
     r["title"] = "Anaemia, children 5-11 years (WHO 2024, Hb <115 g/L)"
     note("child_anemia_who_2024_v2", "population restricted to 'child' (engine 6-<12 y; 1-5 y fall back to this group, WHO cut-off there is 110 g/L - documented 0.5 g/dL over-sensitivity). Previously applied Hb <11.5 to all ages and sexes, including men (WHO <130).", ["who24_tab2"])
-    r = rules["iron_deficiency_anemia_v1"]  # sex male, Hb<12 -> WHO men <130
+    r = rules["iron_deficiency_anemia_v1"]
     assert r["population"]["sex"] == "male" and r["expression"]["all"][0]["feature_id"] == "hemoglobin"
     r["expression"]["all"][0]["value"] = 13.0
     note("iron_deficiency_anemia_v1", "male rule used the female cut-off (Hb <12.0); WHO 2024 men <130 g/L.", ["who24_tab2", "who20_ferritin"])
@@ -378,13 +368,11 @@ def patch(d):
         if sid in src: src[sid].update(upd); log["sources_repaired"].append(sid)
     for sid, doi in LOCATOR_ONLY.items():
         if sid in src and not src[sid].get("doi"): src[sid]["doi"] = doi
-    # R1
     for rid, r in rules.items():
         if rid.startswith("co_") and r["disease_id"].startswith("co_") and (r.get("source_ids") or [None])[0] == "who_essential_lab_2024":
             set_sources(r, ["generated_pair_pattern"]); r["evidence_tier"] = "generated_template"
             r["curation_note"] = "15.0.0 R1: template-generated co-abnormality pattern; no guideline provenance."
             log["R1"].append(rid)
-    # R2a explicit + disease extension
     for rid in R2A_IDS:
         r = rules.get(rid)
         if r and r.get("executable"):
@@ -402,7 +390,6 @@ def patch(d):
         leaves = [e] if is_single_leaf(e) else [c for c in (e.get("all") or e.get("any") or []) if is_single_leaf(c)]
         if leaves and all(l["feature_id"] in UBIQUITOUS for l in leaves) and len(leaves) <= 2 and not r["status"].startswith("curated"):
             retire(r, "retired_v15_0_0_nonspecific_single_marker", "same class as the core R2a rules of this entity (ubiquitous analyte(s) only).", "R2a-ext"); log["R2a_ext"].append(rid)
-    # R3 / R4
     for rid, (sids, keys) in R3.items():
         r = rules.get(rid)
         if not r: log["missing"].append(rid); continue
@@ -426,7 +413,6 @@ def patch(d):
         "surrogate that the engine grades as 'chronicity undetermined' with a probability cap. Planned retirement (R2b) was reversed because the test gate "
         "showed the ESL layer depends on it (6 regressions, e.g. creatinine 4.4 mg/dL + BUN 71 + K 5.9 no longer ranked). Its sibling with non-source thresholds (_f13_3) is retired.")
     r5(rules, log["R5"])
-    # metadata
     m = d["registry_metadata"]; m["version"] = f"{VER}-CLINICAL-CURATED"; m["last_updated"] = TODAY
     m["executable_rules"] = sum(1 for r in rules.values() if r.get("executable"))
     m["retired_rules"] = sum(1 for r in rules.values() if str(r.get("status", "")).startswith("retired"))

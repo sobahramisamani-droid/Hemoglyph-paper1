@@ -24,7 +24,6 @@ from eval_eicu import GROUPS  # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 P = lambda x: ast.literal_eval(x) if isinstance(x, str) else x
 
-# synonym map used for the LLM free-text names (same as b8_v7_cluster.SYN)
 _src = open(os.path.join(ROOT, "eval/baselines/b8_v7_cluster.py")).read()
 from llm_zero_shot import SYN  # noqa: E402
 RENAL = {"acute_kidney_injury", "renal_impairment", "chronic_kidney_disease"}
@@ -54,14 +53,11 @@ def engine_groups(panel):
     return gr
 
 
-# conventional-unit twin of a perturbed panel, built with the generator's own unit logic (isolates the unit/presentation effect
-# from harness differences such as max_differential=40 and LAB-map units used in the original eICU run)
 _gen = open(os.path.join(HERE, "make_property_panels.py")).read()
 _gns = {"__file__": os.path.join(HERE, "make_property_panels.py")}
 exec(compile(_gen[:_gen.index("# P2 unit invariance")], "gen", "exec"), _gns)
 conv_panel = lambda stay: _gns["panel"](stay)
 
-# post-hoc (declared after first scoring run, 2026-10-27): analytes that carry the same information as the removed one
 REDUNDANT = {"hemoglobin": ["hematocrit"], "troponin_i": ["creatine_kinase_mb", "troponin_t"], "bicarbonate": ["anion_gap", "arterial_ph", "base_excess"]}
 
 
@@ -83,7 +79,6 @@ def main():
     for r in rows.values():
         for k in ("gr", "coded", "labs"):
             r[k] = P(r[k])
-    # original LLM readings
     _b = _src.split("def main():")[0].replace('json.load(open(os.path.join(R, "b8_blind_panels_n240.json")))', 'json.load(gzip.open(os.path.join(R, "b8_blind_panels_n240.json.gz"),"rt"))')
     ns = {"__file__": os.path.join(ROOT, "eval/baselines/b8_v7_cluster.py")}
     exec(compile(_b, "b8", "exec"), ns)

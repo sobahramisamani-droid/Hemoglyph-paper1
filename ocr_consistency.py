@@ -36,10 +36,6 @@ from typing import Any, Callable, Iterable, Mapping, Optional
 
 __all__ = ["validate_results", "canonical_value", "HARD_LIMITS", "ConsistencyReport"]
 
-# --------------------------------------------------------------------------- #
-# Canonical units and conversions for the analytes the identities use.
-# Values are (canonical_unit, {unit_alias: factor_to_canonical}).
-# --------------------------------------------------------------------------- #
 _CONV: dict[str, tuple[str, dict[str, float]]] = {
     "hemoglobin": ("g/dL", {"g/dl": 1.0, "g/l": 0.1, "mmol/l": 1.6114, "g%": 1.0, "gm/dl": 1.0, "gr/dl": 1.0}),
     "hematocrit": ("%", {"%": 1.0, "l/l": 100.0, "fraction": 100.0, "ratio": 100.0}),
@@ -56,7 +52,7 @@ _CONV: dict[str, tuple[str, dict[str, float]]] = {
     "lymphocyte_count_absolute": ("10^9/L", {"10^9/l": 1.0, "10*9/l": 1.0, "10^3/ul": 1.0, "10*3/ul": 1.0, "k/ul": 1.0, "/ul": 1e-3}),
     "glucose": ("mg/dL", {"mg/dl": 1.0, "mmol/l": 18.016, "g/l": 100.0}),
     "fasting_plasma_glucose": ("mg/dL", {"mg/dl": 1.0, "mmol/l": 18.016, "g/l": 100.0}),
-    "hemoglobin_a1c": ("%", {"%": 1.0, "mmol/mol": 0.0915}),  # IFCC -> NGSP approx (0.0915x + 2.15) handled below
+    "hemoglobin_a1c": ("%", {"%": 1.0, "mmol/mol": 0.0915}),
     "creatinine": ("mg/dL", {"mg/dl": 1.0, "umol/l": 1 / 88.42, "µmol/l": 1 / 88.42, "mg/l": 0.1}),
     "blood_urea_nitrogen": ("mg/dL", {"mg/dl": 1.0, "mmol/l": 2.801}),
     "urea": ("mg/dL", {"mg/dl": 1.0, "mmol/l": 6.006, "g/l": 100.0}),
@@ -106,12 +102,7 @@ _CONV: dict[str, tuple[str, dict[str, float]]] = {
     "anion_gap": ("mmol/L", {"mmol/l": 1.0, "meq/l": 1.0}),
 }
 
-# --------------------------------------------------------------------------- #
-# Physiologically possible ranges in canonical units (not reference ranges:
-# anything outside is a transcription / unit / OCR error, never biology).
 # Tietz Textbook of Clinical Chemistry; extreme published survivals used as
-# the outer bound.
-# --------------------------------------------------------------------------- #
 HARD_LIMITS: dict[str, tuple[float, float]] = {
     "hemoglobin": (1.5, 25.0), "hematocrit": (5.0, 75.0), "red_blood_cell_count": (0.5, 9.5),
     "white_blood_cell_count": (0.05, 600.0), "platelets": (1.0, 3000.0),
@@ -140,12 +131,8 @@ HARD_LIMITS: dict[str, tuple[float, float]] = {
     "anion_gap": (-5.0, 60.0),
 }
 
-# OCR glyph confusions seen on printed reports (both directions).
 _GLYPH_SWAPS = (("1", "7"), ("0", "8"), ("5", "6"), ("3", "8"), ("6", "8"), ("2", "7"), ("4", "9"), ("0", "6"), ("1", "4"), ("6", "9"))
 
-# Median adult value in canonical units - used only to rank competing
-# repairs (the reading closer, in log space, to a typical result is the
-# more probable one), never to accept or reject a value.
 TYPICAL: dict[str, float] = {
     "hemoglobin": 14.0, "hematocrit": 42.0, "red_blood_cell_count": 4.7, "white_blood_cell_count": 7.0,
     "platelets": 250.0, "mean_corpuscular_volume": 90.0, "mean_corpuscular_hemoglobin": 30.0,
@@ -169,8 +156,6 @@ TYPICAL: dict[str, float] = {
     "corrected_calcium_for_serum_albumin": 9.4, "transferrin": 250.0,
 }
 
-# For a failed identity, the value of one field implied by the others
-# (used as a repair candidate when no digit-level repair reproduces it).
 DERIVE: dict[str, dict[str, Callable[[dict[str, float]], Optional[float]]]] = {
     "mchc_identity": {"mean_corpuscular_hemoglobin_concentration": lambda v: v["hemoglobin"] / v["hematocrit"] * 100.0,
                       "hematocrit": lambda v: v["hemoglobin"] / v["mean_corpuscular_hemoglobin_concentration"] * 100.0,
@@ -271,10 +256,6 @@ def canonical_value(feature_id: str, value: Any, unit: Optional[str]) -> Optiona
     return v * f
 
 
-# --------------------------------------------------------------------------- #
-# Identities. Each returns None when not computable, else (ok, message).
-# `fields` lists the analytes the identity touches (used for culprit search).
-# --------------------------------------------------------------------------- #
 class _Check:
     __slots__ = ("name", "fields", "fn", "corroborates")
 
@@ -320,8 +301,6 @@ def _c_rule_of_three(v):
     hb, hct = v.get("hemoglobin"), v.get("hematocrit")
     if hb is None or hct is None:
         return None
-    # Hct ~ 3 x Hb holds within ~15 % except in marked hypo/hyperchromia,
-    # which the MCHC check already covers; keep this tolerant.
     return 2.4 <= hct / max(hb, 1e-9) <= 3.7, f"Hct/Hb = {hct / max(hb, 1e-9):.2f} (expected ~3)"
 
 
@@ -398,7 +377,6 @@ def _c_friedewald(v):
     if ldl is not None:
         return abs(ldl - calc) <= max(12.0, 0.12 * max(calc, 1.0)), f"LDL printed {ldl:.0f} vs Friedewald {calc:.0f} mg/dL"
     if direct is not None:
-        # a directly measured LDL tracks Friedewald within ~20 % below TG 400
         return abs(direct - calc) <= max(20.0, 0.20 * max(calc, 1.0)), f"direct LDL {direct:.0f} vs Friedewald {calc:.0f} mg/dL"
     return None
 
@@ -436,7 +414,7 @@ def _abs_count_check(label, pct_key, abs_key):
         if wbc is None or pct is None or ab is None or wbc <= 0:
             return None
         calc = wbc * pct / 100.0
-        tol = max(0.08, 0.12 * calc)           # rounding of small absolute counts
+        tol = max(0.08, 0.12 * calc)
         return abs(ab - calc) <= tol, f"{label} printed {ab:.2f} vs WBC x % = {calc:.2f}"
     return fn
 
@@ -451,7 +429,7 @@ def _c_ag_ratio(v):
 
 def _c_vldl(v):
     tg, vldl = v.get("triglycerides"), v.get("vldl_cholesterol")
-    if tg is None or vldl is None or tg > 400.0:        # TG/5 invalid above 400 mg/dL
+    if tg is None or vldl is None or tg > 400.0:
         return None
     calc = tg / 5.0
     return abs(vldl - calc) <= max(3.0, 0.12 * calc), f"VLDL printed {vldl:.0f} vs TG/5 = {calc:.0f} mg/dL"
@@ -461,7 +439,7 @@ def _c_eag(v):
     a1c, eag = v.get("hemoglobin_a1c"), v.get("estimated_average_glucose")
     if a1c is None or eag is None:
         return None
-    calc = 28.7 * a1c - 46.7                              # ADAG (Nathan 2008)
+    calc = 28.7 * a1c - 46.7
     return abs(eag - calc) <= max(4.0, 0.04 * calc), f"eAG printed {eag:.0f} vs 28.7 x A1c - 46.7 = {calc:.0f} mg/dL"
 
 
@@ -477,7 +455,7 @@ def _c_transferrin_tibc(v):
     tf, tibc = v.get("transferrin"), v.get("total_iron_binding_capacity")
     if tf is None or tibc is None:
         return None
-    calc = tf * 1.389                                      # TIBC(ug/dL) ~ 1.389 x transferrin(mg/dL)
+    calc = tf * 1.389
     return abs(tibc - calc) <= 0.15 * calc, f"TIBC printed {tibc:.0f} vs 1.389 x transferrin = {calc:.0f} ug/dL"
 
 
@@ -500,8 +478,6 @@ def _c_egfr_cr(v):
     cr, egfr = v.get("creatinine"), v.get("egfr_ckd_epi_creatinine")
     if cr is None or egfr is None:
         return None
-    # Monotonic sanity only (no age/sex here): Cr >= 2.0 cannot give eGFR >= 60;
-    # Cr <= 0.7 cannot give eGFR < 45 in an adult.
     if cr >= 2.0 and egfr >= 60:
         return False, f"creatinine {cr:.1f} mg/dL is incompatible with eGFR {egfr:.0f}"
     if cr <= 0.7 and egfr < 45:
@@ -545,9 +521,6 @@ CHECKS: tuple[_Check, ...] = (
 )
 
 
-# --------------------------------------------------------------------------- #
-# Repair candidates for a single field.
-# --------------------------------------------------------------------------- #
 def _repair_candidates(raw_value: Any) -> list[tuple[float, str]]:
     """Alternative readings of one printed number, most likely first."""
     out: list[tuple[float, str]] = []
@@ -573,8 +546,6 @@ def _repair_candidates(raw_value: Any) -> list[tuple[float, str]]:
                             continue
                         if cv != v:
                             out.append((cv, f"glyph {x}->{y}"))
-    # two adjacent digits transposed by the reader or the typist (14.2 -> 41.2,
-    # 12.4). The decimal point is skipped so that the swap acts on digits.
     digit_pos = [i for i, ch in enumerate(txt) if ch.isdigit()]
     for i, j in zip(digit_pos, digit_pos[1:]):
         if txt[i] == txt[j]:
@@ -587,7 +558,6 @@ def _repair_candidates(raw_value: Any) -> list[tuple[float, str]]:
             continue
         if cv != v:
             out.append((cv, f"transposition {txt[i]}{txt[j]}->{txt[j]}{txt[i]}"))
-    # dropped / misplaced decimal point in an integer reading (135 -> 13.5)
     if "." not in txt and len(txt.lstrip("-")) >= 2:
         for pos in range(1, len(txt)):
             cand = txt[:pos] + "." + txt[pos:]
@@ -597,7 +567,6 @@ def _repair_candidates(raw_value: Any) -> list[tuple[float, str]]:
                 continue
             if cv != v and all(abs(cv - o) > 1e-9 for o, _ in out):
                 out.append((cv, "missing decimal point"))
-    # de-duplicate preserving order
     seen: set[float] = set()
     uniq: list[tuple[float, str]] = []
     for cv, why in out:
@@ -675,7 +644,6 @@ def validate_results(results: list[dict[str, Any]], *,
                                 plausibility_violations=[], flag_mismatches=[], corroborated=[], exonerated=[])
     check_by_name = {c.name: c for c in CHECKS}
 
-    # legacy multiplicative factors -> evidence terms of the log-odds model
     _FACTOR_TERM = {0.45: "identity_culprit", 0.7: "identity_unresolved", 0.35: "implausible_value",
                     0.4: "implausible_value", 0.75: "flag_mismatch"}
 
@@ -768,7 +736,6 @@ def validate_results(results: list[dict[str, Any]], *,
                 out.append((ccv, pv, f"row swap with {g}"))
         return out
 
-    # ---- 1. hard plausibility: implausible values leave the identity pool --- #
     implausible: set[str] = set()
     for fid, r in by_fid.items():
         cv = canon.get(fid)
@@ -784,14 +751,12 @@ def validate_results(results: list[dict[str, Any]], *,
             summary["plausibility_violations"].append(fid)
     pool = {f: v for f, v in canon.items() if f not in implausible}
 
-    # ---- 2. flag vs value vs printed interval ------------------------------ #
     for fid, r in by_fid.items():
         m = _flag_check(r, canon.get(fid))
         if m:
             summary["flag_mismatches"].append(fid)
             note(r, "report flag mismatch: " + m, factor=0.75, force_review=True)
 
-    # ---- 3. identities on the plausible pool -------------------------------- #
     base = evaluate(pool)
     summary["checks_run"] = len(base)
     failed = {n: m for n, (ok, m) in base.items() if not ok}
@@ -803,15 +768,13 @@ def validate_results(results: list[dict[str, Any]], *,
         trial[fid] = ccv
         res = evaluate(trial)
         for n in must_fix:
-            if n not in res or not res[n][0]:      # must be computable AND pass
+            if n not in res or not res[n][0]:
                 return False
         return all(res.get(n, (True, ""))[0] for n in passing)
 
-    # ---- 4. culprit search ---------------------------------------------------- #
     involved: set[str] = set()
     for n in failed:
         involved.update(f for f in check_by_name[n].fields if f in pool)
-    # (fid) -> (canonical, printed, reason, n_failed_fixed, typical_distance)
     fixers: dict[str, tuple[float, float, str, int, float]] = {}
     for fid in sorted(involved):
         r = by_fid[fid]
@@ -820,7 +783,6 @@ def validate_results(results: list[dict[str, Any]], *,
             continue
         cands = candidates_for(fid, r)
         cands.extend(swap_candidates(fid, r, my_failed))
-        # derived value implied by the failed identity (odd-one-out repair)
         for n in my_failed:
             fn = DERIVE.get(n, {}).get(fid)
             if fn is None:
@@ -834,8 +796,6 @@ def validate_results(results: list[dict[str, Any]], *,
             lim = limits_for(fid)
             if lim and not (lim[0] <= dv <= lim[1]):
                 continue
-            # a digit-level candidate within 6 % of the derived value is the
-            # better story (it names the misread glyph); else use derived
             near = [c for c in cands if abs(c[0] - dv) <= 0.06 * dv]
             if near:
                 cands = near + [c for c in cands if c not in near]
@@ -846,7 +806,6 @@ def validate_results(results: list[dict[str, Any]], *,
                 fixers[fid] = (ccv, printed, why, len(my_failed), _typ_dist(fid, ccv))
                 break
 
-    # resolve each failed check: a unique fixer, or a clearly more plausible one
     culprit_of: dict[str, str] = {}
     for n in failed:
         fields_here = [f for f in check_by_name[n].fields if f in pool]
@@ -862,14 +821,6 @@ def validate_results(results: list[dict[str, Any]], *,
                 chosen = a
         culprit_of[n] = chosen
 
-    # ---- 4b. joint minimal-cost repair ------------------------------------- #
-    # When no single value explains the failures (two misreads in one panel,
-    # or one misread that breaks identities a second value also shares) search
-    # pairs of fields for the cheapest combined edit that restores EVERY
-    # identity. Cost = edit-type prior (decimal shift < missing point < glyph
-    # < derived) + a small distance-from-typical term. The answer is accepted
-    # only when it is unique (second-best costs >= 0.5 more); otherwise the
-    # alternatives are reported and the fields stay suspects.
     _EDIT_COST = (("decimal shift", 1.0), ("missing decimal", 1.2), ("transposition", 2.0), ("glyph", 1.5), ("row swap", 2.0), ("implied by", 2.5))
 
     def edit_cost(why: str) -> float:
@@ -882,7 +833,6 @@ def validate_results(results: list[dict[str, Any]], *,
     summary["ambiguous"] = []
     joint_fields: set[str] = set()
     unresolved = [n for n, c in culprit_of.items() if c is None]
-    # cost of the greedy per-identity assignment, if it is jointly valid
     greedy = {c: fixers[c] for c in culprit_of.values() if c}
     greedy_cost = float("inf")
     if greedy and not unresolved:
@@ -923,9 +873,6 @@ def validate_results(results: list[dict[str, Any]], *,
                 return
             if not all(res.get(n, (True, ""))[0] for n in passing):
                 return
-            # residual: how far each edited value sits from what the
-            # (now-consistent) panel derives for it - separates the exact
-            # repair from one that merely squeaks inside tolerance
             resid = 0.0
             n_res = 0
             for f, cand in combo:
@@ -950,9 +897,6 @@ def validate_results(results: list[dict[str, Any]], *,
             for ca in cand_map[a]:
                 for cb in cand_map[b]:
                     try_combo(((a, ca), (b, cb)))
-        # three simultaneous misreads: only when the search stays small and
-        # no pair explains the panel (a triple is never preferred over a pair
-        # of equal story because it costs one more edit)
         if not solutions and len(fields_u) <= 6 and len(failed) >= 2:
             for a, b, c in itertools.combinations(fields_u, 3):
                 for ca in cand_map[a][:5]:
@@ -965,14 +909,11 @@ def validate_results(results: list[dict[str, Any]], *,
             second = solutions[1][0] if len(solutions) > 1 else float("inf")
             tied = [sol for c, sol in solutions if c - best_cost < 0.5]
             best_fields = frozenset(f for f, _ in best)
-            # near-ties that name the SAME two fields are one story (which
-            # two values are wrong) with alternative readings; different
-            # field sets are a genuine ambiguity.
             unique = all(frozenset(f for f, _ in sol) == best_fields for sol in tied)
             beats_greedy = best_cost + 0.5 <= greedy_cost
             if unique and (unresolved or beats_greedy):
                 for n in list(culprit_of):
-                    culprit_of[n] = None          # joint story replaces the greedy one
+                    culprit_of[n] = None
                 unresolved = list(culprit_of)
                 for f, (ccv, printed, why) in best:
                     joint_fields.add(f)
@@ -1039,7 +980,6 @@ def validate_results(results: list[dict[str, Any]], *,
                 if f not in summary["suspects"]:
                     summary["suspects"].append(f)
 
-    # ---- 5. implausible values: propose the reading the panel supports ------- #
     for fid in sorted(implausible):
         r = by_fid[fid]
         lim = limits_for(fid)
@@ -1072,7 +1012,6 @@ def validate_results(results: list[dict[str, Any]], *,
             summary["suspects"].append(fid)
         note(r, msg, factor=0.35, force_review=True)
 
-    # ---- 6. corroboration ---------------------------------------------------- #
     for n in passing:
         chk = check_by_name[n]
         if not chk.corroborates:

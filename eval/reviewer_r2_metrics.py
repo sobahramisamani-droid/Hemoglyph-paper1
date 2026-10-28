@@ -7,7 +7,6 @@ src=open(f"{ROOT}/eval/realdata/eval_eicu.py").read()
 GROUPS=ast.literal_eval(re.search(r"^GROUPS\s*=\s*(\{.*?^\})",src,re.S|re.M).group(1))
 B=json.load(gzip.open(f"{OUT}/per_stay_v7.json.gz","rt"))
 def evaluable(r,g): return g in GROUPS and any(k in r["labs"] for k in GROUPS[g][2])
-# prevalence of coded, evaluable labels
 prev=C.Counter(g for r in B for g in r["coded"] if evaluable(r,g)); order=[g for g,_ in prev.most_common()]
 K=(3,5,10); rng=np.random.default_rng(7); NB=2000
 def per_stay(r, ranks):
@@ -17,7 +16,6 @@ def per_stay(r, ranks):
     for k in K:
         pred=[g for g,rk in ranks.items() if rk<=k and evaluable(r,g)]
         hits=sum(1 for g in pred if g in coded)
-        # NDCG with binary relevance over coded labels
         dcg=sum(1/math.log2(rk+1) for g,rk in ranks.items() if rk<=k and g in coded)
         idcg=sum(1/math.log2(i+2) for i in range(min(k,len(coded))))
         out[k]=dict(pred=len(pred),hits=hits,coded=len(coded),ndcg=(dcg/idcg if idcg>0 else None))
@@ -40,16 +38,13 @@ def boot(rows,key,k):
         elif key=="f1": p,r_=H/P,H/Cn; vals.append(100*2*p*r_/(p+r_))
         elif key=="ndcg": vals.append(100*np.nanmean(a[:,3]))
     return np.percentile(vals,[2.5,97.5])
-# engine
 eng=[per_stay(r,r["gr"]) for r in B]
-# prevalence baseline: same ranking for everyone, restricted to groups whose key analyte is present in that stay
 def prev_ranks(r):
     rk={}; i=0
     for g in order:
         if evaluable(r,g): i+=1; rk[g]=i
     return rk
 base=[per_stay(r,prev_ranks(r)) for r in B]
-# alert burden: differential length and number of group-mapped assertions
 L=[len(r["gr"]) for r in B]
 E=agg(eng); Pb=agg(base)
 lines=["# Reviewer round-2 metrics — engine v7, eICU-CRD demo (2,314 stays, labs only), label-group level","",
@@ -64,7 +59,6 @@ for key in ("precision","recall","f1","ndcg"):
     lines.append(f"| prevalence-ranking baseline {key}@k (%) | "+" | ".join(f"{Pb[k][key]:.1f}" for k in K)+" |")
 lines.append("| engine: label-group assertions per stay | "+" | ".join(f"{E[k]['asserted_per_stay']:.2f}" for k in K)+" |")
 lines+=["",f"Alert burden: mean {np.mean(L):.1f} (median {np.median(L):.0f}, IQR {np.percentile(L,25):.0f}–{np.percentile(L,75):.0f}) label-group entries in the full flat differential (max list length 25); mean flat list carries {np.mean([len(r['top5']) for r in B]):.1f} entries in the top-5.", ""]
-# per-group PPV / sens at k=5 vs problem list
 lines+=["## Per-group PPV and sensitivity at k = 5 (problem-list reference)","","| group | coded (evaluable) | asserted@5 | PPV@5 (%) | sensitivity@5 (%) | prevalence baseline sens@5 (%) |","|---|---:|---:|---:|---:|---:|"]
 pg={}
 for r,rk in zip(B,[x["gr"] for x in B]):
@@ -79,9 +73,7 @@ for g,(c,p,tp,bp) in sorted(pg.items(),key=lambda x:-x[1][0]):
 lines+=["","Interpretation: PPV against an admission problem list is a lower bound (uncoded but present conditions count as false positives); it is reported to quantify alert burden, not accuracy."]
 open(f"{OUT}/reviewer_r2_metrics_v7.md","w").write("\n".join(lines)+"\n"); print("\n".join(lines))
 
-# ---- R2 addendum: criterion-supported precision (how many of the engine's top-5 label-group assertions that are NOT on
 # the problem list nevertheless satisfy a fixed guideline laboratory criterion in the same panel; panel_supported_metric.CRIT,
-# written before scoring). This is a laboratory-criterion adjudication, not a clinician adjudication.
 import sys; sys.path.insert(0, f"{ROOT}/eval/realdata")
 from panel_supported_metric import CRIT
 tot=hit=crit_pos=crit_neg=crit_na=0; pg2={}

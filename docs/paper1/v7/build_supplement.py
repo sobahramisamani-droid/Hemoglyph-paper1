@@ -2,7 +2,7 @@
 
 Order: cover/index · Note 1 SAP · Note 2 LLM protocol · Table S1 cohort flow · SUPPLEMENT_R1 (Notes 3–8, Tables S4–S16) ·
 Note 8 addendum (second-rater attempts) · Notes 9–12 and 17 (from the manuscript tail) · TRIPOD+AI checklist.
-Output: submission_CMPB/Supplementary_Information_R8.md and ../../../ارسال پیپر ۱/Supplementary_Information.docx
+Output: submission_CMPB/Supplementary_Information_R8.md and Supplementary_Information.docx (written to the submission package folder when present)
 """
 import re, os
 from docx import Document
@@ -174,8 +174,8 @@ def _strip_files(s):
         return m.group(0) if any(k in m.group(1) for k in _KEEP) else ""
     s = pat.sub(rep, s)
     s = re.sub(r"; script (?=`)", "; script ", s)
-    s = re.sub(r"\((?:[ \t]*[;,][ \t]*)+", "(", s)          # "(; script …" → "(script …"
-    s = re.sub(r"\([ \t]*\)", "", s)                        # empty parentheses
+    s = re.sub(r"\((?:[ \t]*[;,][ \t]*)+", "(", s)
+    s = re.sub(r"\([ \t]*\)", "", s)
     s = re.sub(r"\([ \t]*[;,]?[ \t]*(?=[^()\n]*\))", "(", s)
     s = re.sub(r"[ \t]+([;,.)])", r"\1", s)
     s = re.sub(r"[ \t]{2,}", " ", s)
@@ -231,7 +231,6 @@ md = md.replace("## Supplementary Figures", REPRO + "\n" + S18 + "\n\n## Supplem
 os.makedirs(os.path.join(V7, "submission_CMPB"), exist_ok=True)
 open(os.path.join(V7, "submission_CMPB", "Supplementary_Information_R8.md"), "w", encoding="utf-8").write(md)
 
-# ---------------- docx
 import sys; sys.path.insert(0, V7)
 from docx_style import setup_document, inline, add_table, heading
 from docx.shared import Pt, Cm
@@ -267,6 +266,7 @@ while i < len(lines):
     else:
         p = doc.add_paragraph(); inline(p, l)
     i += 1
-out = os.path.join(V7, "..", "..", "..", "ارسال پیپر ۱", "Supplementary_Information.docx")
+PKG = os.path.join(V7, "..", "..", "..", "..", "ارسال پیپر ۱")
+out = os.path.join(PKG, "Supplementary_Information.docx") if os.path.isdir(PKG) else os.path.join(V7, "submission_CMPB", "Supplementary_Information.docx")
 doc.save(out)
 print("supplement ok:", out, "| words", len(md.split()))

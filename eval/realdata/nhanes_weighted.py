@@ -51,7 +51,6 @@ def wauroc(y, s, w):
     y = np.asarray(y); s = np.asarray(s, float); w = np.asarray(w, float)
     pos = y == 1; neg = ~pos
     if pos.sum() == 0 or neg.sum() == 0: return float("nan")
-    # weighted Mann-Whitney via sorting negatives
     sn, wn = s[neg], w[neg]; o = np.argsort(sn); sn, wn = sn[o], wn[o]; cw = np.concatenate([[0], np.cumsum(wn)])
     lo = np.searchsorted(sn, s[pos], "left"); hi = np.searchsorted(sn, s[pos], "right")
     num = (w[pos] * (cw[lo] + 0.5 * (cw[hi] - cw[lo]))).sum(); return float(num / (w[pos].sum() * wn.sum()))
@@ -87,7 +86,6 @@ def main():
             sens = (ww * (pred & (yy == 1))).sum() / (ww * (yy == 1)).sum(); spec = (ww * (~pred & (yy == 0))).sum() / (ww * (yy == 0)).sum()
             res[c][t] = dict(n=int(m.sum()), pos=int(yy.sum()), auroc_unweighted=au_u, auroc_weighted=au_w, ci=[lo, hi], sens_w=sens, spec_w=spec)
             L.append(f"| {t} | {c} {CYC[c][2].split(' ')[0]} | {int(m.sum())} ({int(yy.sum())}) | {au_u:.3f} | {au_w:.3f} ({lo:.3f}–{hi:.3f}) | {au_w-au_u:+.3f} | {100*sens:.1f} / {100*spec:.1f} |")
-        # healthy false-assertion, weighted
         if "healthy" in df.columns:
             h = df.healthy.astype(bool).values; w = df.WTMEC2YR.values; fa = df.any50.astype(bool).values
             k = int((h & fa).sum()); n = int(h.sum()); wr = (w[h] * fa[h]).sum() / w[h].sum() if n else float("nan")

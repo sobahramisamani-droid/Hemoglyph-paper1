@@ -9,7 +9,7 @@ import pandas as pd
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")); sys.path.insert(0, os.path.join(ROOT, "eval", "realdata"))
 from eval_eicu import GROUPS
 R = os.path.join(ROOT, "eval", "results", "eicu_demo")
-LIB = {  # deliberately over-inclusive second coder
+LIB = {
  "acute_kidney_injury": r"acute renal|AKI|acute kidney|ATN|tubular necrosis", "chronic_kidney_disease": r"chronic renal|chronic kidney|CKD|ESRD|end.stage renal|dialysis",
  "renal_impairment": r"renal|kidney|ESRD|dialysis|azotemia|uremia", "diabetes": r"diabet|DM\b|insulin", "hyperglycemia": r"hyperglyc|glucose", "diabetic_ketoacidosis": r"DKA|ketoacid|ketosis",
  "hypoglycemia": r"hypoglyc", "hypokalemia": r"hypokal|low potassium|potassium", "hyperkalemia": r"hyperkal|potassium", "hyponatremia": r"hyponat|sodium", "hypernatremia": r"hypernat|sodium",
@@ -36,7 +36,7 @@ def main():
         print(f"stays {len(S)} strings {n_str} regex-positive cells {n_pos} disagreements {len(dis)}")
         for s, g, a, ev in dis: print(f"{s}\t{g}\tregex={'POS' if a else 'neg'}\t" + " || ".join(ev)[:300])
     else:
-        adj = json.load(open(sys.argv[2]))  # {"stay|group": "miss" | "fp" | "ok_regex" | "ambiguous"}
+        adj = json.load(open(sys.argv[2]))
         tp = fp = fn = amb = 0; pg = collections.defaultdict(lambda: [0, 0, 0])
         for s in S:
             txt = " ;; ".join(strings.get(s, []))

@@ -1,6 +1,4 @@
 import json
-# For each stay: non-renal differential (my blind read of the base panel) + renal probability at each creatinine step.
-# Renal probability reflects my judgement of the creatinine value shown at that step given age/sex/BUN.
 R = {
 "1599068": ({1.0:0.30,1.5:0.60,2.0:0.80}, [("mild high anion gap (16.5) - early metabolic acidosis / uremic",0.35),("prerenal azotemia (BUN 27)",0.40),("subclinical hypothyroidism (TSH 4.34)",0.25),("neutrophilia / infection",0.30),("borderline thrombocytopenia (150)",0.15),("dehydration",0.30),("anemia (mild)",0.10),("sepsis",0.15),("hyperkalemia",0.05)]),
 "1771521": ({1.0:0.15,1.5:0.50,2.0:0.75}, [("heart failure (BNP 616)",0.70),("severe hypoalbuminemia (2.5) / hypoproteinemia (4.3)",0.70),("leukocytosis with lymphopenia - infection / sepsis",0.60),("hypomagnesemia (1.4)",0.55),("hypocalcemia (7.8, albumin-related)",0.45),("hyperchloremia (112)",0.35),("hyperglycemia (150)",0.30),("mild anemia (11.2)",0.35),("malnutrition / protein-losing state",0.40)]),

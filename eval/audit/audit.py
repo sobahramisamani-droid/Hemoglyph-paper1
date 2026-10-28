@@ -37,7 +37,7 @@ FINDING_ENTITY = re.compile(
  r"dyslipidemia|hyperlipidemia|^diabetes_mellitus$|^prediabetes|^type_2_diabetes|^metabolic_syndrome|coagulopathy|"
  r"^thrombocyt|^leukocyt|^neutro|^lympho|^eosino|^pancytopenia|^bicytopenia|syndrome_of_inappropriate|^dehydration|"
  r"^malnutrition|^refeeding|^rhabdomyolysis$|^gout$|^tumor_lysis")
-ALLOW_TIER = {  # published cut-offs that coincide with a 1.5x/0.5x transform (see patch_15_1_0.py)
+ALLOW_TIER = {
  ("egfr_ckd_epi_creatinine",45.0),("egfr_ckd_epi_creatinine",30.0),("egfr_ckd_epi_creatinine",15.0),
  ("fecal_elastase_1",100.0),("urine_protein_to_creatinine_ratio",0.3),("urine_albumin_to_creatinine_ratio",300.0),
  ("hemoglobin",8.0),("hemoglobin",7.0),("platelets",50.0),("platelets",20.0),("platelets",100.0),
@@ -50,9 +50,8 @@ ALLOW_TIER = {  # published cut-offs that coincide with a 1.5x/0.5x transform (s
  ("eosinophil_count_absolute",1.5),("triglycerides",500.0),("triglycerides",880.0),("ldl_cholesterol_calculated",190.0),
  ("bicarbonate",18.0),("bicarbonate",15.0),("phosphate",1.0),("magnesium",1.0),("uric_acid",10.0),("hematocrit",65.0),
  ("mean_corpuscular_volume",120.0),("fibrinogen",100.0),("fibrinogen",150.0),("arterial_ph",7.2),("arterial_ph",7.1),
- ("ceruloplasmin",10.0),("folate_serum",3.0)}  # Wilson (EASL 2012: <10 strongly suggestive, <20 low); BSH 2014 folate 2-3 borderline
+ ("ceruloplasmin",10.0),("folate_serum",3.0)}
 SIGNED = ("base_excess", "anion_gap", "standard_base")
-# hand-set physiological bounds in canonical units for ubiquitous analytes (feature-registry limits are not reliable)
 PHYS = {"hemoglobin":(1,25),"hematocrit":(5,75),"sodium":(100,200),"potassium":(1,12),"chloride":(60,140),"bicarbonate":(2,60),
  "glucose":(5,3000),"fasting_plasma_glucose":(5,1000),"creatinine":(0.1,40),"urea":(1,400),"blood_urea_nitrogen":(1,300),"calcium_total":(3,20),
  "phosphate":(0.2,20),"magnesium":(0.2,10),"albumin":(0.5,6.5),"total_protein":(2,14),"total_bilirubin":(0.05,60),"alanine_aminotransferase":(1,20000),
@@ -62,7 +61,6 @@ PHYS = {"hemoglobin":(1,25),"hematocrit":(5,75),"sodium":(100,200),"potassium":(
  "hemoglobin_a1c":(3,25),"triglycerides":(10,15000),"total_cholesterol":(30,1500),"hdl_cholesterol":(1,200),"ldl_cholesterol_calculated":(5,1000),
  "international_normalized_ratio":(0.5,20),"prothrombin_time":(5,200),"fibrinogen":(10,1500),"egfr_ckd_epi_creatinine":(1,200),"creatine_kinase_total":(5,1000000),
  "procalcitonin":(0.01,1000),"erythrocyte_sedimentation_rate":(0,200),"mean_corpuscular_volume":(40,160),"amylase":(1,10000),"lipase":(1,20000),"ammonia":(1,2000),"arterial_ph":(6.5,8.0)}
-# units that belong to the mass/molar family (a mismatch between two of these is a real unit error)
 QUANT_UNITS = {"mg/dL","mmol/L","umol/L","µmol/L","g/dL","g/L","ng/mL","ug/dL","µg/dL","nmol/L","pmol/L","mg/L","ug/L","µg/L","ng/dL","pg/mL","mmol/mol","mEq/L"}
 ENTITY_DOM_SYN = {"rheumatology":"autoimmune","pediatric":"pediatric_neonatal","nephrology":"renal","hepatology":"liver","metabolic":"diabetes_metabolic",
  "diabetes":"diabetes_metabolic","haematology":"hematology","hematology_oncology":"hematology","infection":"infectious","cardiology":"cardiovascular","obstetrics":"pregnancy"}
@@ -70,12 +68,11 @@ KEEP_SINGLE = {"hereditary_hemochromatosis_c282y_screening_1_v1","familial_chylo
  "familial_chylomicronemia_syndrome_existing_diagnostic_criterion_1_v1","tangier_disease_screening_1_v1","tangier_disease_diagnostic_criterion_1_v1",
  "lcat_deficiency_screening_1_v1","lcat_deficiency_diagnostic_criterion_1_v1","malignant_hyperthermia_stage_p131","acute_hepatitis_screen_p131",
  "warfarin_over_anticoagulation_authentic_criterion_v1","sepsis_screening_1_v1",
- "acute_pancreatitis_atlanta_2012_lipase_3x_uln_cur13","acute_pancreatitis_atlanta_2012_amylase_3x_uln_cur13"}  # Atlanta 2012: lipase/amylase >= 3x ULN is a defining criterion
+ "acute_pancreatitis_atlanta_2012_lipase_3x_uln_cur13","acute_pancreatitis_atlanta_2012_amylase_3x_uln_cur13"}
 DIR_MARGIN = 1.15
 HIGH_WORDS = re.compile(r"^elevated_|^high_|^hyper|cytosis$|philia$|^prolonged_|uremia$|^leukocytosis|^thrombocytosis|^polycythemia|^erythrocytosis")
 LOW_WORDS = re.compile(r"^decreased_|^low_|^hypo|penia$|^anemia|anemia$|deficiency$|^short_")
-# unit conversion to canonical for common analytes: factor such that value_in_unit * factor = value_in_canonical
-CONV = {  # (feature, from_unit) -> factor to canonical
+CONV = {
  ("glucose","mmol/L"):18.0, ("fasting_plasma_glucose","mmol/L"):18.0, ("creatinine","umol/L"):1/88.4, ("creatinine","µmol/L"):1/88.4,
  ("total_cholesterol","mmol/L"):38.67, ("ldl_cholesterol_calculated","mmol/L"):38.67, ("hdl_cholesterol","mmol/L"):38.67,
  ("triglycerides","mmol/L"):88.57, ("calcium_total","mmol/L"):4.0, ("total_bilirubin","umol/L"):1/17.1, ("total_bilirubin","µmol/L"):1/17.1,
@@ -84,7 +81,7 @@ CONV = {  # (feature, from_unit) -> factor to canonical
  ("ferritin","pmol/L"):1/2.247, ("c_reactive_protein","mg/dL"):10.0, ("lactate","mg/dL"):1/9.01, ("iron","umol/L"):1/0.179,
  ("vitamin_b12","pmol/L"):1.355, ("folate","nmol/L"):1/2.266, ("vitamin_d_25_hydroxy","nmol/L"):1/2.496,
  ("hemoglobin_a1c","mmol/mol"):None, ("morning_cortisol","ng/mL"):0.1, ("morning_cortisol","nmol/L"):1/27.59, ("cortisol","nmol/L"):1/27.59,
- ("vitamin_b12","pmol/L"):1.355, ("iron","umol/L"):5.585, ("total_iron_binding_capacity","umol/L"):5.585, ("ammonia","umol/L"):1/0.587}  # A1c: no linear factor used (IFCC vs NGSP), treated as accepted
+ ("vitamin_b12","pmol/L"):1.355, ("iron","umol/L"):5.585, ("total_iron_binding_capacity","umol/L"):5.585, ("ammonia","umol/L"):1/0.587}
 # source scope keyword -> disease domain(s)
 SCOPE2DOM = {
  "ckd":"renal","nephrology":"renal","egfr":"renal","albuminuria":"renal","aki":"renal","kidney":"renal","glomerular":"renal","dialysis":"renal",
@@ -145,7 +142,6 @@ class Audit:
                 if r.get("rule_type") == "screening": self.scr[(r["disease_id"], l["feature_id"])].add(v)
                 if l.get("operator") in ("<", "<=", ">", ">="): self.dirs[(r["disease_id"], l["feature_id"])][l["operator"][0]] += 1
 
-    # ---- feature helpers
     def ref(self, fid, pop=None):
         rr = (self.F.get(fid) or {}).get("reference_ranges") or []
         if pop: rr = [x for x in rr if x.get("population") == pop]
@@ -161,7 +157,6 @@ class Audit:
         if c: u.add(c)
         return u, c
 
-    # ---- detectors
     def d_r2a(self, rid, r):
         L = leaves(r.get("expression")); dis = r["disease_id"]
         if self.kind.get(dis) != "clinical_entity" or len(L) != 1 or L[0]["feature_id"] not in UBIQUITOUS: return None
@@ -187,7 +182,7 @@ class Audit:
             if v == 0 and l.get("operator") in ("<", "<=") and not any(s in fid for s in SIGNED): return f"{fid} {l['operator']} 0 impossible"
             if fid in PHYS:
                 u = l.get("unit"); _, canon = self.units_ok(fid)
-                if u and canon and u != canon: continue  # unit detector handles converted values
+                if u and canon and u != canon: continue
                 lo, hi = PHYS[fid]
                 if v < lo or v > hi: return f"{fid} {l['operator']} {v} outside physiological bounds [{lo}, {hi}]"
         return None
@@ -199,18 +194,15 @@ class Audit:
             op = l.get("operator"); v = num(l.get("value")); fid = l["feature_id"]
             if op not in ("<", "<=", ">", ">=") or v is None: continue
             d = op[0]
-            # (a) finding entity named after this analyte: name says HIGH/LOW, operator points the other way
             stem = fid.split("_")[0]
             if len(stem) >= 4 and re.search(rf"(^|_){stem}", dis) and per_feat[fid] == 1:
                 if HIGH_WORDS.search(dis) and d == "<": return f"entity {dis} names a HIGH state but rule says {fid} {op} {v}"
                 if LOW_WORDS.search(dis) and d == ">": return f"entity {dis} names a LOW state but rule says {fid} {op} {v}"
-            # (b) contradicts >= 3 other rules of the same entity on this analyte (skip range rules)
             if per_feat[fid] == 1:
                 c = self.dirs.get((dis, fid))
                 if c:
                     other = c[">" if d == "<" else "<"]; same = c[d] - 1
                     if other >= 3 and same <= 0: return f"{fid} {op} {v} contradicts {other} other rules of {dis} that use the opposite direction"
-            # (c) grossly beyond the reference interval in the wrong direction (factor 2), finding entities only
             lo, hi, ru = self.ref(fid); u = l.get("unit")
             if u and ru and u != ru: continue
             if FINDING_ENTITY.search(dis) and per_feat[fid] == 1:

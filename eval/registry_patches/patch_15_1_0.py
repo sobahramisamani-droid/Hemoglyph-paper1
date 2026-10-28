@@ -51,18 +51,17 @@ FINDING_ENTITY = re.compile(
  r"^malnutrition|^refeeding|^rhabdomyolysis$|^gout$|^tumor_lysis")
 
 KEEP_SINGLE = {
- "hereditary_hemochromatosis_c282y_screening_1_v1",            # TSAT >45 % (AASLD 2011 / EASL 2022 screening cut-off)
- "familial_chylomicronemia_syndrome_existing_screening_1_v1",   # TG >880 mg/dL (10 mmol/L), ESC/EAS
+ "hereditary_hemochromatosis_c282y_screening_1_v1",
+ "familial_chylomicronemia_syndrome_existing_screening_1_v1",
  "familial_chylomicronemia_syndrome_existing_diagnostic_criterion_1_v1",
- "tangier_disease_screening_1_v1","tangier_disease_diagnostic_criterion_1_v1",      # HDL-C <10 / <5 mg/dL
+ "tangier_disease_screening_1_v1","tangier_disease_diagnostic_criterion_1_v1",
  "lcat_deficiency_screening_1_v1","lcat_deficiency_diagnostic_criterion_1_v1",
- "malignant_hyperthermia_stage_p131",                           # CK >20,000 U/L
- "acute_hepatitis_screen_p131",                                 # ALT >200 U/L
- "warfarin_over_anticoagulation_authentic_criterion_v1",        # PT >30 s
- "sepsis_screening_1_v1",                                       # PCT >0.5 ng/mL
+ "malignant_hyperthermia_stage_p131",
+ "acute_hepatitis_screen_p131",
+ "warfarin_over_anticoagulation_authentic_criterion_v1",
+ "sepsis_screening_1_v1",
 }
 
-# (feature, value) pairs that are real published cut-offs even though they equal 1.5x/0.5x of a screening limit
 ALLOW_TIER = {
  ("egfr_ckd_epi_creatinine",45.0),("egfr_ckd_epi_creatinine",30.0),("egfr_ckd_epi_creatinine",15.0),
  ("fecal_elastase_1",100.0),("urine_protein_to_creatinine_ratio",0.3),("urine_albumin_to_creatinine_ratio",300.0),

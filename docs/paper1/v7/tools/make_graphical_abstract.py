@@ -4,7 +4,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 
-W, H = 13.0, 6.5                         # cm-ish proportions; saved at 300 dpi -> 3900 x 1950 px
+W, H = 13.0, 6.5
 fig = plt.figure(figsize=(W, H), dpi=300)
 ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, W); ax.set_ylim(0, H); ax.axis("off")
 INK, ACC, GREY, RED = "#1f2a44", "#2b6cb0", "#6b7280", "#b91c1c"
@@ -26,7 +26,6 @@ ax.text(W / 2, H - 0.22, "Hemoglyph: a verifiable, auditable, offline rule engin
 ax.text(W / 2, H - 0.62, "Research prototype · 33,183 guideline-transcribed rules (99.2% AI-drafted, not clinically audited) · no outcome training",
         ha="center", va="top", fontsize=6.6, color=GREY)
 
-# pipeline row
 y, h = 3.55, 1.75
 box(0.35, y, 2.45, h, "Structured lab panel", ["analyte–value–unit", "age · sex · encounter", "context optional"])
 arrow(2.85, y + h / 2, 3.35, y + h / 2)
@@ -37,7 +36,6 @@ box(7.6, y, 2.6, h, "Ranked, cited differential", ["≤ 25 entries, each with", 
 arrow(10.25, y + h / 2, 10.75, y + h / 2)
 box(10.8, y, 1.9, h, "Verification", ["property-based tests", "on every release", "1 defect 353 vignettes missed"], fc="#fff7e6", ec="#b7791f", tc="#92400e")
 
-# evaluation row
 ax.text(0.35, 3.15, "Pre-specified, hash-frozen, one-shot evaluation (first quarantine round failed — reported)", fontsize=7.2, fontweight="bold", color=INK, va="top")
 y2, h2 = 0.55, 2.15
 box(0.35, y2, 2.95, h2, "eICU-CRD demo · 2,314 ICU stays", ["recall@5 60.8% (95% CI 58.7–62.9)", "precision@5 14.2%", "prevalence baseline 51.3%", "ceiling ≈ 60%: labels not in first panel"])

@@ -4,7 +4,6 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 _st=Axes.set_title
 def set_title(self,label,*a,**k):
-    # keep short panel subtitles (explicit small fontsize); drop headline/conclusion titles
     if k.get("fontsize") is not None and k["fontsize"]<=10 and len(label)<70: return _st(self,label,*a,**k)
     return _st(self,"",*a,**k)
 Axes.set_title=set_title

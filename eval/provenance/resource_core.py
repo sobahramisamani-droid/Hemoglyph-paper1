@@ -26,7 +26,6 @@ core = json.load(gzip.open(os.path.join(HERE, "core_rules.json.gz"), "rt"))
 UA = "Mozilla/5.0 (X11; Linux x86_64) Hemoglyph-provenance/1.0"
 GENERIC = re.compile(r"^(https?://)?(www\.)?[^/]+/?$|/publications/?$|/guidelines/?$|/clinical-practice-guidelines/?$", re.I)
 DOI_RX = re.compile(r"10\.\d{4,9}/[^\s\"'<>]+", re.I)
-# conversions used only to search for the same threshold expressed in the other common unit
 CONV = {"creatinine": [("mg/dL", "umol/L", 88.4)], "glucose": [("mg/dL", "mmol/L", 1 / 18.0)], "blood_urea_nitrogen": [("mg/dL", "mmol/L", 0.357)],
         "total_bilirubin": [("mg/dL", "umol/L", 17.1)], "calcium_total": [("mg/dL", "mmol/L", 0.2495)], "hemoglobin": [("g/dL", "g/L", 10.0)],
         "albumin": [("g/dL", "g/L", 10.0)], "total_cholesterol": [("mg/dL", "mmol/L", 0.02586)], "ldl_cholesterol": [("mg/dL", "mmol/L", 0.02586)],

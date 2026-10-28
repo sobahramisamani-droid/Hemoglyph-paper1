@@ -25,9 +25,7 @@ def units(groups=None):
 def cal_slope(p, y):
     lg = np.log(p / (1 - p)).reshape(-1, 1)
     m = LogisticRegression(C=1e6, max_iter=1000).fit(lg, y); slope = float(m.coef_[0][0])
-    # intercept with slope fixed at 1 (calibration-in-the-large)
-    off = lg.ravel(); m2 = LogisticRegression(C=1e6, max_iter=1000, fit_intercept=True).fit(np.zeros((len(y), 1)), y)  # placeholder
-    # proper CITL: logistic with offset -> use iterative: intercept = log(mean odds) adjustment via Newton
+    off = lg.ravel(); m2 = LogisticRegression(C=1e6, max_iter=1000, fit_intercept=True).fit(np.zeros((len(y), 1)), y)
     a = 0.0
     for _ in range(50):
         q = 1 / (1 + np.exp(-(off + a))); g = (y - q).sum(); h = (q * (1 - q)).sum(); a += g / h
@@ -52,7 +50,6 @@ for name, gs in (("ALL pooled", None), ("renal_impairment", ["renal_impairment"]
     L.append(f"| {name} | {len(y)} | {y.mean():.3f} | {sl:.2f} | {ic:+.2f} | {b:.3f} ({lo:.3f}–{hi:.3f}) | {ll(p, y):.3f} | {au:.3f} |")
 L += ["", "Interpretation: slope < 1 and strongly negative intercept = raw scores are over-confident ranks, not probabilities (as stated in the manuscript); the cross-fitted isotonic map (calibration_dca_v7.md) removes this for display purposes only.", ""]
 
-# ---- B6a multiplicity: per-group AUROC with DeLong-free bootstrap p vs 0.5, Holm and Benjamini-Hochberg
 L += ["## B6a Multiplicity control over per-group AUROC (H0: AUROC = 0.5; Mann–Whitney U, two-sided; Holm and BH-FDR at 0.05; label-level, exploratory)", "", "| group | n coded | AUROC | raw p | Holm-adjusted | BH q | significant after BH |", "|---|---:|---:|---:|---:|---:|---|"]
 pv = []
 for g in GROUPS:
@@ -63,13 +60,11 @@ for g in GROUPS:
     praw = float(mannwhitneyu(p[y == 1], p[y == 0], alternative="two-sided").pvalue); pv.append((g, int(y.sum()), au, praw))
 m = len(pv); srt = sorted(pv, key=lambda x: x[3]); holm = {}; bh = {}
 for i, (g, n, au, pr) in enumerate(srt): holm[g] = min(1.0, pr * (m - i)); bh[g] = min(1.0, pr * m / (i + 1))
-# enforce monotonicity for BH
 prev = 1.0
 for g, n, au, pr in reversed(srt): bh[g] = prev = min(prev, bh[g])
 for g, n, au, pr in sorted(pv, key=lambda x: -x[1]): L.append(f"| {g} | {n} | {au:.3f} | {pr:.2e} | {holm[g]:.2e} | {bh[g]:.2e} | {'yes' if bh[g] < 0.05 else 'no'} |")
 L += ["", f"{sum(1 for g in bh if bh[g] < 0.05)} of {m} groups remain significant after BH-FDR; all per-group comparisons other than the pre-specified primary (flat recall@5) are labelled exploratory in the manuscript.", ""]
 
-# ---- B6b panel-size sensitivity
 L += ["## B6b Sensitivity of recall to the minimum number of analytes in the first panel", "", "| minimum analytes (n_in) | stays | labels | flat @3 | flat @5 | flat @10 | two-tier @5 |", "|---:|---:|---:|---:|---:|---:|---:|"]
 for thr in (8, 10, 12, 16, 20, 25):
     sub = [r for r in rows if r["n_in"] >= thr]; tot = 0; c = {3: 0, 5: 0, 10: 0}; c2 = 0

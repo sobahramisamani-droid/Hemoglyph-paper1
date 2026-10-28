@@ -1,7 +1,0 @@
-Highlights
-
-• Four frozen, reproducible methods verify an AI-drafted lab rule base pre-review
-• Executable invariants found a ranking defect that 353 adversarial vignettes missed
-• Frozen provenance audits: 92% of rules unverifiable by locator; 1.1% drive output
-• Unit-invariant in 40/40 panels vs 8/40 for an LLM; cuts LLM unsupported claims 40%
-• Held-out mutation test and one-command clean-clone reproduction; no clinical claim

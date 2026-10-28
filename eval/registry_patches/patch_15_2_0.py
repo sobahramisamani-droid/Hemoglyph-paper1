@@ -53,7 +53,6 @@ def patch(d):
             r["source_ids"] = [new if s == "nes_sod_guidelines_2024" else s for s in r["source_ids"]]; log["C4c"].append(rid)
     for rid in [x for v in log.values() for x in v]:
         R[rid].setdefault("patch_history", []).append({"version": VER, "date": TODAY})
-    # disease rule-layer bookkeeping for C1
     for did, dz in d["diseases"].items():
         for layer, ids in (dz.get("layers") or {}).items():
             if any(i in C1 for i in ids): dz["layers"][layer] = [i for i in ids if i not in C1]

@@ -9,7 +9,8 @@ from docx_style import setup_document, inline, add_table, heading
 
 import sys
 SRC = sys.argv[1] if len(sys.argv) > 1 else "Paper1_Hemoglyph_CMPB_EN_v7_R9.md"
-OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "ارسال پیپر ۱", "Manuscript_Paper1_Hemoglyph_CMPB_R9.docx")
+PKG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "ارسال پیپر ۱")
+OUT = sys.argv[2] if len(sys.argv) > 2 else (os.path.join(PKG, "Manuscript_Paper1_Hemoglyph_CMPB_R9.docx") if os.path.isdir(PKG) else SRC.replace(".md", ".docx"))
 doc = Document(); setup_document(doc)
 TEXT = open(SRC, encoding="utf-8").read()
 # Supplementary Notes kept at the end of the markdown source are built into the separate Supplementary Information file; the manuscript stops before them.
@@ -46,7 +47,6 @@ while i < len(lines):
     else:
         p = doc.add_paragraph(); inline(p, l); p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     i += 1
-# figures, one per page, legend repeated beneath
 doc.add_page_break(); heading(doc, "Figures", 1)
 LEG = {}
 for l in lines:

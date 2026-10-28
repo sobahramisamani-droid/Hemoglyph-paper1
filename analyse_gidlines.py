@@ -148,7 +148,6 @@ class ClinicalContext:
     serum_albumin: Optional[float] = None
     serum_glucose_mgdl: Optional[float] = None
 
-    # ULTRA-PRECISE: vital signs and anthropometry for complex diagnosis
     systolic_bp: Optional[float] = None
     diastolic_bp: Optional[float] = None
     systolic_blood_pressure: Optional[float] = None
@@ -172,7 +171,6 @@ class ClinicalContext:
     extra: dict[str, Any] = field(default_factory=dict)
 
     def __getattr__(self, name: str) -> Any:
-        # ULTRA-PRECISE: fallback to extra dict for any missing vital/context
         try:
             extra = object.__getattribute__(self, 'extra')
             if isinstance(extra, dict) and name in extra:
@@ -182,12 +180,9 @@ class ClinicalContext:
         raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
 
     def __getattribute__(self, name: str) -> Any:
-        # ULTRA-PRECISE: if dataclass field is None, try extra dict before returning None
-        # This makes context.systolic_bp work even when stored in extra
         try:
             val = object.__getattribute__(self, name)
             if val is None:
-                # Check extra for fallback, but avoid recursion
                 try:
                     extra = object.__getattribute__(self, 'extra')
                     if isinstance(extra, dict) and name in extra and extra[name] is not None:
@@ -196,7 +191,6 @@ class ClinicalContext:
                     pass
             return val
         except AttributeError:
-            # If attribute doesn't exist, try extra via __getattr__ logic
             try:
                 extra = object.__getattribute__(self, 'extra')
                 if isinstance(extra, dict) and name in extra:
@@ -245,7 +239,6 @@ class ClinicalContext:
             "altitude_m": "altitude_m",
             "pregnancy_trimester": "pregnancy_trimester",
 
-            # ULTRA-PRECISE: vital signs and anthropometry aliases
             "systolic_bp": "systolic_bp",
             "diastolic_bp": "diastolic_bp",
             "systolic_blood_pressure": "systolic_blood_pressure",
@@ -311,8 +304,6 @@ class ClinicalContext:
                        "heart_rate", "weight_kg", "height_cm"):
             if normalized.get(numkey) is not None:
                 normalized[numkey] = _float(normalized[numkey])
-        # FIX A41: negative/absurd ages previously mapped to 'neonate'
-        # reference bands. Reject them (stashed in extra for audit).
         _age = normalized.get("age_years")
         if _age is not None and not 0 <= _age <= 120:
             extra["rejected_age_years"] = _age
@@ -327,8 +318,6 @@ class ClinicalContext:
             return cls(**safe)
 
     def get(self, key: str) -> Any:
-        # ULTRA-PRECISE: robust getter that checks dataclass field first, then extra
-        # Returns None only if both are missing/None, allowing fallback logic
         if hasattr(self, key):
             try:
                 val = getattr(self, key)
@@ -336,7 +325,6 @@ class ClinicalContext:
                     return val
             except AttributeError:
                 pass
-        # Fallback to extra dict
         if hasattr(self, 'extra') and isinstance(self.extra, dict):
             return self.extra.get(key)
         return None
@@ -539,17 +527,6 @@ class DiseaseInterpretation:
         return "\n".join(l for l in lines if l)
 
 
-
-# ---------------------------------------------------------------------------
-# ESL extension 8 (2026-10-22): next-test layer.
-# A laboratory-only engine cannot assert heart failure without a natriuretic
-# peptide or diabetes without HbA1c; the honest output is the test that would
-# settle the question. Each trigger is an entity the differential already
-# contains (any probability); each recommendation names the registry feature(s)
-# that would satisfy it, so a test already measured is never recommended again.
-# Priority: 1 = time-critical (sepsis bundle, acid-base), 2 = diagnostic
-# confirmation, 3 = aetiological work-up.
-# ---------------------------------------------------------------------------
 _NEXT_TEST_LIBRARY: dict[str, list[dict[str, Any]]] = {
     "leukocytosis_pattern": [
         {"test": "Serum lactate", "features": ["lactate"], "priority": 1, "why": "organ hypoperfusion screen when leukocytosis may represent infection", "src": "Surviving Sepsis Campaign 2021 (Evans et al., Crit Care Med 2021)"},
@@ -713,7 +690,7 @@ _NEXT_TEST_LIBRARY: dict[str, list[dict[str, Any]]] = {
         {"test": "BNP / NT-proBNP", "features": ["b_type_natriuretic_peptide", "nt_probnp"], "priority": 1, "why": "rule-out thresholds BNP < 35 / NT-proBNP < 125 pg/mL", "src": "ESC HF 2021"},
     ],
 }
-_NEXT_TEST_ALIASES = {  # entity -> entity whose entry applies
+_NEXT_TEST_ALIASES = {
     "severe_hyponatremia": "hyponatremia", "siadh": "hyponatremia", "lactic_acidosis": "metabolic_acidosis",
     "neutrophilia_pattern": "leukocytosis_pattern", "leukemoid_reaction": "leukocytosis_pattern", "sepsis_support_pattern": "sepsis",
     "septic_shock": "sepsis", "stress_hyperglycemia": "hyperglycemia", "type_1_diabetes": "diabetes_mellitus",
@@ -741,16 +718,13 @@ def _esl_next_tests(differential: list, observed: set, max_items: int = 12, valu
             if any(f in observed for f in rec["features"]):
                 continue
             if (rec["priority"] == 3 and p < 0.30) or (rec["priority"] == 2 and p < 0.10):
-                continue  # aetiological work-up only for entities with real support
-            dkey = tuple(sorted(rec["features"]))  # one line per test, whichever entity asked first/strongest
+                continue
+            dkey = tuple(sorted(rec["features"]))
             cur = out.get(dkey)
-            score = (4 - rec["priority"]) + p  # priority dominates, probability breaks ties
+            score = (4 - rec["priority"]) + p
             if cur is None or score > cur["_score"]:
                 out[dkey] = {"test": rec["test"], "priority": rec["priority"], "because_of": did, "entity_probability": round(p, 3),
                                     "rationale": rec["why"], "source": rec["src"], "satisfied_by": list(rec["features"]), "_score": score}
-    # value-level triggers that no entity carries (ESL ext 8b): ADA 2024 §2 — a random glucose of 140–199 mg/dL
-    # does not diagnose diabetes but is an indication to test HbA1c; below 200 the engine (correctly) proposes no
-    # diabetes entity, so the recommendation must come from the value itself.
     if value_of is not None:
         glu = value_of("glucose")
         if glu is not None and 140.0 <= glu < 200.0 and "hemoglobin_a1c" not in observed:
@@ -803,10 +777,10 @@ class InterpretationReport:
     executive_summary: str = ''
     data_completeness: dict[str, Any] = field(default_factory=dict)
     expert_syndromes: list[dict[str, Any]] = field(default_factory=list)
-    next_tests: list[dict[str, Any]] = field(default_factory=list)  # ESL extension 8
-    temporal_findings: list[dict[str, Any]] = field(default_factory=list)   # ESL extension 11-T
-    clinical_context_applied: list[dict[str, Any]] = field(default_factory=list)  # ESL extension 11-C
-    borderline_values: list[dict[str, Any]] = field(default_factory=list)   # v8.1 measurement uncertainty
+    next_tests: list[dict[str, Any]] = field(default_factory=list)
+    temporal_findings: list[dict[str, Any]] = field(default_factory=list)
+    clinical_context_applied: list[dict[str, Any]] = field(default_factory=list)
+    borderline_values: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return _json_safe(asdict(self))
@@ -821,9 +795,6 @@ class EnrichedObservation:
     percentile: Optional[float] = None
     deviation_from_ref: Optional[float] = None
     severity_score: float = 0.0
-    # 'unknown' until an interval was actually applied. Defaulting to
-    # 'normal' silently vetoed every Bayesian finding on the ~2,000 analytes
-    # without an engine-side interval (anion gap, ketones, pH, lipase, CK...).
     direction: str = 'unknown'
     reliability: float = 1.0
     fuzzy_membership: Optional[float] = None
@@ -831,13 +802,11 @@ class EnrichedObservation:
     corrected_value: Optional[float] = None
     correction_note: Optional[str] = None
     context_flags: dict[str, Any] = field(default_factory=dict)
-    # Which interval the verdict was made against and why.
-    reference_source: str = "registry"          # registry | laboratory_reported | registry_locked
+    reference_source: str = "registry"
     reference_used: dict[str, float] = field(default_factory=dict)
     reference_note: Optional[str] = None
 
 
-# Pure transforms over observations - no instance state was ever kept.
 REFERENCE_RANGES = {
     "hemoglobin": {"mean": 14.5, "std": 1.5, "low": 12.0,
                    "high": 17.5, "critical_low": 7.0,
@@ -943,8 +912,6 @@ REFERENCE_RANGES = {
 }
 
 AGE_SPECIFIC_RANGES: dict[str, dict[str, dict]] = {
-    # Term neonate, 48-120 h: Bhutani low-risk zone upper bound ~12 mg/dL;
-    # AAP 2022 phototherapy threshold (>=38 wk, no risk factors) ~15 at 48 h.
     # Physiologic jaundice must not surface as "isolated hyperbilirubinemia".
     "total_bilirubin": {
         "neonate": {"low": 0.2, "high": 12.0, "critical_low": 0.0, "critical_high": 20.0},
@@ -1204,17 +1171,7 @@ def emal_interference_corrections(observations: Mapping[str, ObservationRecord],
 
     return corrections
 
-# ---------------------------------------------------------------------------
-# Measurement uncertainty (v8.1, 2026-10-26). A reported value is one draw from
-# analytical imprecision (CVA) and within-subject biological variation (CVI);
-# the question "is the true/homeostatic value beyond the cut-off?" therefore has
-# a probability, not a yes/no. sigma = value * sqrt(CVA^2 + CVI^2) with the
-# desirable specifications of Ricos et al. (Scand J Clin Lab Invest 1999;
-# 2014 update; EFLM Biological Variation Database 2019). Values are approximate
-# and apply to adults. REPORTING ONLY: no rule, membership or score is changed;
-# the engine stays deterministic and the healthy-sweep contract is untouched.
-# ---------------------------------------------------------------------------
-_BIOLOGICAL_VARIATION_CV: dict[str, tuple[float, float]] = {  # feature: (CVI %, CVA %)
+_BIOLOGICAL_VARIATION_CV: dict[str, tuple[float, float]] = {
     "sodium": (0.6, 0.3), "potassium": (4.6, 2.3), "chloride": (1.2, 0.6), "bicarbonate": (4.8, 2.4),
     "carbon_dioxide": (4.8, 2.4), "glucose": (5.6, 2.8), "fasting_plasma_glucose": (5.6, 2.8),
     "creatinine": (6.0, 2.2), "blood_urea_nitrogen": (12.3, 6.1), "urea": (12.3, 6.1),
@@ -1293,7 +1250,6 @@ def enrich_observations(observations: Mapping[str, ObservationRecord],
         ref = _get_reference(fid, ctx)
         ref, ref_source, ref_note = apply_local_reference(fid, ref, record)
 
-        # Scale cell counts for reference comparison if values were provided in raw /uL
         ref_comp_val = effective_value
         if fid in ("platelet_count", "platelets", "plt") and ref_comp_val > 1000.0:
             ref_comp_val = ref_comp_val / 1000.0
@@ -1336,26 +1292,10 @@ def enrich_observations(observations: Mapping[str, ObservationRecord],
         enriched[fid] = obs
     return enriched
 
-# ---------------------------------------------------------------------------
 # Reference-interval policy (CLSI EP28-A3c vs. clinical decision limits)
-#
-# Two kinds of cut-off exist and must be treated differently:
-#
-#  * CLINICAL DECISION LIMITS (CDL) are fixed by outcome studies and are
-#    method-independent by design (ADA FPG >= 126 mg/dL, HbA1c >= 6.5 %,
 #    WHO anaemia thresholds, KDIGO creatinine / eGFR, ACC/AHA lipid cut
-#    points, universal electrolyte panic values). A local kit's printed
 #    interval must NOT move these. We keep the registry value and only
-#    warn when the laboratory's interval disagrees.
-#
-#  * METHOD-DEPENDENT REFERENCE INTERVALS: enzymes (37 vs 30 degC, with/
-#    without pyridoxal phosphate), immunoassays (TSH, prolactin,
-#    testosterone, tumour markers, troponin 99th percentile, NT-proBNP),
-#    acute-phase proteins. For these the interval printed by the
 #    performing laboratory is the correct one (CLSI EP28-A3c; Tietz). When
-#    the report carries a sane interval we interpret against it and
-#    scale ULN-multiple thresholds accordingly.
-# ---------------------------------------------------------------------------
 CDL_LOCKED_FEATURES: frozenset[str] = frozenset({
     "glucose", "fasting_plasma_glucose", "fasting_glucose",
     "random_glucose", "hba1c", "hemoglobin_a1c", "ogtt_2h_glucose",
@@ -1397,8 +1337,6 @@ METHOD_DEPENDENT_FEATURES: frozenset[str] = frozenset({
     "homocysteine", "lipoprotein_a", "apolipoprotein_b", "apolipoprotein_a1",
 })
 
-# A printed interval is only trusted if it is internally sane and within a
-# plausible factor of the registry interval; otherwise it is most likely an
 # OCR / column-association error and must not recalibrate anything.
 _LOCAL_REF_MIN_RATIO = 0.40
 _LOCAL_REF_MAX_RATIO = 2.50
@@ -1465,13 +1403,11 @@ def apply_local_reference(fid: str, ref: dict[str, Any],
         local["low"] = lo
     if hi is not None:
         local["high"] = hi
-    # keep z-score machinery coherent with the new interval
     if lo is not None and hi is not None:
         local["mean"] = (lo + hi) / 2.0
         local["std"] = max(1e-9, (hi - lo) / 3.92)
     src = "laboratory_reported"
     if policy == "registry_default":
-        # Unknown method dependence: trust the lab interval but say so.
         return local, src, (f"{fid}: interpreted against the performing "
                             f"laboratory's interval {lo}–{hi}.")
     return local, src, (f"{fid}: method-dependent analyte; interpreted "
@@ -1500,7 +1436,6 @@ def _get_reference(fid: str,
     base = dict(REFERENCE_RANGES.get(fid, {}))
     grp = ctx.age_group
 
-    # 1. Pregnancy-specific overrides take highest precedence when pregnant
     if ctx.pregnant:
         preg_table = PREGNANCY_SPECIFIC_RANGES.get(fid)
         if preg_table:
@@ -1511,7 +1446,6 @@ def _get_reference(fid: str,
                 base.update(override)
                 return base
 
-    # 2. Sex-specific ranges are derived from adult populations
     if grp in ("adult", "older_adult", None):
         sex_table = SEX_SPECIFIC_RANGES.get(fid)
         if sex_table:
@@ -1520,13 +1454,11 @@ def _get_reference(fid: str,
             if override is not None:
                 base.update(override)
 
-    # 3. Geriatric overrides for older adults (age >= 65)
     if grp == "older_adult":
         ger_override = GERIATRIC_SPECIFIC_RANGES.get(fid)
         if ger_override:
             base.update(ger_override)
 
-    # 4. Age-specific ranges with hierarchical fallback
     age_table = AGE_SPECIFIC_RANGES.get(fid)
     if age_table:
         override = age_table.get(grp)
@@ -1631,10 +1563,9 @@ def _arzyabi_reliability(record: ObservationRecord) -> float:
     if conf is not None:
         conf = _clamp01(conf)
         if conf < 0.95:
-            # 0.95 -> 1.00, 0.85 -> 0.80, 0.70 -> 0.50, 0.50 -> 0.10
             reliability *= max(0.10, 1.0 - 2.0 * (0.95 - conf))
     if record.metadata.get("review_action") in ("confirmed", "edited"):
-        reliability = max(reliability, 0.95)   # clinician saw and accepted it
+        reliability = max(reliability, 0.95)
     if record.metadata.get("conflict"):
         reliability *= 0.6
     penalty = _float(record.metadata.get("preanalytical_penalty"))
@@ -1705,9 +1636,6 @@ class ClinicalBayesianNetwork:
         "pheochromocytoma": 0.001,
         "hashimoto_thyroiditis": 0.04,
         "sepsis": 0.01,
-        # --- phase-3 additions: syndromes the AI-built registry covers only
-        # with non-specific CBC rules; LRs are literature-anchored and the
-        # pathognomonic marker carries most of the weight. ---
         "acute_pancreatitis": 0.004,
         "rhabdomyolysis": 0.002,
         "multiple_myeloma": 0.001,
@@ -1717,7 +1645,6 @@ class ClinicalBayesianNetwork:
         "nephrotic_syndrome": 0.002,
         "hypercalcemia_of_malignancy_support_pattern": 0.002,
         "diabetic_ketoacidosis": 0.005,
-        # === SUPER-ENHANCED COMPLEX DIAGNOSES ===
         "primary_hyperparathyroidism": 0.008,
         "secondary_hyperparathyroidism": 0.015,
         "diabetic_ketoacidosis": 0.005,
@@ -1750,9 +1677,6 @@ class ClinicalBayesianNetwork:
 
 
     LIKELIHOOD_RATIOS = {
-        # Lipase >= 3x ULN: sensitivity ~90 %, specificity ~95 % (ACG 2024,
-        # revised Atlanta 2012). Amylase less specific. Hypocalcaemia and
-        # leukocytosis are severity markers, not diagnostic.
         "acute_pancreatitis": {
             "lipase_high": {"LR+": 18.0, "LR-": 0.1},
             "amylase_high": {"LR+": 6.0, "LR-": 0.4},
@@ -1760,9 +1684,6 @@ class ClinicalBayesianNetwork:
             "wbc_high": {"LR+": 1.6, "LR-": 0.8},
             "triglycerides_very_high": {"LR+": 3.0, "LR-": 0.95},
         },
-        # CK > 5x ULN defines rhabdomyolysis; CK > 5,000 U/L carries AKI
-        # risk (McMahon score). Hyperkalaemia / hyperphosphataemia /
-        # hypocalcaemia from myocyte lysis; AST rises with CK.
         "rhabdomyolysis": {
             "ck_high": {"LR+": 15.0, "LR-": 0.08},
             "ck_very_high": {"LR+": 40.0, "LR-": 0.3},
@@ -1772,10 +1693,6 @@ class ClinicalBayesianNetwork:
             "ast_high": {"LR+": 2.5, "LR-": 0.6},
             "creatinine_high": {"LR+": 2.0, "LR-": 0.8},
         },
-        # IMWG 2014: M-protein / abnormal FLC ratio plus CRAB. Serum M-spike
-        # >= 3 g/dL or involved:uninvolved FLC >= 100 are myeloma-defining
-        # in context; CRAB features add modest LRs because they are shared
-        # with many other diseases.
         "multiple_myeloma": {
             "m_spike_present": {"LR+": 25.0, "LR-": 0.15},
             "m_spike_high": {"LR+": 60.0, "LR-": 0.5},
@@ -1788,9 +1705,6 @@ class ClinicalBayesianNetwork:
             "albumin_low": {"LR+": 1.6, "LR-": 0.9},
             "esr_high": {"LR+": 3.0, "LR-": 0.6},
         },
-        # WHO 2022 / ELN 2022: >= 20 % blasts (marrow or blood) defines
-        # acute leukaemia; any circulating blasts with bicytopenia is an
-        # urgent haematology referral.
         "acute_myeloid_leukemia": {
             "blasts_high": {"LR+": 80.0, "LR-": 0.2},
             "blasts_present": {"LR+": 15.0, "LR-": 0.1},
@@ -1801,9 +1715,6 @@ class ClinicalBayesianNetwork:
             "ldh_high": {"LR+": 2.5, "LR-": 0.6},
             "uric_acid_high": {"LR+": 2.0, "LR-": 0.8},
         },
-        # D-dimer: sensitivity ~97 %, specificity ~40 % (ESC 2019) - a
-        # negative result excludes, a positive one only keeps PE on the
-        # list. Troponin / BNP mark RV strain, not diagnosis.
         "pulmonary_embolism": {
             "d_dimer_high": {"LR+": 1.7, "LR-": 0.08},
             "d_dimer_very_high": {"LR+": 4.0, "LR-": 0.6},
@@ -1811,8 +1722,6 @@ class ClinicalBayesianNetwork:
             "bnp_high": {"LR+": 1.6, "LR-": 0.8},
             "pco2_low": {"LR+": 1.8, "LR-": 0.8},
         },
-        # Anti-HAV IgM is the diagnostic test (sens/spec > 95 %); ALT
-        # typically > 10x ULN with AST < ALT in acute viral hepatitis.
         "hepatitis_a": {
             "hav_igm_positive": {"LR+": 60.0, "LR-": 0.05},
             "alt_very_high": {"LR+": 6.0, "LR-": 0.3},
@@ -1821,7 +1730,6 @@ class ClinicalBayesianNetwork:
             "bilirubin_high": {"LR+": 2.5, "LR-": 0.6},
         },
         # KDIGO 2021: proteinuria >= 3.5 g/d (UPCR >= 3,000 mg/g) with
-        # hypoalbuminaemia; hyperlipidaemia is secondary.
         "nephrotic_syndrome": {
             "proteinuria_nephrotic": {"LR+": 30.0, "LR-": 0.08},
             "albumin_low": {"LR+": 6.0, "LR-": 0.15},
@@ -1829,8 +1737,6 @@ class ClinicalBayesianNetwork:
             "triglycerides_high": {"LR+": 1.8, "LR-": 0.8},
             "creatinine_high": {"LR+": 1.3, "LR-": 0.9},
         },
-        # PTH-independent hypercalcaemia: suppressed PTH with raised PTHrP
-        # (humoral) or raised calcium with suppressed PTH alone.
         "hypercalcemia_of_malignancy_support_pattern": {
             "calcium_high": {"LR+": 8.0, "LR-": 0.05},
             "pth_low": {"LR+": 12.0, "LR-": 0.1},
@@ -2108,7 +2014,6 @@ class ClinicalBayesianNetwork:
             'wbc_low': {"LR+": 4.0, 'LR-': 0.85},
             'platelets_low': {'LR+': 3.5, "LR-": 0.7},
         },
-        # === COMPLEX DIAGNOSES LRs ===
         "primary_hyperparathyroidism": {
             "calcium_high": {"LR+": 18.0, "LR-": 0.15},
             "pth_high": {"LR+": 22.0, "LR-": 0.12},
@@ -2235,9 +2140,8 @@ class ClinicalBayesianNetwork:
 
 
     FEATURE_TO_FINDING: dict[str, list] = {
-        # --- phase-3 canonical-id findings ---
-        "lipase": [("lipase_high", lambda v: v is not None and v >= 180.0)],          # >= 3x ULN (60 U/L)
-        "amylase": [("amylase_high", lambda v: v is not None and v >= 300.0)],        # >= 3x ULN (100 U/L)
+        "lipase": [("lipase_high", lambda v: v is not None and v >= 180.0)],
+        "amylase": [("amylase_high", lambda v: v is not None and v >= 300.0)],
         "creatine_kinase_total": [("ck_high", lambda v: v is not None and v >= 1000.0),
                                   ("ck_very_high", lambda v: v is not None and v >= 5000.0)],
         "blasts_percent": [("blasts_present", lambda v: v is not None and v > 0.0),
@@ -2415,7 +2319,6 @@ class ClinicalBayesianNetwork:
         'creatine_kinase': [('ck_high', lambda v: v > 200)],
         "troponin_i": [('troponin_high', lambda v: v > 0.04)],
         "anti_ttg_iga": [("ttg_positive", lambda v: v > 10)],
-        # === SUPER-ENHANCED COMPLEX LAB FINDINGS ===
         "anion_gap": [("anion_gap_high", lambda v: v is not None and v > 12), ("anion_gap_very_high", lambda v: v is not None and v > 20)],
         "corrected_anion_gap": [("anion_gap_high", lambda v: v is not None and v > 12)],
         "delta_gap": [("delta_gap_high", lambda v: v is not None and abs(v) > 5)],
@@ -2554,7 +2457,6 @@ class ClinicalBayesianNetwork:
         mcv = val("mean_corpuscular_volume")
         rbc = val("red_blood_cell_count")
         if mcv is not None and rbc is not None and rbc > 0:
-            # Mentzer <13 favours thalassaemia trait, >=13 iron deficiency
             out["mentzer_index"] = mcv / rbc
         iron = val("serum_iron")
         tibc = val("total_iron_binding_capacity")
@@ -2603,10 +2505,6 @@ class ClinicalBayesianNetwork:
                     present = bool(condition(val_for_comp))
                 except (TypeError, ValueError):
                     continue
-                # Grounding to population-adjusted reference interval direction:
-                # Where the preprocessor evaluated the value against an age-, sex-,
-                # geriatric, or pregnancy-specific reference interval, that verdict wins
-                # over static adult threshold lambdas:
                 if (obs.direction in ("low", "high", "normal")
                         and obs.reference_used.get("low") is not None
                         and obs.reference_used.get("high") is not None):
@@ -2626,22 +2524,7 @@ class ClinicalBayesianNetwork:
                 }
         return findings
 
-    # -----------------------------------------------------------------
-    # Regional prior calibration.
-    #
-    # The registry priors are literature (largely North-American /
-    # European) prevalences. Odds multipliers below re-anchor them to a
-    # region. They are PROVISIONAL literature-derived estimates, clearly
-    # not a substitute for locally collected, physician-adjudicated data;
-    # a hospital can replace them with its own by dropping a
-    # `regional_priors.json` next to the registries:
-    #   {"IR": {"thalassemia_trait": 8.0, ...}}
     # Sources for the IR defaults: national beta-thal carrier frequency
-    # ~4-6 % (up to ~10 % Caspian littoral & Persian-Gulf provinces);
-    # G6PD deficiency ~10-15 % of males in Mazandaran/Gilan; high IDA
-    # prevalence in women of reproductive age; FMF carrier enrichment in
-    # north-west; higher vitamin-D deficiency prevalence.
-    # -----------------------------------------------------------------
     REGIONAL_PRIOR_ODDS: dict[str, dict[str, float]] = {
         "IR": {
             "thalassemia_trait": 8.0,
@@ -2680,7 +2563,7 @@ class ClinicalBayesianNetwork:
                             {k: float(v) for k, v in table.items()})
                     logger.info("Regional prior overrides loaded from %s", cand)
                     break
-        except Exception as exc:  # never let a bad file break inference
+        except Exception as exc:
             logger.warning("regional_priors.json ignored: %s", exc)
 
     @staticmethod
@@ -2718,7 +2601,6 @@ class ClinicalBayesianNetwork:
         sex = context.normalized_jensiat()
         if sex:
             odds *= (mods.get("sex") or {}).get(sex, 1.0)
-        # Biological Gating for Bayesian Prior:
         is_preg_dis = any(k in disease_id for k in ("_in_pregnancy", "gestational", "preeclampsia", "eclampsia", "peripartum", "postpartum", "hellp"))
         if is_preg_dis and not context.pregnant:
             return 0.0
@@ -2728,7 +2610,6 @@ class ClinicalBayesianNetwork:
         if sex == "female" and any(k in disease_id for k in ("prostate", "prostatic", "testicular")):
             return 0.0
 
-        # Pediatric Adult-Malignancy & Chronic Degenerative Gating
         if age is not None and age < 18.0:
             if disease_id in (
                 "coronary_artery_disease", "atherosclerosis", "multiple_myeloma",
@@ -2771,9 +2652,6 @@ class ClinicalBayesianNetwork:
         results.sort(key=lambda r: -r.posterior_probability)
         return results
 
-    # Findings produced by routine panels (CBC, BMP, LFT, lipids, TSH) are
-    # measured in nearly everyone and say nothing about why the sample was
-    # drawn. Anything else with a strong LR is a *targeted* test.
     _ROUTINE_FINDING_STEMS: frozenset[str] = frozenset({
         "hemoglobin", "hematocrit", "mcv", "mch", "mchc", "rdw", "platelets", "platelet",
         "wbc", "neutrophils", "lymphocytes", "glucose", "creatinine", "egfr", "bun", "urea",
@@ -2784,12 +2662,6 @@ class ClinicalBayesianNetwork:
     })
     ORDERED_TEST_PRIOR_FLOOR = 0.06
 
-    # Findings that measure (nearly) the same physiological quantity, or are
-    # graded cut-offs of ONE analyte, are not independent evidence. Inside a
-    # cluster the strongest finding counts in full and the rest at 25 %;
-    # across clusters the usual correlated-evidence discount applies. This
-    # replaces a uniform discount that treated "Hb low + Hct low" exactly
-    # like "lipase high + calcium low".
     EVIDENCE_CLUSTERS: tuple[frozenset[str], ...] = (
         frozenset({"hemoglobin_low", "hct_low"}),
         frozenset({"hemoglobin_high", "hct_high", "rbc_high"}),
@@ -2865,9 +2737,6 @@ class ClinicalBayesianNetwork:
             return prior
         max_lr = max(node.likelihood_ratios.values() or [0.0])
         for key, lr in node.likelihood_ratios.items():
-            # Only the node's *targeted* test(s) betray clinical suspicion:
-            # a strong marker (LR+ >= 10) or the node's single most specific
-            # finding (D-dimer for PE). Shared routine findings never do.
             if lr < 10.0 and lr < max_lr:
                 continue
             f = findings.get(key)
@@ -2886,8 +2755,6 @@ class ClinicalBayesianNetwork:
                       else node.prior_probability)
         log_odds = math.log(max(p0, 1e-9) / max(1e-9, 1 - p0))
         base_log_odds = log_odds
-        # per-cluster lists of weighted log-LR contributions (sorted keys so
-        # the result cannot depend on dict iteration order)
         pos_by_cluster: dict[str, list[float]] = {}
         neg_by_cluster: dict[str, list[float]] = {}
         for finding_key in sorted(findings):
@@ -2903,33 +2770,20 @@ class ClinicalBayesianNetwork:
                 severity = finding_data.get('severity')
                 sev = _clamp01(1.0 if severity is None else severity)
 
-                # Severity scales how far a value sits past its cutoff. A
-                # finding that is merely positive still deserves most of
-                # its published LR, so the floor is high; only genuinely
-                # borderline values get pulled toward 1.0.
                 lr = 1.0 + (lr_full - 1.0) * max(sev, 0.80)
                 bucket = pos_by_cluster
             else:
                 lr = node.negative_lrs.get(finding_key, 1.0)
                 bucket = neg_by_cluster
-            # Guard against a registry typo of LR=0 taking the log to -inf.
             lr = max(float(lr), 1e-3)
             bucket.setdefault(self.cluster_of(finding_key), []).append(math.log(lr) * reliability)
 
         w2 = self.WITHIN_CLUSTER_SECONDARY_WEIGHT
 
         def _collapse(contribs: list[float], positive: bool) -> float:
-            # strongest member in full, the rest at the secondary weight
             ordered = sorted(contribs, reverse=positive)
             return ordered[0] + w2 * sum(ordered[1:]) if ordered else 0.0
 
-        # Across clusters findings still correlate (a low MCV and a low
-        # ferritin partly say the same thing), so naive LR multiplication
-        # overshoots. Keep the strongest cluster whole and count every
-        # further supporting cluster at CROSS_CLUSTER_WEIGHT. (The previous
-        # form scaled the SUM by (1+0.62(n-1))/n, which let a weak extra
-        # finding *lower* the posterior - non-monotone; this form is
-        # monotone: adding supporting evidence never reduces the odds.)
         n_positive = len(pos_by_cluster)
         pos_contribs = sorted((_collapse(c, True) for c in pos_by_cluster.values()), reverse=True)
         support = sum(x for x in pos_contribs if x > 0)
@@ -2940,19 +2794,14 @@ class ClinicalBayesianNetwork:
         log_odds += support
         for cl, contribs in neg_by_cluster.items():
             if cl in pos_by_cluster:
-                # a cluster with one positive and one negative graded cut-off
-                # (CK high but not very high) is simply "positive at the lower
                 # grade"; do not also charge the negative LR of the higher grade
                 continue
             log_odds += _collapse(contribs, False)
 
         delta = log_odds - base_log_odds
 
-        # +/-8 log-odds ~ 0.03%..99.97%. Never return a hard 0 or 1.
         delta = max(-8.0, min(8.0, delta))
         final = base_log_odds + delta
-        # exp() overflows past ~709; clamping at 30 keeps the sigmoid in range
-        # while leaving the probability visually saturated anyway.
         posterior = 1.0 / (1.0 + math.exp(-max(-30.0, min(30.0, final))))
         return _clamp01(posterior)
 
@@ -2969,8 +2818,6 @@ class ClinicalBayesianNetwork:
                 dep_prob = prob_map.get(dep_id, 0)
                 if dep_prob > 0.3:
                     boost = 1 + (dep_prob - 0.3) * 0.5
-                    # multiply the ODDS, not the probability: a probability
-                    # scaled by 1.35 can only be clipped, odds stay coherent
                     p = _clamp01(result.posterior_probability)
                     odds = p / max(1e-9, 1.0 - p) * boost
                     result.posterior_probability = min(0.99, odds / (1.0 + odds))
@@ -3009,8 +2856,6 @@ class ClinicalBayesianNetwork:
                     cl = self.cluster_of(finding_key)
                     lead = strongest_in_cluster.get(cl, (0.0, finding_key))[1]
                     if lead != finding_key:
-                        # transparency: this finding is physiologically
-                        # redundant with `lead` and counted at the secondary weight
                         item["correlated_with"] = lead
                         item["effective_weight"] = self.WITHIN_CLUSTER_SECONDARY_WEIGHT
                     factors.append(item)
@@ -3330,7 +3175,6 @@ class AdaptiveFuzzyEngine:
                     {"feature": 'white_blood_cell_count', "type": "high", "threshold": 11, "softness": 11, "weight": 1.0},
                 ],
             ),
-            # === SUPER-ENHANCED COMPLEX RULES ===
             FuzzyGhaede(
                 disease_id="primary_hyperparathyroidism",
                 name="Primary Hyperpara Pattern", weight=1.0,
@@ -3457,7 +3301,6 @@ class AdaptiveFuzzyEngine:
                 f_rel = _clamp01(float(reliability.get(feature_name, 1.0)))
                 min_rel = min(min_rel, f_rel)
 
-                # Scale normalization for CBC counts
                 if feature_name in ("platelet_count", "platelets", "plt") and value > 1000.0:
                     value = value / 1000.0
                 elif feature_name in ("white_blood_cell_count", "wbc", "white_blood_cells") and value > 100.0:
@@ -3469,27 +3312,26 @@ class AdaptiveFuzzyEngine:
                 if threshold is None:
                     threshold = _float(cond.get("softness")) or 0.0
 
-                # Age & Pregnancy threshold adjustments
                 if context:
                     age = context.age_years
                     if age is not None and age < 18.0:
                         if feature_name in ("white_blood_cell_count", "wbc", "white_blood_cells") and cond.get("type") == "high":
                             if age < 28.0 / 365.25:
-                                threshold = 30.0  # Neonatal physiological leukocytosis
+                                threshold = 30.0
                             elif age < 1.0:
-                                threshold = 17.5  # Infant WBC
+                                threshold = 17.5
                             elif age < 6.0:
-                                threshold = 15.5  # Young child WBC
+                                threshold = 15.5
                             elif age < 12.0:
-                                threshold = 13.5  # Child WBC
+                                threshold = 13.5
                             else:
                                 threshold = 11.0
                         elif feature_name in ("hemoglobin", "hgb", "hb") and cond.get("type") == "high":
                             if age < 28.0 / 365.25:
-                                threshold = 22.5  # Neonatal polycythemia cutoff
+                                threshold = 22.5
                         elif feature_name in ("hematocrit", "hct") and cond.get("type") == "high":
                             if age < 28.0 / 365.25:
-                                threshold = 65.0  # Neonatal hematocrit
+                                threshold = 65.0
                         elif feature_name == "alkaline_phosphatase" and cond.get("type") == "high":
                             threshold = 450.0 if age < 6.0 else (850.0 if age < 14.0 else 500.0)
                         elif feature_name in ("phosphate", "phosphorus") and cond.get("type") == "high":
@@ -3500,7 +3342,7 @@ class AdaptiveFuzzyEngine:
                             threshold = 0.55 if age < 6.0 else (0.70 if age < 12.0 else 0.85)
                     elif context.pregnant:
                         if feature_name in ("white_blood_cell_count", "wbc", "white_blood_cells") and cond.get("type") == "high":
-                            threshold = 16.0  # Pregnancy physiological leukocytosis
+                            threshold = 16.0
                         elif feature_name == "alkaline_phosphatase" and cond.get("type") == "high":
                             threshold = 380.0
                         elif feature_name in ("hemoglobin", "hgb", "hb") and cond.get("type") == "low":
@@ -3510,7 +3352,6 @@ class AdaptiveFuzzyEngine:
                         elif feature_name == "creatinine" and cond.get("type") == "high":
                             threshold = 0.80
 
-                # Laboratory-interval calibration for method-dependent analytes
                 lo_ratio, hi_ratio = reference_scale.get(feature_name, (1.0, 1.0))
                 if feature_name in METHOD_DEPENDENT_FEATURES:
                     ratio = hi_ratio if cond.get("type") == "high" else lo_ratio
@@ -3521,8 +3362,6 @@ class AdaptiveFuzzyEngine:
                     value, threshold, cond["type"],
                     softness=_float(cond.get("softness")) or abs(threshold)
                     or 1.0)
-                # Unreliable evidence: shrink membership toward indifference
-                # and reduce its weight in the pattern.
                 m = 0.5 + (m - 0.5) * (0.5 + 0.5 * f_rel)
                 w_eff = (_float(cond.get("weight")) or 1.0) * (0.5 + 0.5 * f_rel)
                 memberships.append((m, w_eff))
@@ -3534,20 +3373,10 @@ class AdaptiveFuzzyEngine:
 
                 tot_w = sum(w for _, w in memberships) or 1.0
                 score = sum(m * w for m, w in memberships) / tot_w
-                # Coverage must be weighted, not a plain count. The celiac
-                # rule carries anti-tTG at weight 2.0 and ferritin at 0.7;
-                # counting heads let a lone low ferritin claim a third of a
-                # serology pattern whose defining test was never ordered.
                 all_w = sum(float(c.get("weight", 1.0))
                             for c in rule.conditions) or 1.0
                 coverage = tot_w / all_w
                 score *= (0.55 + 0.45 * coverage) * rule.weight
-                # Defining-feature gate (audit 2026-10-21): a pattern whose
-                # heaviest condition was never measured (e.g. "microcytosis
-                # without iron deficiency" scored from ferritin + RDW alone,
-                # MCV absent) may only speak at reduced strength; otherwise a
-                # normal panel can earn a fuzzy vote above 0.5 from supportive
-                # context alone.
                 max_w = max((float(c.get("weight", 1.0)) for c in rule.conditions), default=1.0)
                 defining_present = any(
                     float(c.get("weight", 1.0)) >= 0.9 * max_w and c["feature"] in used_features
@@ -3555,13 +3384,7 @@ class AdaptiveFuzzyEngine:
                 if not defining_present:
                     score *= 0.6
                 else:
-                    # ESL extension 7b (NHANES healthy audit 2026-10-22): the defining
-                    # feature was measured and is NOT in the pattern's direction
-                    # (MCV 88 for "microcytosis without iron deficiency"); the
                     # supportive conditions (normal ferritin, normal RDW) must not
-                    # carry the pattern on their own. Scale by the defining
-                    # membership so a clearly-normal defining analyte leaves at
-                    # most 30 % of the supportive score.
                     m_def = max((m for (m, _w), c in zip(memberships, [c for c in rule.conditions if c["feature"] in used_features])
                                  if float(c.get("weight", 1.0)) >= 0.9 * max_w), default=1.0)
                     if m_def < 0.5:
@@ -3840,17 +3663,10 @@ class ClinicalKnowledgeGraph:
              "Opposite thyroid states", "ATA 2023"),
             ("type_1_diabetes", "type_2_diabetes", "excludes", 0.80,
              "Distinct pathophysiology", "ADA 2024"),
-            # Coexisting iron deficiency and thalassaemia trait is
-            # common and clinically important, so these compete for the
-            # explanation without excluding one another.
             ("iron_deficiency_anemia", "thalassemia_trait",
              "differential", 0.70,
              "Distinguish by Mentzer index, RDW and iron studies; "
              "the two can coexist", "BSH 2023"),
-            # Acute-on-chronic is a standard diagnosis, not a
-            # contradiction: an AKI episode does not rule out underlying
-            # CKD, it is often what unmasks it. Modelled as a
-            # differential to distinguish rather than an exclusion.
             ("acute_kidney_injury", "chronic_kidney_disease",
              "differential", 0.60,
              "Distinguish by baseline creatinine and duration; "
@@ -3901,7 +3717,6 @@ class ClinicalKnowledgeGraph:
              'Worsens hyperkalemia', 'KDIGO 2024'),
             ("peptic_ulcer", "nsaids", 'contraindicates', 0.90,
              "GI bleeding risk", "ACG 2023"),
-            # === SUPER-ENHANCED EDGES FOR COMPLEX DIAGNOSES ===
             ("primary_hyperparathyroidism", "hypercalcemia", "causes", 0.85, "PTH-mediated bone resorption", "Endocrine Society 2022"),
             ("primary_hyperparathyroidism", "osteoporosis", "causes", 0.70, "Chronic hypercalcemia → bone loss", "Endocrine Society 2022"),
             ("primary_hyperparathyroidism", "nephrolithiasis", "causes", 0.65, "Hypercalciuria → stones", "Endocrine Society 2022"),
@@ -4028,47 +3843,17 @@ class EnsembleResult:
     interpretation: str = ""
     calibrated_score: Optional[float] = None
     participating_models: list[str] = field(default_factory=list)
-    # --- Evidence-theoretic fields (binary-frame Dempster-Shafer, Yager rule) ---
-    belief: float = 0.0          # Bel(D): mass committed to the disease
-    plausibility: float = 1.0    # Pl(D) = 1 - Bel(not D): upper bound
-    ignorance: float = 1.0       # m(Theta): unassigned + conflict mass
-    conflict: float = 0.0        # pairwise weighted inter-layer conflict
+    belief: float = 0.0
+    plausibility: float = 1.0
+    ignorance: float = 1.0
+    conflict: float = 0.0
     weight_profile: str = "default"
     input_reliability: float = 1.0
-    evidence_state: str = "insufficient"   # supported / refuted / conflicting / insufficient
+    evidence_state: str = "insufficient"
 
 
-# ---------------------------------------------------------------------------
-# Decision-fusion layer
-#
-# Design notes (kept here on purpose - the reviewers asked for the maths):
-#
-#  * Layer weights are DOMAIN PROFILES, not one global table. In toxicology
-#    an explicit threshold rule is the standard of care, in autoimmune
-#    disease the syndromic graph matters more, for tumour markers the prior
-#    (PPV) dominates. One table for 6,700 diseases was a simplification.
-#  * Inter-layer conflict is the WEIGHTED PAIRWISE disagreement, not the
-#    standard deviation of the votes. A std-based metric cannot tell "one
-#    layer dissents from four" apart from a 50/50 split; the pairwise form
-#    can, and it is exactly the conflict mass of Dempster's rule restricted
-#    to singletons.
-#  * In parallel to the point score we run a binary-frame {D, not-D}
-#    evidence combination with Shafer discounting (layer reliability) and
-#    Yager's rule (conflict mass goes to ignorance, NOT renormalised away).
-#    This gives Belief / Plausibility bounds, separates "no evidence" from
-#    "evidence against", and cannot exhibit Zadeh's paradox. On a binary
-#    frame the combination is O(number of layers) per disease, so it costs
-#    nothing at 6,700 diseases.
-#  * Over-conservatism guard: when the rule layer reports that explicit
 #    guideline criteria are met (vote >= RED_FLAG_RULE_VOTE), a low
-#    population prior may lower the score but may not bury the disease
 #    below RED_FLAG_FLOOR_FRACTION of the rule vote. Guideline criteria are
-#    designed with specificity; the prior changes PPV, not whether the
-#    finding must be shown to the clinician.
-#  * Input reliability (OCR confidence, unconfirmed values, conflicting
-#    duplicates) is carried INTO the fusion as an additional discount, so
-#    uncertainty created at the OCR boundary is no longer lost.
-# ---------------------------------------------------------------------------
 
 MODEL_WEIGHTS = {
     "rule_engine":     0.35,
@@ -4080,21 +3865,16 @@ MODEL_WEIGHTS = {
 
 WEIGHT_PROFILES: dict[str, dict[str, float]] = {
     "default": MODEL_WEIGHTS,
-    # explicit cut-offs are the standard of care (TDM, poisoning, panic values)
     "toxicology":   {"rule_engine": 0.55, "bayesian": 0.15, "fuzzy": 0.15,
                      "knowledge_graph": 0.05, "risk_models": 0.10},
     "critical":     {"rule_engine": 0.50, "bayesian": 0.20, "fuzzy": 0.15,
                      "knowledge_graph": 0.05, "risk_models": 0.10},
-    # syndromic, multi-organ patterns: the graph carries real information
     "autoimmune":   {"rule_engine": 0.30, "bayesian": 0.20, "fuzzy": 0.20,
                      "knowledge_graph": 0.25, "risk_models": 0.05},
-    # low-PPV markers: the prior must be allowed to dominate
     "oncology":     {"rule_engine": 0.30, "bayesian": 0.35, "fuzzy": 0.15,
                      "knowledge_graph": 0.15, "risk_models": 0.05},
-    # continuous hormonal axes: boundary behaviour matters
     "endocrine":    {"rule_engine": 0.35, "bayesian": 0.25, "fuzzy": 0.25,
                      "knowledge_graph": 0.10, "risk_models": 0.05},
-    # validated multivariable scores exist (ASCVD, FIB-4, FINDRISC...)
     "cardiometabolic": {"rule_engine": 0.30, "bayesian": 0.20, "fuzzy": 0.15,
                         "knowledge_graph": 0.10, "risk_models": 0.25},
 }
@@ -4112,8 +3892,6 @@ _DOMAIN_TO_PROFILE = (
      "cardiometabolic"),
 )
 
-# Shafer discount factor per layer: how much of its own vote a layer is
-# allowed to commit. No layer is treated as infallible (cap 0.95).
 LAYER_RELIABILITY = {m: min(0.95, w / 0.35) for m, w in MODEL_WEIGHTS.items()}
 
 RED_FLAG_RULE_VOTE = 0.70
@@ -4122,11 +3900,9 @@ MAX_DISCORD_SHRINK = 0.45
 SINGLE_SOURCE_DISCOUNT = 0.70
 RULE_ABSTAIN_BELOW = 0.05
 INSUFFICIENT_CEILING = 0.49
-# ESL extension 11-C (2026-10-23): clinical-context layer scores
-CONTEXT_CONFIRMED_SCORE = 0.80    # documented diagnosis + consistent laboratory support
-CONTEXT_DOCUMENTED_SCORE = 0.49   # documented diagnosis, no support on this panel (below operating point)
+CONTEXT_CONFIRMED_SCORE = 0.80
+CONTEXT_DOCUMENTED_SCORE = 0.49
 
-# documented-history phrase -> registry entity (conservative: only unambiguous phrases)
 _DOCUMENTED_CONDITION_MAP: tuple[tuple[str, str], ...] = (
     (r"insulin.?dependent diabetes|non.?insulin.?dependent|diabetes mellitus|\bdiabet|\bdm2?\b|\bt2dm\b|\bt1dm\b|\biddm\b|\bniddm\b", "diabetes_mellitus"),
     (r"\bchf\b|congestive heart failure|heart failure|\bhfref\b|\bhfpef\b|cardiomyopathy", "heart_failure"),
@@ -4140,7 +3916,6 @@ _DOCUMENTED_CONDITION_MAP: tuple[tuple[str, str], ...] = (
     (r"alcohol (abuse|dependence|use disorder)|alcoholism|\betoh abuse|heavy alcohol", "alcohol_use_disorder"),
     (r"chronic an(a)?emia|an(a)?emia - chronic", "anemia"),
 )
-# home medication -> entity it implies (only drugs with a single dominant indication)
 _DOCUMENTED_MEDICATION_MAP: tuple[tuple[str, str], ...] = (
     (r"\binsulin|novolog|humalog|lantus|glargine|levemir|detemir|aspart|lispro|humulin|novolin|tresiba|degludec|metformin|glucophage|glipizide|glyburide|glimepiride|sitagliptin|januvia|empagliflozin|jardiance|dapagliflozin|farxiga|canagliflozin|liraglutide|victoza|semaglutide|ozempic|pioglitazone", "diabetes_mellitus"),
     (r"levothyroxine|synthroid|levoxyl|euthyrox|liothyronine", "hypothyroidism"),
@@ -4151,7 +3926,6 @@ _DOCUMENTED_MEDICATION_MAP: tuple[tuple[str, str], ...] = (
 )
 
 
-# entities whose laboratory signal counts as support for a documented diagnosis
 _CONTEXT_SUPPORT_ALIASES: dict[str, tuple[str, ...]] = {
     "diabetes_mellitus": ("type_2_diabetes", "type_1_diabetes", "hyperglycemia", "stress_hyperglycemia", "diabetic_ketoacidosis", "hyperosmolar_hyperglycemic_state"),
     "heart_failure": ("heart_failure_bnp_pattern", "heart_failure_ntprobnp_pattern", "heart_failure_decompensated", "acute_heart_failure_support_pattern", "chronic_heart_failure_support_pattern"),
@@ -4205,7 +3979,6 @@ def _documented_entities(ctx: Optional["ClinicalContext"]) -> dict[str, list[str
             if re.search(rx, ml):
                 out.setdefault(did, []).append("med:" + m)
     return out
-# extension 7 (2026-10-22): entities whose executable rules use only ubiquitous analytes (filled at registry load)
 NONSPECIFIC_ONLY_CEILING = 0.35
 _NONSPECIFIC_ONLY_IDS: set = set()
 _NONSPECIFIC_FEATURES = frozenset({
@@ -4234,18 +4007,7 @@ def _collect_nonspecific_only(rules: Mapping[str, Mapping[str, Any]]) -> set:
         acc: set = set(); feats(r.get("expression", {}), acc)
         byd.setdefault(r.get("disease_id", ""), set()).update(acc)
     return {d for d, f in byd.items() if d and f and f <= _NONSPECIFIC_FEATURES}
-# Findings that are real but rarely the reason a panel is being read; they are
-# listed after diseases/syndromes of equal or higher probability unless severe
-# (ESL extension 6, 2026-10-21).  Potassium, sodium, calcium, glucose, lactate,
-# haemoglobin, platelets and WBC findings are NOT in this list.
-# ---------------------------------------------------------------------------
 # v7 C11 (SAP Amendment 15, 2026-10-25): CAUSAL EXPLANATION MAP.
-# A diagnosis may be named as the explanation of a laboratory finding ("hyponatraemia -
-# explained by: ...") ONLY if it is a recognised cause of that finding, or if the
-# analytes that define the finding are part of the constellation that asserted the
-# diagnosis. Before v7 the best-scoring diagnosis of the panel was named generically,
-# which produced clinically absurd attributions (hyponatraemia "explained by"
-# respiratory acidosis, hypochloraemia by diabetes). Entries list the laboratory
 # manifestations each diagnosis is expected to produce; sources are the governing
 # guidelines named per line (pathophysiology as in Harrison's 21e / UpToDate).
 _CE = lambda *xs: frozenset(xs)
@@ -4260,7 +4022,6 @@ _CAUSAL_EXPLANATION: dict = {
     "cardiorenal_syndrome": _RENAL_FX | _CE("elevated_nt_probnp", "myocardial_injury_acuity_undetermined"),
     "hepatorenal_syndrome": _RENAL_FX | _CE("thrombocytopenia", "elevated_inr_pattern", "hypoalbuminemia"),
     "tumor_lysis_syndrome": _CE("hyperuricemia", "hyperkalemia", "hyperphosphatemia", "hypocalcemia", "reduced_gfr_chronicity_undetermined", "acute_kidney_injury", "metabolic_acidosis", "high_anion_gap_metabolic_acidosis"),
-    # Sepsis-3 (Singer JAMA 2016) / Surviving Sepsis 2021: SIRS, leukocytosis/-penia, lactate, thrombocytopenia, AKI, cholestasis, hyperglycaemia
     "sepsis": _CE("systemic_inflammatory_response_syndrome", "quick_sofa_positive", "leukocytosis_pattern", "neutrophilia_pattern", "leukopenia", "lymphopenia",
                   "lactic_acidosis", "metabolic_acidosis", "high_anion_gap_metabolic_acidosis", "thrombocytopenia", "reduced_gfr_chronicity_undetermined",
                   "acute_kidney_injury", "elevated_procalcitonin_pattern", "hypocalcemia", "hypophosphatemia", "hypomagnesemia", "hyponatremia", "hypoalbuminemia",
@@ -4270,7 +4031,6 @@ _CAUSAL_EXPLANATION: dict = {
                         "leukocytosis_pattern", "thrombocytopenia", "acute_kidney_injury", "reduced_gfr_chronicity_undetermined", "myocardial_injury_acuity_undetermined",
                         "hepatocellular_injury_pattern", "elevated_inr_pattern", "hypocalcemia", "hypoxemia"),
     "disseminated_intravascular_coagulation": _CE("thrombocytopenia", "elevated_inr_pattern", "anemia"),
-    # ADA/EASD hyperglycaemic crises 2024
     "diabetic_ketoacidosis": _CE("metabolic_acidosis", "high_anion_gap_metabolic_acidosis", "hyperkalemia", "hypokalemia", "hyponatremia", "hyperchloremia",
                                  "hypophosphatemia", "hypomagnesemia", "leukocytosis_pattern", "hypertriglyceridemia", "diabetes_mellitus", "type_1_diabetes", "type_2_diabetes",
                                  "reduced_gfr_chronicity_undetermined", "hyperuricemia", "hyperosmolar_hyperglycemia_pattern"),
@@ -4279,7 +4039,6 @@ _CAUSAL_EXPLANATION: dict = {
                                             "hyperkalemia", "diabetes_mellitus", "type_2_diabetes", "elevated_serum_osmolality_pattern"),
     "diabetes_mellitus": _CE("hypertriglyceridemia", "hyperosmolar_hyperglycemia_pattern", "hyperuricemia"),
     "type_2_diabetes": _CE("hypertriglyceridemia", "hyperosmolar_hyperglycemia_pattern", "hyperuricemia", "metabolic_dysfunction_associated_steatotic_liver_disease"),
-    # EASL/AASLD cirrhosis: thrombocytopenia (hypersplenism), coagulopathy, hyponatraemia, hypoalbuminaemia, hyperbilirubinaemia, AKI-HRS
     "liver_cirrhosis": _CE("thrombocytopenia", "elevated_inr_pattern", "hyponatremia", "hypoalbuminemia", "anemia", "leukopenia", "hepatocellular_injury_pattern",
                            "cholestatic_pattern", "isolated_hyperbilirubinemia_pattern", "hypokalemia", "hypomagnesemia", "respiratory_alkalosis", "fasting_hypoglycemia",
                            "reduced_gfr_chronicity_undetermined", "hyperammonemia"),
@@ -4290,25 +4049,19 @@ _CAUSAL_EXPLANATION: dict = {
     "alcohol_use_disorder": _CE("hypomagnesemia", "hypophosphatemia", "hypokalemia", "anemia", "thrombocytopenia", "hepatocellular_injury_pattern", "hypertriglyceridemia",
                                 "hyperuricemia", "elevated_mean_corpuscular_volume", "alcoholic_liver_pattern", "fasting_hypoglycemia"),
     "alcoholic_ketoacidosis": _CE("metabolic_acidosis", "high_anion_gap_metabolic_acidosis", "hypokalemia", "hypomagnesemia", "hypophosphatemia", "fasting_hypoglycemia", "lactic_acidosis"),
-    # ESC HF 2021/2023: natriuretic peptides, dilutional hyponatraemia, congestive hepatopathy, cardiorenal
     "heart_failure": _CE("elevated_nt_probnp", "hyponatremia", "reduced_gfr_chronicity_undetermined", "hepatocellular_injury_pattern", "cholestatic_pattern",
                          "myocardial_injury_acuity_undetermined", "hypochloremia", "hypoxemia", "respiratory_acidosis", "cardiorenal_syndrome", "anemia"),
-    # 4th UDMI 2018 / ESC ACS 2023
     "acute_myocardial_infarction": _CE("myocardial_injury_acuity_undetermined", "acute_myocardial_injury", "leukocytosis_pattern", "elevated_nt_probnp", "hyperosmolar_hyperglycemia_pattern"),
-    # rhabdomyolysis (Bosch NEJM 2009): CK, AKI, K, PO4, Ca, urate, AST/ALT from muscle
     "rhabdomyolysis": _CE("acute_kidney_injury", "reduced_gfr_chronicity_undetermined", "hyperkalemia", "hyperphosphatemia", "hypocalcemia", "hyperuricemia",
                           "hepatocellular_injury_pattern", "metabolic_acidosis", "high_anion_gap_metabolic_acidosis", "lactic_acidosis"),
-    # Atlanta 2012 / ACG 2024 pancreatitis
     "acute_pancreatitis": _CE("hypocalcemia", "leukocytosis_pattern", "hyperosmolar_hyperglycemia_pattern", "hypertriglyceridemia", "hypomagnesemia",
                               "acute_kidney_injury", "reduced_gfr_chronicity_undetermined", "cholestatic_pattern", "hepatocellular_injury_pattern", "hypoxemia", "lactic_acidosis",
                               "metabolic_acidosis", "systemic_inflammatory_response_syndrome", "anemia"),
     "alcoholic_pancreatitis": _CE("hypocalcemia", "leukocytosis_pattern", "hypertriglyceridemia", "hypomagnesemia", "hepatocellular_injury_pattern"),
-    # Endocrine Society adrenal insufficiency 2016
     "primary_adrenal_insufficiency": _CE("hyponatremia", "hyperkalemia", "fasting_hypoglycemia", "eosinophilia", "eosinophilia_pattern", "hypercalcemia", "metabolic_acidosis",
                                          "reduced_gfr_chronicity_undetermined", "anemia", "lymphocytosis", "hyponatremia_hyperkalemia_pattern"),
     "adrenal_crisis": _CE("hyponatremia", "hyperkalemia", "fasting_hypoglycemia", "eosinophilia", "hypercalcemia", "reduced_gfr_chronicity_undetermined", "metabolic_acidosis", "hyponatremia_hyperkalemia_pattern"),
     "central_adrenal_insufficiency": _CE("hyponatremia", "fasting_hypoglycemia", "eosinophilia", "anemia"),
-    # ATA hypothyroidism 2014 / myxoedema
     "hypothyroidism": _CE("hypercholesterolemia", "hyponatremia", "anemia", "elevated_mean_corpuscular_volume", "hypertriglyceridemia", "reduced_gfr_chronicity_undetermined"),
     "primary_hypothyroidism": _CE("hypercholesterolemia", "hyponatremia", "anemia", "elevated_mean_corpuscular_volume", "hypertriglyceridemia", "reduced_gfr_chronicity_undetermined"),
     "myxedema_coma": _CE("hyponatremia", "fasting_hypoglycemia", "hypercapnia_pattern", "respiratory_acidosis", "hypoxemia", "hypercholesterolemia", "anemia"),
@@ -4317,7 +4070,6 @@ _CAUSAL_EXPLANATION: dict = {
     # Hyponatraemia guideline (ESE/ERA 2014)
     "siadh": _CE("hyponatremia", "severe_hyponatremia", "low_serum_osmolality_pattern", "high_urine_osmolality_pattern", "hypouricemia"),
     "diabetes_insipidus": _CE("hypernatremia", "severe_hypernatremia", "low_urine_osmolality_pattern", "elevated_serum_osmolality_pattern"),
-    # Haematology
     "hemolytic_anemia": _CE("anemia", "isolated_hyperbilirubinemia_pattern", "elevated_lactate_dehydrogenase", "reticulocytosis"),
     "thrombotic_microangiopathy": _CE("anemia", "thrombocytopenia", "acute_kidney_injury", "reduced_gfr_chronicity_undetermined", "isolated_hyperbilirubinemia_pattern"),
     "thrombotic_thrombocytopenic_purpura": _CE("anemia", "thrombocytopenia", "isolated_hyperbilirubinemia_pattern", "myocardial_injury_acuity_undetermined"),
@@ -4332,7 +4084,6 @@ _CAUSAL_EXPLANATION: dict = {
     "iron_deficiency_anemia": _CE("anemia", "thrombocytosis", "thrombocytosis_pattern", "decreased_mean_corpuscular_volume"),
     "vitamin_b12_deficiency": _CE("anemia", "elevated_mean_corpuscular_volume", "leukopenia", "thrombocytopenia", "elevated_lactate_dehydrogenase"),
     "folate_deficiency": _CE("anemia", "elevated_mean_corpuscular_volume", "leukopenia", "thrombocytopenia"),
-    # Respiratory / blood gas (ATS/ERS, GOLD 2024)
     "copd": _CE("respiratory_acidosis", "hypercapnia_pattern", "hypoxemia", "high_bicarbonate_pattern", "secondary_erythrocytosis", "polycythemia"),
     "respiratory_acidosis": _CE("hypercapnia_pattern", "hypoxemia", "high_bicarbonate_pattern", "hypochloremia"),
     "acute_respiratory_distress_syndrome": _CE("hypoxemia", "respiratory_acidosis", "hypercapnia_pattern", "lactic_acidosis"),
@@ -4343,14 +4094,11 @@ _CAUSAL_EXPLANATION: dict = {
     "lactic_acidosis": _CE("metabolic_acidosis", "high_anion_gap_metabolic_acidosis", "low_bicarbonate_pattern", "low_base_excess_pattern", "hyperkalemia"),
     "metabolic_alkalosis": _CE("high_bicarbonate_pattern", "high_base_excess_pattern", "hypokalemia", "hypochloremia", "hypocalcemia"),
     "respiratory_alkalosis": _CE("hypophosphatemia", "hypocalcemia", "hypokalemia", "hypochloremia"),
-    # Nutrition (ASPEN/ESPEN), refeeding (ASPEN 2020)
     "protein_energy_malnutrition": _CE("hypoalbuminemia", "anemia", "lymphopenia", "hypophosphatemia", "hypomagnesemia", "hypokalemia", "hypocalcemia", "hypocholesterolemia"),
     "refeeding_syndrome": _CE("hypophosphatemia", "severe_hypophosphatemia", "hypokalemia", "hypomagnesemia"),
-    # Calcium / PTH (Endocrine Society)
     "primary_hyperparathyroidism": _CE("hypercalcemia", "hypophosphatemia", "hyperchloremia", "metabolic_acidosis"),
     "hypoparathyroidism": _CE("hypocalcemia", "severe_hypocalcemia", "hyperphosphatemia"),
     "vitamin_d_deficiency": _CE("hypocalcemia", "hypophosphatemia"),
-    # Misc
     "cushing_syndrome": _CE("hypokalemia", "metabolic_alkalosis", "hyperosmolar_hyperglycemia_pattern", "leukocytosis_pattern", "lymphopenia", "eosinopenia", "hypercholesterolemia"),
     "nephrotic_syndrome": _CE("hypoalbuminemia", "hypercholesterolemia", "hypertriglyceridemia", "hyponatremia", "reduced_gfr_chronicity_undetermined"),
     "vitamin_k_deficiency": _CE("elevated_inr_pattern"),
@@ -4358,7 +4106,6 @@ _CAUSAL_EXPLANATION: dict = {
     "acute_cholangitis": _CE("cholestatic_pattern", "isolated_hyperbilirubinemia_pattern", "leukocytosis_pattern", "hepatocellular_injury_pattern", "systemic_inflammatory_response_syndrome", "sepsis"),
     "heat_stroke": _CE("rhabdomyolysis", "hepatocellular_injury_pattern", "acute_kidney_injury", "hyperkalemia", "hypocalcemia", "lactic_acidosis", "elevated_inr_pattern", "thrombocytopenia", "respiratory_alkalosis"),
     "hepatocellular_injury_pattern": _CE("isolated_hyperbilirubinemia_pattern", "elevated_lactate_dehydrogenase"),
-    # ACOG 222 (2020) hypertensive disorders of pregnancy: HELLP - haemolysis, transaminases, platelets; urate rises in pre-eclampsia
     "hellp_syndrome": _CE("thrombocytopenia", "hepatocellular_injury_pattern", "anemia", "hyperuricemia", "isolated_hyperbilirubinemia_pattern", "elevated_lactate_dehydrogenase",
                           "acute_kidney_injury", "reduced_gfr_chronicity_undetermined", "elevated_inr_pattern", "hellp_associated_liver_injury", "thrombotic_microangiopathy"),
     "preeclampsia": _CE("hyperuricemia", "thrombocytopenia", "hepatocellular_injury_pattern", "reduced_gfr_chronicity_undetermined", "elevated_urine_albumin_to_creatinine_ratio"),
@@ -4377,21 +4124,15 @@ _LOW_SALIENCE_FINDINGS = frozenset({
     "hypermagnesemia", "hypomagnesemia", "hypocalcemia", "elevated_anion_gap_pattern",
     "hypoalbuminemia", "hyperglobulinemia", "macrocytosis", "microcytosis",
 })
-SCEPTIC_SOFTNESS = 0.15             # vote this far below the mean = full sceptic
+SCEPTIC_SOFTNESS = 0.15
 DEFINITIONAL_FINDING_SCORE = 0.80
 # Rule-layer vote for a met curated guideline criterion (status
 # `curated_guideline_anchored`), and the minimum ensemble weight share such a
 # disease is treated as carrying: the guideline's own decision limit is not
-# "thin evidence" merely because the Bayesian/fuzzy layers have no prior for
-# that entity.
 GUIDELINE_ANCHOR_RULE_SCORE = 0.92
 GUIDELINE_ANCHOR_MIN_WEIGHT_SHARE = 0.75
 
-# How many differentials a clinician will actually read. The engine
-# ranks everything it knows; this is the point past which a longer
-# list stops informing and starts hiding the answer.
 MAX_DIFFERENTIAL = 25
-
 
 
 def _profile_for_domains(domains: Optional[Iterable[str]]) -> str:
@@ -4435,15 +4176,7 @@ def _yager_binary_combine(masses: Sequence[tuple[float, float, float]]
     spurious certainty (Zadeh's paradox cannot occur). Returns
     (belief, plausibility, ignorance, total_conflict_mass).
     """
-    # n-ary conjunctive combination in closed form on the binary frame.
-    # (A pairwise/sequential Yager fold is NOT associative - moving the
-    # conflict to Theta after each step makes the result depend on the order
-    # in which the layers are visited; the closed form does not.)
     #   q(D)     = prod(d_i + t_i) - prod(t_i)   every source said D or Theta
-    #   q(notD)  = prod(n_i + t_i) - prod(t_i)
-    #   q(Theta) = prod(t_i)
-    #   K        = 1 - q(D) - q(notD) - q(Theta)  (total conflict mass)
-    # Yager: K is handed to Theta instead of being renormalised away.
     if not masses:
         return 0.0, 1.0, 1.0, 0.0
     p_dt = p_nt = p_t = 1.0
@@ -4529,10 +4262,6 @@ def tarkib_ensemble(rule_scores: Mapping[str, float],
         }
         for m in disabled:
             raw[m] = None
-        # The rule layer only ever reports *support* (criterion_not_met is
-        # not scored), so a vanishing rule vote is a heavily discounted
-        # non-specific hit, not a refutation. Treat it as abstention rather
-        # than letting 0.004 drag the mean and plausibility to the floor.
         if raw["rule_engine"] is not None and float(raw["rule_engine"]) < RULE_ABSTAIN_BELOW:
             raw["rule_engine"] = None
         votes = {m: (0.0 if v is None else _clamp01(float(v)))
@@ -4552,18 +4281,13 @@ def tarkib_ensemble(rule_scores: Mapping[str, float],
         norm_w = {m: effective_weights[m] / total_w for m in effective_weights}
         weighted_mean = sum(votes[m] * norm_w[m] for m in votes)
 
-        # Thin evidence must rank below broad evidence of the same strength.
         weight_share = total_w / total_profile_w
         if disease_id in anchored and raw.get("rule_engine") is not None:
             weight_share = max(weight_share, GUIDELINE_ANCHOR_MIN_WEIGHT_SHARE)
-        # A met expert-syndrome constellation is a complete clinical picture:
-        # the probabilistic layers' silence on a multi-analyte definition is
-        # not thin evidence.
         if disease_id in expert and raw.get("rule_engine") is not None:
             weight_share = 1.0
         final_score = weighted_mean * (0.60 + 0.40 * weight_share)
 
-        # --- conflict / confidence ---------------------------------------
         conflict = _pairwise_conflict(
             {m: votes[m] for m in participating}, norm_w)
         rel = _clamp01(float(input_reliability.get(disease_id, 1.0)))
@@ -4571,13 +4295,7 @@ def tarkib_ensemble(rule_scores: Mapping[str, float],
         confidence *= min(1.0, 0.45 + 0.2 * len(participating))
         confidence *= (0.5 + 0.5 * rel)
 
-        # --- discord: pull toward the sceptical cluster ------------------
         if len(participating) > 1 and conflict > 0.0:
-            # Soft sceptic membership (0 at the mean, 1 at mean-0.15 and
-            # below) instead of a hard "below the mean" set, so the score is
-            # continuous in every vote. (A weak rule vote above the abstain
-            # threshold still counts as scepticism here: "criteria evaluated
-            # and barely met" is information; the DST masses stay one-sided.)
             memb = {m: _clamp01((weighted_mean - votes[m]) / SCEPTIC_SOFTNESS)
                     for m in participating}
             w_sc = sum(norm_w[m] * memb[m] for m in memb)
@@ -4587,40 +4305,26 @@ def tarkib_ensemble(rule_scores: Mapping[str, float],
                 shrink = max(0.0, min(MAX_DISCORD_SHRINK, shrink))
                 final_score = (1.0 - shrink) * final_score + shrink * target
 
-        # --- red-flag floor against over-conservatism ---------------------
         rule_vote = votes.get("rule_engine", 0.0)
         if raw.get("rule_engine") is not None and rule_vote >= RED_FLAG_RULE_VOTE:
             final_score = max(final_score,
                               RED_FLAG_FLOOR_FRACTION * rule_vote)
-        # A met expert-syndrome constellation is the definition of the
-        # entity; a low prior-driven Bayesian/fuzzy vote on a subset of its
-        # analytes is not a refutation. Floor at 90% of the constellation vote.
         expert_hit = disease_id in expert and raw.get("rule_engine") is not None
         if expert_hit:
             final_score = max(final_score, 0.90 * rule_vote)
-            # v6.1: an ANCHOR-strength constellation is the published decision
-            # limit itself (sodium 121 mmol/L *is* hyponatraemia). It is not a
-            # hypothesis to be diluted by a prior-driven layer, and must never
-            # rank below a weaker single-vote finding that happened to have no
-            # corroborating layer: floor at the full constellation vote.
             if disease_id in definitional:
                 final_score = max(final_score, rule_vote)
 
-        # --- evidence theory: Belief / Plausibility -----------------------
         masses = []
         for m in participating:
             alpha = LAYER_RELIABILITY.get(m, 0.5) * (0.5 + 0.5 * rel)
-            # profile re-weighting also moves the discount
             alpha *= min(1.0, weights[m] / max(1e-9, MODEL_WEIGHTS[m]))
             # One uncorroborated source cannot by itself reach "supported"
-            # unless its vote is red-flag strong: part of its mass is kept
-            # as ignorance until a second layer speaks.
             if len(participating) == 1 and disease_id not in anchored:
                 alpha *= SINGLE_SOURCE_DISCOUNT
             alpha = _clamp01(alpha)
             v = votes[m]
             if m == "rule_engine":
-                # one-sided evidence: absence of a met criterion is ignorance
                 masses.append((alpha * v, 0.0, 1.0 - alpha * v))
             else:
                 masses.append((alpha * v, alpha * (1.0 - v), 1.0 - alpha))
@@ -4629,23 +4333,13 @@ def tarkib_ensemble(rule_scores: Mapping[str, float],
         if expert_hit and state in ("conflicting", "weak", "insufficient"):
             state = "supported"
 
-        # A disease carried by ONE weak layer with everything else silent is
-        # mostly ignorance; let that show in the point score as well.
         if len(participating) == 1 and participating[0] != "rule_engine":
             final_score = min(final_score, 0.5 * (belief + plaus))
         # "Insufficient" evidence (one uncorroborated non-anchored source,
         # belief < 0.5, wide ignorance) must not be displayed as a >= 0.5
-        # assertion: 0.5 is the operating point at which the engine claims
-        # an entity (UCI HCV held-out run 2026-10-21: PBC 0.555 from ALP+GGT
-        # in 15 healthy donors). The rank order among insufficient items is
-        # preserved; only the ceiling moves.
-        # Pure laboratory findings (hyperuricaemia, hypercholesterolaemia)
-        # are exempt: a single rule on the defining analyte IS the finding.
         if (state == "insufficient" and len(participating) == 1 and not expert_hit
                 and disease_id not in anchored and disease_id not in findings):
             final_score = min(final_score, INSUFFICIENT_CEILING)
-        # extension 7 (2026-10-22): a disease whose only rules read ubiquitous analytes cannot be established
-        # from a panel (pellagra from albumin, frailty from albumin + Hb); findings and *_pattern entities exempt.
         if (disease_id in _NONSPECIFIC_ONLY_IDS and not expert_hit and disease_id not in anchored
                 and disease_id not in findings and not disease_id.endswith("_pattern") and not disease_id.startswith("co_")):
             final_score = min(final_score, NONSPECIFIC_ONLY_CEILING)
@@ -4668,7 +4362,6 @@ def tarkib_ensemble(rule_scores: Mapping[str, float],
             input_reliability=rel,
             evidence_state=state,
         ))
-    # extension 7 (2026-10-22): co_<a>_with_<b> where a and b are the same analyte family carries no information
     def _self_pair(d: str) -> bool:
         if not d.startswith("co_") or "_with_" not in d:
             return False
@@ -4708,14 +4401,11 @@ def _evidence_abnormal(evidence, feature_id) -> bool:
             if not (lo <= aval <= hi):
                 return True
             continue
-        return True  # no reference available: keep previous behaviour
+        return True
     return False
 
 
 def _calibrate(score: float, confidence: float) -> float:
-    # FIX A32/A33: shrinking every low-confidence score toward 0.5 inflated
-    # weak evidence (0.1 -> ~0.42), flipping "unlikely" to "pending" in
-    # _tabaghebandi_vaziat. Low scores now shrink toward 0 instead.
     if confidence < 0.3:
         if score < 0.5:
             return score * (confidence / 0.3)
@@ -4738,7 +4428,6 @@ def _tafsir(score: float, confidence: float,
         return 'کم‌احتمال'
 
 
-
 @dataclass
 class DifferentialEntry:
     disease_id: str
@@ -4758,8 +4447,6 @@ class DifferentialEntry:
     conflict: float = 0.0
     evidence_state: str = "insufficient"
     weight_profile: str = "default"
-    # Set on laboratory-finding entities ("anaemia", "polycythemia") when a
-    # diagnosis higher in the list accounts for them.
     explained_by: Optional[str] = None
 
 
@@ -4892,9 +4579,6 @@ class MultiStageReasoner:
     def __init__(self, knowledge_graph: ClinicalKnowledgeGraph):
         self.kg = knowledge_graph
 
-    # Registry entities that are the same diagnosis under two ids. The
-    # evidence of the alias is folded into the canonical entry (max per
-    # model), so a syndrome never competes against its own duplicate.
     DISEASE_ID_ALIASES: dict[str, str] = {
         "hyperglycemic_hyperosmolar_state": "hyperosmolar_hyperglycemic_state",
         "primary_adrenal_insufficiency_addison": "addison_disease",
@@ -4918,7 +4602,6 @@ class MultiStageReasoner:
         "paraneoplastic_hypercalcemia_support_pattern": "hypercalcemia_of_malignancy_support_pattern",
         "biliary_obstruction_choledocholithiasis": "cholestasis",
     }
-    # Pattern twins (X_pattern -> X) are derived from the registry at init.
     _entity_kind: dict[str, str] = {}
     _twin_map: dict[str, str] = {}
 
@@ -4953,16 +4636,12 @@ class MultiStageReasoner:
         by_id: dict[str, EnsembleResult] = {}
         order: list[str] = []
         merged: set[str] = set()
-        # canonical entries first so an alias is always folded *into* the
-        # real entity rather than the other way round
         ordered = sorted(results, key=lambda r: self._canonical_id(r.disease_id) != r.disease_id)
         for r in ordered:
             canon = self._canonical_id(r.disease_id)
             target = by_id.get(canon)
             if target is None:
                 if canon != r.disease_id:
-                    # canonical entity not scored by any layer: promote the
-                    # alias under the canonical id so one name is shown.
                     try:
                         r.disease_id = canon
                     except Exception:
@@ -4972,7 +4651,6 @@ class MultiStageReasoner:
                 continue
             if target is r:
                 continue
-            # fold evidence: per-model max, keep the stronger fusion
             votes = dict(target.votes or {})
             for m, v in (r.votes or {}).items():
                 votes[m] = max(votes.get(m, 0.0), v)
@@ -4980,8 +4658,6 @@ class MultiStageReasoner:
             part = set(target.participating_models or ()) | set(r.participating_models or ())
             target.participating_models = sorted(part)
             merged.add(canon)
-        # Re-run the fusion on the folded votes so the merged entity gets a
-        # proper combined score (not just the better of the two halves).
         for canon in merged:
             t = by_id[canon]
             v = t.votes or {}
@@ -5052,9 +4728,6 @@ class MultiStageReasoner:
         by_id = {r.disease_id: r for r in scored}
         for did, srcs in doc.items():
             r = by_id.get(did)
-            # laboratory support may sit on a related entity (type_2_diabetes for diabetes_mellitus,
-            # a BNP pattern for heart failure); the documented entity is then confirmed and the
-            # related entity is left as scored.
             _alias_support = max([by_id[a].final_score for a in _CONTEXT_SUPPORT_ALIASES.get(did, ()) if a in by_id] or [0.0])
             if r is None and _alias_support >= 0.30:
                 r = EnsembleResult(disease_id=did, final_score=_alias_support, votes={"clinical_context": CONTEXT_CONFIRMED_SCORE}, confidence=0.5,
@@ -5070,9 +4743,6 @@ class MultiStageReasoner:
                 if r.evidence_state in ("insufficient", "weak"):
                     r.evidence_state = "supported"
             else:
-                # A diagnosis implied only by a medication (metformin -> diabetes) is NOT listed
-                # without laboratory support: the drug has other indications (PCOS, prediabetes).
-                # An empty panel is not interpreted at all.
                 if not observations or all(str(x).startswith("med:") for x in srcs):
                     self._context_applied.append({"disease_id": did, "action": "not_listed_unsupported", "source": sorted(set(srcs))[:4], "probability": None})
                     continue
@@ -5110,7 +4780,7 @@ class MultiStageReasoner:
         pth = self._val(observations, "intact_parathyroid_hormone", "parathyroid_hormone")
         uacr = self._val(observations, "urine_albumin_to_creatinine_ratio")
         egfr = self._val(observations, "egfr_ckd_epi_creatinine", "egfr")
-        if egfr is None:  # extension 7 (2026-10-22): CKD-EPI 2021 from creatinine when eGFR is not reported
+        if egfr is None:
             try:
                 _cr = self._val(observations, "creatinine"); _ctx = getattr(self, "_ctx_for_renal", None)
                 _age = float(getattr(_ctx, "age_years", None)) if _ctx is not None and getattr(_ctx, "age_years", None) is not None else None
@@ -5130,15 +4800,8 @@ class MultiStageReasoner:
             d for d in ("diabetic_ketoacidosis", "rhabdomyolysis", "sepsis",
                         "hyperosmolar_hyperglycemic_state", "tumor_lysis_syndrome")
             if d in by_id and by_id[d].final_score >= 0.45
-            # An acute cause may only "explain away" the creatinine when
-            # its own evidence is corroborated. A sepsis / DKA entry that
-            # is merely 'insufficient' (prior-driven, no lactate, no
             # ketones) must not cap a strongly supported renal entry
-            # beneath it. Found in the retrospective pipeline dry-run.
             and getattr(by_id[d], "evidence_state", "") == "supported"]
-        # Hyperkalaemia + hyperphosphataemia with anaemia, high PTH and
-        # albuminuria is CKD-MBD, not tumour lysis: without a malignancy
-        # context TLS cannot explain the creatinine and is itself capped.
         if chronic_markers >= 2:
             if "tumor_lysis_syndrome" in acute_cause:
                 acute_cause.remove("tumor_lysis_syndrome")
@@ -5149,8 +4812,6 @@ class MultiStageReasoner:
         if ck is not None and ck >= 5000.0:
             acute_cause.append("rhabdomyolysis")
         if acute_cause:
-            # creatinine is explained; the renal entry is a complication,
-            # listed beneath the cause
             cause_score = max(by_id[d].final_score for d in acute_cause if d in by_id) \
                 if any(d in by_id for d in acute_cause) else 0.6
             if aki is not None:
@@ -5158,7 +4819,6 @@ class MultiStageReasoner:
             if ckd is not None and chronic_markers < 2:  # extension 7: two chronicity markers keep CKD on the list (KDIGO 2024)
                 ckd.final_score = min(ckd.final_score, cause_score * 0.6)
             return
-        # ESL extension 11 (2026-10-23): chronicity resolved by a creatinine TRAJECTORY
         # (KDIGO dynamic criteria) and/or by DOCUMENTED chronic kidney disease.
         _fired = {h.get("syndrome_id") for h in (getattr(self, "_esl_hits", None) or []) if not h.get("guard")}
         _dyn_aki = bool(_fired & {"aki_kdigo_creatinine_rise", "aki_recovering_creatinine_fall"})
@@ -5170,17 +4830,13 @@ class MultiStageReasoner:
         _doc_dialysis = any("dialys" in str(s).lower() or "esrd" in str(s).lower() for s in _doc.get("chronic_kidney_disease", ()))
         if aki is not None and ckd is not None and (_dyn_aki or _doc_ckd):
             if _dyn_aki and (_doc_ckd or chronic_markers >= 2):
-                pass  # AKI on CKD: both established, neither capped
+                pass
             elif _dyn_aki:
                 ckd.final_score = min(ckd.final_score, aki.final_score * 0.7)
                 # v7 C12 (2026-10-25): a PRESUMPTIVE AKI (KDIGO imputed baseline in acute care) with
-                # no chronicity marker at all and no documented CKD leaves chronic disease
-                # undemonstrable from this panel - it is kept as a sub-threshold possibility
-                # (symmetric with "documented CKD, no trajectory: AKI <= 0.49"), not as a third
-                # renal entry competing in the first five lines next to AKI and the reduced-GFR finding.
                 if _imp_aki and chronic_markers == 0 and not _doc_ckd:
                     ckd.final_score = min(ckd.final_score, 0.49)
-            else:  # documented CKD, no dynamic rise on this panel
+            else:
                 if ckd.final_score < aki.final_score:
                     ckd.final_score = max(ckd.final_score, aki.final_score * 0.95)
                 aki.final_score = min(aki.final_score, ckd.final_score * (0.5 if _doc_dialysis else 0.75))
@@ -5190,18 +4846,12 @@ class MultiStageReasoner:
             return
         if aki is not None and ckd is not None:
             if chronic_markers >= 2:
-                # ESL extension 6 (2026-10-21): chronicity markers transfer the
                 # renal signal to CKD (KDIGO CKD 2024) instead of erasing it.
                 if ckd.final_score < aki.final_score:
                     ckd.final_score = max(ckd.final_score, aki.final_score * 0.95)
                 aki.final_score = min(aki.final_score, ckd.final_score * 0.75)
             elif chronic_markers == 0 and (egfr is None or egfr >= 15):
-                # nothing says chronic; nothing says acute either.
-                # ESL extension 10 (2026-10-23): the ceiling expresses uncertainty about
-                # CHRONICITY, not about the presence of renal impairment, which is as
                 # certain as the eGFR is low (KDIGO 2012/2024 G-staging). A G4 kidney is
-                # impaired whatever its time course, so the undetermined-chronicity
-                # ceiling is graded by severity instead of one flat 0.62.
                 if egfr is None or egfr >= 45:
                     cap = 0.62
                 elif egfr >= 30:
@@ -5213,7 +4863,7 @@ class MultiStageReasoner:
             else:
                 _anch = getattr(self, "_expert_anchored", ()) or ()
                 if "chronic_kidney_disease" in _anch and "acute_kidney_injury" not in _anch:
-                    pass  # ESL extension 6d / 7: expert-anchored CKD stays; AKI is left as scored (chronicity undetermined)
+                    pass
                 else:
                     ckd.final_score = min(ckd.final_score, aki.final_score * 0.9)
 
@@ -5230,7 +4880,7 @@ class MultiStageReasoner:
             return scored
         direct = self._val(observations, "direct_bilirubin", "bilirubin_direct")
         if direct is not None and direct > 1.0:
-            return scored  # conjugated - never physiologic
+            return scored
         kept = []
         for r in scored:
             did = r.disease_id
@@ -5248,33 +4898,21 @@ class MultiStageReasoner:
         context: Optional[ClinicalContext] = None,
     ) -> list[DifferentialEntry]:
         ensemble_results = self._merge_aliases(list(ensemble_results))
-        # A fixed 0.05 floor was fine against a handful of diseases, but it
-        # keeps roughly half of whatever the network knows: on a registry of
-        # six thousand it returns some three thousand "differentials", which
-        # is a data dump rather than a differential. Keep the absolute floor
-        # as a sanity bound, then take the leading edge of the ranking -
-        # anything an order of magnitude below the top candidate is noise no
-        # clinician would work through.
         scored = [r for r in ensemble_results
                   if r.final_score > 0.05 and r.participating_models]
 
-        # Active Evidence Filter:
-        # Require at least one model to have real active evidence (vote >= 0.18) to prevent
-        # passive background prior noise from surfacing false differentials
         scored = [
             r for r in scored
             if any(v >= 0.18 for v in r.votes.values())
         ]
 
         if context is not None:
-            # 1. Pregnancy condition gating:
             if not getattr(context, "pregnant", False):
                 scored = [
                     r for r in scored
                     if not any(k in r.disease_id for k in ("_in_pregnancy", "gestational", "preeclampsia", "eclampsia"))
                 ]
 
-            # 2. Pediatric age gating (< 18 years):
             if getattr(context, "age_years", None) is not None and float(context.age_years) < 18.0:
                 ped_blocked = {
                     "coronary_artery_disease", "atherosclerosis", "multiple_myeloma",
@@ -5283,19 +4921,17 @@ class MultiStageReasoner:
                 }
                 scored = [r for r in scored if r.disease_id not in ped_blocked]
 
-            # 3. Sex anatomical gating:
             sex = context.normalized_jensiat()
             if sex == "female":
                 scored = [r for r in scored if not any(k in r.disease_id for k in ("prostate", "prostatic", "testicular"))]
             elif sex == "male":
                 scored = [r for r in scored if not any(k in r.disease_id for k in ("ovarian", "uterine", "cervical", "endometrio", "preeclampsia"))]
 
-        # Demote synthetic pairwise combinations (co_elevated_ / co_decreased_) so real clinical diseases take priority
         for item in scored:
             if item.disease_id.startswith("co_elevated_") or item.disease_id.startswith("co_decreased_"):
                 item.final_score *= 0.65
-        self._ctx_for_renal = context  # extension 7 (2026-10-22)
-        self._ctx_documented = _documented_entities(context)  # ESL ext 11-C (2026-10-23)
+        self._ctx_for_renal = context
+        self._ctx_documented = _documented_entities(context)
         self._apply_renal_chronicity(scored, observations)
         scored = self._apply_clinical_context(scored, observations, context)
         scored = self._neonatal_guard(scored, observations, context)
@@ -5325,12 +4961,6 @@ class MultiStageReasoner:
                     for e in exclusions]
             filtered.append(candidate)
 
-        # A parent term absorbs evidence from all of its children, so
-        # "anaemia" always outscores "anaemia of chronic disease" and the
-        # ranking degenerates into naming the category instead of the
-        # diagnosis. When a specific child is well supported, demote the
-        # umbrella term below it: the clinician already knows the patient is
-        # anaemic, what they need is which anaemia.
         by_id = {c.disease_id: c for c in filtered}
         parents = dict(_DISEASE_PARENT)
         parents.update(getattr(self, "_registry_parents", None) or {})
@@ -5338,48 +4968,27 @@ class MultiStageReasoner:
             kid, mother = by_id.get(child), by_id.get(parent)
             if kid is None or mother is None:
                 continue
-            # Only a child whose own evidence is corroborated may demote the
-            # umbrella term. A sub-type carried by thin / insufficient
             # evidence (e.g. Graves' without TRAb) must not pull a strongly
-            # supported parent (overt hyperthyroidism, TSH + FT4) below
             # unrelated single-source candidates. Found in the retrospective
-            # pipeline dry-run (fixture case: parent rank 1 -> 6).
             if kid.final_score >= 0.30 and getattr(kid, "evidence_state", "") == "supported":
                 mother.final_score = min(
                     mother.final_score, kid.final_score * 0.85)
 
-        # Demote synthetic pairwise combinations (co_elevated_ / co_decreased_) so real clinical diseases take priority
         for item in filtered:
             if item.disease_id.startswith("co_elevated_") or item.disease_id.startswith("co_decreased_"):
                 item.final_score *= 0.82
 
-        # A laboratory finding ("hyperglycemia", "hypertriglyceridemia") is
-        # a fact the clinician can already read off the sheet. When a real
-        # diagnosis that accounts for it is supported, the finding is listed
-        # just beneath that diagnosis rather than above it.
-        # A diagnosis counts as "accounting for" the findings when it is
-        # supported, or when at least two layers vote for it strongly even
-        # if a third dissents (a specific marker the rule base lacks).
         anchored = set(getattr(self, "_guideline_anchored", ()) or ())
 
         def _accounts(c: EnsembleResult) -> bool:
             if self._is_finding(c.disease_id):
                 return False
-            # Nothing "accounts for" a finding unless at least one rule of
-            # that diagnosis actually fired on this panel; a prior-driven
             # Bayesian/fuzzy vote alone must not bury a finding that a rule
-            # established (TG 2100 is severe hypertriglyceridaemia whatever
-            # the umbrella "hyperlipidaemia" prior says).
             if float((c.votes or {}).get("rule_engine", 0.0) or 0.0) < 0.30:
                 return False
-            # v6: a diagnosis whose own evidence is 'insufficient' and that sits
-            # below 0.6 (AKI from one creatinine in a community panel) does not
-            # bury the certain finding (reduced GFR) beneath itself.
             if getattr(c, "evidence_state", "") == "insufficient" and c.final_score < 0.6:
                 return False
             # A met curated guideline criterion accounts for the findings it
-            # is built from even when the probabilistic layers have no prior
-            # for the entity (they vote 0, not against).
             if c.disease_id in anchored and c.final_score >= 0.45:
                 return True
             if c.evidence_state == "supported":
@@ -5388,33 +4997,15 @@ class MultiStageReasoner:
             return strong >= 2 and c.final_score >= 0.45
 
         explained_by: dict[str, str] = {}
-        # Critical-severity findings established by an ESL severity anchor
-        # (K >= 6.5, Na < 120 / >= 160, Ca >= 14, glucose < 40, pH < 7.20,
-        # lactate >= 4 ...) are life-threatening in their own right and are
-        # never listed beneath the diagnosis that "explains" them (MIMIC-IV
-        # demo error analysis 2026-10-21: K 7.4 demoted under AKI).
         critical_findings: set[str] = set()
         for _h in (getattr(self, "_esl_hits", None) or []):
             _sid = str(_h.get("syndrome_id", ""))
             if _h.get("strength") == "anchor" and (_sid.endswith("_severe") or _sid.endswith("_crisis") or _sid in ("severe_acidemia", "hypoglycemia_level3", "lactic_acidosis_definitional")):
                 critical_findings.update(_h.get("dx", ()))
             elif _sid in ("severe_neutropenia", "agranulocytosis", "profound_neutropenia") and not _h.get("guard"):
-                # v6 C8 (2026-10-25): ANC < 0.5 x10^9/L is a critical value (febrile-neutropenia risk; IDSA 2010 / ASCO-IDSA 2018)
-                # whatever the syndrome strength - never listed beneath the cytopenia pattern that "accounts" for it.
                 critical_findings.update(_h.get("dx", ()))
             elif (_h.get("strength") in ("anchor", "strong") and not _h.get("guard") and _h.get("dx")
                   and (not self._is_finding(_h["dx"][0]) or _h.get("strength") == "anchor")):
-                # v6: a finding asserted at ANCHOR strength is a critical value
-                # (INR >= 4.5, K >= 6.5, ...) and keeps its place; a finding asserted
-                # at 'strong' (reduced GFR from one creatinine, moderate anaemia) is
-                # listed beneath the diagnosis that accounts for it.
-                # the primary entity of an expert-syndrome hit (e.g. thiazide
-                # hyponatraemia at 0.95) is likewise never buried under a
-                # weaker "accounting" diagnosis such as a 0.5 SIADH prior.
-                # v6: this protection is for DIAGNOSES; a laboratory finding
-                # asserted by the syndrome layer (reduced GFR, myocardial
-                # injury) is a fact the clinician can read off the sheet and
-                # is listed beneath the diagnosis that accounts for it.
                 critical_findings.add(_h["dx"][0])
         accounting = [c for c in filtered if _accounts(c)]
         if os.environ.get("HG_DEBUG_DEMOTE"):
@@ -5422,14 +5013,9 @@ class MultiStageReasoner:
                   "accounting=", [(c.disease_id, round(c.final_score, 3)) for c in accounting],
                   "pre=", [(c.disease_id, round(c.final_score, 3)) for c in sorted(filtered, key=lambda c: -c.final_score)[:6]])
         # v6 (Amendment 14): a finding asserted by an expert-syndrome hit at anchor/strong
-        # strength whose own evidence is NOT covered by the evidence of any accounting
-        # diagnosis (IgG4 620 mg/dL next to an eosinophilia-driven strongyloidiasis) is not
-        # "accounted for" and keeps its score; coverage is set-theoretic on the fired features.
         _esl_asserted_findings: dict[str, set[str]] = {}
         for _h in (getattr(self, "_esl_hits", None) or []):
             if _h.get("strength") in ("anchor", "strong") and not _h.get("guard"):
-                # analytes behind the REQUIRED groups of the syndrome (creatinine for
-                # reduced GFR), not its optional supporting leaves
                 _hf = set(_h.get("features") or ())
                 _rf: set[str] = set()
                 for _gk in (_h.get("required_met") or ()):
@@ -5447,7 +5033,6 @@ class MultiStageReasoner:
         _tf0 = getattr(self, "_disease_true_feats", {}) or {}
         _CR_EQ = {"creatinine", "egfr_ckd_epi_creatinine", "egfr", "estimated_gfr", "cystatin_c"}
         def _norm_feats(fs) -> set[str]:
-            # eGFR is a function of creatinine: either analyte covers the other
             return {"creatinine" if f in _CR_EQ else f for f in fs}
         def _covering_dx(did: str):
             """Best accounting diagnosis whose own fired evidence contains the analytes behind the
@@ -5456,8 +5041,6 @@ class MultiStageReasoner:
             _f = _norm_feats(_esl_asserted_findings.get(did) or set())
             if not _f:
                 return None
-            # a diagnosis below the 0.6 operating band (a 0.57 CKD from chronicity clues)
-            # is not asserted firmly enough to account for a strong finding
             _cov = [c for c in accounting if c.final_score >= 0.6 and _f <= _norm_feats(_tf0.get(c.disease_id, ()))]
             return max(_cov, key=lambda c: c.final_score) if _cov else None
         def _causal_dx(did: str, min_score: float):
@@ -5469,24 +5052,13 @@ class MultiStageReasoner:
                                and _norm_feats(_esl_asserted_findings.get(did) or set()) <= _norm_feats(_tf0.get(c.disease_id, ()))))]
             return max(_cands, key=lambda c: c.final_score) if _cands else None
         def _uncovered_finding(did: str) -> bool:
-            # 13.x behaviour restored (attribution runs 2026-10-24: the exemption had no effect on
-            # the blood-gas findings, which come from the rule layer, but its removal buried
-            # moderate/severe anaemia, hyponatraemia, hyperkalaemia beneath unrelated diagnoses):
-            # a finding asserted by an anchor/strong expert syndrome keeps its score unless a
-            # diagnosis whose evidence covers the syndrome's required analytes accounts for it.
             _f = _esl_asserted_findings.get(did) or set()
             return bool(_f) and _covering_dx(did) is None
         if accounting:
             best = max(accounting, key=lambda c: c.final_score)
             best_dx = best.final_score
             for item in filtered:
-                # an uncovered strong finding behaves like a critical finding: never beneath
-                # the explaining diagnosis, but tied with a well-supported one (>= 0.80) so the
-                # sort lists the diagnosis first
                 if self._is_finding(item.disease_id) and (item.disease_id in critical_findings or _uncovered_finding(item.disease_id)):
-                    # tie with (never beneath) a well-supported explaining
-                    # diagnosis; the sort key then lists the diagnosis first
-                    # v7 C11: only a diagnosis that can cause the finding is named / ties it
                     _cb = _causal_dx(item.disease_id, 0.80)
                     if _cb is not None and item.final_score > _cb.final_score:
                         explained_by[item.disease_id] = _cb.disease_id
@@ -5494,34 +5066,14 @@ class MultiStageReasoner:
                     continue
                 if self._is_finding(item.disease_id):
                     _cov = _covering_dx(item.disease_id)
-                    # v7 C11: a finding is listed beneath a diagnosis only when that diagnosis
-                    # covers its defining analytes OR is a recognised cause of it; otherwise the
-                    # finding is an independent fact of the panel and keeps its own score.
                     _cau = _causal_dx(item.disease_id, 0.6)
-                    # the best-supported RELATED diagnosis (analyte coverage or recognised cause) is the explainer;
-                    # a weakly supported explainer (< 0.80) does not pull a better-established finding beneath it
-                    # (eICU dev: Hb 7.3 anaemia capped to 0.58 under a 0.61 'acute chest syndrome' leaf while a 0.97
-                    # cirrhosis stood above) - the finding then stands on its own.
                     _by = max([c for c in (_cov, _cau) if c is not None], key=lambda c: c.final_score, default=None)
                     if _by is not None and _by is not _cov and _by.final_score < 0.80 and item.final_score > _by.final_score * 0.95:
-                        _by = _cov  # a covering diagnosis (same analytes, e.g. AKI for the reduced-GFR finding) always explains
+                        _by = _cov
                     if _by is None:
-                        # no recognised cause in the panel: the finding is NOT attributed to anything,
-                        # but a well-supported diagnosis (>= 0.80) is still listed first - the finding
-                        # ties with it (sort key: diagnosis before finding) instead of being capped
-                        # to 95 % of an unrelated entity.
                         if best_dx >= 0.80 and item.final_score > best_dx:
                             item.final_score = best_dx
                         continue
-                    # v8.1 (2026-10-26, property test P3): the "a weakly supported explainer
-                    # (< 0.80) does not pull a better-established finding beneath it" rule above
-                    # applied only to CAUSAL explainers; an analyte-COVERING explainer below 0.80
-                    # still capped the finding. Hence creatinine 1.6 -> 2.2 mg/dL lowered the renal
-                    # lead (0.828 -> 0.792): at 1.6 the rule-layer finding stood on its own, at 2.2
-                    # the strong 'renal_failure_marked' finding was capped to 95 % of a presumptive
-                    # AKI (0.792). One rule for both kinds of explainer: the finding is still NESTED
-                    # beneath the covering diagnosis (grouped output unchanged) but keeps its own
-                    # score when the explainer is below 0.80 and less established than the finding.
                     if _by.final_score < 0.80 and item.final_score > _by.final_score * 0.95:
                         explained_by[item.disease_id] = _by.disease_id
                         continue
@@ -5531,17 +5083,7 @@ class MultiStageReasoner:
                     item.final_score = min(item.final_score, _cap)
 
         # Evidence subsumption. A met curated guideline criterion that was
-        # built from features {a, b, c} accounts for every other entity whose
-        # entire positive evidence is a subset of {a, b, c}: "metabolic
-        # acidosis" next to a DKA triad, "thyroid storm" next to Graves'
-        # (TSH + FT4 + TRAb), Sjögren next to a full SLE serology. Those
-        # entities are listed beneath the diagnosis that explains them. An
-        # entity bringing evidence of its own, or itself anchored, is never
-        # demoted this way - the guard is purely set-theoretic.
         true_feats = getattr(self, "_disease_true_feats", {}) or {}
-        # ESL ext 11 (2026-10-23): an anchored entity that has itself been capped below the
-        # operating point (AKI beneath documented CKD / dialysis) is no longer asserted and
-        # cannot "explain" a finding; otherwise K 6.6 was buried at 0.95 x a 0.40 AKI.
         anchored_items = [c for c in filtered
                           if c.disease_id in anchored and true_feats.get(c.disease_id) and c.final_score >= 0.5]
         for anchor in sorted(anchored_items, key=lambda c: -c.final_score):
@@ -5549,33 +5091,19 @@ class MultiStageReasoner:
             for item in filtered:
                 if item is anchor:
                     continue
-                # extension 7 (2026-10-22): AKI and CKD share the creatinine evidence by nature; their relative
-                # order is adjudicated by _apply_renal_chronicity, never by mutual subsumption (which demoted both).
                 if {item.disease_id, anchor.disease_id} == {"acute_kidney_injury", "chronic_kidney_disease"}:
                     continue
                 # v6 (Amendment 14): a laboratory finding / syndrome (reduced GFR,
-                # myocardial injury, SIRS) never "explains" a diagnosis built on the
-                # same analytes - the direction of explanation is diagnosis -> finding.
                 if self._is_finding(anchor.disease_id) and not self._is_finding(item.disease_id):
                     continue
-                # v6 C8 (2026-10-25): a critical-value finding (ANC < 0.5, Hb < 7 ...) is never subsumed by
-                # ANOTHER FINDING whose rule evidence happens to contain its analyte (thrombocytopenia rule
-                # with a WBC leaf "explaining" profound neutropenia); a diagnosis (cyanide poisoning over
-                # lactate 9) may still organise it.
                 if item.disease_id in critical_findings and self._is_finding(anchor.disease_id):
                     continue
-                # v6 C8 (2026-10-25): one finding "explains" another only when the analytes that DEFINE
-                # the explained finding (its syndrome's required groups) are among the analytes that
-                # define the explaining one - a troponin finding whose rule merely lists creatinine as
                 # support must not account for reduced GFR.
                 if self._is_finding(anchor.disease_id) and self._is_finding(item.disease_id):
                     _ireq = _norm_feats(_esl_asserted_findings.get(item.disease_id) or set())
                     _areq = _norm_feats(_esl_req_feats.get(anchor.disease_id) or set())
                     if _ireq and not _ireq <= _areq:
                         continue
-                # v7 C11: a DIAGNOSIS explains a finding only when it is a recognised cause of it
-                # (causal map) or the finding's defining analytes sit in the constellation that
-                # asserted the diagnosis; a rule leaf that merely mentions the analyte is not a cause.
                 if not self._is_finding(anchor.disease_id) and self._is_finding(item.disease_id):
                     _ireq = _norm_feats(_esl_asserted_findings.get(item.disease_id) or set())
                     _areq = _norm_feats(_esl_req_feats.get(anchor.disease_id) or set())
@@ -5584,18 +5112,8 @@ class MultiStageReasoner:
                 fi = set(true_feats.get(item.disease_id, ()))
                 if not fi or not fi <= fa:
                     continue
-                # Two anchored criteria: only a *strict* superset explains
-                # the other (DKA triad over high-anion-gap acidosis); equal
-                # evidence sets stay side by side for the clinician.
                 if item.disease_id in anchored and not fi < fa:
                     continue
-                # v8.1 (2026-10-26, property test P3): a presumptive diagnosis (< 0.80) that
-                # subsumes a better-established finding organises it (explained_by is still
-                # recorded, grouped output unchanged) but does not pull its score down — the
-                # same rule the attribution step applies to causal explainers. Before this,
-                # creatinine 1.6 -> 2.2 mg/dL lowered the renal lead from 0.828 to 0.792
-                # because the strong 'renal_failure_marked' finding (0.92) was capped to
-                # 95 % of a presumptive imputed-baseline AKI (0.792).
                 if (self._is_finding(item.disease_id) and not self._is_finding(anchor.disease_id)
                         and anchor.final_score < 0.80 and item.final_score > anchor.final_score * 0.95):
                     explained_by.setdefault(item.disease_id, anchor.disease_id)
@@ -5603,22 +5121,11 @@ class MultiStageReasoner:
                 cap = anchor.final_score * 0.95
                 if item.final_score > cap:
                     item.final_score = cap
-                # Recorded even when no demotion was needed: the report can
-                # then group the finding under the diagnosis that covers it.
                 explained_by.setdefault(item.disease_id, anchor.disease_id)
 
         # v6 (Amendment 14, 4th UDMI 2018 §1-2): a cardiac troponin above the 99th percentile
-        # is *myocardial injury*; infarction additionally requires a rise and/or fall AND
-        # clinical evidence of ischaemia. Without a dynamic-troponin syndrome hit or an
-        # ischaemic context (chest pain / ACS / ECG change in the documented conditions),
-        # acute myocardial infarction is listed beneath the injury finding it is inferred from.
         _by_id_mi = {c.disease_id: c for c in filtered}
-        # v6 C10 (2026-10-25): the single-panel injury finding is `myocardial_injury_acuity_undetermined`
-        # (registry 14.1); `acute_myocardial_injury` is asserted by the temporal layer. Either one is the
-        # injury the infarction is inferred from.
         _inj_id = next((k for k in ("acute_myocardial_injury", "myocardial_injury_acuity_undetermined") if k in _by_id_mi), None)
-        # C10: once acuity IS determined (temporal rise/fall or CK-MB-dated acute injury, or a flat chronic pattern,
-        # asserted >= 0.6) the acuity-undetermined finding is redundant and is listed beneath the determined one.
         if "myocardial_injury_acuity_undetermined" in _by_id_mi:
             _und = _by_id_mi["myocardial_injury_acuity_undetermined"]
             for _det_id in ("acute_myocardial_injury", "chronic_myocardial_injury"):
@@ -5628,8 +5135,6 @@ class MultiStageReasoner:
                     _und.final_score = min(_und.final_score, _det.final_score * 0.95)
                     break
         if "acute_myocardial_infarction" in _by_id_mi and _inj_id is not None:
-            # an expert syndrome that asserts infarction itself (dynamic troponin, massive
-            # troponin with CK-MB, ECG-context constellations) overrides the single-value rule
             _dyn_tn = any((str(h.get("syndrome_id", "")) in ("acute_myocardial_injury_dynamic_troponin", "troponin_rise_fall", "acs_dynamic_troponin")
                            or ("dynamic" in str(h.get("syndrome_id", "")) and "tropon" in str(h.get("syndrome_id", "")))
                            or ("acute_myocardial_infarction" in (h.get("dx") or ()) and not h.get("guard")))
@@ -5651,20 +5156,11 @@ class MultiStageReasoner:
                     _mi.final_score = _inj.final_score * 0.85
                     explained_by.setdefault(_mi.disease_id, _inj.disease_id)
             else:
-                # v6 C8 (2026-10-25): the converse - when infarction is asserted (dynamic troponin,
-                # ischaemic context) the myocardial-injury finding is its component (UDMI 2018:
-                # MI = acute injury + ischaemia) and is listed beneath it.
                 _mi, _inj = _by_id_mi["acute_myocardial_infarction"], _by_id_mi[_inj_id]
                 if _mi.final_score >= 0.6 and _mi.final_score >= _inj.final_score * 0.85:
                     explained_by.setdefault(_inj.disease_id, _mi.disease_id)
 
-        # Expert-syndrome competitor caps: a met constellation that carries
-        # an explicit exclusion of a rival (AKA vs euglycaemic DKA, PTHrP vs
-        # primary HPT) lists the rival beneath it.
-        # An entity that is itself the primary target of an equally strong
-        # met syndrome is never capped by a rival syndrome (prerenal
         # azotaemia's "hyponatraemia 0.85" cap must not bury a met thiazide /
-        # hypovolaemic hyponatraemia anchor - perturbation fuzz 2026-10-21).
         _esl_primary_score: dict[str, float] = {}
         for hit in (getattr(self, "_esl_hits", None) or []):
             if hit.get("dx") and not hit.get("guard"):
@@ -5681,33 +5177,18 @@ class MultiStageReasoner:
                     continue
                 if _esl_primary_score.get(cid, 0.0) > float(hit.get("score", 0.0) or 0.0) and primary is not None:
                     continue
-                # dx-less guard syndromes (physiological states such as
-                # pregnancy) carry ABSOLUTE ceilings instead of ratios.
                 cap = float(factor) if primary is None else primary.final_score * float(factor)
                 if rival.final_score > cap:
                     rival.final_score = cap
                     if primary is not None:
                         explained_by.setdefault(cid, primary.disease_id)
-            # secondary targets of the same syndrome stay just beneath the primary
             for did in hit["dx"][1:]:
                 sec = by_id.get(did)
                 if sec is not None and sec.final_score >= primary.final_score:
                     sec.final_score = primary.final_score * 0.97
-        # --- clinical-salience re-ranking (ESL extension 6, 2026-10-21) -------
-        # Probabilities are untouched; only the display/recall order changes:
-        #  tier 0: diseases, syndromes and clinically material findings (p >= 0.5)
-        #  tier 1: low-salience single-analyte findings (p >= 0.5, not severe)
-        #  tier 2: everything below the 0.5 operating point
-        #  tier 3: derived `co_*` pair patterns and family duplicates
-        #          (child id = parent id + suffix, the lower score of the pair;
-        #           `*_support_pattern` when its base entity is present)
         _ids = {r.disease_id for r in filtered}
         _score = {r.disease_id: r.final_score for r in filtered}
         _dup: set[str] = set()
-        # ESL extension 6b (2026-10-21): twins that differ only by a severity /
-        # acuity prefix or a pattern suffix (hyponatremia vs severe_hyponatremia,
-        # acute_ vs chronic_myocardial_injury, heart_failure vs its support
-        # pattern) are one clinical statement; the best-scoring member leads.
         def _stem(_x):
             for _pre in ("severe_", "acute_", "chronic_", "mild_", "moderate_", "marked_"):
                 if _x.startswith(_pre):
@@ -5733,20 +5214,12 @@ class MultiStageReasoner:
                 if _parent in _ids and _parent != _i:
                     _loser = _i if _score[_i] <= _score[_parent] else _parent
                     _dup.add(_loser); break
-        # --- ESL extension 9 (2026-10-23): ranking hygiene, probabilities untouched ---
-        # (a) explicit synonym families: ids that are one clinical statement but
-        #     share no stem; only the best-scoring member leads, the rest go to tier 3.
         for _fam in _ESL_SYNONYM_FAMILIES:
             _members = [r for r in filtered if r.disease_id in _fam]
             if len(_members) > 1:
                 _members.sort(key=lambda r: -r.final_score)
                 for _m in _members[1:]:
                     _dup.add(_m.disease_id)
-        # (b) aetiology-beneath-finding: an entity that is only a putative CAUSE of a
-        #     laboratory finding already in the list, whose own confirmatory marker was
-        #     not measured, is displayed beneath the finding (tier 3). It is not removed
-        #     and its probability is unchanged; it simply cannot outrank the finding it
-        #     is inferred from (Sackett: a cause is not evidence for itself).
         try:
             _obs_ids = set(observations.keys())
         except Exception:
@@ -5754,15 +5227,8 @@ class MultiStageReasoner:
         for _aet, (_findings, _markers) in _ESL_AETIOLOGY_BENEATH_FINDING.items():
             if _aet in _ids and not (_obs_ids & set(_markers)):
                 _fp = [_score[_f] for _f in _findings if _f in _ids]
-                # demote only when the cause does not out-score the finding it is inferred
-                # from; independent evidence (context, other markers) that lifts it above
-                # the finding is respected.
                 if _fp and _score[_aet] <= max(_fp):
                     _dup.add(_aet)
-        # (c) organising-diagnosis precedence: when an ESL syndrome with a marked,
-        #     cause-level laboratory signature fired (e.g. creatinine-defined renal
-        #     failure, DKA), the downstream findings it explains are ordered after it
-        #     within tier 0. Probabilities unchanged; parsimony (Occam) in display order.
         _org_first: dict[str, int] = {}
         _fired = {h.get("syndrome_id") or h.get("id") for h in (getattr(self, "_esl_hits", None) or []) if not h.get("guard")}
         for _syn_ids, (_causes, _effects) in _ESL_ORGANISING_PRECEDENCE:
@@ -5779,43 +5245,23 @@ class MultiStageReasoner:
             if _i.startswith("co_") or _i in _dup:
                 return 3
             if _p < 0.5:
-                # ESL ext 11-C: a documented-history entry without panel support is not derived
-                # from the laboratory data; it ranks after every lab-derived sub-threshold entry.
                 return 2.5 if getattr(r, "evidence_state", "") == "documented_history" else 2
             if _i in _LOW_SALIENCE_FINDINGS and _p < 0.75:
                 return 1
-            # v6 C8 (2026-10-25): a laboratory finding / syndrome that an asserted diagnosis
-            # accounts for (explained_by set, not a critical value) is listed after every
-            # asserted entity that stands on its own - reduced GFR beneath AKI, myocardial
-            # injury beneath infarction, SIRS beneath sepsis. Probability unchanged; the
-            # finding remains in the list with its explaining diagnosis named. Parsimony only:
-            # the same fact is otherwise shown twice in the first five lines.
             if _i in explained_by and _i not in critical_findings and self._is_finding(_i):
                 return 0.5
             return 0
         # v6 (SAP Amendment 14, C1): final pass of the finding demotion AFTER every
-        # competitor / subsumption / renal cap has been applied. A laboratory
-        # finding or syndrome (reduced GFR, myocardial injury, SIRS) is listed
-        # beneath the best diagnosis that accounts for it whenever that diagnosis
-        # is itself asserted (final >= 0.6, rule evidence present); critical
-        # severity findings keep their place.
         _acc2 = [c for c in filtered if _accounts(c) and c.final_score >= 0.6]
         if _acc2:
             _best2 = max(_acc2, key=lambda c: c.final_score)
             for item in filtered:
-                # only findings already placed beneath a diagnosis (first pass or
-                # subsumption) are re-ordered here; a finding carrying evidence of
-                # its own that no diagnosis accounted for keeps its score.
                 if (self._is_finding(item.disease_id) and item.disease_id not in critical_findings
                         and item.disease_id in explained_by
                         and item.final_score > _best2.final_score * 0.95
-                        # v8.1 (property test P3): a presumptive explainer (< 0.80) organises
-                        # the finding (tier 0.5, named) but does not lower its probability
                         and _best2.final_score >= 0.80):
                     item.final_score = _best2.final_score * 0.95
         filtered.sort(key=lambda r: (_tier(r), -r.final_score, self._is_finding(r.disease_id), r.disease_id))
-        # (c) continued: move each organising diagnosis to just ahead of the first
-        #     downstream finding it explains; it never overtakes anything else.
         if _org_first:
             _effects = {k for k, v in _org_first.items() if v == 1}
             for _cause in [k for k, v in _org_first.items() if v == 0]:
@@ -5827,8 +5273,6 @@ class MultiStageReasoner:
                     filtered.insert(_ei, filtered.pop(_ci))
 
         differential = []
-        # UI shows 15; evaluation harnesses may raise `max_differential`
-        # so that probabilities of lower-ranked entities are not lost.
         for rank, result in enumerate(filtered[:int(getattr(self, "max_differential", 15) or 15)], 1):
             entry = DifferentialEntry(
                 disease_id=result.disease_id,
@@ -5873,10 +5317,6 @@ class MultiStageReasoner:
                  if result.calibrated_score is not None
                  else result.final_score)
         conf = result.confidence
-        # Evidence-theoretic overrides: a flat inter-layer conflict is a
-        # distinct clinical state (order the discriminating test), and a
-        # wide Belief-Plausibility interval means "not enough data", which
-        # must never be presented as a probability.
         state = getattr(result, "evidence_state", None)
         if state == "conflicting" and score > 0.2:
             return "conflicting_evidence"
@@ -5980,7 +5420,6 @@ class DrugInteraction:
     clinical_note: str
     citation: str
 
-# Interaction lookup is table-driven and stateless.
 INTERACTION_DATABASE: dict[str, list[DrugInteraction]] = {
 
     "statins": [
@@ -6729,7 +6168,6 @@ def hoshdar_haye_vizhegi(feature_id: str, context: ClinicalContext
     return caveats
 
 
-
 @dataclass
 class MoshtaghOlgoo:
     pattern_id: str
@@ -6744,8 +6182,6 @@ class MoshtaghOlgoo:
     inputs: dict[str, float] = field(default_factory=dict)
 
 
-# Was a single-method class with no state; a module function says the
-# same thing with one less indirection.
 def tahlil_olgoo_haye_moshtagh(
     values: Mapping[str, float],
     context: Optional[ClinicalContext] = None,
@@ -6758,9 +6194,8 @@ def tahlil_olgoo_haye_moshtagh(
         it supports or argues against, and its source.
 
         SUPER-ENHANCED: now includes 35+ complex multi-system patterns
-        for ultra-precise diagnosis - PEDIATRIC AWARE.
+        with paediatric reference bands.
         """
-    # ULTRA-PRECISE: normalize CBC values that may be in /uL vs K/uL
     def _norm_cbc(fid, val):
         if val is None:
             return None
@@ -6768,11 +6203,8 @@ def tahlil_olgoo_haye_moshtagh(
             fv = float(val)
         except:
             return val
-        # Platelets: if >1000, likely /uL, convert to K/uL
         if fid in ("platelet_count", "platelets", "plt") and fv > 1000:
             return fv / 1000.0
-        # WBC: if >1000, likely /uL, convert to K/uL? But keep as /uL for threshold 4500-13500
-        # For WBC, keep original if >1000 as /uL, but also allow K/uL
         return fv
 
     v_raw = {k: val for k, val in values.items() if val is not None}
@@ -6782,7 +6214,6 @@ def tahlil_olgoo_haye_moshtagh(
     g = v.get
     out: list[MoshtaghOlgoo] = []
 
-    # ULTRA-PRECISE: robust context getter for age-aware analysis
     def _ctx_get(key: str):
         if not context:
             return None
@@ -6807,7 +6238,6 @@ def tahlil_olgoo_haye_moshtagh(
             return
         out.append(MoshtaghOlgoo(**kw))
 
-    # ---- Existing patterns (kept) ----
     ast, alt = g("aspartate_aminotransferase"), g("alanine_aminotransferase")
     if ast and alt and alt > 0:
         ratio = ast / alt
@@ -6817,10 +6247,7 @@ def tahlil_olgoo_haye_moshtagh(
         except:
             age_for_ritis = None
         is_child = age_for_ritis is not None and age_for_ritis < 18
-        # The De Ritis ratio classifies an *elevated* transaminase pattern;
-        # AST 30 / ALT 12 in a healthy adult is not 'alcoholic pattern'.
         _enzymes_raised = (ast > 35.0) or (alt > 40.0)
-        # In children, low ALT is common, ratio high is not alcoholic
         if not _enzymes_raised:
             pass
         elif ratio >= 2.0:
@@ -6857,7 +6284,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Botros M, 2013",
                 inputs={'AST': ast, "ALT": alt})
 
-    # Iron studies
     iron = g("serum_iron")
     tibc = g("total_iron_binding_capacity")
     tsat = g("transferrin_saturation")
@@ -6902,10 +6328,8 @@ def tahlil_olgoo_haye_moshtagh(
         except:
             age_for_bun = None
         is_child_bun = age_for_bun is not None and age_for_bun < 18
-        low_muscle_cr = cr < 0.7  # low creatinine due to low muscle mass in children
+        low_muscle_cr = cr < 0.7
         # BUN/Cr classifies *azotaemia* (KDIGO 2012); when both urea and
-        # creatinine are inside the reference interval the ratio carries no
-        # renal information (BUN 18 / Cr 0.7 = 26 in a healthy adult).
         _azotaemia = (bun > 20.0) or (cr > (1.1 if (str(_ctx_get("sex") or _ctx_get("sex_at_birth") or "").lower().startswith("f")) else 1.3)) \
             or (is_child_bun and cr > 1.0)
 
@@ -7017,16 +6441,7 @@ def tahlil_olgoo_haye_moshtagh(
         alb = g("albumin")
         if alb and alb < 4.0:
             ag += 2.5 * (4.0 - alb)
-        # A high-anion-gap *metabolic acidosis* needs the acidosis: with
-        # bicarbonate in range an AG of 13-16 is a normal analyser value
-        # (modern ISE reference 8-16). A clearly raised gap (>20) is kept
-        # even without a low bicarbonate (mixed disorder).
-        # Pregnancy: compensated respiratory alkalosis lowers HCO3 to 18-22
-        # physiologically (ACOG); require a bicarbonate below that band.
         _hco3_floor = 18.0 if bool(_ctx_get("pregnant")) else 22.0
-        # A measured lactate in range removes 'sepsis' (and AKI if creatinine
-        # is normal) from the supported list: the gap is then unexplained
-        # (ketones / toxins / uraemia / analytical) rather than septic.
         _lac = g("lactate"); _crea = g("creatinine")
         _sup_ag = ["acute_kidney_injury", "sepsis"]
         if _lac is not None and _lac < 2.0:
@@ -7146,9 +6561,6 @@ def tahlil_olgoo_haye_moshtagh(
     age = _float(context.age_years) if context else None
     if ast and alt and plt_ and age and alt > 0 and plt_ > 0:
         fib4 = (age * ast) / (plt_ * math.sqrt(alt))
-        # FIB-4 is age-driven: above 65 it over-calls fibrosis (McPherson
-        # 2017; AASLD NAFLD guidance 2023), and with every input inside its
-        # reference interval it carries no supporting weight at all.
         inputs_normal = ast <= 40 and alt <= 40 and plt_ >= 150
         if fib4 > 2.67 and not inputs_normal:
             add(pattern_id="fib4_high", name_en="FIB-4 Index",
@@ -7186,11 +6598,6 @@ def tahlil_olgoo_haye_moshtagh(
                 inputs={"AST": ast, "ALT": alt, "PLT": plt_,
                         'Age': age})
 
-    # MELD-Na (Kamath 2001; Kim NEJM 2008; OPTN policy 2016) — severity
-    # of established liver disease, only computed when the panel itself
-    # shows hepatic synthetic/excretory impairment (bilirubin >2 or INR
-    # >1.5); the score is a prognostic index, not a diagnostic criterion,
-    # so it never proposes a diagnosis on its own (supports=[]).
     bili_m = g("bilirubin_total"); inr_m = g("inr") or g("international_normalized_ratio")
     cr_m = g("creatinine"); na_m = g("sodium")
     if bili_m and inr_m and cr_m and (bili_m > 2.0 or inr_m > 1.5):
@@ -7216,9 +6623,6 @@ def tahlil_olgoo_haye_moshtagh(
             inputs={"Bilirubin": bili_m, "INR": inr_m, "Creatinine": cr_m,
                     **({"Na": na_m} if na_m is not None else {})})
 
-    # Platelet-to-lymphocyte ratio — weak, heterogeneous evidence base
-    # (no consensus cutoff); reported as a low-significance inflammatory
-    # marker only when NLR-type data are present, never as support.
     wbc_p = g("white_blood_cell_count") or g("wbc"); lym_p = g("lymphocytes")
     if plt_ and wbc_p and lym_p and lym_p > 0:
         alc = wbc_p * lym_p / 100.0
@@ -7250,38 +6654,30 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="McLaughlin T, Ann Intern Med 2003",
                 inputs={'TG': tg, "HDL": hdl})
 
-    # ==================== SUPER-ENHANCED COMPLEX PATTERNS ====================
 
-    # 1. Liver injury pattern: R ratio (ALT/ULN)/(ALP/ULN) - ULTRA-PRECISE PEDIATRIC AWARE
     alp = g("alkaline_phosphatase")
-    # Age- and pregnancy-aware ALP ULN
     age_for_alp = _ctx_get("age_years")
     is_pregnant = bool(_ctx_get("pregnant"))
     try:
         age_for_alp = float(age_for_alp) if age_for_alp is not None else None
     except:
         age_for_alp = None
-    # Pediatric & Pregnancy ALP ULN:
     if is_pregnant:
-        alp_uln = 350  # Pregnancy placental isoenzyme
+        alp_uln = 350
         alt_uln = 35
     elif age_for_alp is not None and age_for_alp < 12:
-        alp_uln = 400  # children <12: up to 400 normal
+        alp_uln = 400
         alt_uln = 30
     elif age_for_alp is not None and age_for_alp < 18:
-        alp_uln = 300  # adolescents: up to 300
+        alp_uln = 300
         alt_uln = 35
     else:
         alp_uln = 120
         alt_uln = 40
 
-    # The R ratio (Aithal 2011 / ACG DILI 2021) classifies an *established*
-    # liver-enzyme elevation; with ALT and ALP both inside their reference
     # intervals it is undefined as a pattern and must not fire (a normal
-    # panel otherwise reads as "cholestatic, high significance").
     if alt and alp and (alt > alt_uln or alp > alp_uln):
         r_ratio = (alt/alt_uln) / (alp/alp_uln) if alp>0 else None
-        # Check if this is pediatric or pregnancy physiological ALP elevation
         is_pediatric_alp = age_for_alp is not None and age_for_alp < 18 and alp < (800 if age_for_alp <12 else 500)
         bili_total_check = g("bilirubin_total")
         ggt_check = g("gamma_glutamyl_transferase")
@@ -7299,7 +6695,6 @@ def tahlil_olgoo_haye_moshtagh(
                     citation="Pediatric Reference Ranges, CALIPER 2020; ALP bone isoenzyme in children",
                     inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2), "Age": age_for_alp or 0})
             elif is_pregnancy_alp:
-                # Pregnancy physiological ALP - placental isoenzyme
                 add(pattern_id="pregnancy_alp_elevation", name_en="Pregnancy Physiological ALP Elevation",
                     name_fa="افزایش فیزیولوژیک ALP در بارداری", value=round(alp,0),
                     interpretation=f"افزایش ALP ({alp:.0f} U/L) در دوران بارداری فیزیولوژیک و ناشی از ایزوآنزیم جفتی است. با توجه به طبیعی بودن آنزیم‌های کبدی و بیلی‌روبین، بیماری کبدی یا کلستاز مطرح نیست.",
@@ -7308,8 +6703,6 @@ def tahlil_olgoo_haye_moshtagh(
                     citation="ACOG Clinical Guidance 2023; Placental alkaline phosphatase isoenzyme",
                     inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2)})
             elif alp <= alp_uln:
-                # extension 7 (2026-10-22): ALP inside its reference interval -> the R ratio cannot indicate
-                # cholestasis (ACG 2021 DILI; Aithal 2011). Isolated ALT elevation is hepatocellular by definition.
                 add(pattern_id="liver_isolated_alt", name_en="Isolated ALT elevation (ALP normal)",
                     name_fa="افزایش ایزولهٔ ALT با ALP طبیعی", value=round(alt / alt_uln, 2),
                     interpretation=f"ALT {alt:.0f} U/L بالاتر از ULN با ALP طبیعی — الگوی هپاتوسلولار خفیف (NAFLD، دارو، هپاتیت ویروسی مزمن، الکل)؛ کلستاز مطرح نیست.",
@@ -7328,14 +6721,13 @@ def tahlil_olgoo_haye_moshtagh(
                     inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2)})
             elif r_ratio <= 2:
                 if (is_pediatric_alp or is_pregnancy_alp) and not has_cholestasis_markers:
-                    # Already handled above as physiological adaptation, skip cholestatic flag
                     pass
                 else:
                     add(pattern_id="liver_cholestatic", name_en="R Ratio Cholestatic",
                         name_fa="آسیب کلستاتیک", value=round(r_ratio,2),
                         interpretation=f"R = {r_ratio:.1f} (≤2) — الگوی کلستاتیک: انسداد صفراوی، PBC، PSC یا داروی کلستاتیک. {'در کودک با ALP بالا، رشد استخوانی را رد کنید.' if age_for_alp and age_for_alp<18 else ''}",
                         significance="high" if not (age_for_alp and age_for_alp<18) else "low",
-                        supports=(["cholestasis","primary_biliary_cholangitis"] if alp >= 1.5 * alp_uln else ["cholestasis"]) if not is_pediatric_alp else [],  # extension 7: EASL 2017 PBC ALP >= 1.5 x ULN
+                        supports=(["cholestasis","primary_biliary_cholangitis"] if alp >= 1.5 * alp_uln else ["cholestasis"]) if not is_pediatric_alp else [],
                         argues_against=["nafl_d"] if not is_pediatric_alp else ["cholestasis"],
                         citation="Aithal GP 2011",
                         inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2)})
@@ -7347,7 +6739,6 @@ def tahlil_olgoo_haye_moshtagh(
                     citation="Aithal GP 2011",
                     inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2)})
 
-    # 2. Bilirubin fractions: direct vs indirect
     bili_total = g("bilirubin_total")
     bili_direct = g("bilirubin_direct")
     bili_indirect = g("bilirubin_indirect")
@@ -7367,7 +6758,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Fargo MV 2017",
             inputs={"Total": bili_total, "Indirect": bili_indirect})
 
-    # 3. DKA pattern
     glu = g("glucose") or g("fasting_plasma_glucose")
     ket = g("ketones") or g("beta_hydroxybutyrate") or g("urine_ketones")
     bicarb = g("bicarbonate") or g("carbon_dioxide")
@@ -7385,7 +6775,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="ADA DKA Guidelines 2024",
                 inputs={"Glucose": glu, "HCO3": bicarb, "AG": ag_val or 0})
 
-    # 4. HHS pattern
     if glu and glu>=600 and bicarb is not None and bicarb>15:
         add(pattern_id="hhs_risk", name_en="HHS Pattern",
             name_fa="الگوی HHS", value=round(glu,0),
@@ -7394,7 +6783,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="ADA Hyperglycemic Crises 2024",
             inputs={"Glucose": glu, "HCO3": bicarb})
 
-    # 5. Metabolic syndrome 3/5
     waist = g("waist_circumference") or _ctx_get("waist_cm") or _ctx_get("waist_circumference")
     bp_sys = g("systolic_bp") or _ctx_get("systolic_bp") or _ctx_get("systolic_blood_pressure")
     bp_dia = g("diastolic_bp") or _ctx_get("diastolic_bp") or _ctx_get("diastolic_blood_pressure")
@@ -7418,7 +6806,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="IDF/NCEP ATP III 2009",
             inputs={"criteria": ms_criteria})
 
-    # 6. Anemia differential - microcytic
     hb = g("hemoglobin")
     if hb is not None and hb<12:
         if mcv is not None:
@@ -7456,7 +6843,7 @@ def tahlil_olgoo_haye_moshtagh(
                         significance="high", supports=["folate_deficiency"],
                         citation="BSH 2023",
                         inputs={"Hb": hb, "MCV": mcv, "Folate": fol})
-            else: # normocytic
+            else:
                 egfr = g("egfr_ckd_epi_creatinine")
                 crp_val = g("c_reactive_protein")
                 if egfr and egfr<60:
@@ -7474,7 +6861,6 @@ def tahlil_olgoo_haye_moshtagh(
                         citation="Weiss G, NEJM 2005",
                         inputs={"Hb": hb, "MCV": mcv, "CRP": crp_val})
 
-    # 7. Hemolytic pattern: LDH high + indirect bili + haptoglobin low + retic high
     ldh = g("lactate_dehydrogenase")
     hapto = g("haptoglobin")
     retic = g("reticulocyte_count")
@@ -7487,7 +6873,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="BSH Hemolysis 2023",
                 inputs={"Hb": hb, "LDH": ldh, "Haptoglobin": hapto or 0, "Retic": retic or 0})
 
-    # 8. Pancytopenia
     wbc = g("white_blood_cell_count")
     plt = g("platelet_count")
     if hb and hb<10 and wbc and wbc<4 and plt and plt<150:
@@ -7498,7 +6883,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="BSH Pancytopenia 2023",
             inputs={"Hb": hb, "WBC": wbc, "PLT": plt})
 
-    # 9. NLR high - inflammation/bacterial vs viral
     neut = g("neutrophils")
     lymph = g("lymphocytes")
     if wbc and neut and lymph and lymph>0:
@@ -7511,7 +6895,6 @@ def tahlil_olgoo_haye_moshtagh(
                     significance="moderate", supports=["urinary_tract_infection","sepsis"],
                     citation="Zahorec R, Bratisl Lek Listy 2001",
                     inputs={"NLR": round(nlr,2), "CRP": crp, "Neut": neut})
-    # Viral pattern: lymphocytosis + low neutrophils
     if wbc and lymph and lymph>50 and neut and neut<40:
         add(pattern_id="viral_pattern", name_en="Viral Lymphocytosis",
             name_fa="لنفوسیتوز ویروسی", value=round(lymph,1),
@@ -7520,7 +6903,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Harrison Hematology",
             inputs={"WBC": wbc, "Lymph": lymph, "Neut": neut})
 
-    # 10. Sepsis pattern: PCT high + lactate + WBC abnormal + CRP very high
     pct = g("procalcitonin")
     lac = g("lactate")
     if pct and pct>0.5 and ((lac and lac>2) or (crp and crp>100) or (wbc and (wbc>12 or wbc<4))):
@@ -7531,7 +6913,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Surviving Sepsis Campaign 2021",
             inputs={"PCT": pct, "Lactate": lac or 0, "CRP": crp or 0})
 
-    # 11. DIC pattern: low platelets + high D-dimer + prolonged PT + low fibrinogen
     d_dimer = g("d_dimer") or g("d-dimer")
     pt = g("prothrombin_time") or g("pt")
     fib = g("fibrinogen")
@@ -7543,7 +6924,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="ISTH DIC Score 2001",
             inputs={"PLT": plt, "D-dimer": d_dimer, "Fibrinogen": fib or 0})
 
-    # 12. Adrenal insufficiency: Na low + K high + cortisol low + ACTH high
     cortisol = g("cortisol_morning") or g("morning_cortisol") or g("cortisol")
     acth = g("adrenocorticotropic_hormone")
     k = g("potassium")
@@ -7555,7 +6935,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Endocrine Society Adrenal Insufficiency 2016",
             inputs={"Cortisol": cortisol, "Na": na, "K": k, "ACTH": acth or 0})
 
-    # 13. Primary aldosteronism: K low + HCO3 high + HTN context
     if k and k<3.5 and bicarb and bicarb>29:
         arr = g("aldosterone_to_renin_ratio_arr") or g("aldosterone_renin_ratio")
         if arr and arr>30 or (bp_sys and bp_sys>=140):
@@ -7566,9 +6945,7 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Endocrine Society PA Guideline 2016",
                 inputs={"K": k, "HCO3": bicarb, "ARR": arr or 0})
 
-    # 14. Acid-base: Winter's formula for metabolic acidosis
     if ph and bicarb and ph<7.35 and bicarb<22:
-        # Expected pCO2 = 1.5*HCO3 +8 ±2
         pco2 = g("pco2") or g("arterial_pco2") or g("carbon_dioxide_partial_pressure")
         if pco2:
             expected = 1.5*bicarb + 8
@@ -7588,15 +6965,11 @@ def tahlil_olgoo_haye_moshtagh(
                         citation="Winter's Formula",
                         inputs={"pH": ph, "HCO3": bicarb, "pCO2": pco2})
 
-    # 15. Delta ratio for high AG acidosis
     if na and cl and bicarb:
         ag = na - (cl + bicarb)
         alb_v = g("albumin")
         if alb_v and alb_v<4.0:
             ag += 2.5*(4.0-alb_v)
-        # The delta ratio is only interpretable in an *established* high-AG
-        # acidosis (Kraut 2014: AG clearly raised AND bicarbonate low); with
-        # AG 13 and HCO3 23 the quotient of two tiny deltas is noise.
         if ag >= 16 and bicarb < 22:
             delta_ag = ag-12
             delta_hco3 = 24-bicarb
@@ -7617,7 +6990,6 @@ def tahlil_olgoo_haye_moshtagh(
                         citation="Kraut JA 2014",
                         inputs={"AG": ag, "DeltaRatio": round(delta_ratio,2)})
 
-    # 16. Osmolar gap
     osm_calc = g("calculated_osmolality")
     osm_meas = g("osmolality") or g("measured_osmolality") or g("serum_osmolality")
     if osm_calc is None and na and glu and bun:
@@ -7632,7 +7004,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Kraut JA 2014",
                 inputs={"Measured": osm_meas, "Calculated": osm_calc, "Gap": round(og,1)})
 
-    # 17. Corrected Na for glucose already in calcu, but pattern
     if na and glu and glu>200 and na<135:
         corr_na = na + 1.6*(glu-100)/100.0
         if corr_na>=135:
@@ -7643,7 +7014,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Katz MA 1973",
                 inputs={"Na": na, "Glucose": glu, "CorrNa": round(corr_na,1)})
 
-    # 18. Hypocalcemia with high phosphate - CKD-MBD
     phos = g("phosphate") or g("phosphate_inorganic")
     if ca and ca<8.5 and phos and phos>4.5:
         if g("egfr_ckd_epi_creatinine") and g("egfr_ckd_epi_creatinine")<60 or (cr and cr>1.3):
@@ -7654,7 +7024,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="KDIGO CKD-MBD 2017",
                 inputs={"Ca": ca, "Phos": phos, "Creatinine": cr or 0})
 
-    # 19. Hypercalcemia with low phosphate - primary hyperpara
     if ca and ca>10.5 and phos and phos<2.5:
         add(pattern_id="hypercalcemia_low_phos", name_en="Hypercalcemia Low Phosphate",
             name_fa="هیپرکلسمی با فسفات پایین", value=round(ca,2),
@@ -7663,7 +7032,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Bilezikian JP 2014",
             inputs={"Ca": ca, "Phos": phos})
 
-    # 20. Hyperkalemia with ECG risk + CKD + acidosis
     if k and k>5.5:
         if (cr and cr>1.5) or (bicarb and bicarb<20):
             add(pattern_id="hyperkalemia_ckd_acidosis", name_en="Hyperkalemia with CKD/Acidosis",
@@ -7673,9 +7041,7 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="KDIGO AKI 2012",
                 inputs={"K": k, "Cr": cr or 0, "HCO3": bicarb or 0})
 
-    # 21. Hyponatremia with low osmolality - SIADH vs hypovolemia
     if na and na<135 and osm_meas and osm_meas<280:
-        # need volume status, but pattern
         add(pattern_id="hypotonic_hyponatremia", name_en="Hypotonic Hyponatremia",
             name_fa="هیپوناترمی هیپوتونیک", value=round(na,1),
             interpretation=f"Na {na:.0f} پایین + اسمولالیته {osm_meas:.0f} پایین (<280) — هیپوناترمی هیپوتونیک: SIADH، کمبود حجم یا نارسایی آدرنال.",
@@ -7683,7 +7049,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Verbalis JG, Am J Med 2013",
             inputs={"Na": na, "Osm": osm_meas})
 
-    # 22. Atherogenic dyslipidemia: high TG + low HDL + small dense LDL
     if tg and tg>=150 and hdl and hdl<40:
         ldl = g("ldl_cholesterol") or g("ldl_cholesterol_direct")
         if ldl and ldl>=130:
@@ -7694,7 +7059,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="NCEP ATP III",
                 inputs={"TG": tg, "HDL": hdl, "LDL": ldl})
 
-    # 23. Remnant cholesterol high
     tc = g("total_cholesterol")
     if tc and hdl and (g("ldl_cholesterol") or g("ldl_cholesterol_direct")):
         ldl_v = g("ldl_cholesterol") or g("ldl_cholesterol_direct") or 0
@@ -7707,7 +7071,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Varbo A, JACC 2013",
                 inputs={"Remnant": round(remnant,1), "TC": tc, "HDL": hdl, "LDL": ldl_v})
 
-    # 24. Hyperuricemia with metabolic syndrome
     ua = g("uric_acid")
     if ua and ua>7:
         if (tg and tg>=150) or (fpg and fpg>=100) or (bp_sys and bp_sys>=130):
@@ -7718,7 +7081,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="ACR Gout 2020",
                 inputs={"UA": ua})
 
-    # 25. Thrombocytosis with inflammation vs essential
     if plt and plt>450:
         if crp and crp>10:
             add(pattern_id="reactive_thrombocytosis", name_en="Reactive Thrombocytosis",
@@ -7735,10 +7097,7 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="WHO MPN 2022",
                 inputs={"PLT": plt})
 
-    # ==================== ULTRA-PRECISE EXTENDED COVERAGE ====================
-    # Additional high-power patterns for outstanding analysis
 
-    # 16. Hyponatremia severe + hypo-osmolality
     na = g("sodium")
     osmo = g("osmolality") or g("calculated_osmolality") or g("serum_osmolality")
     if na and na<135:
@@ -7757,7 +7116,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Verbalis 2013",
                 inputs={"Na": na})
 
-    # 17. Hypernatremia
     if na and na>145:
         if osmo and osmo>295:
             add(pattern_id="hypernatremia_hyperosmolar", name_en="Hypernatremia Hyperosmolar",
@@ -7767,7 +7125,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Adrogué HJ, NEJM 2000",
                 inputs={"Na": na, "Osm": osmo})
 
-    # 18. Hypokalemia with alkalosis
     k = g("potassium")
     if k and k<3.5:
         if bicarb and bicarb>29:
@@ -7778,7 +7135,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Weiner ID, JASN 2019",
                 inputs={"K": k, "HCO3": bicarb})
 
-    # 19. Hypocalcemia patterns
     ca = g("calcium_total") or g("corrected_calcium")
     phos = g("phosphate")
     pth = g("parathyroid_hormone")
@@ -7799,14 +7155,12 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Holick MF 2011",
                 inputs={"Ca": ca, "VitD": vitd})
 
-    # 20. Hyperphosphatemia in CKD - PEDIATRIC AWARE
     if phos and phos>4.5:
         age_for_phos = _ctx_get("age_years")
         try:
             age_for_phos = float(age_for_phos) if age_for_phos is not None else None
         except:
             age_for_phos = None
-        # Pediatric normal: <12 up to 6.5, 12-18 up to 5.5
         is_pediatric_phos_normal = False
         if age_for_phos is not None:
             if age_for_phos < 12 and phos <= 6.5:
@@ -7839,7 +7193,6 @@ def tahlil_olgoo_haye_moshtagh(
                     citation="KDIGO CKD-MBD 2017",
                     inputs={"Phos": phos})
 
-    # 21. Hypophosphatemia
     if phos and phos<2.5:
         add(pattern_id="hypophosphatemia", name_en="Hypophosphatemia",
             name_fa="هیپوفسفاتمی", value=round(phos,2),
@@ -7848,7 +7201,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Gaasbeek A, Am J Med 2005",
             inputs={"Phos": phos})
 
-    # 22. Hypomagnesemia with hypoK/hypoCa
     mg = g("magnesium")
     if mg and mg<1.7:
         if (k and k<3.5) or (ca and ca<8.5):
@@ -7859,7 +7211,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="de Baaij JHF, Physiol Rev 2015",
                 inputs={"Mg": mg, "K": k or 0, "Ca": ca or 0})
 
-    # 23. Metabolic alkalosis
     if bicarb and bicarb>29 and ph and ph>7.45:
         add(pattern_id="metabolic_alkalosis", name_en="Metabolic Alkalosis",
             name_fa="آلکالوز متابولیک", value=round(bicarb,0),
@@ -7868,7 +7219,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Emmett M, NEJM 2020",
             inputs={"pH": ph, "HCO3": bicarb})
 
-    # 24. Respiratory acidosis
     pco2 = g("pco2") or g("arterial_pco2") or g("carbon_dioxide_partial_pressure")
     if ph and ph<7.35 and pco2 and pco2>45:
         add(pattern_id="respiratory_acidosis", name_en="Respiratory Acidosis",
@@ -7878,7 +7228,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Adrogué HJ, NEJM 2022",
             inputs={"pH": ph, "pCO2": pco2, "HCO3": bicarb or 0})
 
-    # 25. Respiratory alkalosis
     if ph and ph>7.45 and pco2 and pco2<35:
         add(pattern_id="respiratory_alkalosis", name_en="Respiratory Alkalosis",
             name_fa="آلکالوز تنفسی", value=round(pco2,0),
@@ -7887,7 +7236,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Adrogué HJ 2022",
             inputs={"pH": ph, "pCO2": pco2})
 
-    # 26. Vitamin D deficiency secondary hyperpara
     if vitd and vitd<20 and pth and pth>65 and ca and ca<10.2:
         add(pattern_id="vitd_def_secondary_hpt", name_en="VitD Def Secondary Hyperpara",
             name_fa="کمبود VitD با هایپرپارای ثانویه", value=round(vitd,1),
@@ -7896,7 +7244,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Holick MF 2011",
             inputs={"VitD": vitd, "PTH": pth, "Ca": ca})
 
-    # 27. Secondary hyperpara in CKD
     if pth and pth>65:
         egfr = g("egfr_ckd_epi_creatinine")
         if (egfr and egfr<60) or (g("creatinine") and g("creatinine")>1.5):
@@ -7908,7 +7255,6 @@ def tahlil_olgoo_haye_moshtagh(
                     citation="KDIGO CKD-MBD 2017",
                     inputs={"PTH": pth, "Ca": ca, "Phos": phos})
 
-    # 28. Cushing pattern
     cortisol = g("cortisol_morning") or g("cortisol")
     if cortisol and cortisol>25:
         if (k and k<3.5) or (glu and glu>126) or (bp_sys and bp_sys>=140):
@@ -7919,7 +7265,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="Nieman LK, JCEM 2015",
                 inputs={"Cortisol": cortisol, "K": k or 0, "Glucose": glu or 0})
 
-    # 29. Severe malnutrition
     alb = g("albumin")
     prealb = g("prealbumin") or g("transthyretin")
     bmi_val = g("body_mass_index") or g("bmi") or _ctx_get("body_mass_index") or _ctx_get("bmi")
@@ -7931,7 +7276,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="ASPEN Malnutrition 2020",
             inputs={"Albumin": alb, "Prealbumin": prealb, "BMI": bmi_val})
 
-    # 30. Atherogenic triad
     tg = g("triglycerides")
     hdl = g("hdl_cholesterol")
     ldl = g("ldl_cholesterol")
@@ -7943,7 +7287,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="AHA Dyslipidemia 2018",
             inputs={"TG": tg, "HDL": hdl, "LDL": ldl})
 
-    # 31. High RDW with normal MCV - early iron/B12 deficiency
     rdw = g("red_cell_distribution_width")
     mcv = g("mean_corpuscular_volume")
     if hb and hb<12 and rdw and rdw>15 and mcv and 80<=mcv<=100:
@@ -7954,7 +7297,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="BSH Anemia 2023",
             inputs={"Hb": hb, "RDW": rdw, "MCV": mcv})
 
-    # 32. Leukocytosis with left shift
     wbc = g("white_blood_cell_count")
     neut = g("neutrophils")
     if wbc and wbc>11 and neut and neut>75:
@@ -7965,7 +7307,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Harrison Infectious Disease",
             inputs={"WBC": wbc, "Neut": neut})
 
-    # 33. Thrombocytopenia severe
     if plt and plt<50:
         add(pattern_id="severe_thrombocytopenia", name_en="Severe Thrombocytopenia",
             name_fa="ترومبوسیتوپنی شدید", value=round(plt,0),
@@ -7974,7 +7315,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="BSH Thrombocytopenia 2023",
             inputs={"PLT": plt})
 
-    # 34. ESR/CRP dissociation
     esr = g("erythrocyte_sedimentation_rate")
     crp = g("c_reactive_protein")
     if esr and esr>50 and crp and crp<10:
@@ -7985,7 +7325,6 @@ def tahlil_olgoo_haye_moshtagh(
             citation="Lapić I, Biochem Med 2020",
             inputs={"ESR": esr, "CRP": crp})
 
-    # 35. Hypothyroidism metabolic effects
     tsh = g("thyroid_stimulating_hormone")
     ft4 = g("free_thyroxine")
     chol = g("total_cholesterol")
@@ -7999,7 +7338,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="ATA Hypothyroidism 2014",
                 inputs={"TSH": tsh, "FT4": ft4, "Chol": chol or 0, "CK": ck or 0})
 
-    # 36. ULTRA-PRECISE: Pediatric overall normal assessment
     age_check = _ctx_get("age_years")
     try:
         age_check = float(age_check) if age_check is not None else None
@@ -8052,7 +7390,6 @@ def tahlil_olgoo_haye_moshtagh(
                 citation="CALIPER Pediatric Reference Intervals 2020; Harriet Lane Handbook",
                 inputs={"Age": age_check, "NormalRatio": round(normal_count/total_checked,2)})
 
-    # 37. Thrombotic Microangiopathy (TMA / TTP / HUS Pattern)
     haptoglobin_v = g("serum_haptoglobin") or g("haptoglobin")
     inr_v = g("inr") or g("international_normalized_ratio")
     fib_v = g("fibrinogen")
@@ -8080,7 +7417,6 @@ def tahlil_olgoo_haye_moshtagh(
                     inputs={"PLT": plt, "LDH": ldh, "Hb": hb, "INR": inr_v or 1.0, "Fibrinogen": fib_v or 300}
                 )
 
-    # 38. Hemophagocytic Lymphohistiocytosis (HLH / MAS Pattern)
     ferr_v = g("ferritin")
     tg_v = g("triglycerides")
     if ferr_v and ferr_v > 3000.0:
@@ -8107,7 +7443,6 @@ def tahlil_olgoo_haye_moshtagh(
                 inputs={"Ferritin": ferr_v, "Cytopenias": cytopenia_count, "Fibrinogen": fib_v or 0, "TG": tg_v or 0}
             )
 
-    # 39. Adrenal Insufficiency Disambiguation (Primary vs Secondary)
     acth_v = g("adrenocorticotropic_hormone") or g("acth")
     cort_v = g("morning_cortisol") or g("cortisol_morning") or g("cortisol_8am") or g("cortisol")
     if cort_v and cort_v < 5.0:
@@ -8145,10 +7480,8 @@ def tahlil_olgoo_haye_moshtagh(
                 inputs={"Cortisol": cort_v, "ACTH": acth_v or 0, "Potassium": k or 0}
             )
 
-    # 40. Pheochromocytoma / Paraganglioma Catecholamine Crisis
     p_meta = g("plasma_free_metanephrines") or g("plasma_metanephrine")
     p_normeta = g("plasma_free_normetanephrines") or g("plasma_normetanephrine")
-    # Handle both pg/mL and nmol/L (1 nmol/L ~ 197 pg/mL)
     p_meta_pg = (p_meta * 197.2 if p_meta < 50.0 else p_meta) if p_meta is not None else None
     p_normeta_pg = (p_normeta * 183.2 if p_normeta < 50.0 else p_normeta) if p_normeta is not None else None
     if (p_meta_pg and p_meta_pg > 200.0) or (p_normeta_pg and p_normeta_pg > 400.0):
@@ -8171,8 +7504,6 @@ def tahlil_olgoo_haye_moshtagh(
     return out
 
 
-
-
 @functools.lru_cache(maxsize=4096)
 def _is_finding_entity(disease_id: str) -> bool:
     """True when the entity's name is nothing but a laboratory finding plus
@@ -8191,20 +7522,12 @@ def _is_finding_entity(disease_id: str) -> bool:
     return found
 
 
-# --- Code-level curation of the AI-assisted registry -----------------------
-# Rules whose expression contradicts the entity (e.g. "hypoglycemia" supported
-# by glucose >= 140) are removed at load time.
 QUARANTINED_RULE_IDS: frozenset[str] = frozenset({
     "hyperinsulinemic_hypoglycemia_guideline_criterion_v1",
     "factitious_hypoglycemia_guideline_criterion_v1",
-    # Requires 24-h protein AND UPCR AND UACR AND albumin simultaneously - no
-    # real report carries all three proteinuria measures; replaced by
     # nephrotic_syndrome_kdigo_any_proteinuria_v1 (any one measure + albumin).
     "nephrotic_syndrome_v1",
-    # "Hypercalcaemia of malignancy" supported by glucose >= 140 mg/dL.
     "hypercalcemia_of_malignancy_support_pattern_guideline_criterion_v1",
-    # Thyroid / cortisol / HbA1c screens attached to the HHS entity make a
-    # TSH of 5 vote for a hyperosmolar emergency.
     "hyperosmolar_hyperglycemic_state_tsh_hypothyroid_screen",
     "hyperosmolar_hyperglycemic_state_tsh_hyperthyroid_screen",
     "hyperosmolar_hyperglycemic_state_addison_morning_cortisol",
@@ -8245,7 +7568,7 @@ def _direction_contradictions(rules: Mapping[str, Mapping[str, Any]]) -> list[tu
             continue
         did = str(r.get("disease_id", ""))
         expr = r.get("expression") or {}
-        if "feature_id" not in expr:          # only unambiguous single-condition rules
+        if "feature_id" not in expr:
             continue
         fid = str(expr.get("feature_id", ""))
         op = expr.get("operator")
@@ -8316,7 +7639,6 @@ def _sup_rule(rule_id: str, disease_id: str, rule_type: str, expression: dict[st
 
 
 SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
-    # ---- acute pancreatitis: lipase >= 3x ULN (revised Atlanta; ACG 2024) ----
     _sup_rule("acute_pancreatitis_lipase_3x_uln_acg2024", "acute_pancreatitis", "diagnostic_criterion",
               _leaf("lipase", ">=", 180.0, "U/L", 3.0),
               "Acute pancreatitis - lipase >= 3x ULN (ACG 2024 / revised Atlanta)",
@@ -8325,7 +7647,6 @@ SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
               "(with typical pain or imaging) for acute pancreatitis; sensitivity ~90 %, specificity ~95 %.",
               ["ULN assumed 60 U/L; scale to the performing laboratory's interval.",
                "Renal failure, bowel ischaemia, DKA and macrolipasaemia also raise lipase."]),
-    # ---- rhabdomyolysis: CK > 5x ULN; > 5,000 U/L = AKI risk ----
     _sup_rule("rhabdomyolysis_ck_5x_uln_screen_v1", "rhabdomyolysis", "screening",
               _leaf("creatine_kinase_total", ">=", 1000.0, "U/L", 2.0),
               "Rhabdomyolysis - CK >= 5x ULN", "kdigo_aki_2012",
@@ -8337,7 +7658,6 @@ SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
               "CK >= 5,000 U/L marks clinically significant rhabdomyolysis with risk of myoglobin-induced AKI "
               "(McMahon risk score); aggressive fluid resuscitation is indicated.",
               ["Peak CK is usually 24-72 h after injury."], urgent=True),
-    # ---- multiple myeloma (IMWG) ----
     _sup_rule("multiple_myeloma_imwg_m_protein_or_flc_v1", "multiple_myeloma", "diagnostic_criterion",
               {"any": [_leaf("serum_protein_electrophoresis_m_spike", ">=", 3.0, "g/dL", 3.0),
                        _leaf("free_light_chain_ratio", ">=", 100.0, "ratio", 3.0),
@@ -8358,7 +7678,6 @@ SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
               "classic presentation of symptomatic myeloma.",
               ["Any single CRAB feature is non-specific; it is the combination with a paraprotein that counts."],
               urgent=True),
-    # ---- acute myeloid leukaemia (WHO 2022 / ELN 2022) ----
     _sup_rule("acute_myeloid_leukemia_blasts_ge_20_eln_v1", "acute_myeloid_leukemia", "diagnostic_criterion",
               _leaf("blasts_percent", ">=", 20.0, "%", 4.0),
               "Acute leukaemia - >= 20 % blasts", "eln_aml_2024",
@@ -8373,7 +7692,6 @@ SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
               "Any circulating blasts accompanied by anaemia or thrombocytopenia is an urgent haematology "
               "referral.", ["Leukoerythroblastic reactions and recovery marrows can show rare blasts."],
               specificity="specific", urgent=True),
-    # ---- pulmonary embolism: D-dimer is an exclusion test ----
     _sup_rule("pulmonary_embolism_d_dimer_positive_screen_v1", "pulmonary_embolism", "screening",
               _leaf("d_dimer", ">=", 0.5, "ug/mL", 1.0),
               "Pulmonary embolism - D-dimer above cut-off (not excluded)", "esc_pulmonary_embolism_2019",
@@ -8382,7 +7700,6 @@ SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
               ["Age-adjusted cut-off = age x 10 ng/mL FEU over 50 y.",
                "Raised in sepsis, malignancy, pregnancy, post-operatively."],
               specificity="non_specific", age_groups=_ADULT_AGES),
-    # ---- hepatitis A: anti-HAV IgM ----
     _sup_rule("hepatitis_a_igm_positive_diagnostic_v1", "hepatitis_a", "diagnostic_criterion",
               {"all": [_leaf("hepatitis_a_igm_antibody", "==", 1.0, "1", 4.0),
                        _leaf("alanine_aminotransferase", ">", 50.0, "U/L", 1.0)]},
@@ -8401,7 +7718,6 @@ SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
               "Proteinuria >= 3.5 g/day (UPCR >= 3,000 mg/g) with serum albumin < 3.0 g/dL defines nephrotic "
               "syndrome; oedema and hyperlipidaemia are supportive.",
               ["Spot ratios approximate 24-h excretion; confirm when near the threshold."]),
-    # ---- PTH-independent hypercalcaemia / humoral hypercalcaemia of malignancy ----
     _sup_rule("hypercalcemia_pth_independent_v1", "hypercalcemia_of_malignancy_support_pattern", "diagnostic_criterion",
               {"all": [_leaf("calcium_total", ">", 10.5, "mg/dL", 2.0),
                        _leaf("intact_parathyroid_hormone", "<", 20.0, "pg/mL", 3.0)]},
@@ -8417,7 +7733,6 @@ SUPPLEMENTAL_RULES: list[dict[str, Any]] = [
               "malignancy (squamous, renal, breast, HTLV-1 ATLL).",
               ["PTHrP assay units vary (pmol/L vs ng/mL); threshold assumes assay ULN ~2 pmol/L."],
               urgent=True),
-    # ---- Cushing syndrome (Endocrine Society) ----
     _sup_rule("cushing_syndrome_dst_nonsuppression_v1", "cushing_syndrome", "screening",
               _leaf("cortisol_after_dexamethasone", ">", 1.8, "ug/dL", 3.0),
               "Cushing screen - 1 mg overnight DST cortisol > 1.8 ug/dL", "endocrine_society_cushing_2024",
@@ -8471,15 +7786,12 @@ class DiseaseGuidelineRegistry:
         self.diseases: dict[str, dict[str, Any]] = payload.get(
             "diseases", {})
         self.rules: dict[str, dict[str, Any]] = payload.get("rules", {})
-        try:  # extension 7 (2026-10-22)
+        try:
             _NONSPECIFIC_ONLY_IDS.clear(); _NONSPECIFIC_ONLY_IDS.update(_collect_nonspecific_only(self.rules))
         except Exception:
             pass
         self.sources: dict[str, dict[str, Any]] = payload.get(
             'guideline_sources', {})
-        # Code-level curation layer: quarantine registry rules whose direction
-        # contradicts the entity they claim to support, and add WHO adult anemia
-        # thresholds that the shipped registry lacks.
         self.quarantined_rules: list[str] = []
         for bad_id in QUARANTINED_RULE_IDS:
             if bad_id in self.rules:
@@ -8719,33 +8031,19 @@ class DiseaseGuidelineRegistry:
             disease = self.diseases.get(str(rule.get("disease_id"))) or {}
             required = set((disease.get("feature_links") or {}).get("required") or ())
             rule_feats = set(rule.get("_feature_ids") or ())
-            # A finding that *defines* the entity (hypoglycaemia <- glucose,
-            # hyperkalaemia <- potassium) is not "stamped" onto it: the
-            # rule is the entity's own criterion and keeps full weight.
-            # Decided from the entity's name and the rule's direction, not
-            # from `feature_links.required`, which the registry fills
-            # inconsistently (it lists bilirubin as the sole requirement of
-            # congenital dyserythropoietic anaemia).
             if self._rule_defines_finding_entity(rule):
                 self.rule_defines_entity.add(rule_id)
                 self.rule_empirical_specificity[rule_id] = 1.0
                 continue
             # Curated rules (registry status `curated_guideline_anchored`,
             # curation pass 13.0.0) encode a guideline's published decision
-            # limit; their weight is not inferred from how the AI-assembled
-            # remainder of the registry re-uses the analyte.
             if str(rule.get("status") or "") == "curated_guideline_anchored":
                 self.rule_empirical_specificity[rule_id] = 1.0
                 continue
             n_sig = n
-            # A multi-feature pattern ("hyponatraemia + hyperkalaemia")
-            # cannot be carried by a rule that sees only one of its parts.
             coverage = 1.0
             if len(required) >= 2:
                 coverage = max(0.5, len(rule_feats & required) / len(required))
-            # ...unless the rule tests a pathogen / decisive marker in the
-            # positive direction (anti-HAV IgM, lipase, blasts): that leaf
-            # IS the criterion, whatever else `feature_links.required` lists.
             if coverage < 1.0 and str(rule.get("rule_type") or "") != "exclusion_criterion":
                 for leaf in _leaf_conditions(rule.get("expression")):
                     lf = str(leaf.get("feature_id") or "")
@@ -8754,10 +8052,6 @@ class DiseaseGuidelineRegistry:
                             and op in (">", ">=", "=="):
                         coverage = 1.0
                         break
-            # For a lone threshold the discriminating power is bounded by how
-            # many diseases claim the *same analyte in the same direction*:
-            # "bilirubin > 1.5" is not more specific than "bilirubin > 1.2"
-            # merely because nobody else picked 1.5.
             expression = rule.get("expression") or {}
             if expression.get("feature_id"):
                 op = str(expression.get("operator") or "")
@@ -8768,16 +8062,9 @@ class DiseaseGuidelineRegistry:
                 self.rule_empirical_specificity[rule_id] = coverage
                 continue
             spec = 1.0 / (1.0 + math.log2(n))
-            # Legitimately shared diagnostic criteria (ADA FPG >= 126 across
-            # the diabetes subtypes) are discounted gently; screening
-            # thresholds copied onto dozens of unrelated entities, hard.
             is_dx = str(rule.get("rule_type") or "") == "diagnostic_criterion"
             floor = 0.5 if is_dx else 0.15
-            # "FPG >= 126 -> Paget disease / phaeochromocytoma / HHS" (28
-            # entities), "CRP > 5" as the diagnostic criterion of 133
-            # diseases: a single-analyte threshold stamped onto >= 5
             # entities is a template artefact, not a shared guideline
-            # criterion. It is demoted to a non-specific screen.
             if (is_dx and n_sig >= STAMPED_SIGNATURE_MIN
                     and _shomar_shart(rule) < 2
                     and not _is_pathogen_marker_rule(rule)
@@ -8890,9 +8177,6 @@ def normalize_observations(
                 and default_source == 'derived'):
             container = container["results"]
         for feature_id, raw_original in container.items():
-            # Short lab names (tsh, egfr, alt) must be mapped to the
-            # canonical ids the registry and the Bayesian/fuzzy layers use,
-            # otherwise the observation is dropped without a trace.
             canon = _resolve_alias(feature_id, known)
             if canon and canon != feature_id:
                 renamed[feature_id] = canon
@@ -8931,16 +8215,13 @@ def normalize_observations(
                     f"{feature_id}: scalar input has no explicit "
                     f"unit or confirmation metadata.")
 
-            if isinstance(raw, Mapping) and raw.get("series") is not None:  # ESL ext 11-T (2026-10-23)
+            if isinstance(raw, Mapping) and raw.get("series") is not None:
                 _ser = _normalise_series(raw.get("series"))
                 if _ser:
                     record.metadata["series"] = _ser
             old = records.get(feature_id)
             if (old and old.source == "input" and record.source == "derived"
                     and (old.value != record.value or old.unit != record.unit)):
-                # A measured analyte outranks the calculator's estimate of the
-                # same analyte (direct LDL vs Friedewald LDL). That is not a
-                # conflict between two measurements; the estimate is simply
                 # superseded, with a note when the two disagree materially.
                 try:
                     ov, nv = float(old.value), float(record.value)
@@ -8973,8 +8254,6 @@ def normalize_observations(
             "Mapped to canonical feature ids: "
             + ", ".join(f"{k}->{v}" for k, v in sorted(renamed.items())))
     if unknown:
-        # Loud, because a silently ignored lab value is the worst outcome
-        # here: the report looks complete but the finding never existed.
         warnings.append(
             "IGNORED - no rule or model consumes these features: "
             + ", ".join(sorted(set(unknown)))
@@ -9049,14 +8328,7 @@ POSITIVE_RESULT_STATES = frozenset({
 })
 
 
-# The registry labels every rule with how narrowly it targets its disease
 # and which of the four guideline layers it belongs to. Both are evidence
-# about how much the rule should count, so both scale its contribution.
-# A specific diagnostic criterion is worth roughly twice a general
-# screening rule that happens to fire.
-# child -> umbrella term. Only pairs where the parent genuinely subsumes
-# the child, so demoting the parent cannot hide a distinct diagnosis.
-# ESL extension 9 (2026-10-23) — ranking hygiene tables (no probability effect).
 _ESL_SYNONYM_FAMILIES: tuple[frozenset, ...] = (
     frozenset({"thalassemia_trait", "beta_thalassemia_trait", "beta_thalassemia_minor", "alpha_thalassemia_trait"}),
     frozenset({"immune_thrombocytopenia", "immune_thrombocytopenia_itp"}),
@@ -9067,7 +8339,6 @@ _ESL_SYNONYM_FAMILIES: tuple[frozenset, ...] = (
     frozenset({"diabetes_mellitus", "type_2_diabetes"}),
     frozenset({"heart_failure_bnp_pattern", "heart_failure_ntprobnp_pattern"}),
 )
-# ((ESL syndrome ids), ((organising diagnosis ids), (downstream findings it explains)))
 _ESL_ORGANISING_PRECEDENCE: tuple = (
     (("renal_failure_marked", "ckd_advanced", "ckd_egfr_g4_single"),
      (("acute_kidney_injury", "chronic_kidney_disease", "renal_failure_unspecified"),
@@ -9080,7 +8351,6 @@ _ESL_ORGANISING_PRECEDENCE: tuple = (
      (("hyperosmolar_hyperglycemic_state",),
       ("hyperglycemia", "hypernatremia", "hyponatremia", "pseudohyponatremia", "acute_kidney_injury", "prerenal_azotemia"))),
 )
-# aetiology id -> (finding ids it is inferred from, confirmatory marker feature ids)
 _ESL_AETIOLOGY_BENEATH_FINDING: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
     "bacterial_infection": (("sepsis", "septic_shock", "leukocytosis_pattern", "neutrophilia_pattern"),
                             ("procalcitonin", "procalcitonin_quantitative", "c_reactive_protein", "high_sensitivity_c_reactive_protein", "blood_culture", "band_neutrophils_percent")),
@@ -9129,7 +8399,6 @@ def kashf_selsele_maratib(disease_ids: Iterable[str]) -> dict[str, str]:
                     and not candidate.startswith("co_")):
                 out[cid] = candidate
                 break
-    # A cycle would let two diseases demote each other forever.
     for child, parent in list(out.items()):
         if out.get(parent) == child:
             out.pop(child, None)
@@ -9153,16 +8422,9 @@ _SPECIFICITY_FACTOR = {
     "general": 0.72,
 }
 
-# A lone non-specific threshold names a category, never a diagnosis, so
-# it is held to a fraction of its nominal weight. Conjunctions and rules
-# the registry grades "specific" are untouched: both discriminate.
 _TAK_SHART_SCREENING_FACTOR = 0.25
-# A single-leaf "diagnostic criterion" whose verbatim signature appears under
-# this many or more diseases is a template stamp (see
 # DiseaseGuidelineRegistry._index_empirical_specificity).
 STAMPED_SIGNATURE_MIN = 5
-# disease_id -> (components required, component finding groups, posterior cap
-# while fewer than the required number are positive).
 COUNT_DEFINED_NODES: dict[str, tuple[int, tuple[tuple[str, ...], ...], float]] = {
     "metabolic_syndrome": (3, (
         ("triglycerides_high",), ("hdl_low",), ("fbs_high", "fbs_prediabetic"),
@@ -9170,14 +8432,7 @@ COUNT_DEFINED_NODES: dict[str, tuple[int, tuple[tuple[str, ...], ...], float]] =
     ), 0.45),
 }
 PATHOGEN_MARKER_MIN_SPECIFICITY = 0.60
-# A diagnostic-criterion rule on a decisive marker (lipase >= 3x ULN, CK >=
-# 5,000, blasts >= 20 %) is shared only by the syndrome's own aliases /
-# pattern twins; it is not "stamped" and keeps near-full weight.
 DECISIVE_DIAGNOSTIC_MIN_SPECIFICITY = 0.85
-# Non-infectious analytes whose single positive result is itself the
-# diagnostic criterion of the entity carrying it (lipase >= 3x ULN, CK > 5x
-# ULN, >= 20 % blasts, M-spike, PTHrP, non-suppressed DST cortisol...).
-# They are treated like pathogen markers: no "doorway" discount.
 _DECISIVE_MARKER_RE = re.compile(
     r"(^lipase$|^amylase$|creatine_kinase_total|^troponin|high_sensitivity_troponin|"
     r"blasts_percent|m_spike|free_light_chain|parathyroid_hormone_related_peptide|"
@@ -9194,12 +8449,6 @@ _DECISIVE_MARKER_RE = re.compile(
     re.IGNORECASE)
 
 
-# Analytes every routine panel carries (CBC, differential, BMP/CMP, LFT,
-# lipids, TSH, acute-phase, iron studies). A combination of these is a
-# *compatible laboratory pattern* for an infection, malignancy or specific
-# endocrinopathy - never its diagnostic criterion. The AI-assembled registry
-# labels "platelets < 150 + LDH > 300" a diagnostic criterion of malaria and
-# "CRP > 10 + platelets < 150" one of chikungunya; this guard re-grades them.
 ROUTINE_PANEL_FEATURES: frozenset[str] = frozenset({
     "hemoglobin", "hematocrit", "red_blood_cell_count", "mean_corpuscular_volume",
     "mean_corpuscular_hemoglobin", "mean_corpuscular_hemoglobin_concentration",
@@ -9276,7 +8525,6 @@ def _is_pathogen_marker_rule(rule: Mapping[str, Any]) -> bool:
     fid = str(expr.get("feature_id") or "")
     if not fid or not _PATHOGEN_MARKER_RE.search(fid):
         return False
-    # Only the positive/qualitative direction; "HBsAg negative" exclusions stay as they are.
     ctx = expr.get("context") or {}
     qual = str(ctx.get("qualitative") or "").casefold()
     if qual in {"negative", "non_reactive", "not_detected", "absent"}:
@@ -9374,12 +8622,6 @@ def _edgham_nodes(truth: TruthValue,
     )
 
 
-
-# ---------------------------------------------------------------------------
-# Pre-analytical / structural plausibility gate
-# ---------------------------------------------------------------------------
-# Absolute physiological limits in canonical units. A value outside these
-# bounds is not a critical result, it is a transcription or unit error and
 # must not reach any reasoning layer.
 ABSOLUTE_LIMITS: dict[str, tuple[float, float]] = {
     "hemoglobin": (1.0, 25.0), "hematocrit": (3.0, 75.0),
@@ -9409,7 +8651,6 @@ ABSOLUTE_LIMITS: dict[str, tuple[float, float]] = {
     "activated_partial_thromboplastin_time": (10.0, 300.0),
     "25_hydroxy_vitamin_d": (1.0, 400.0), "vitamin_b12": (20.0, 10000.0),
     "ph": (6.5, 7.9), "pco2": (5.0, 200.0), "po2": (10.0, 700.0), "lactate": (0.1, 40.0),
-    # ESL ext 8c (fabrication-provocation audit 2026-10-22): canonical units per feature registry
     "arterial_ph": (6.5, 7.9), "venous_ph": (6.5, 7.9), "arterial_pco2": (5.0, 250.0), "arterial_po2": (5.0, 760.0),
     "troponin_i": (0.0, 10000.0), "troponin_t": (0.0, 1000.0), "creatine_kinase_total": (0.0, 2000000.0),
     "lipase": (0.0, 100000.0), "amylase": (0.0, 100000.0), "ammonia": (0.0, 3000.0), "procalcitonin": (0.0, 2000.0),
@@ -9418,7 +8659,6 @@ ABSOLUTE_LIMITS: dict[str, tuple[float, float]] = {
     "ethanol": (0.0, 1500.0), "temperature": (20.0, 45.0), "body_temperature": (20.0, 45.0),
 }
 
-# Analyte -> fraction of reliability kept when the sample carries the
 # interference. Tietz, ch. "Preanalytical variables"; CLSI C56.
 INTERFERENCE_PENALTIES: dict[str, dict[str, float]] = {
     "hemolysis": {
@@ -9465,14 +8705,6 @@ def _canonical_number(engine: "ClinicalRuleEngine", fid: str,
         return _float(record.value)
 
 
-
-# Feature ids that the registries use interchangeably for the same
-# measurement. 470 rules are written on "platelets" and 97 on
-# "platelet_count"; a sheet that arrives as either must drive both.
-# The AI-assembled registry carries several ids for one analyte, with the rule
-# base split between them (e.g. intact PTH: 81 rules on one id, 17 on another).
-# Members of a group are the same measurement; an observation on any member is
-# mirrored to the others so no rule is starved by a naming accident.
 EQUIVALENT_FEATURE_GROUPS: tuple[tuple[str, ...], ...] = (
     ("platelet_count", "platelets"),
     ("ldl_cholesterol_direct", "ldl_cholesterol_calculated"),
@@ -9521,7 +8753,6 @@ EQUIVALENT_FEATURE_GROUPS: tuple[tuple[str, ...], ...] = (
     ("urine_albumin_to_creatinine_ratio", "albumin_creatinine_ratio"),
     ("total_prostate_specific_antigen", "prostate_specific_antigen"),
     ("fasting_serum_insulin", "insulin_fasting", "insulin"),
-    # --- registry near-duplicates found by stem analysis (serum_/plasma_/_serum/_quantitative...) ---
     ("glucose", "glucose_random"),
     ("arterial_ph", "arterial_blood_ph", "ph", "blood_ph"),
     ("bicarbonate", "calculated_bicarbonate_blood_gas", "serum_bicarbonate"),
@@ -9577,7 +8808,6 @@ EQUIVALENT_FEATURE_GROUPS: tuple[tuple[str, ...], ...] = (
     ("fasting_c_peptide", "c_peptide"),
     ("total_carbon_dioxide", "carbon_dioxide", "total_co2"),
     ("cortisol_30min_post_acth", "cortisol_30_min_post_acth"),
-    # --- engine-internal legacy ids (REFERENCE_RANGES / FEATURE_TO_FINDING / PANIC_VALUES) ---
     ("total_bilirubin", "bilirubin_total"),
     ("direct_bilirubin", "bilirubin_direct"),
     ("indirect_bilirubin", "bilirubin_indirect"),
@@ -9616,7 +8846,6 @@ def _mirror_equivalent_observations(observations: dict[str, ObservationRecord],
         for f in group:
             if f not in observations:
                 observations[f] = replace(src, feature_id=f) if is_dataclass(src) else src
-    # A glucose drawn fasting satisfies the fasting-plasma-glucose criteria.
     if (context.fasting is True and "glucose" in observations
             and "fasting_plasma_glucose" not in observations):
         src = observations["glucose"]
@@ -9654,11 +8883,8 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
         if note not in notes:
             notes.append(note)
 
-    # --- 1. impossible values ---------------------------------------------
-    # ESL ext 8c: values that are implausible in the stated unit but ordinary in the
-    # sibling unit are the classic transcription error (glucose "5.5 mg/dL" = 5.5 mmol/L).
     # They are removed with an explicit note instead of being read literally.
-    _UNIT_SWAP = {  # fid: (implausible-if-below, implausible-if-above, sibling unit, factor to canonical)
+    _UNIT_SWAP = {
         "glucose": (20.0, None, "mmol/L", 18.016), "fasting_plasma_glucose": (20.0, None, "mmol/L", 18.016),
         "creatinine": (None, 30.0, "µmol/L", 1 / 88.4), "hemoglobin": (None, 26.0, "g/L", 0.1),
         "calcium_total": (None, 20.0, "mmol/L", 4.008), "total_bilirubin": (None, 60.0, "µmol/L", 1 / 17.1),
@@ -9686,7 +8912,7 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
                     del observations[fid]
                     continue
         lim = ABSOLUTE_LIMITS.get(fid)
-        if lim is None:  # ESL ext 8c: fall back to the feature registry's own physiological limits
+        if lim is None:
             try:
                 _pl = ((engine.features.get(fid) or {}).get("validation") or {}).get("physiological_limits") or {}
                 if _pl.get("max") is not None:
@@ -9715,10 +8941,6 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
                     return v
         return None
 
-    # --- 2. culprit localisation (shared with the OCR layer) -----------------
-    # The identity solver names the single analyte whose repair restores every
-    # identity it takes part in; only that analyte is then down-weighted and
-    # the innocent participants keep their reliability.
     culprits: dict[str, tuple[Any, str]] = {}
     exonerated: set[str] = set()
     try:
@@ -9752,12 +8974,11 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
     def penalise_group(fids: Iterable[str], factor: float, note_: str) -> None:
         for f in fids:
             if f in culprits:
-                continue              # already carries the heavier culprit penalty
+                continue
             if culprits and f in exonerated:
-                continue              # a named culprit explains the failure
+                continue
             penalise(f, factor, note_)
 
-    # --- 2a. CBC arithmetic --------------------------------------------------
     hb, hct, rbc = num("hemoglobin"), num("hematocrit"), num("red_blood_cell_count")
     mcv, mch, mchc = (num("mean_corpuscular_volume"), num("mean_corpuscular_hemoglobin"),
                       num("mean_corpuscular_hemoglobin_concentration"))
@@ -9796,7 +9017,6 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
                         "mean_corpuscular_hemoglobin", "mean_corpuscular_hemoglobin_concentration"),
                        0.6, "CBC arithmetic inconsistency")
 
-    # --- 2b. differential sums to ~100 % --------------------------------------
     diff_parts = [num(f) for f in ("neutrophils_percent", "lymphocytes_percent",
                                    "monocytes_percent", "eosinophils_percent",
                                    "basophils_percent")]
@@ -9811,7 +9031,6 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
                             "eosinophils_percent", "basophils_percent"),
                            0.6, "differential does not sum to 100 %")
 
-    # --- 2c. chemistry identities ----------------------------------------------
     tbil, dbil = num("total_bilirubin"), num("direct_bilirubin")
     if tbil is not None and dbil is not None and dbil > tbil * 1.05 + 0.1:
         warnings.append(
@@ -9841,7 +9060,6 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
             for f in ("sodium", "chloride", "bicarbonate"):
                 penalise(f, 0.6, "implausible anion gap")
 
-    # --- 3. declared interference ---------------------------------------------
     flags: dict[str, bool] = {}
     sources: list[Mapping[str, Any]] = [context.extra or {}]
     sources += [rec.metadata for rec in observations.values()]
@@ -9868,7 +9086,6 @@ def preanalytical_gate(engine: "ClinicalRuleEngine",
             for fid, factor in INTERFERENCE_PENALTIES[kind].items():
                 penalise(fid, factor, f"{kind} interference")
 
-    # --- 4. demographics -------------------------------------------------------
     age = context.age_years
     rejected = _float((context.extra or {}).get("rejected_age_years"))
     if rejected is not None:
@@ -9925,8 +9142,6 @@ def hydrate_reference_ranges_from_registry(features: Mapping[str, Any]) -> int:
             pop = str(r.get("population") or "adult").lower()
             sex = str(r.get("sex") or "all").lower()
             entry = {}
-            # One-sided intervals (e.g. troponin "< 0.04"): open side is
-            # anchored at 0 / a wide multiple so comparisons stay numeric.
             entry["low"] = lo if lo is not None else 0.0
             entry["high"] = hi if hi is not None else (
                 (lo * 10.0) if lo and lo > 0 else float("inf"))
@@ -9936,7 +9151,6 @@ def hydrate_reference_ranges_from_registry(features: Mapping[str, Any]) -> int:
                 if general is None or pop == "adult":
                     general = entry
         if general is None and by_sex:
-            # average the sexes as the unstratified fallback
             lows = [v["low"] for v in by_sex.values()]
             highs = [v["high"] for v in by_sex.values()]
             general = {"low": min(lows), "high": max(highs)}
@@ -9958,43 +9172,13 @@ def hydrate_reference_ranges_from_registry(features: Mapping[str, Any]) -> int:
     return added
 
 
-
-# =============================================================================
-# EXPERT SYNDROME LAYER (ESL) - in-engine clinical syndrome library
-# =============================================================================
-# Why this exists. The registry rules are single-threshold, AI-assembled
-# statements ("glucose <= 70 -> Addison's"). Difficult presentations are
-# defined by *constellations* with exclusions (AKA = ketoacidosis + low/normal
-# glucose + alcohol context; PTHrP-mediated hypercalcaemia = high Ca + low PTH
-# + high PTHrP; Gilbert = isolated unconjugated hyperbilirubinaemia with
-# normal haemolysis markers). This layer encodes such constellations as
 # declarative criteria taken from the primary guideline / textbook definition
-# and feeds a met constellation into the fusion as a curated, anchored rule
 # vote (same path as `curated_guideline_anchored` registry rules), together
-# with the set of features it consumed so evidence subsumption can list the
-# constituent findings beneath it.
-#
-# Each entry:
-#   id        syndrome id (report key)
-#   dx        target disease ids, first = primary (must exist in registry)
-#   req       criteria that must ALL be met
-#   sup       optional criteria; `min_sup` of them must be met
-#   excl      criteria that, when met, veto the syndrome
-#   ctx       context predicates (pregnant / age / sex / med / cond)
-#   cap       {disease_id: factor} - competitors capped at factor x own score
-#   strength  "anchor" (0.95) | "strong" (0.88) | "pattern" (0.80, finding-level guard)
 #   src       citation
-#
-# Criteria are (key, op, value). Keys are ESL analyte groups (see
-# _ESL_GROUPS, resolved against the observation ids with unit conversion to
-# the group's canonical unit) or computed keys (_ESL_COMPUTED).
-# Ops: > >= < <= == between pos neg present absent
-# -----------------------------------------------------------------------------
 
 _ESL_GROUPS: dict[str, tuple[str, tuple[str, ...]]] = {
-    # key: (canonical unit for thresholds, candidate observation ids)
     "glucose": ("mg/dL", ("glucose", "fasting_plasma_glucose", "glucose_random", "plasma_glucose")),
-    "fpg": ("mg/dL", ("fasting_plasma_glucose", "glucose_fasting")),  # ESL extension 6d (2026-10-21)
+    "fpg": ("mg/dL", ("fasting_plasma_glucose", "glucose_fasting")),
     "glucose_1h": ("mg/dL", ("glucose_1_hour_ogtt",)),
     "glucose_2h": ("mg/dL", ("glucose_2_hour_postprandial", "glucose_2_hour_ogtt", "two_hour_plasma_glucose")),
     "a1c": ("%", ("hemoglobin_a1c",)),
@@ -10283,7 +9467,6 @@ _ESL_GROUPS: dict[str, tuple[str, tuple[str, ...]]] = {
 def _esl_compute(v: Mapping[str, Optional[float]], ctx: "ClinicalContext") -> dict[str, Optional[float]]:
     """Computed keys (returns None when inputs missing)."""
     out: dict[str, Optional[float]] = {}
-    # ESL extension 6d (2026-10-21): eGFR — reported value preferred, else CKD-EPI 2021 (race-free) from creatinine
     _eg = v.get("egfr")
     if _eg is None and v.get("cr") is not None:
         try:
@@ -10296,9 +9479,8 @@ def _esl_compute(v: Mapping[str, Optional[float]], ctx: "ClinicalContext") -> di
             _eg = None
     out["egfr_c"] = _eg
     if v.get("egfr") is None and _eg is not None:
-        out["egfr"] = _eg  # extension 7 (2026-10-22): computed CKD-EPI 2021 stands in for an unreported eGFR
+        out["egfr"] = _eg
     # v6 (SAP Amendment 14, C3): KDIGO AKI 2012 §2.1 / Appendix B — when no baseline creatinine is known in an acute-care
-    # encounter, the baseline is back-calculated from the MDRD equation assuming eGFR 75 mL/min/1.73 m2; the observed
     # creatinine divided by that imputed baseline is the KDIGO staging ratio (>= 1.5 = stage 1, >= 2.0 = 2, >= 3.0 = 3).
     # v6 (SAP Amendment 14, C2): SIRS criteria count (ACCP/SCCM 1992) from temperature, heart rate, respiratory rate, WBC/bands
     try:
@@ -10309,7 +9491,7 @@ def _esl_compute(v: Mapping[str, Optional[float]], ctx: "ClinicalContext") -> di
         _n += 1 if (_rr is not None and _rr > 20) else 0
         _n += 1 if ((_w is not None and (_w > 12.0 or _w < 4.0)) or (_b is not None and _b > 10)) else 0
         _k = sum(x is not None for x in (_t, _hr, _rr)) + (1 if (_w is not None or _b is not None) else 0)
-        out["sirs_count"] = float(_n) if _k >= 2 else None   # need at least two criteria assessable
+        out["sirs_count"] = float(_n) if _k >= 2 else None
         out["sirs_assessed"] = float(_k)
     except Exception:
         out["sirs_count"] = None
@@ -10340,8 +9522,7 @@ def _esl_compute(v: Mapping[str, Optional[float]], ctx: "ClinicalContext") -> di
     if og is None and v.get("osm") is not None and osm_calc is not None:
         og = v["osm"] - osm_calc
     out["osm_gap_c"] = og
-    out["osm_eff_c"] = (2 * na + glu / 18.0) if None not in (na, glu) else None  # extension 7: effective osmolality (ADA 2024)
-    # extension 7: glucose-corrected sodium (Katz 1973 / Hillier 1999: +1.6 per 100 mg/dL over 100) and NLR (Zahorec 2001)
+    out["osm_eff_c"] = (2 * na + glu / 18.0) if None not in (na, glu) else None
     out["na_c"] = (na + 1.6 * (glu - 100.0) / 100.0) if (None not in (na, glu) and glu > 100) else na
     _np, _lp = v.get("neut_pct"), v.get("lymph_pct")
     out["nlr_c"] = (_np / _lp) if (_np is not None and _lp not in (None, 0)) else None
@@ -10375,7 +9556,6 @@ def _esl_compute(v: Mapping[str, Optional[float]], ctx: "ClinicalContext") -> di
     out["lh_fsh"] = (v["lh"] / v["fsh"]) if (v.get("lh") is not None and v.get("fsh")) else None
     age = _float(getattr(ctx, "age_years", None))
     out["age"] = age
-    # extension 7 (2026-10-22): anion gap not explained by lactate (DKA may coexist with lactic acidosis)
     _agc = out.get("ag_c") if out.get("ag_c") is not None else v.get("ag")
     _lac = v.get("lactate")
     out["ag_minus_lac"] = None if _agc is None else (_agc - (_lac or 0.0))
@@ -10429,7 +9609,6 @@ def _esl_temporal(series: Mapping[str, list[tuple[float, float]]]) -> dict[str, 
         out[f"{key}_drop_pct"], out[f"{key}_pair_pct"] = drop, pair
         later = [v for t, v in pts[1:] if t - ts[0] >= 2.0]
         out[f"{key}_clear_pct"] = ((first - min(later)) / first * 100.0) if (later and first > 0) else None
-    # troponin unified in ng/L
     for src_key, mult in (("trop", 1.0), ("trop_conv", 1000.0)):
         if f"{src_key}_n" in out:
             out["trop_dyn_min_ngl"] = out[f"{src_key}_min"] * mult
@@ -10454,7 +9633,7 @@ def _esl_ctx(ctx: "ClinicalContext", pred: str, arg: Any) -> bool:
         if pred == "encounter_in":  # v6 (SAP Amendment 14): acute-care vs community panel
             enc = str(getattr(ctx, "encounter", "") or "").lower()
             return any(enc.startswith(str(x)) for x in (arg if isinstance(arg, (list, tuple, set)) else (arg,)))
-        if pred == "attr_true":  # ESL extension 6c (2026-10-21)
+        if pred == "attr_true":
             v = getattr(ctx, str(arg), None)
             if v is None:
                 v = (getattr(ctx, "extra", {}) or {}).get(str(arg))
@@ -10472,8 +9651,6 @@ def _esl_ctx(ctx: "ClinicalContext", pred: str, arg: Any) -> bool:
             key = {"med": ("current_medications", "medications"),
                    "cond": ("known_conditions", "conditions", "comorbidities"),
                    "fh": ("family_history",),
-                   # v6 C9 (2026-10-25): presenting symptoms (free text or list) - needed for the
-                   # ischaemia arm of the Universal Definition of MI
                    "sym": ("presenting_complaint", "chief_complaint", "symptoms", "symptom_list", "presentation")}[pred]
             items: list[str] = []
             for kname in key:
@@ -10496,7 +9673,6 @@ def _esl_test(val: Optional[float], op: str, arg: Any) -> Optional[bool]:
         return val is None
     if val is None:
         return None
-    # Unit round-trips (mg/dL -> umol/L -> mg/dL) perturb values at the
     # 1e-12 level; a threshold must not flip on that noise.
     eps = 1e-7 * max(1.0, abs(float(arg)) if isinstance(arg, (int, float)) else 1.0)
     if op == ">": return val > arg + eps
@@ -10511,14 +9687,10 @@ def _esl_test(val: Optional[float], op: str, arg: Any) -> Optional[bool]:
     return None
 
 
-# ---------------------------------------------------------------------------
 # The syndrome library. Thresholds follow the cited primary sources; where a
 # source gives a range the more specific bound is used. Values are in the
-# group canonical unit (see _ESL_GROUPS).
-# ---------------------------------------------------------------------------
 _ESL_LIBRARY: list[dict[str, Any]] = [
- # ---------------- acid-base / toxicology ---------------------------------
- dict(id="dka", dx=["diabetic_ketoacidosis", "diabetes_mellitus"], req=[("glucose", ">=", 200), ("bhb", ">=", 3.0)],  # extension 7: ADA/EASD 2024 glucose >= 200
+ dict(id="dka", dx=["diabetic_ketoacidosis", "diabetes_mellitus"], req=[("glucose", ">=", 200), ("bhb", ">=", 3.0)],
       sup=[("hco3", "<", 18), ("ph", "<", 7.30), ("ag_c", ">", 12)], min_sup=1,
       cap={"metabolic_acidosis": 0.9, "euglycemic_diabetic_ketoacidosis": 0.7, "alcoholic_ketoacidosis": 0.6, "hyperosmolar_hyperglycemic_state": 0.8},
       src="ADA/EASD 2024 hyperglycaemic crises consensus"),
@@ -10562,7 +9734,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
  dict(id="bartter", dx=["bartter_syndrome", "gitelman_syndrome"], req=[("k", "<", 3.5), ("hco3", ">", 28), ("ucl", ">", 20), ("ucacr", ">", 0.2)],
       sup=[("pra", ">", 3), ("aldo", ">", 15), ("mg", ">=", 1.7)], min_sup=1, excl=[("arr", ">", 30)], ctx=[], cap={"primary_aldosteronism": 0.5},
       src="Konrad et al., Bartter consensus, Kidney Int 2021"),
- # ---------------- renal / electrolytes -----------------------------------
  dict(id="prerenal", dx=["prerenal_azotemia", "acute_kidney_injury"], req=[("cr", ">", 1.3), ("bun_cr", ">", 20)],
       sup=[("fena", "<", 1.0), ("una", "<", 20), ("feurea", "<", 35), ("natri_high", "==", 1), ("hco3", ">", 28)], min_sup=1,
       excl=[("fena", ">", 2.0), ("ck", ">", 5000)], cap={"acute_tubular_necrosis_atn": 0.6, "hyponatremia": 0.85},
@@ -10614,7 +9785,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       src="Christ-Crain 2019; Bockenhauer, Nat Rev Nephrol 2015"),
  # v6 (Amendment 14): a documented history of CKD / renal insufficiency establishes chronicity
  # (KDIGO CKD 2024: duration > 3 months is met when the abnormality is already known) — a
- # single reduced eGFR with such a history is CKD, not an undetermined reduction in GFR.
  dict(id="ckd_documented_history_reduced_egfr", dx=["chronic_kidney_disease"], req=[("egfr", "<", 60)], sup=[], min_sup=0, strength="strong",
       ctx_any=[("cond", "chronic kidney"), ("cond", "ckd"), ("cond", "renal insufficiency"), ("cond", "renal failure"), ("cond", "nephropathy"),
                ("cond", "dialysis"), ("cond", "esrd"), ("cond", "kidney disease")],
@@ -10636,7 +9806,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       sup=[("cr", ">", 1.2), ("ph", ">", 7.45), ("pthrp", "<", 2)], min_sup=1, excl=[("pthrp", ">", 2)],
       cap={"hypercalcemia_of_malignancy_support_pattern": 0.6, "acute_kidney_injury": 0.8, "metabolic_alkalosis": 0.9, "chronic_kidney_disease": 0.7},
       src="Patel & Goldfarb, JASN 2010 (calcium-alkali syndrome)"),
- # ---------------- endocrine ------------------------------------------------
  dict(id="thyroid_storm", dx=["thyroid_storm", "hyperthyroidism", "graves_disease"], req=[("tsh", "<", 0.1), ("ft4", ">", 4.0)],
       sup=[("ft3", ">", 8), ("alt", ">", 50), ("tbil", ">", 1.5), ("glucose", ">", 140), ("ca_c", ">", 10.5), ("wbc", ">", 11), ("trab", ">", 1.75)], min_sup=2,
       cap={"hyperthyroidism": 0.95, "atrial_fibrillation_hyperthyroid": 0.8}, src="Burch-Wartofsky 1993; ATA 2016 hyperthyroidism"),
@@ -10652,14 +9821,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       req=[("ft3", "<", 2.0), ("tsh", "between", (0.05, 10))], sup=[("rt3", ">", 0.35), ("crp", ">", 50), ("alb", "<", 3.2), ("lactate", ">", 2), ("ft4", "between", (0.6, 1.8))], min_sup=2,
       cap={"subclinical_hyperthyroidism": 0.4, "central_hypothyroidism": 0.6, "hypothyroidism": 0.6, "sepsis": 0.95, "malnutrition": 0.9},
       src="Fliers, Lancet Diabetes Endocrinol 2015 (NTIS)"),
- # v7 C13 (2026-10-25): acute-care context. Fliers 2015 / ATA-AACE 2012 (Garber): in hospitalised and critically ill
- # patients TSH is commonly transiently low (0.1-0.4) or, in recovery, raised (up to ~20) with low T3 and low-normal
- # or low FT4; thyroid function should not be interpreted as thyroid disease in that setting unless TSH is
- # frankly suppressed (< 0.1) or frankly raised (> 10) or a thyroid history exists. No dataset threshold.
- # v7 C13 (2026-10-25, revised in the development gate): a NORMAL TSH with normal FT4 in an ICU patient is not a finding
- # at all - the syndrome needs an ABNORMAL thyroid test in the acute-care pattern (Fliers 2015): low T3 / low-normal FT4
- # with non-suppressed TSH, a mildly low TSH (0.1-0.4) during illness, or a mildly raised TSH (4.5-10) in recovery.
- # TSH < 0.1 or > 10 fall outside the syndrome (frank thyroid disease must be considered). No dataset threshold.
  dict(id="nti_acute_care_low_t3", dx=["euthyroid_sick_syndrome_nontr"], req=[("tsh", "between", (0.1, 10.0)), ("ft3", "<", 2.3)], alt_req=[("tsh", "between", (0.1, 10.0)), ("tt3", "<", 80)],
       sup=[("ft4", "<", 1.0), ("crp", ">", 30), ("alb", "<", 3.2), ("lactate", ">", 2), ("wbc", ">", 12), ("plt", "<", 150), ("rt3", ">", 0.35)], min_sup=0, strength="pattern", ctx=[("encounter_in", ("icu", "inpatient", "emergency", "hospital", "acute"))],
       ctx_excl=[("med", "levothyrox"), ("med", "methimazole"), ("med", "carbimazole"), ("med", "propylthiouracil"), ("med", "amiodarone"), ("med", "lithium"),
@@ -10769,7 +9930,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       cap={"prediabetes": 0.5, "impaired_glucose_tolerance": 0.6, "diabetes_mellitus": 0.6}, src="IADPSG 2010 / ADA 2025 one-step 75-g OGTT: FPG ≥92, 1-h ≥180, 2-h ≥153 mg/dL"),
  dict(id="hhs", dx=["hyperosmolar_hyperglycemic_state", "diabetes_mellitus"], req=[("glucose", ">", 600), ("osm", ">", 320)], sup=[("bhb", "<", 3.0), ("hco3", ">", 15), ("ph", ">", 7.30), ("cr", ">", 1.3), ("na", ">", 145)], min_sup=1,
       cap={"diabetic_ketoacidosis": 0.6, "hypernatremia": 0.85, "acute_kidney_injury": 0.85, "diabetes_insipidus": 0.3}, src="ADA/EASD 2024 hyperglycaemic crises"),
- # ---------------- liver / GI ----------------------------------------------
  dict(id="alcoholic_hepatitis", dx=["alcoholic_hepatitis_pattern", "alcoholic_liver_disease", "alcohol_associated_hepatitis", "alcoholic_liver_pattern"],
       req=[("tbil", ">", 3.0), ("ast_alt", ">", 1.5), ("ast", "between", (50, 400))], sup=[("ggt", ">", 100), ("mcv", ">", 98), ("inr", ">", 1.5), ("wbc", ">", 11), ("alb", "<", 3.0), ("alt", "<", 200)], min_sup=2,
       min_sup_any=[("ggt", ">", 100), ("mcv", ">", 98), ("wbc", ">", 11)],
@@ -10859,7 +10019,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       excl=[("hcg", ">", 25)], ctx=[("age_ge", 30)], cap={"liver_cirrhosis": 0.9, "chronic_hepatitis_b": 0.9, "hepatitis_b": 0.9, "isolated_hyperbilirubinemia_pattern": 0.7, "nash": 0.5}, src="AASLD HCC 2023 (Singal); AFP >400 ng/mL in cirrhosis highly specific"),
  dict(id="cirrhosis_decomp", dx=["liver_cirrhosis", "decompensated_cirrhosis"], req=[("plt", "<", 150), ("alb", "<", 3.5), ("inr", ">", 1.3)], sup=[("tbil", ">", 2), ("na", "<", 135), ("nh3", ">", 60), ("ast_alt", ">", 1)], min_sup=1,
       excl=[("alt", ">", 1000), ("fib", "<", 150), ("ddimer", ">", 10)], src="EASL decompensated cirrhosis 2018"),
- # ---------------- haematology ---------------------------------------------
  dict(id="ida", dx=["iron_deficiency_anemia"], req=[("hb", "<", 13), ("ferritin", "<", 30)], sup=[("mcv", "<", 80), ("tsat", "<", 20), ("rdw", ">", 15), ("plt", ">", 400), ("chr", "<", 29)], min_sup=1,
       cap={"thalassemia_trait": 0.8, "beta_thalassemia_trait": 0.8, "anemia": 0.9, "anemia_of_chronic_disease": 0.6}, src="BSH 2021 IDA (Snook); WHO 2020 ferritin <15/30"),
  dict(id="ida_inflamm", dx=["iron_deficiency_anemia", "combined_iron_deficiency_and_anemia_of_chronic_disease", "functional_iron_deficiency", "anemia_of_chronic_disease"],
@@ -10879,22 +10038,15 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       cap={"hemolytic_anemia": 0.8, "iron_overload": 0.9, "anemia": 0.9, "thalassemia_trait": 0.5, "hemochromatosis": 0.5}, src="TIF guidelines 2021"),
  dict(id="thal_trait", dx=["thalassemia_trait", "beta_thalassemia_trait", "beta_thalassemia_minor"], req=[("mcv", "<", 75), ("hb", ">", 9)], sup=[("hba2", ">", 3.5), ("mentzer", "<", 13), ("rbc", ">", 5.0), ("ferritin", ">=", 30), ("rdw", "<", 16)], min_sup=2,
       excl=[("ferritin", "<", 30), ("hbf", ">", 20), ("hb", ">", 17.5), ("rdw", ">", 18)], cap={"iron_deficiency_anemia": 0.5, "anemia": 0.9}, src="BSH 2010 haemoglobinopathy screening; Mentzer 1973 (trait: normal RDW, no erythrocytosis; microcytosis with Hb > 17.5 or RDW > 18 points to iron-deficient secondary erythrocytosis)"),
- # ESL extension 9 (2026-10-23): microcytosis with erythrocytosis is iron-restricted secondary polycythaemia until proven otherwise, not thalassaemia trait
  dict(id="thal_trait_erythrocytosis_guard", dx=[], guard=True, req=[("mcv", "<", 78), ("hb", ">", 17.5)], min_sup=0, strength="pattern",
       cap={"thalassemia_trait": 0.45, "beta_thalassemia_trait": 0.45, "beta_thalassemia_minor": 0.45, "alpha_thalassemia_trait": 0.45},
       src="BSH 2010 haemoglobinopathy screening; WHO 2016 polycythaemia vera criteria; McMullin BJH 2019 (secondary erythrocytosis work-up)"),
- # ESL extension 9b (2026-10-23): profound neutropenia is a sepsis-risk state (IDSA 2010 / ASCO-IDSA 2018 febrile neutropenia); the engine
- # names severe_neutropenia and routes blood cultures / lactate through the next-test layer; sepsis itself still needs infection evidence.
  dict(id="severe_neutropenia", dx=["severe_neutropenia", "neutropenia"], req=[("anc", "<", 0.5)], alt_req=[("wbc", "<", 1.0)], min_sup=0, strength="strong",
       excl=[("blasts", ">", 20)], src="Freifeld et al. IDSA 2010 febrile neutropenia (ANC < 500/µL); Taplitz ASCO/IDSA 2018"),
- # ESL extension 10 (2026-10-23): bandemia > 10 % is a SIRS criterion in its own right (Bone 1992) and predicts bacteraemia
- # independently of the total WBC (Drees 2012); with one organ-dysfunction marker it is a sepsis pattern even at a normal WBC.
  dict(id="sepsis_bandemia_organ", dx=["sepsis", "bacterial_infection"], req=[("bands", ">", 10)],
       sup=[("cr", ">", 1.5), ("lactate", ">", 2), ("plt", "<", 150), ("inr", ">", 1.5), ("hco3", "<", 20), ("tbil", ">", 2), ("alb", "<", 3.0), ("pct", ">", 0.5), ("crp", ">", 100)], min_sup=1, strength="pattern",
       excl=[("blasts", ">", 5), ("wbc", ">", 50), ("pct", "<", 0.1)],
       src="Bone et al. Chest 1992 (SIRS: > 10 % immature forms); Drees et al. Am J Infect Control 2012; Singer 2016 Sepsis-3; SSC 2021"),
- # ESL extension 10: macrocytosis with the companion biomarkers of heavy alcohol use is the laboratory signature of alcohol use disorder;
- # deficiency and marrow causes exclude it when measured and abnormal.
  dict(id="alcohol_biomarker_macrocytosis", dx=["alcohol_use_disorder", "alcoholic_liver_pattern"], req=[("mcv", ">", 100)],
       sup=[("ast_alt", ">", 1.5), ("ggt", ">", 60), ("plt", "<", 150), ("mg", "<", 1.7), ("phos", "<", 2.5), ("urate", ">", 7.0), ("tg", ">", 200), ("tbil", ">", 1.5), ("ethanol", ">", 10), ("alb", "<", 3.5)], min_sup=2, strength="supportive",
       excl=[("b12", "<", 200), ("folate", "<", 3.0), ("tsh", ">", 10), ("retic", ">", 3.0), ("blasts", ">", 0), ("mcv", ">", 125), ("hb", "<", 7)],
@@ -10902,7 +10054,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       cap={"vitamin_b12_deficiency": 0.7, "folate_deficiency": 0.7, "myelodysplastic_syndrome": 0.6},
       src="Niemelä, Clin Chim Acta 2007 (MCV, GGT, AST/ALT as alcohol biomarkers); Hock et al. Addiction 2005; EASL 2018 ALD guideline"),
 
- # ===== ESL extension 11-T (2026-10-23): temporal constellations (fire only when a series was supplied) =====
  dict(id="aki_kdigo_creatinine_rise", temporal=True, dx=["acute_kidney_injury"],
       req=[("cr_rise48", ">=", 0.3), ("cr_max", ">=", 1.0)], alt_req=[("cr_ratio_max", ">=", 1.5), ("cr_max", ">=", 1.0)],
       sup=[("bun_cr", ">", 20), ("k", ">", 5.0), ("hco3", "<", 22), ("phos", ">", 4.5), ("lactate", ">", 2)], min_sup=0, strength="anchor",
@@ -10918,9 +10069,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       cap={"chronic_myocardial_injury": 0.5},
       note="Rise and/or fall of cardiac troponin with >= 1 value above the 99th percentile = ACUTE myocardial injury (4th UDMI); ischaemia criteria decide MI type.",
       src="Thygesen et al. 4th Universal Definition of MI, Eur Heart J 2019;40:237; ESC 2023 ACS guideline (0 h/1-3 h delta criteria: >= 20 % if baseline raised, >= 50 % if baseline normal)"),
- # v6 C9 (2026-10-25): single very high hs-troponin WITH clinical evidence of ischaemia = acute MI (4th UDMI: acute injury + ischaemia;
- # ESC 2023 ACS 0 h rule-in: hs-cTn well above the assay-specific threshold of ~52-120 ng/L). Without an ischaemic context the same value
- # is reported as acute myocardial injury only (rule above / registry UDMI rule). Strength "strong": serial values still decide type/timing.
  dict(id="mi_high_troponin_ischaemic_presentation", dx=["acute_myocardial_infarction", "acute_coronary_syndrome"], req=[("trop_c", ">=", 100)],
       sup=[("ckmb", ">", 5), ("ck", ">", 200), ("ntprobnp", ">", 300), ("glucose", ">", 140), ("lactate", ">", 2)], min_sup=0, strength="strong",
       ctx=[("age_ge", 18)],
@@ -10931,10 +10079,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       excl=[("ck", ">", 5000)], cap={"chronic_myocardial_injury": 0.5, "takotsubo_cardiomyopathy": 0.6},
       note="hs-troponin >= 100 ng/L on presentation with ischaemic symptoms or ECG ischaemia reported in the context: acute myocardial infarction (4th UDMI criterion: acute myocardial injury + clinical evidence of ischaemia). Serial troponin and ECG/imaging confirm type and timing.",
       src="Thygesen et al. 4th Universal Definition of MI, Eur Heart J 2019;40:237; Byrne et al. 2023 ESC Guidelines for ACS, Eur Heart J 2023;44:3720 (0 h/1 h algorithm rule-in thresholds)"),
- # v6 C10 (2026-10-25): very high troponin WITH concurrent CK-MB elevation. CK-MB returns to normal within 48-72 h, so its
- # elevation next to a markedly raised troponin (>= 500 ng/L, i.e. >= ~35 x URL hs-cTnT / >= ~15 x hs-cTnI) marks the injury as
- # ACUTE and of a magnitude rarely produced by chronic injury outside ESRD (excluded by context). Infarction is listed first as the
- # most probable cause at strength "strong" (0.88), not anchor: ischaemia evidence (ECG/symptoms) is still required by the 4th UDMI.
  dict(id="mi_very_high_troponin_with_ckmb", dx=["acute_myocardial_infarction", "acute_myocardial_injury", "acute_coronary_syndrome"], req=[("trop_c", ">=", 500), ("ckmb", ">", 5)],
       sup=[("natri_high", "==", 1), ("glucose", ">", 140), ("lactate", ">", 2), ("cr", ">", 1.3)], min_sup=0, strength="strong", ctx=[(("age_ge"), 18)],
       ctx_excl=[("cond", "dialysis"), ("cond", "esrd"), ("cond", "myocarditis"), ("cond", "cardiac surgery"), ("cond", "pci"), ("cond", "cardioversion"), ("cond", "trauma")],
@@ -10984,7 +10128,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       req=[("na_fall24", ">=", 8), ("na_last", "<", 130)], strength="strong",
       note="Sodium fell >= 8 mmol/L within 24 h to < 130 - acute hyponatraemia (higher cerebral-oedema risk than chronic).",
       src="Spasovski 2014 (acute vs chronic hyponatraemia); Adrogue & Madias NEJM 2000"),
- # ===== ESL extension 11-C (2026-10-23): medication-gated constellations (fire only when the caller supplied the medication) =====
  dict(id="warfarin_inr_explained", dx=[], guard=True, req=[("inr", ">", 1.5), ("inr", "<=", 4.0)],
       ctx_any=[("med", "warfarin"), ("med", "coumadin"), ("med", "acenocoumarol"), ("med", "phenprocoumon")],
       cap={"coagulopathy": 0.45, "vitamin_k_deficiency": 0.3, "elevated_inr_pattern": 0.6, "prolonged_pt_pattern": 0.6, "liver_cirrhosis": 0.85, "disseminated_intravascular_coagulation": 0.6},
@@ -11099,7 +10242,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
  dict(id="imn", dx=["infectious_mononucleosis", "epstein_barr_virus_infection"], req=[("atyp_lymph", ">=", 10)], alt_req=[("hetero", "pos", None)], alt_req2=[("ebv_vca_igm", "pos", None)],
       sup=[("hetero", "pos", None), ("ebv_vca_igm", "pos", None), ("lymph_pct", ">", 50), ("alt", ">", 40), ("plt", "<", 150), ("wbc", ">", 10)], min_sup=1, ctx=[("age_lt", 40)],
       cap={"chronic_lymphocytic_leukemia": 0.3, "acute_lymphoblastic_leukemia": 0.3, "lymphocytosis": 0.9, "hepatitis": 0.7, "autoimmune_hepatitis": 0.4}, src="Hoagland criteria; Luzuriaga NEJM 2010"),
- # ---------------- infection / inflammation / rheumatology -----------------
  dict(id="sepsis_bacterial", dx=["sepsis", "bacterial_infection"], req=[("pct", ">=", 2.0)], sup=[("wbc", ">", 12), ("wbc", "<", 4), ("bands", ">", 10), ("crp", ">", 100), ("lactate", ">", 2), ("plt", "<", 150), ("cr", ">", 1.5)], min_sup=2,
       excl=[("ferritin", ">", 10000)], cap={"leukocytosis_pattern": 0.8, "bacterial_infection": 0.95, "viral_infection": 0.3}, src="Sepsis-3; Schuetz, PCT meta-analysis, Lancet ID 2018"),
  dict(id="urosepsis", dx=["pyelonephritis", "urinary_tract_infection", "sepsis"], req=[("ule", "pos", None), ("uwbc", ">", 10)], alt_req=[("unitrite", "pos", None), ("uwbc", ">", 10)],
@@ -11146,10 +10288,6 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
       ctx=[("age_lt", 8)], excl=[("pct", ">", 2), ("ferritin", ">", 1000), ("blasts", ">", 0)],
       cap={"hyponatremia": 0.85, "leukocytosis_pattern": 0.8, "thrombocytosis": 0.9, "malnutrition": 0.5, "bacterial_infection": 0.6, "urinary_tract_infection": 0.5, "reactive_thrombocytosis": 0.9},
       src="AHA 2017 Kawasaki (McCrindle): supplemental lab criteria — albumin ≤3, anaemia, ALT↑, platelets >450 after 7 d, WBC ≥15, sterile pyuria"),
- # ---------------- cardiopulmonary / miscellaneous -------------------------
- # v6 C10 (2026-10-25): formerly asserted acute MI from troponin > 100 ng/L plus a non-ischaemic support (glucose, creatinine, lactate,
- # natriuretic peptide). 4th UDMI: that is myocardial injury; infarction needs clinical ischaemia (see mi_high_troponin_ischaemic_presentation)
- # or a rise/fall (temporal layer). Retargeted to the acuity-undetermined injury finding; caps on AKI / HF retained.
  dict(id="mi", dx=["myocardial_injury_acuity_undetermined"], strength="strong", req=[("trop_c", ">", 100)],
       sup=[("ckmb", ">", 5), ("natri_high", "==", 1), ("glucose", ">", 140), ("cr", ">", 1.3), ("lactate", ">", 2)], min_sup=1, excl=[("ck", ">", 5000), ("crp", ">", 60), ("ddimer", ">", 4), ("cohb", ">", 10), ("schisto", ">", 1), ("plt", "<", 50), ("pct", ">", 2)], ctx=[("age_ge", 35)],
       cap={"acute_kidney_injury": 0.85, "heart_failure": 0.9, "myocarditis": 0.6}, src="Fourth Universal Definition of MI (Thygesen 2018)"),
@@ -11234,17 +10372,12 @@ _ESL_LIBRARY: list[dict[str, Any]] = [
  dict(id="acd", dx=["anemia_of_chronic_disease", "anemia_of_inflammation"], req=[("hb", "<", 12), ("ferritin", ">=", 100), ("tsat", "<", 20)], sup=[("crp", ">", 10), ("esr", ">", 28), ("mcv", "between", (78, 100)), ("stfr", "<", 2.5)], min_sup=1,
       excl=[("ferritin", ">", 5000), ("egfr", "<", 30)], cap={"anemia": 0.9, "iron_deficiency_anemia": 0.5}, src="Weiss & Ganz, Anemia of inflammation, Blood 2019"),
  dict(id="ckd_anemia", dx=["chronic_kidney_disease", "anemia_of_chronic_disease"], req=[("hb", "<", 12), ("egfr", "<", 45), ("mcv", "between", (80, 100))], sup=[("retic", "<", 1.5), ("ferritin", ">=", 100), ("epo", "<", 50), ("tsat", "between", (20, 100))], min_sup=1,
-      excl=[("lactate", ">", 4), ("ck", ">", 5000)],  # extension 7: normocytosis is a requirement, not evidence; needs a marrow/iron marker
+      excl=[("lactate", ">", 4), ("ck", ">", 5000)],
       src="KDIGO anaemia in CKD 2012"),
 ]
 
 
-# ---------------------------------------------------------------------------
-# ESL extension 2 (2026-10-21): additional analyte groups and ~100 further
-# constellations (endocrine, renal, haematology, GI/liver, infection,
-# rheumatology, cardio-pulmonary, neurology, toxicology, inborn errors,
 # neonatal/paediatric, pregnancy). Thresholds follow the cited sources.
-# ---------------------------------------------------------------------------
 _ESL_GROUPS.update({
     "tryptase": ("ng/mL", ("tryptase_serum", "serum_total_tryptase_baseline")),
     "ige": ("IU/mL", ("total_immunoglobulin_e",)),
@@ -11369,7 +10502,6 @@ _ESL_GROUPS.update({
 })
 
 _ESL_LIBRARY.extend([
- # ---------------- endocrine -----------------------------------------------
  dict(id="subacute_thyroiditis", dx=["subacute_thyroiditis", "subacute_thyroiditis_de_quervain"], req=[("tsh", "<", 0.4), ("ft4", ">", 1.8), ("esr", ">=", 50)],
       sup=[("crp", ">", 30), ("trab", "<", 1.75), ("tpo", "<", 35), ("wbc", ">", 10)], min_sup=1, excl=[("trab", ">", 1.75), ("pct", ">", 2)],
       cap={"graves_disease": 0.5, "thyroid_storm": 0.6, "painless_thyroiditis": 0.7, "hyperthyroidism": 0.9, "giant_cell_arteritis": 0.6}, src="ATA 2016 hyperthyroidism guideline (Ross): thyrotoxicosis + ESR >50 = subacute thyroiditis"),
@@ -11403,7 +10535,6 @@ _ESL_LIBRARY.extend([
       cap={"hypoparathyroidism": 0.5, "hypocalcemia": 0.9, "pseudohypoparathyroidism": 0.4}, src="Severe hypomagnesaemia causes functional hypoparathyroidism (Rude 1976)"),
  dict(id="hashimoto_serologic", dx=["hashimoto_thyroiditis"], req=[("tsh", ">", 4.5), ("tpo", ">", 35)], sup=[("ft4", "<", 0.8), ("tg_ab", ">", 40), ("tc", ">", 200)], min_sup=0, excl=[("tsh", ">", 30), ("ft4", "<", 0.5)],
       cap={"euthyroid_sick_syndrome_nontr": 0.3}, src="ATA 2014 hypothyroidism (Jonklaas)"),
- # ---------------- renal / GN ------------------------------------------------
  dict(id="iga_nephropathy", dx=["iga_nephropathy", "iga_nephropathy_berger"], req=[("urbc", ">", 5), ("iga", ">", 400)], sup=[("upcr", ">", 0.5), ("cr", ">", 1.2), ("c3", ">=", 90)], min_sup=1, excl=[("dsdna", ">", 30), ("anti_gbm", "pos", None), ("mpo", "pos", None), ("pr3", "pos", None)], ctx=[("age_ge", 10)],
       cap={"lupus_nephritis": 0.5, "iga_vasculitis": 0.9}, src="KDIGO GN 2021: haematuria with raised serum IgA (supportive)"),
  dict(id="iga_vasculitis_child", dx=["iga_vasculitis"], req=[("urbc", ">", 5), ("plt", ">=", 150)], sup=[("iga", ">", 300), ("upcr", ">", 0.3), ("crp", ">", 10)], min_sup=1, excl=[("dsdna", ">", 30), ("c3", "<", 70), ("plt", "<", 150)], ctx=[("age_lt", 16)],
@@ -11416,7 +10547,6 @@ _ESL_LIBRARY.extend([
       cap={"renal_tubular_acidosis_type_2": 0.9, "renal_tubular_acidosis": 0.9, "type_2_diabetes": 0.2, "diabetes_mellitus": 0.2}, src="Normoglycaemic glycosuria + hypophosphataemia + proximal RTA (Foreman 2019)"),
  dict(id="hyperkalemic_aki_rhabdo_guard", dx=["rhabdomyolysis"], req=[("ck", ">", 5000), ("umyoglobin", "pos", None)], sup=[("k", ">", 5.5), ("phos", ">", 4.5), ("cr", ">", 1.5), ("ca_c", "<", 8.5)], min_sup=1,
       cap={"acute_myocardial_infarction": 0.5, "myositis": 0.7}, src="Bosch, NEJM 2009"),
- # ---------------- haematology ---------------------------------------------
  dict(id="sickle_cell_disease", dx=["sickle_cell_disease"], req=[("hbs", ">", 50)], sup=[("hb", "<", 11), ("retic", ">", 2.5), ("ldh", ">", 250), ("tbil", ">", 1.2), ("hbf", ">", 2), ("hba2", "<", 3.6)], min_sup=1,
       cap={"sickle_cell_trait": 0.3, "sickle_cell_trait_hbas": 0.3, "hemolytic_anemia": 0.9, "anemia": 0.9}, src="ASH SCD 2020; HbS >50% on HPLC"),
  dict(id="sickle_cell_trait", dx=["sickle_cell_trait", "sickle_cell_trait_hbas"], req=[("hbs", "between", (25, 45)), ("hb", ">=", 11)], sup=[("mcv", ">=", 78), ("retic", "<", 2.5)], min_sup=0,
@@ -11450,9 +10580,6 @@ _ESL_LIBRARY.extend([
  dict(id="hes", dx=["hypereosinophilic_syndrome"], req=[("eos_abs", ">=", 1.5)], sup=[("trop_c", ">", 30), ("tryptase", ">", 11), ("b12", ">", 1000), ("ldh", ">", 250), ("ige", "<", 100)], min_sup=2, excl=[("blasts", ">", 5)],
       cap={"eosinophilia": 0.95, "eosinophilia_pattern": 0.95, "strongyloidiasis": 0.6, "allergic_disease": 0.5}, src="Valent, JACI 2012; eos ≥1.5×10⁹/L with organ damage markers"),
  # v6 (Amendment 14): the parasitic attribution of eosinophilia + raised IgE is an exposure-dependent
- # inference (returning travellers, migrants from endemic areas, pre-immunosuppression screening);
- # without such context the constellation is non-specific (atopy, drug reaction, IgG4-RD, EGPA) and is
- # reported as eosinophilia only - no infection is asserted from two analytes.
  dict(id="eosinophilia_parasitic", dx=["strongyloidiasis", "eosinophilia"], req=[("eos_abs", ">=", 0.5), ("ige", ">", 200)], sup=[("hb", "<", 12), ("alb", "<", 3.5)], min_sup=0, strength="pattern",
       ctx_any=[("cond", "travel"), ("cond", "endemic"), ("cond", "migra"), ("cond", "refugee"), ("cond", "tropic"), ("cond", "exposure"), ("cond", "soil"), ("cond", "barefoot"),
                ("cond", "immunosuppress"), ("cond", "transplant"), ("cond", "steroid"), ("cond", "parasit"), ("cond", "worm"), ("cond", "helminth"), ("cond", "diarrh")],
@@ -11483,7 +10610,6 @@ _ESL_LIBRARY.extend([
       src="ASH 2023 thrombophilia testing (Middeldorp)"),
  dict(id="massive_transfusion_coag", dx=["massive_transfusion_coagulopathy"], req=[("fib", "<", 150), ("plt", "<", 100), ("ica", "<", 1.1)], sup=[("inr", ">", 1.5), ("k", ">", 5.5), ("hb", "<", 9), ("lactate", ">", 2)], min_sup=1, ctx=[("cond", "transfusion")],
       cap={"disseminated_intravascular_coagulation": 0.7}, src="Dilutional coagulopathy + citrate hypocalcaemia (Hess 2008)"),
- # ---------------- GI / liver -----------------------------------------------
  dict(id="crigler_najjar", dx=["crigler_najjar_syndrome"], req=[("ibil_c", ">", 15), ("dbil_frac", "<", 0.15), ("alt", "<", 60), ("hb", ">=", 10)], sup=[("ldh", "<", 300), ("retic", "<", 3)], min_sup=0, ctx=[("age_lt", 1)], excl=[("dat", "pos", None), ("hapto", "<", 30)],
       cap={"neonatal_jaundice": 0.9, "hemolytic_disease_of_the_newborn": 0.4, "gilbert_syndrome": 0.5, "breast_milk_jaundice": 0.6}, src="Unconjugated bilirubin >15 mg/dL without haemolysis in infancy (Strauss 2020)"),
  dict(id="hepatitis_e", dx=["hepatitis_e", "hepatitis_e_infection", "hepatitis_e_infection_pattern"], req=[("hev_igm", "pos", None), ("alt", ">", 80)], sup=[("tbil", ">", 2), ("hav_igm", "neg", None), ("hbsag", "neg", None)], min_sup=0,
@@ -11520,7 +10646,6 @@ _ESL_LIBRARY.extend([
       src="Elevated LDH + β2-microglobulin as lymphoma tumour-burden markers (IPI; Swerdlow WHO 2016)"),
  dict(id="neuroblastoma", dx=["neuroblastoma"], req=[("vma", ">", 10)], alt_req=[("hva", ">", 15)], sup=[("ldh", ">", 500), ("ferritin", ">", 150), ("nse", ">", 30), ("hb", "<", 11)], min_sup=0, ctx=[("age_lt", 10)],
       cap={"pheochromocytoma": 0.6}, src="INRG 2009; urinary catecholamine metabolites (Strenger 2007)"),
- # ---------------- infection -------------------------------------------------
  dict(id="brucellosis", dx=["brucellosis", "brucellosis_serologic_support_pattern"], req=[("brucella", ">=", 160)], alt_req=[("brucella_pcr", "pos", None)], sup=[("alt", ">", 40), ("plt", "<", 150), ("wbc", "<", 4), ("crp", ">", 10), ("esr", ">", 20)], min_sup=0,
       cap={"typhoid_fever": 0.5, "lymphoma_support_pattern": 0.5, "hepatitis": 0.5}, src="Wright titre ≥1:160 in endemic areas (Araj, Int J Antimicrob Agents 2010)"),
  dict(id="typhoid", dx=["typhoid_fever"], req=[("widal_o", ">=", 160)], sup=[("wbc", "<", 4.5), ("alt", ">", 40), ("eos_abs", "<", 0.05), ("plt", "<", 150), ("crp", ">", 20)], min_sup=1, excl=[("brucella", ">=", 160), ("malaria", ">", 0), ("malaria_smear", "pos", None)],
@@ -11551,7 +10676,6 @@ _ESL_LIBRARY.extend([
  dict(id="invasive_aspergillosis", dx=["invasive_aspergillosis_marker_pattern"], req=[("galactomannan", ">=", 0.5)], sup=[("anc", "<", 0.5), ("crp", ">", 50), ("pct", "<", 1)], min_sup=0, src="EORTC/MSGERC 2020: serum GM index ≥0.5 (or ≥1.0 single)"),
  dict(id="tb_pleural_ada", dx=["tuberculous_pleuritis", "tuberculosis", "exudative_pleural_effusion"], req=[("pleural_ada", ">", 40)], sup=[("igra", "pos", None), ("pleural_ldh", ">", 200), ("alb", "<", 3.5)], min_sup=0, strength="strong",
       cap={"malignant_pleural_effusion": 0.6, "parapneumonic_effusion": 0.7}, src="Pleural ADA >40 U/L (Light; Aggarwal 2019 meta-analysis)"),
- # ---------------- rheumatology ---------------------------------------------
  dict(id="mctd", dx=["mixed_connective_tissue_disease", "mixed_connective_tissue_disease_serologic_pattern"], req=[("rnp", "pos", None), ("ana", ">=", 320)], sup=[("ck", ">", 300), ("rf", ">", 20), ("hb", "<", 12), ("plt", "<", 150)], min_sup=0, excl=[("dsdna", ">", 30), ("scl70", "pos", None)],
       cap={"systemic_lupus_erythematosus": 0.6, "systemic_sclerosis": 0.6, "polymyositis": 0.6, "myositis": 0.6}, src="Alarcón-Segovia criteria; anti-U1-RNP high titre with speckled ANA"),
  dict(id="septic_arthritis", dx=["septic_arthritis"], req=[("syn_wbc", ">", 50000)], sup=[("crp", ">", 50), ("wbc", ">", 10), ("pct", ">", 0.5), ("esr", ">", 30)], min_sup=1,
@@ -11567,7 +10691,6 @@ _ESL_LIBRARY.extend([
       cap={"systemic_lupus_erythematosus": 0.6}, src="Anti-histone + culprit drug with normal complement/dsDNA (Borchers 2007)"),
  dict(id="axial_spa", dx=["ankylosing_spondylitis"], req=[("hla_b27", "pos", None), ("crp", ">", 10)], sup=[("esr", ">", 20), ("hb", "<", 12), ("rf", "<", 20), ("ccp", "<", 20)], min_sup=0, excl=[("rf", ">", 40), ("ccp", ">", 20)], ctx=[("age_lt", 50)],
       cap={"rheumatoid_arthritis": 0.5, "reactive_arthritis": 0.8}, src="ASAS 2009 axial SpA classification"),
- # ---------------- cardio / pulmonary ---------------------------------------
  dict(id="aortic_dissection_lab", dx=["aortic_dissection"], req=[("ddimer", ">", 0.5), ("trop_c", "<", 100)], sup=[("ldh", ">", 300), ("cr", ">", 1.3), ("lactate", ">", 2), ("hb", "<", 12), ("crp", ">", 10)], min_sup=2, strength="pattern", ctx_any=[("cond", "chest pain"), ("cond", "tearing"), ("cond", "hypertension"), ("cond", "marfan"), ("cond", "aortic"), ("cond", "dissection")],
       excl=[("fib", "<", 150), ("plt", "<", 100), ("pct", ">", 2), ("schisto", ">", 1), ("po2", "<", 70)],
       cap={"pulmonary_embolism": 0.7, "acute_myocardial_infarction": 0.7}, src="ADD-RS + D-dimer <500 rule-out (ADvISED, Nazerian Circulation 2018); D-dimer >0.5 µg/mL FEU only supports"),
@@ -11586,7 +10709,6 @@ _ESL_LIBRARY.extend([
       cap={"heart_failure": 0.5, "acute_heart_failure_support_pattern": 0.5, "pulmonary_embolism": 0.7}, src="Berlin 2012 / new global ARDS definition 2023: hypoxaemia without cardiac failure (natriuretic peptide not raised)"),
  dict(id="co_poisoning_lactate_guard", dx=["carbon_monoxide_poisoning"], req=[("cohb", ">", 25)], sup=[("lactate", ">", 4), ("trop_c", ">", 30), ("ck", ">", 1000), ("hco3", "<", 18)], min_sup=1,
       cap={"sepsis": 0.5, "acute_myocardial_infarction": 0.6, "lactic_acidosis": 0.9, "rhabdomyolysis": 0.9}, src="Hampson, Am J Respir Crit Care Med 2012: COHb >25% severe"),
- # ---------------- neurology -------------------------------------------------
  dict(id="myasthenia", dx=["myasthenia_gravis", "myasthenia_gravis_antibody_pattern"], req=[("achr", ">", 0.5)], sup=[("tsh", "<", 0.4), ("tsh", ">", 4.5), ("tpo", ">", 35), ("ck", "<", 200)], min_sup=0, src="Anti-AChR binding antibody >0.5 nmol/L (Gilhus NEJM 2016)"),
  dict(id="nmdar_encephalitis", dx=["anti_nmdar_encephalitis"], req=[("nmdar", "pos", None)], sup=[("ocb", "pos", None), ("na", "<", 135), ("ck", ">", 300)], min_sup=0, ctx=[("age_lt", 50)], src="Graus Lancet Neurol 2016 criteria"),
  dict(id="ms_csf", dx=["multiple_sclerosis"], req=[("ocb", "pos", None)], sup=[("b12", ">=", 300), ("ana", "<", 80), ("esr", "<", 30), ("igg", "between", (600, 1800))], min_sup=1, strength="pattern", ctx=[("age_lt", 60)], excl=[("nmdar", "pos", None), ("trep", "pos", None), ("hiv_ab", "pos", None), ("b12", "<", 200)],
@@ -11594,7 +10716,6 @@ _ESL_LIBRARY.extend([
  dict(id="mcardle", dx=["mcardle_disease"], req=[("ck", ">", 1000), ("urate", ">", 7)], sup=[("umyoglobin", "pos", None), ("cr", ">", 1.3), ("lactate", "<", 2), ("tsh", "<=", 10)], min_sup=1, strength="pattern", ctx_any=[("cond", "exercise"), ("cond", "exertion"), ("cond", "cramp"), ("cond", "second wind"), ("cond", "myoglobinuria"), ("fh", "myopathy")],
       excl=[("jo1", "pos", None), ("tsh", ">", 10), ("trop_c", ">", 500)],
       cap={"rhabdomyolysis": 0.9, "myositis": 0.6, "polymyositis": 0.6, "statin_associated_muscle_injury": 0.6}, src="Lucia, Nat Rev Neurol 2021: exertional rhabdomyolysis + hyperuricaemia (myogenic), blunted lactate rise"),
- # ---------------- toxicology ----------------------------------------------
  dict(id="lithium_toxicity", dx=["lithium_toxicity"], req=[("lithium", ">", 1.5)], sup=[("cr", ">", 1.3), ("na", ">", 145), ("uosm", "<", 300), ("tsh", ">", 4.5), ("ca_c", ">", 10.5), ("wbc", ">", 11)], min_sup=0,
       cap={"nephrogenic_diabetes_insipidus": 0.9, "central_diabetes_insipidus": 0.3, "acute_kidney_injury": 0.9, "primary_hyperparathyroidism": 0.6, "hypothyroidism": 0.6}, src="Lithium >1.5 mmol/L (Baird-Gunning, J Intensive Care Med 2017)"),
  dict(id="valproate_toxicity", dx=["valproate_toxicity", "valproic_acid_toxicity"], req=[("valproate", ">", 100)], sup=[("nh3", ">", 60), ("plt", "<", 150), ("na", "<", 135), ("ag_c", ">", 14), ("alt", ">", 80), ("lactate", ">", 2)], min_sup=0,
@@ -11619,7 +10740,6 @@ _ESL_LIBRARY.extend([
  dict(id="mala", dx=["lactic_acidosis_metformin_associated"], req=[("lactate", ">", 5), ("hco3", "<", 18), ("cr", ">", 1.5)], sup=[("ag_c", ">", 16), ("k", ">", 5.0), ("glucose", "<", 250), ("pct", "<", 0.5)], min_sup=1, ctx_any=[("med", "metformin"), ("med", "glucophage")],
       excl=[("pct", ">", 2), ("bcx", "pos", None), ("cohb", ">", 10)],
       cap={"sepsis": 0.6, "septic_shock_severe_lactic_acidosis": 0.6, "lactic_acidosis": 0.95, "diabetic_ketoacidosis": 0.5}, src="Lalau, Diabetes Obes Metab 2017: lactate >5 + pH <7.35 + metformin + AKI"),
- # ---------------- inborn errors / neonatal / paediatric --------------------
  dict(id="galactosemia", dx=["classic_galactosemia", "galactosemia"], req=[("galt", "<", 3.5)], alt_req=[("galactose", ">", 10), ("stool_reducing", "pos", None)], sup=[("dbil", ">", 1), ("alt", ">", 60), ("glucose", "<", 50), ("inr", ">", 1.5), ("bcx", "pos", None), ("uglu", "neg", None)], min_sup=0, ctx=[("age_lt", 1)],
       cap={"neonatal_sepsis": 0.8, "neonatal_jaundice": 0.6, "biliary_atresia": 0.5, "tyrosinemia_type_1": 0.6}, src="Welling, J Inherit Metab Dis 2017 international guideline"),
  dict(id="pku", dx=["phenylketonuria_pku"], req=[("phe", ">", 6)], sup=[("tyrosine", "<", 40)], min_sup=0, ctx=[("age_lt", 18)], src="ACMG PKU 2014 (Vockley): Phe >360 µmol/L (6 mg/dL)"),
@@ -11657,7 +10777,6 @@ _ESL_LIBRARY.extend([
       cap={"premature_ovarian_insufficiency": 0.9, "menopause": 0.1}, src="Gravholt 2017 Turner guideline: hypergonadotropic hypogonadism in a girl"),
  dict(id="ghd_child", dx=["growth_hormone_deficiency", "growth_hormone_deficiency_pattern", "isolated_growth_hormone_deficiency"], req=[("igf1", "<", 60), ("gh", "<", 7)], sup=[("glucose", "<", 60), ("ft4", "between", (0.8, 1.8)), ("ttg_iga", "<", 10), ("alb", ">=", 3.5)], min_sup=1, strength="pattern", ctx=[("age_lt", 18)], excl=[("tsh", ">", 10), ("alb", "<", 3.0), ("ttg_iga", ">", 10), ("crp", ">", 20)],
       cap={"hypopituitarism_panhypopituitarism": 0.95, "hypothyroidism": 0.4}, src="GRS 2019 (Collett-Solberg); low IGF-1 with failed stimulated GH <7 ng/mL (Grimberg 2016)"),
- # ---------------- pregnancy ------------------------------------------------
  dict(id="hyperemesis", dx=["hyperemesis_gravidarum", "hyperemesis_gravidarum_metabolic_pattern"], req=[("uket", "pos", None), ("k", "<", 3.5)], alt_req=[("uket", "pos", None), ("hco3", ">", 28)], sup=[("tsh", "<", 0.4), ("ft4", ">", 1.8), ("alt", ">", 40), ("na", "<", 135), ("ucl", "<", 20), ("bun_cr", ">", 20)], min_sup=1, ctx=[("pregnant", True)], excl=[("trab", ">", 1.75), ("glucose", ">", 250), ("bhb", ">=", 3)],
       cap={"graves_disease": 0.3, "hyperthyroidism": 0.4, "thyroid_storm": 0.2, "diabetic_ketoacidosis": 0.2, "gestational_thyrotoxicosis": 0.95, "metabolic_alkalosis": 0.9, "hypokalemia": 0.9}, src="ACOG PB 189 2018; RCOG GTG 69: ketonuria, hypokalaemic alkalosis, transient biochemical hyperthyroidism"),
  dict(id="postpartum_thyroiditis", dx=["postpartum_thyroiditis", "postpartum_thyroiditis_support_pattern"], req=[("tsh", "<", 0.4), ("tpo", ">", 35), ("trab", "<", 1.75)], alt_req=[("tsh", ">", 4.5), ("tpo", ">", 35)], sup=[("ft4", ">", 1.8), ("esr", "<", 50)], min_sup=0, ctx=[("sex", "f"), ("cond", "postpartum")],
@@ -11665,7 +10784,6 @@ _ESL_LIBRARY.extend([
  dict(id="peripartum_cardiomyopathy", dx=["peripartum_cardiomyopathy_support_pattern"], req=[("natri_high", "==", 1)], sup=[("trop_c", ">", 14), ("na", "<", 135), ("cr", ">", 1.0), ("alt", ">", 40), ("crp", ">", 10)], min_sup=1, strength="strong", ctx=[("sex", "f")], ctx_any=[("pregnant", True), ("cond", "postpartum"), ("cond", "peripartum"), ("cond", "delivery")],
       excl=[("ddimer", ">", 4), ("plt", "<", 100), ("upcr", ">", 0.3), ("ast", ">", 200)],
       cap={"heart_failure": 0.95, "pulmonary_embolism": 0.6, "preeclampsia": 0.6, "acute_myocardial_infarction": 0.6}, src="ESC PPCM 2019 (Bauersachs): NT-proBNP raised in last month of pregnancy to 5 months postpartum"),
- # --- modular physiological guards (dx-less; caps are ABSOLUTE ceilings) ---
  dict(id="pregnancy_prolactin_guard", dx=[], guard=True, req=[("prl", "between", (20, 400))], min_sup=0, strength="pattern", ctx=[("pregnant", True)],
       excl=[("na", "<", 130), ("ft4", "<", 0.7)],
       cap={"hyperprolactinemia": 0.3, "prolactinoma": 0.3, "pituitary_adenoma": 0.3, "macroprolactinoma": 0.3, "microprolactinoma": 0.3, "elevated_prolactin": 0.3},
@@ -11717,10 +10835,7 @@ _ESL_LIBRARY.extend([
 ])
 
 
-# ---------------------------------------------------------------------------
-# ESL extension 3 (2026-10-21): syndromes for the 48 entities added by
 # registry patch 13.1.0. Thresholds mirror the registry rules (sources there).
-# ---------------------------------------------------------------------------
 _ESL_GROUPS.update({
     "tt": ("s", ("thrombin_time", "thrombin_time_plasma")),
     "reptilase": ("s", ("reptilase_time", "reptilase_time_plasma")),
@@ -11847,19 +10962,7 @@ _ESL_LIBRARY.extend([
       cap={"alcoholic_hepatitis": 0.4, "ischemic_hepatitis": 0.5, "cholestasis": 0.3, "cholestatic_liver_injury_pattern": 0.3, "rhabdomyolysis": 0.3, "liver_cirrhosis": 0.4, "hemochromatosis": 0.3}, src="Wendon 2017 EASL ALF: ALT ≥5–10× ULN hepatocellular; INR ≥1.5 flags ALF"),
 ])
 
-# ---------------------------------------------------------------------------
-# ESL extension 4 (2026-10-21) — severity-graded DEFINITIONAL dyselectrolytaemias
-# Motivated by MIMIC-IV demo error analysis: K 6.8 mmol/L (pH 7.07) was absent
-# from the 15-entry differential because single-analyte electrolyte entities
-# received a flat ~0.57 'possible pattern' score irrespective of severity and
-# were out-ranked by trivial findings.  Hyperkalaemia, hyponatraemia etc. are
 # definitional diagnoses (KDIGO 2020 K+ controversies; Spasovski 2014 ESE/ESICM
-# hyponatraemia; Adrogué & Madias NEJM 2000; Endocrine Society hypoglycaemia
-# 2009 Whipple levels; 5th Int. Workshop hypercalcaemia) so severity tiers are
-# anchors (severe) / strong (moderate); mild deviations stay with the rule layer.  Tiers use disjoint 'between' ranges so exactly
-# one tier fires per analyte.  Pseudo-hyperkalaemia is excluded on extreme
-# thrombocytosis / leukocytosis (Sevastos 2008).
-# ---------------------------------------------------------------------------
 _ESL_LIBRARY.extend([
  dict(id="hyperkalemia_severe", dx=["hyperkalemia", "severe_hyperkalemia"], req=[("k", ">=", 6.5)], sup=[("cr", ">", 1.5), ("hco3", "<", 20), ("glucose", "<", 70)], min_sup=0, strength="anchor",
       excl=[("plt", ">", 1000), ("wbc", ">", 100)], cap={"hyperkalemia_pattern": 0.9, "hyperkalemia_acidosis_pattern": 0.9}, src="KDIGO 2020 potassium controversies conference; Sevastos 2008 pseudohyperkalaemia"),
@@ -11875,9 +10978,6 @@ _ESL_LIBRARY.extend([
       excl=[("glucose", ">", 400), ("tg", ">", 1500), ("tp", ">", 10)], src="Spasovski 2014"),
  dict(id="hypercalcemia_crisis", dx=["hypercalcemia"], req=[("ca_c", ">=", 14.0)], alt_req=[("ica", ">=", 1.75)], sup=[("pth", "<", 20), ("cr", ">", 1.5)], min_sup=0, strength="anchor", src="Minisola BMJ 2015; Endocrine Society"),
  dict(id="hypercalcemia_moderate", dx=["hypercalcemia"], req=[("ca_c", "between", (12.0, 13.999))], alt_req=[("ica", "between", (1.50, 1.7499))], sup=[("pth", "<", 20), ("pth", ">", 65)], min_sup=0, strength="strong", src="Minisola BMJ 2015"),
- # v7 C15 (2026-10-25): a TOTAL calcium can only be graded when it can be albumin-corrected (or ionised calcium is
- # measured) - Cooper & Gittoes BMJ 2008; in acute illness hypoalbuminaemia lowers total calcium with a normal
- # ionised fraction. Without albumin the value is reported as an unconfirmed low total calcium (pattern grade).
  dict(id="hypocalcemia_severe", dx=["hypocalcemia"], req=[("ica", "<", 0.9)], alt_req=[("ca_c", "<", 7.0), ("alb", ">", 0)], sup=[("mg", "<", 1.5), ("phos", ">", 5.0), ("pth", "<", 15)], min_sup=0, strength="anchor", src="Cooper & Gittoes BMJ 2008"),
  dict(id="hypocalcemia_moderate", dx=["hypocalcemia"], req=[("ica", "between", (0.9, 0.9999))], alt_req=[("ca_c", "between", (7.0, 7.499)), ("alb", ">", 0)], sup=[("mg", "<", 1.5), ("phos", ">", 5.0)], min_sup=0, strength="strong", src="Cooper & Gittoes BMJ 2008"),
  dict(id="hypocalcemia_total_uncorrected", dx=["hypocalcemia"], req=[("ca", "<", 7.5), ("alb", "absent", None), ("ica", "absent", None)], sup=[("mg", "<", 1.5), ("phos", ">", 5.0), ("pth", "<", 15)], min_sup=0, strength="pattern",
@@ -11888,53 +10988,35 @@ _ESL_LIBRARY.extend([
  dict(id="hypophosphatemia_severe", dx=["hypophosphatemia"], req=[("phos", "<", 1.0)], sup=[("k", "<", 3.5), ("mg", "<", 1.7), ("ck", ">", 500)], min_sup=0, strength="anchor", src="Gaasbeek & Meinders Am J Med 2005"),
  dict(id="severe_acidemia", dx=["metabolic_acidosis"], req=[("ph", "<", 7.20), ("hco3", "<", 15)], sup=[("lactate", ">", 4), ("ag_c", ">", 16), ("k", ">", 5.5)], min_sup=0, strength="anchor",
       excl=[("pco2", ">", 60)], src="Kraut & Madias NEJM 2014"),
- # DKA when ketones were NOT measured: hyperglycaemia + HAGMA is strongly suggestive (ADA 2024); ketone assay is the recommended next test
  dict(id="dka_ketones_unmeasured", dx=["diabetic_ketoacidosis", "diabetes_mellitus"], req=[("glucose", ">=", 200), ("hco3", "<", 15), ("ag_c", ">", 16), ("ag_minus_lac", ">", 10)], sup=[("ph", "<", 7.3), ("k", ">", 5.0), ("phos", "<", 2.5)], min_sup=0, strength="strong",
       excl=[("bhb", "<", 3.0), ("uket", "neg", None), ("cr", ">", 6.0)], cap={"metabolic_acidosis": 0.9, "hyperosmolar_hyperglycemic_state": 0.8}, src="ADA/EASD 2024 hyperglycaemic crises consensus; ext9b: with creatinine > 6 mg/dL an unmeasured-ketone gap acidosis is uraemic until ketones are measured (Kraut & Madias NEJM 2014)"),
- # Lactic acidosis tiers: lactate >= 4 is definitional; 2-4 with acidosis is hyperlactataemia with acidosis (Kraut 2014)
  dict(id="lactic_acidosis_definitional", dx=["lactic_acidosis"], req=[("lactate", ">=", 4.0)], sup=[("hco3", "<", 20), ("ph", "<", 7.35), ("ag_c", ">", 16)], min_sup=0, strength="anchor",
       excl=[("cohb", ">", 10)], cap={"metabolic_acidosis": 0.9}, src="Kraut & Madias NEJM 2014 lactic acidosis"),
  dict(id="lactic_acidosis_moderate", dx=["lactic_acidosis"], req=[("lactate", "between", (2.0, 3.9999)), ("hco3", "<", 20)], sup=[("ph", "<", 7.35), ("ag_c", ">", 16)], min_sup=1, strength="pattern",
       excl=[("cohb", ">", 10)], src="Kraut & Madias NEJM 2014"),
 ])
-# ---------------------------------------------------------------------------
-# ESL extension 5 (2026-10-21) — critical haematology / coagulation / acid-base
 # anchors.  Motivated by eICU-CRD demo held-out safety analysis: critical
-# platelet, haemoglobin, leucocyte and INR values and hypercapnic acidaemia
-# were not guaranteed a place in the differential because the corresponding
-# single-analyte entities carried flat 'possible pattern' scores.  Thresholds
 # follow CLSI/College of American Pathologists critical-value consensus lists
-# (Howanitz 2002; Campbell & Horvath 2014 systematic review), BSH platelet
 # transfusion guideline 2017 (< 20 prophylactic threshold), AABB red-cell
 # guideline 2016 (Hb < 7 restrictive threshold), ACCP/BSH warfarin guidelines
-# (INR >= 4.5 without bleeding = urgent reversal), Röllig & Ehninger Blood 2015
-# (hyperleukocytosis >= 100 x10^9/L), Kraut & Madias NEJM 2014 and
-# Berend NEJM 2014 (acid-base physiology).  Entity ids are existing registry
-# ids; no new diseases are introduced here.
-# ---------------------------------------------------------------------------
 _ESL_LIBRARY.extend([
- # --- red cells -------------------------------------------------------------
  dict(id="anemia_critical", dx=["anemia"], req=[("hb", "<", 7.0)], sup=[("mcv", "<", 80), ("ferritin", "<", 30), ("retic", ">", 2.5), ("ldh", ">", 250)], min_sup=0, strength="anchor",
       src="AABB 2016 red-cell transfusion guideline (Hb < 7 g/dL restrictive threshold); CAP critical-value survey (Howanitz 2002)"),
  dict(id="anemia_moderate_severe", dx=["anemia"], req=[("hb", "between", (7.0, 8.9999))], sup=[("mcv", "<", 80), ("ferritin", "<", 30), ("retic", ">", 2.5)], min_sup=0, strength="strong",
       src="WHO haemoglobin severity grading 2011 (moderate 8.0-10.9, severe < 8.0 g/dL)"),
- # --- platelets -------------------------------------------------------------
  dict(id="thrombocytopenia_critical", dx=["thrombocytopenia"], req=[("plt", "<", 20)], sup=[("wbc", "<", 4), ("hb", "<", 10), ("ldh", ">", 250), ("inr", ">", 1.5)], min_sup=0, strength="anchor",
       src="BSH platelet transfusion guideline 2017 (< 20 prophylactic threshold); CAP critical-value consensus"),
  dict(id="thrombocytopenia_severe", dx=["thrombocytopenia"], req=[("plt", "between", (20, 49.9999))], sup=[("wbc", "<", 4), ("hb", "<", 10), ("inr", ">", 1.5)], min_sup=0, strength="strong",
       src="BSH 2017; ASH ITP guideline 2019 severity bands"),
- # --- leucocytes ------------------------------------------------------------
  dict(id="hyperleukocytosis", dx=["acute_leukemia_support_pattern", "chronic_leukemia_support_pattern", "leukocytosis_pattern"], req=[("wbc", ">=", 100)],
       sup=[("blasts", ">", 0), ("ldh", ">", 300), ("urate", ">", 7.0), ("hb", "<", 10), ("plt", "<", 100)], min_sup=0, strength="anchor",
       cap={"nephrotic_syndrome": 0.5, "leukemoid_reaction": 0.6}, src="Röllig & Ehninger, Blood 2015 (hyperleukocytosis >= 100 x10^9/L = presumptive leukaemia until proven otherwise)"),
  dict(id="leukocytosis_marked", dx=["leukocytosis_pattern"], req=[("wbc", "between", (30, 99.9999))], sup=[("bands", ">", 10), ("crp", ">", 50), ("pct", ">", 0.5), ("lactate", ">", 2)], min_sup=0, strength="strong",
       src="Cerny & Rosmarin, leukemoid reaction review 2012 (WBC > 30 x10^9/L without leukaemia)"),
- # --- coagulation -----------------------------------------------------------
  dict(id="inr_critical", dx=["elevated_inr_pattern"], req=[("inr", ">=", 4.5)], sup=[("plt", "<", 100), ("alb", "<", 3.0), ("tbil", ">", 2.0), ("hb", "<", 10)], min_sup=0, strength="anchor",
       src="ACCP 2012 / BSH 2011 oral anticoagulation guidelines (INR >= 4.5 = urgent review/reversal); CAP critical-value consensus"),
  dict(id="inr_elevated", dx=["elevated_inr_pattern"], req=[("inr", "between", (2.0, 4.4999))], sup=[("plt", "<", 100), ("alb", "<", 3.0), ("tbil", ">", 2.0)], min_sup=0, strength="pattern",
       src="BSH 2011 oral anticoagulation guideline"),
- # --- acid-base: acidaemia not explained by low bicarbonate -----------------
  dict(id="hypercapnic_acidemia_severe", dx=["respiratory_acidosis"], req=[("ph", "<", 7.20), ("pco2", ">", 50)], sup=[("hco3", ">", 26), ("k", ">", 5.0)], min_sup=0, strength="anchor",
       excl=[("hco3", "<", 15)], src="Berend et al. NEJM 2014 physiological approach to acid-base; Kraut & Madias 2014"),
  dict(id="hypercapnic_acidemia_moderate", dx=["respiratory_acidosis"], req=[("ph", "between", (7.20, 7.2999)), ("pco2", ">", 50)], sup=[("hco3", ">", 26)], min_sup=0, strength="strong",
@@ -11942,8 +11024,6 @@ _ESL_LIBRARY.extend([
  dict(id="mixed_acidosis_severe", dx=["mixed_metabolic_and_respiratory_acidosis"], req=[("ph", "<", 7.20), ("pco2", ">", 45), ("hco3", "<", 22)], sup=[("lactate", ">", 2), ("k", ">", 5.0)], min_sup=0, strength="anchor",
       src="Berend et al. NEJM 2014 (acidaemia with both pCO2 up and HCO3 down = mixed disorder)"),
  # --- thyroid: total-hormone tiers (ATA 2016 hyperthyroidism guideline; ATA 2014 hypothyroidism guideline).
- #     Free T4 syndromes exist already; these fire when only TOTAL T4/T3 is reported (UCI thyroid0387 held-out set
- #     showed overt hyperthyroidism with TSH 0.05 and TT4 > 12.5 ug/dL scored only ~0.3 because no total-hormone rule existed).
  dict(id="thyrotox_overt_tt4", dx=["hyperthyroidism", "thyrotoxicosis"], req=[("tsh", "<", 0.1), ("tt4", ">", 12.5)], sup=[("tt3", ">", 200), ("alp", ">", 130), ("ca", ">", 10.3)], min_sup=0, strength="strong",
       excl=[("trab", ">", 1.75)], src="ATA 2016 hyperthyroidism guideline (Ross et al.) — suppressed TSH with elevated T4 = overt thyrotoxicosis; TT4 adult reference 5-12.5 ug/dL (Tietz)"),
  dict(id="t3_toxicosis_tt3", dx=["hyperthyroidism", "thyrotoxicosis"], req=[("tsh", "<", 0.1), ("tt3", ">", 200), ("tt4", "between", (0, 12.5))], sup=[("alp", ">", 130)], min_sup=0, strength="strong",
@@ -11952,10 +11032,6 @@ _ESL_LIBRARY.extend([
       excl=[("tt3", ">", 200), ("ft4", ">", 1.8)], src="ATA 2016 (subclinical hyperthyroidism = low TSH with normal T4 and T3)"),
  dict(id="hypothyroid_overt_tt4", dx=["primary_hypothyroidism", "hypothyroidism"], req=[("tsh", ">", 10), ("tt4", "<", 5.0)], sup=[("tc", ">", 200), ("ck", ">", 200), ("na", "<", 135)], min_sup=0, strength="anchor",
       src="ATA 2014 hypothyroidism guideline (Jonklaas et al.) — elevated TSH with low T4 = overt primary hypothyroidism"),
- # --- urate: definitional hyperuricaemia (NHANES 2017-18 held-out: urate > 7 mg/dL scored <= 0.34 -> sensitivity 0.3 % at 0.5)
- # v7 C14 (2026-10-25): graded like every other analyte - a mild elevation above the solubility limit is a
- # laboratory pattern (0.80); >= 9.0 mg/dL (ACR 2020: risk stratum for gout/urolithiasis; Cairo-Bishop TLS
- # criterion >= 8.0) is the moderate-severe grade (0.88). Before v7 urate 7.1 carried the same weight as Na 122.
  dict(id="hyperuricemia_definitional", dx=["hyperuricemia"], req=[("urate", "between", (7.0001, 8.9999))], sup=[("cr", ">", 1.3), ("tg", ">", 150), ("glucose", ">", 100), ("ldh", ">", 250)], min_sup=0, strength="pattern",
       src="ACR 2020 gout guideline; Tietz reference intervals (urate M 3.5-7.2, F 2.6-6.0 mg/dL); urate solubility limit 6.8 mg/dL"),
  dict(id="hyperuricemia_marked", dx=["hyperuricemia"], req=[("urate", ">=", 9.0)], sup=[("cr", ">", 1.3), ("tg", ">", 150), ("glucose", ">", 100), ("ldh", ">", 250)], min_sup=0, strength="strong",
@@ -11965,12 +11041,7 @@ _ESL_LIBRARY.extend([
  dict(id="severe_acidemia_metabolic_moderate_hco3", dx=["metabolic_acidosis"], req=[("ph", "<", 7.20), ("hco3", "between", (15, 21.9999))], sup=[("lactate", ">", 2), ("ag_c", ">", 16)], min_sup=0, strength="strong",
       excl=[("pco2", ">", 45)], src="Kraut & Madias NEJM 2014"),
 ])
-# ---------------------------------------------------------------------------
-# ESL extension 6 (2026-10-21) — context-aware anchors found missing in a blind
-# LLM-vs-engine comparison on eICU-CRD demo (see eval/patches/esl_ext6_ranking_20261021.py).
-# ---------------------------------------------------------------------------
 _ESL_LIBRARY.extend([
- # massive cTn elevation is cardiac whatever the CK: cardiac troponin I is not expressed in adult skeletal muscle
  dict(id="mi_massive_troponin", dx=["acute_myocardial_infarction", "myocardial_infarction", "acute_coronary_syndrome"], req=[("trop_c", ">", 5000)],
       sup=[("ckmb", ">", 5), ("glucose", ">", 140), ("lactate", ">", 2), ("cr", ">", 1.3)], min_sup=0, strength="anchor", ctx=[("age_ge", 18)],
       cap={"rhabdomyolysis": 0.95, "acute_myocardial_injury": 0.8, "myocardial_injury_acuity_undetermined": 0.8, "chronic_myocardial_injury": 0.6},
@@ -11978,7 +11049,6 @@ _ESL_LIBRARY.extend([
  # marked renal failure: creatinine >= 2.0 mg/dL cannot be ignored even when chronicity is unknown (KDIGO AKI 2012 / CKD 2024)
  # v6 (SAP Amendment 14, C3): a single raised creatinine establishes REDUCED GFR; KDIGO needs a delta (AKI) or > 90 days
  # (CKD). AKI is asserted from one value only in an acute-care encounter via the KDIGO-imputed baseline (below); CKD only with
- # chronicity clues (registry rule chronic_kidney_disease_chronicity_clues_v14 / ckd_egfr_* with min_sup=1) or history.
  dict(id="renal_failure_marked", dx=["reduced_gfr_chronicity_undetermined"], req=[("cr", ">=", 2.0)],
       sup=[("bun", ">", 40), ("k", ">", 5.0), ("hco3", "<", 20), ("phos", ">", 4.5), ("hb", "<", 10), ("lactate", ">", 2)], min_sup=0, strength="strong", ctx=[("age_ge", 18)],
       excl=[("ck", ">", 5000)], cap={"renal_tubular_acidosis_type_4": 0.5, "renal_tubular_acidosis": 0.5, "nephrotic_syndrome": 0.7},
@@ -11991,9 +11061,6 @@ _ESL_LIBRARY.extend([
       sup=[("lactate", ">", 2.0), ("pct", ">", 0.5), ("crp", ">", 10), ("wbc", ">", 12), ("wbc", "<", 4), ("bands", ">", 10), ("plt", "<", 100), ("tbil", ">", 2.0), ("cr", ">", 1.5)], min_sup=1,
       strength="screen", ctx_excl=[("cond", "pancreatitis"), ("cond", "trauma"), ("cond", "burn"), ("cond", "post-op"), ("cond", "postoperative")],
       excl=[("lipase", ">", 180), ("ck", ">", 5000)],
-      # v6 (2026-10-25): downgraded from "supportive" (0.72) to "screen" (0.45). SIRS >= 2 is met by most ICU patients without infection
-      # (Sprung 2006; Kaukonen NEJM 2015) and Sepsis-3 dropped SIRS from the definition for that reason; SSC 2021 treats a positive screen
-      # as a prompt for evaluation, not a diagnosis. Sepsis is asserted (>= 0.5) only by the Sepsis-3/organ-dysfunction syndromes below.
       note="SIRS >= 2 with a laboratory marker of host response or organ dysfunction (lactate, PCT, CRP, WBC, bands, platelets, bilirubin, creatinine): positive sepsis SCREEN (SSC 2021 recommends systematic screening). Sepsis-3 additionally requires a suspected infection source and organ dysfunction (SOFA >= 2) - neither is a laboratory input.",
       src="Surviving Sepsis Campaign 2021 (screening, recommendation 1-3); Sepsis-3 (Singer et al. JAMA 2016); ACCP/SCCM 1992 SIRS"),
  dict(id="aki_kdigo_imputed_baseline_acute_care", dx=["acute_kidney_injury"], req=[("cr_ratio_imputed", ">=", 1.5), ("cr", ">=", 1.2)],
@@ -12002,7 +11069,6 @@ _ESL_LIBRARY.extend([
       excl=[("ck", ">", 5000)], cap={"chronic_kidney_disease": 0.8},
       note="Acute-care encounter, no known CKD and no baseline creatinine: KDIGO AKI 2012 (section 2.1, appendix B) back-calculates the baseline from MDRD at eGFR 75 mL/min/1.73 m2; observed/imputed creatinine >= 1.5 meets the stage-1 ratio criterion. Still presumptive - a documented baseline or a repeat value supersedes this.",
       src="KDIGO Clinical Practice Guideline for Acute Kidney Injury, Kidney Int Suppl 2012;2:1 (2.1.1-2.1.2, Appendix B estimated baseline SCr)"),
- # sepsis with left shift: bandaemia >= 10 % plus leucocytosis/leucopenia and one organ-dysfunction marker (Sepsis-3; Surviving Sepsis 2021)
  dict(id="sepsis_bandemia", dx=["sepsis", "bacterial_infection"], req=[("bands", ">=", 10), ("wbc", ">", 12)], alt_req=[("bands", ">=", 10), ("wbc", "<", 4)],
       sup=[("cr", ">", 1.5), ("lactate", ">", 2), ("plt", "<", 150), ("hco3", "<", 20), ("pct", ">", 0.5), ("crp", ">", 100), ("tbil", ">", 2), ("inr", ">", 1.5)], min_sup=1, strength="strong",
       excl=[("pct", "<", 0.1)], cap={"leukocytosis_pattern": 0.9, "leukemoid_reaction": 0.6},
@@ -12010,27 +11076,20 @@ _ESL_LIBRARY.extend([
  dict(id="sepsis_marked_leukocytosis_organ", dx=["sepsis", "bacterial_infection"], req=[("wbc", ">", 20), ("lactate", ">", 2)],
       sup=[("cr", ">", 1.5), ("plt", "<", 150), ("hco3", "<", 20), ("pct", ">", 0.5), ("crp", ">", 100), ("bands", ">", 10)], min_sup=1, strength="pattern",
       excl=[("wbc", ">", 100), ("blasts", ">", 5), ("ck", ">", 5000)], src="Singer et al. JAMA 2016 (Sepsis-3)"),
- # acute hepatocellular injury: ALT/AST > 5x ULN is not a chronic-liver-disease pattern; chronic entities are capped
  dict(id="acute_hepatocellular_injury", dx=["hepatocellular_injury_pattern"], req=[("alt", ">", 200)], alt_req=[("ast", ">", 200)],
       sup=[("ldh", ">", 400), ("lactate", ">", 2), ("inr", ">", 1.5), ("tbil", ">", 2), ("trop_c", ">", 50), ("cr", ">", 1.5)], min_sup=0, strength="pattern",
-      # aetiology-specific markers present -> the specific syndromes decide, not the generic pattern
       excl=[("hbsag", "pos", None), ("hbv_dna", ">", 0), ("hbc_igm", "pos", None), ("hcv_rna", ">", 0), ("asma", ">", 0), ("ana", ">", 0), ("apap", ">", 10)],
       cap={"nafl_d": 0.4, "nonalcoholic_fatty_liver_disease": 0.4, "nash": 0.5, "liver_cirrhosis": 0.6},
       src="ACG 2017 guideline on abnormal liver chemistries (Kwo et al.); Kwo 2017 severe (>15x) vs borderline patterns"),
- # mild DKA (ADA/EASD 2024: glucose > 250 or known DM, HCO3 < 18, AG > 12) when ketones were not measured
  dict(id="dka_mild_ketones_unmeasured", dx=["diabetic_ketoacidosis", "diabetes_mellitus"], req=[("glucose", ">=", 200), ("hco3", "<", 18), ("ag_c", ">", 12), ("ag_minus_lac", ">", 8)],
       sup=[("ph", "<", 7.3), ("k", ">", 5.0), ("phos", "<", 2.5), ("glucose", ">", 400), ("ag_c", ">", 16)], min_sup=0, strength="pattern",
       excl=[("bhb", "<", 3.0), ("uket", "neg", None), ("cr", ">", 6.0)], cap={"hyperosmolar_hyperglycemic_state": 0.8},
       src="Umpierrez et al., Diabetes Care 2024 (ADA/EASD hyperglycaemic crises consensus) - mild DKA tier; ext9b creatinine > 6 exclusion (uraemic acidosis)"),
- # Sepsis-3 operational screen without procalcitonin: abnormal WBC + >= 2 organ-dysfunction / infection markers (pattern strength only)
  dict(id="sepsis_sirs_two_organ", dx=["sepsis", "bacterial_infection"], req=[("wbc", ">", 12)], alt_req=[("wbc", "<", 4)],
       sup=[("plt", "<", 150), ("lactate", ">", 2), ("cr", ">", 1.5), ("tbil", ">", 2), ("hco3", "<", 20), ("bands", ">", 10), ("pct", ">", 0.5), ("crp", ">", 100), ("inr", ">", 1.5)], min_sup=2, strength="pattern",
       excl=[("wbc", ">", 100), ("blasts", ">", 5), ("ck", ">", 5000), ("pct", "<", 0.1), ("hb", "<", 7)],
       src="Singer et al. JAMA 2016 (Sepsis-3, SOFA components); Surviving Sepsis Campaign 2021"),
  # total calcium low only because albumin is low: albumin-corrected calcium normal (Payne 1973; KDIGO CKD-MBD 2017)
- # v7 C16 (2026-10-25): acute chest syndrome is a complication OF SICKLE CELL DISEASE (NHLBI 2014 / ASH 2020): anaemia
- # with hypoxaemia in a patient without known sickle cell disease or a measured HbS fraction is not ACS. The registry
- # leaf (Hb < 9 + pO2 < 70) carries no such requirement, so the syndrome layer supplies the context gate.
  dict(id="sickle_complication_context_guard", dx=[], guard=True, req=[("hb", "<", 9)], min_sup=0, strength="pattern",
       excl=[("hbs", ">", 0)], ctx_excl=[("cond", "sickle"), ("cond", "hbss"), ("cond", "hbsc"), ("cond", "drepanocyt"), ("cond", "hemoglobin s"), ("cond", "haemoglobin s"), ("med", "hydroxyurea"), ("med", "voxelotor"), ("med", "crizanlizumab")],
       cap={"acute_chest_syndrome": 0.3, "vaso_occlusive_crisis": 0.3, "sickle_cell_anemia_hbss": 0.3, "sickle_cell_disease": 0.35},
@@ -12038,17 +11097,13 @@ _ESL_LIBRARY.extend([
  dict(id="pseudohypocalcemia_guard", dx=[], guard=True, req=[("ca", "<", 8.5), ("ca_c", ">=", 8.5), ("alb", "<", 3.5)], min_sup=0, strength="pattern",
       excl=[("ica", "<", 1.12)], cap={"hypocalcemia": 0.45, "hypoparathyroidism": 0.4, "vitamin_d_deficiency": 0.6, "pseudohypoparathyroidism": 0.4},
       src="Payne RB et al. BMJ 1973; KDIGO CKD-MBD 2017 (use corrected or ionised calcium)"),
- # CK-only elevation without any drug / temperature / mental-status context: hyperthermic drug syndromes are not supportable
  dict(id="ck_elevation_no_context_guard", dx=[], guard=True, req=[("ck", ">", 500)], min_sup=0, strength="pattern",
       cap={"serotonin_syndrome": 0.45, "neuroleptic_malignant_syndrome": 0.45, "malignant_catatonia": 0.45, "malignant_hyperthermia": 0.45, "heat_stroke": 0.45},
       excl=[("temp", ">", 38.5)], ctx_excl=[("med", "serotonin"), ("med", "ssri"), ("med", "antipsychotic"), ("med", "haloperidol"), ("med", "anesth"), ("cond", "hyperthermia"), ("cond", "fever")],
       src="Boyer & Shannon NEJM 2005 (serotonin syndrome requires serotonergic exposure); Strawn 2007 NMS criteria"),
 ])
-# ESL extension 6b (2026-10-21)
 _ESL_LIBRARY.extend([
  dict(id="sepsis_lactate_organ", dx=["sepsis"], req=[("lactate", ">", 2.5)],
-      # v6 (2026-10-25): hypotension (SBP < 90 / MAP < 65 mmHg) added as organ-dysfunction support - the cardiovascular SOFA component (Sepsis-3)
-      # and the septic-shock criterion (vasopressor need + lactate > 2); vitals come from the optional context module and are absent in labs-only use.
       sup=[("cr", ">", 1.5), ("plt", "<", 150), ("tbil", ">", 2), ("hco3", "<", 20), ("inr", ">", 1.5), ("wbc", ">", 12), ("wbc", "<", 4), ("bands", ">", 10), ("pct", ">", 0.5), ("crp", ">", 100), ("sbp", "<", 90), ("map", "<", 65)], min_sup=1, strength="pattern",
       excl=[("ck", ">", 5000), ("trop_c", ">", 1000), ("hb", "<", 7), ("ethanol", ">", 80), ("glucose", ">", 400), ("blasts", ">", 5), ("wbc", ">", 100), ("cohb", ">", 10), ("apap", ">", 50)],
       src="Singer et al. JAMA 2016 (Sepsis-3); Surviving Sepsis Campaign 2021 (lactate > 2 as screening trigger); Vincent 2016 ICU aetiology of hyperlactataemia"),
@@ -12057,31 +11112,24 @@ _ESL_LIBRARY.extend([
       excl=[("wbc", ">", 50), ("blasts", ">", 5), ("ck", ">", 5000), ("pct", "<", 0.1), ("hb", "<", 7), ("glucose", ">", 400), ("trop_c", ">", 1000)],
       src="Singer et al. JAMA 2016 (Sepsis-3, SOFA components); Surviving Sepsis Campaign 2021"),
 ])
-# ESL extension 6c (2026-10-21) — clinical-confirmation ceilings
 _ESL_LIBRARY.extend([
- # Thyroid storm is a clinical score (Burch-Wartofsky / JTA); biochemical thyrotoxicosis without any systemic
- # marker (fever, tachycardia, cholestasis, leucocytosis, hyperglycaemia, hypercalcaemia) is thyrotoxicosis, not storm.
  dict(id="thyrotox_no_systemic_guard", dx=[], guard=True, req=[("tsh", "<", 0.1)], alt_req=[("ft4", ">", 1.8)], min_sup=0, strength="pattern",
       excl=[("ft4", ">", 4.0), ("tbil", ">", 1.5), ("wbc", ">", 12), ("glucose", ">", 180), ("temp", ">", 38.0), ("ca", ">", 10.5), ("alt", ">", 80), ("lactate", ">", 2.5)],
       ctx_excl=[("attr_gt", ("heart_rate", 120)), ("cond", "fever"), ("cond", "storm"), ("cond", "agitation"), ("cond", "delirium")],
       cap={"thyroid_storm": 0.45, "atrial_fibrillation_hyperthyroid": 0.40, "thyrotoxic_periodic_paralysis": 0.45},
       src="Burch & Wartofsky 1993; Ross et al. ATA 2016 hyperthyroidism guideline; Akamizu JTA criteria 2012"),
- # Shock is a haemodynamic diagnosis: without hypotension / vasopressor context, hyperlactataemia supports
  # sepsis or lactic acidosis, not 'septic shock' / 'cardiogenic shock' (Sepsis-3: vasopressors + lactate > 2 after resuscitation).
  dict(id="shock_hemodynamics_guard", dx=[], guard=True, req=[("lactate", ">", 2.0)], min_sup=0, strength="pattern",
       ctx_excl=[("attr_true", "vasopressor_required"), ("attr_lt", ("systolic_bp", 90)), ("attr_lt", ("systolic_blood_pressure", 90)),
                 ("cond", "hypotension"), ("cond", "shock"), ("med", "norepinephrine"), ("med", "vasopressin"), ("med", "vasopressor")],
       cap={"septic_shock": 0.45, "septic_shock_severe_lactic_acidosis": 0.49, "cardiogenic_shock": 0.45, "hypovolemic_shock": 0.45, "hemorrhagic_shock": 0.45, "distributive_shock": 0.45, "obstructive_shock": 0.45},
       src="Singer et al. JAMA 2016 (Sepsis-3 septic shock definition); Vincent & De Backer NEJM 2013 circulatory shock"),
- # An isolated D-dimer has no diagnostic specificity: PE / dissection / DVT need imaging; the ceiling lifts when a second
- # objective marker (troponin, natriuretic peptide, hypoxaemia, thrombocytopenia, low fibrinogen) is present.
  dict(id="isolated_ddimer_guard", dx=[], guard=True, req=[("ddimer", ">", 0.5)], min_sup=0, strength="pattern",
       excl=[("trop_c", ">", 14), ("natri_high", "==", 1), ("po2", "<", 70), ("plt", "<", 100), ("fib", "<", 150), ("inr", ">", 1.5), ("lactate", ">", 2.5)],
       ctx_excl=[("cond", "chest pain"), ("cond", "dyspnea"), ("cond", "dyspnoea"), ("cond", "leg swelling"), ("cond", "syncope"), ("pregnant", True)],
       cap={"pulmonary_embolism": 0.45, "aortic_dissection": 0.40, "deep_vein_thrombosis": 0.45, "venous_thromboembolism": 0.45},
       src="Konstantinides ESC 2019 PE guideline (D-dimer rule-out only); Erbel ESC 2014 aortic diseases"),
 ])
-# ESL extension 6d (2026-10-21)
 _ESL_LIBRARY.extend([
  dict(id="ckd_egfr_albuminuria", dx=["chronic_kidney_disease"], req=[("egfr_c", "<", 60), ("uacr", ">=", 30)],
       sup=[("hb", "<", 12), ("phos", ">", 4.5), ("pth", ">", 65), ("hco3", "<", 22), ("urate", ">", 7)], min_sup=0, strength="strong", ctx=[("age_ge", 18)],
@@ -12095,12 +11143,11 @@ _ESL_LIBRARY.extend([
  dict(id="ckd_egfr_g4_single", dx=["chronic_kidney_disease"], req=[("egfr_c", "<", 30)],
       sup=[("uacr", ">=", 30), ("hb", "<", 11), ("phos", ">", 4.5), ("pth", ">", 65)], min_sup=1, strength="pattern", ctx=[("age_ge", 18)],
       excl=[("lactate", ">", 4), ("ck", ">", 5000), ("k", ">", 6.5), ("glucose", ">", 400)],
-      src="KDIGO 2024 CKD guideline (single eGFR < 30: AKI vs CKD undetermined - both listed; chronicity markers decide)"),  # extension 7
+      src="KDIGO 2024 CKD guideline (single eGFR < 30: AKI vs CKD undetermined - both listed; chronicity markers decide)"),
  dict(id="ckd_egfr_g3b_young", dx=["chronic_kidney_disease"], req=[("egfr_c", "between", (30, 44.9999))],
       sup=[("uacr", ">=", 30), ("phos", ">", 4.5), ("pth", ">", 65), ("hb", "<", 11)], min_sup=1, strength="pattern", ctx=[("age_ge", 18), ("age_lt", 40)],
       excl=[("lactate", ">", 4), ("ck", ">", 5000), ("k", ">", 6.0), ("bun_cr", ">", 30), ("glucose", ">", 400)],
-      src="KDIGO 2024 CKD guideline (young adult: single eGFR 30-44 needs corroboration before CKD is listed)"),  # extension 7 (2026-10-22)
- # G3a alone overlaps age-related decline in the elderly; needs one renal-specific corroborating marker (anaemia / low HCO3 are too unspecific - B4 stay 172015, cirrhosis)
+      src="KDIGO 2024 CKD guideline (young adult: single eGFR 30-44 needs corroboration before CKD is listed)"),
  dict(id="ckd_egfr_moderate", dx=["chronic_kidney_disease"], req=[("egfr_c", "between", (45, 59.9999))],
       sup=[("uacr", ">=", 30), ("phos", ">", 4.5), ("pth", ">", 65)], min_sup=1, strength="pattern", ctx=[("age_ge", 18)],
       excl=[("lactate", ">", 4), ("ck", ">", 5000), ("k", ">", 6.0), ("bun_cr", ">", 30)],
@@ -12110,40 +11157,30 @@ _ESL_LIBRARY.extend([
       ctx_excl=[("attr_gt", ("bmi", 29.9)), ("attr_gt", ("body_mass_index", 29.9)), ("attr_gt", ("waist_cm", 101)), ("attr_gt", ("systolic_bp", 129)), ("cond", "hypertension"), ("cond", "obesity")],
       cap={"metabolic_syndrome": 0.45}, src="Alberti et al. Circulation 2009 (harmonised definition: 3 of 5 criteria)"),
 ])
-# extension 7 (2026-10-22)
 _ESL_LIBRARY.extend([
- # anion gap not computable (no chloride) - severe acidaemia with marked hyperglycaemia is a hyperglycaemic crisis
  dict(id="dka_no_gap_severe", dx=["diabetic_ketoacidosis", "diabetes_mellitus"], req=[("glucose", ">", 250), ("hco3", "<", 10), ("ph", "<", 7.20), ("ag_c", "absent", None)], sup=[("k", ">", 5.0), ("glucose", ">", 400)], min_sup=0, strength="pattern",
       excl=[("bhb", "<", 3.0), ("uket", "neg", None), ("cr", ">", 4.0)],
       cap={"metabolic_acidosis": 0.9}, src="ADA/EASD 2024 hyperglycaemic crises consensus (ketones unmeasured; anion gap unavailable)"),
  dict(id="dka_no_gap_moderate", dx=["diabetic_ketoacidosis", "diabetes_mellitus"], req=[("glucose", ">=", 200), ("hco3", "<", 12), ("ag_c", "absent", None), ("ph", "absent", None)], sup=[("k", ">", 5.0), ("glucose", ">", 400)], min_sup=0, strength="pattern",
       excl=[("bhb", "<", 3.0), ("uket", "neg", None), ("cr", ">", 3.0), ("lactate", ">=", 4.0)],
       src="ADA/EASD 2024 hyperglycaemic crises consensus (no gas, no gap available)"),
- # glucose > 600 with computed osmolality 300-320: hyperglycaemic crisis short of HHS criteria
  dict(id="hhs_evolving", dx=["hyperosmolar_hyperglycemic_state", "diabetes_mellitus"], req=[("glucose", ">", 600), ("osm", "between", (300, 320))], sup=[("hco3", ">", 15), ("ph", ">", 7.30), ("cr", ">", 1.3), ("bun", ">", 30)], min_sup=1, strength="pattern",
       excl=[("ph", "<", 7.25), ("hco3", "<", 12)], cap={"diabetic_ketoacidosis": 0.7}, src="ADA/EASD 2024 hyperglycaemic crises consensus (HHS: glucose > 600, osm > 320)"),
- # high-anion-gap metabolic acidosis established from chemistry alone (no blood gas): Kraut & Madias NEJM 2014
  dict(id="hagma_no_gas", dx=["metabolic_acidosis"], req=[("hco3", "<", 15), ("ag_c", ">", 16), ("ph", "absent", None)], sup=[("k", ">", 5.0), ("ag_c", ">", 20), ("hco3", "<", 10)], min_sup=0, strength="strong",
       src="Kraut & Madias NEJM 2014 (HAGMA = low HCO3 with elevated anion gap)"),
  dict(id="hagma_no_gas_mild", dx=["metabolic_acidosis"], req=[("hco3", "between", (15, 17.9999)), ("ag_c", ">", 16), ("ph", "absent", None)], sup=[("k", ">", 5.0), ("lactate", ">", 2)], min_sup=0, strength="pattern",
       src="Kraut & Madias NEJM 2014"),
- # HHS by *effective* osmolality when serum osmolality was not measured (ADA/EASD 2024: 2 x Na + glucose/18 > 320)
  dict(id="hhs_effective_osm", dx=["hyperosmolar_hyperglycemic_state", "diabetes_mellitus"], req=[("glucose", ">", 600), ("osm_eff_c", ">", 320), ("osm", "absent", None)], sup=[("hco3", ">", 15), ("ph", ">", 7.30), ("cr", ">", 1.3), ("bun", ">", 30)], min_sup=1, strength="strong",
       excl=[("ph", "<", 7.25), ("hco3", "<", 12)], cap={"diabetic_ketoacidosis": 0.6, "hypernatremia": 0.85, "acute_kidney_injury": 0.85}, src="ADA/EASD 2024 hyperglycaemic crises consensus"),
- # translocational (hyperglycaemic) hyponatraemia: measured Na low but glucose-corrected Na normal
  dict(id="translocational_hyponatremia_guard", dx=[], guard=True, req=[("na", "<", 135), ("glucose", ">", 300), ("na_c", ">=", 135)], min_sup=0, strength="pattern",
       cap={"hyponatremia": 0.40, "siadh": 0.2, "hypovolemic_hyponatremia": 0.3, "severe_hyponatremia": 0.3},
       src="Hillier TA et al. Am J Med 1999 (1.6-2.4 mEq/L per 100 mg/dL glucose); Spasovski ESE 2014 hyponatraemia guideline"),
- # neutrophil-to-lymphocyte ratio supports bacterial infection (not sepsis, which needs organ dysfunction)
  dict(id="bacterial_infection_nlr", dx=["bacterial_infection"], req=[("wbc", ">", 12), ("nlr_c", ">", 10)], sup=[("bands", ">", 10), ("crp", ">", 50), ("pct", ">", 0.5), ("neut_pct", ">", 85)], min_sup=0, strength="pattern",
       excl=[("blasts", ">", 5), ("wbc", ">", 50), ("med", "corticosteroid")],
       src="Zahorec R. Bratisl Lek Listy 2001; de Jager CP Crit Care 2010 (NLR > 10 in bacteraemia)"),
 ])
-# lactate >= 4 is lactic acidosis first; sepsis is one of its causes, not the definition
 for _s in _ESL_LIBRARY:
     if _s["id"] == "lactic_acidosis_sepsis":
-        # sepsis stays primary only when an infection marker is present;
-        # lactate + leukocytosis + creatinine alone is shock of any cause
         _s["min_sup_any"] = [("pct", ">", 2.0), ("crp", ">", 100), ("bands", ">", 10), ("bcx", "pos", None), ("wbc", ">", 15), ("wbc", "<", 4)]
         _s["cap"] = dict(_s.get("cap") or {}, lactic_acidosis=0.97)
     if _s["id"] in ("mh", "nms", "heat_stroke", "cyanide", "metformin_lactic", "mala", "isoniazid_hepatotoxicity"):
@@ -12168,8 +11205,6 @@ class _ExpertSyndromeLayer:
     def __init__(self, engine: "ClinicalRuleEngine"):
         self._engine = engine
         reg = engine.registry.diseases
-        # keep only syndromes whose primary target exists in the registry;
-        # secondary targets are filtered per entry
         self._lib: list[dict[str, Any]] = []
         for s in _ESL_LIBRARY:
             dx = [d for d in s["dx"] if d in reg]
@@ -12178,10 +11213,9 @@ class _ExpertSyndromeLayer:
             s2 = dict(s); s2["dx"] = dx
             self._lib.append(s2)
 
-    # -- value access --------------------------------------------------------
     def _values(self, observations: Mapping[str, "ObservationRecord"], ctx: "ClinicalContext") -> dict[str, Optional[float]]:
         out: dict[str, Optional[float]] = {}
-        series_map: dict[str, list[tuple[float, float]]] = {}  # ESL ext 11-T
+        series_map: dict[str, list[tuple[float, float]]] = {}
         for key, (unit, fids) in _ESL_GROUPS.items():
             val = None
             for fid in fids:
@@ -12198,14 +11232,10 @@ class _ExpertSyndromeLayer:
                     except Exception:
                         conv = None
                     if conv is None:
-                        # A value in an unconvertible unit is NOT a value in
-                        # the expected unit. Silently reusing the raw number
-                        # (e.g. PTH 14.8 pmol/L read as 14.8 pg/mL) would
-                        # suppress or fabricate constellations; skip it.
                         continue
                     raw = float(conv)
                 val = raw
-                _ser = (getattr(rec, "metadata", None) or {}).get("series") if hasattr(rec, "metadata") else None  # ESL ext 11-T
+                _ser = (getattr(rec, "metadata", None) or {}).get("series") if hasattr(rec, "metadata") else None
                 if _ser:
                     pts: list[tuple[float, float]] = []
                     for p in _ser:
@@ -12235,7 +11265,6 @@ class _ExpertSyndromeLayer:
         out["pregnant_ctx"] = 1.0 if getattr(ctx, "pregnant", False) else 0.0
         return out
 
-    # -- evaluation ----------------------------------------------------------
     @staticmethod
     def _all_met(v: Mapping[str, Optional[float]], crits: list) -> tuple[bool, list[str]]:
         used: list[str] = []
@@ -12250,16 +11279,14 @@ class _ExpertSyndromeLayer:
         v = self._values(observations, ctx)
         hits: list[dict[str, Any]] = []
         for s in self._lib:
-            # context gates
             if any(not _esl_ctx(ctx, p, a) for p, a in s.get("ctx", ())):
                 continue
             ca = s.get("ctx_any")
             if ca and not any(_esl_ctx(ctx, p, a) for p, a in ca):
                 continue
-            ce = s.get("ctx_excl")  # ESL extension 6 (2026-10-21)
+            ce = s.get("ctx_excl")
             if ce and any(_esl_ctx(ctx, p, a) for p, a in ce):
                 continue
-            # required (primary or alternates)
             ok, used = self._all_met(v, s["req"])
             if not ok:
                 ok, used = False, []
@@ -12271,7 +11298,6 @@ class _ExpertSyndromeLayer:
                             break
             if not ok:
                 continue
-            # exclusions
             vetoed = False
             for key, op, arg in s.get("excl", ()):
                 if _esl_test(v.get(key), op, arg):
@@ -12279,7 +11305,6 @@ class _ExpertSyndromeLayer:
                     break
             if vetoed:
                 continue
-            # supports
             sup_met: list[str] = []
             n_eval = 0
             for key, op, arg in s.get("sup", ()):
@@ -12294,12 +11319,10 @@ class _ExpertSyndromeLayer:
             msa = s.get("min_sup_any")
             if msa and not any(_esl_test(v.get(k), o, a) for k, o, a in msa):
                 continue
-            # strength: anchor when the supporting picture is rich
             n_sup = len(s.get("sup", ()))
             richness = (len(sup_met) / n_sup) if n_sup else 1.0
             strength = s.get("strength") or ("anchor" if (len(sup_met) >= max(1, s.get("min_sup", 0)) and richness >= 0.34 or n_sup == 0) else "strong")
-            score = {"anchor": 0.95, "strong": 0.88, "pattern": 0.80, "supportive": 0.72, "screen": 0.45}.get(strength, 0.88)  # v6: "screen" = positive screening tool (SSC 2021) -> stays below the 0.5 assertion line ("possible"); prompts evaluation, never asserts the disease  # ext10: "supportive" = biomarker signature that supports a behaviour/exposure, never a disease on its own
-            # resolve used observation ids for subsumption
+            score = {"anchor": 0.95, "strong": 0.88, "pattern": 0.80, "supportive": 0.72, "screen": 0.45}.get(strength, 0.88)
             feats: set[str] = set()
             for key in used + sup_met:
                 grp = _ESL_GROUPS.get(key)
@@ -12331,9 +11354,6 @@ class _ExpertSyndromeLayer:
                     feats.update(f for f in ("triglycerides", "hdl_cholesterol") if f in observations)
                 elif key in ("lh_fsh",):
                     feats.update(f for f in ("luteinizing_hormone", "follicle_stimulating_hormone") if f in observations)
-            # v6 C8 (2026-10-25): analytes behind the REQUIRED groups only - used for evidence
-            # subsumption, so that an optional support leaf (creatinine in an MI syndrome) does
-            # not let the syndrome "explain" an unrelated finding (reduced GFR).
             req_feats: set[str] = set()
             for key in used:
                 grp = _ESL_GROUPS.get(key)
@@ -12385,14 +11405,10 @@ class ClinicalRuleEngine:
             raise ValueError("execution_mode must be 'research' or 'clinical'.")
         self.registry = DiseaseGuidelineRegistry.shared(
             disease_registry_path, feature_registry_path)
-        # Derived once per engine: on a 6600-disease registry this finds
-        # the subtype relations the data implies but never states.
         try:
             self._registry_parents = kashf_selsele_maratib(
                 self.registry.diseases)
         except Exception as exc:
-            # FIX A34: was a silent degradation (umbrella-term demotion
-            # silently skipped). Log it so it is observable.
             logger.warning("Parent-map derivation failed (%s); umbrella-term "
                            "demotion disabled for this engine.", exc)
             self._registry_parents = {}
@@ -12415,10 +11431,6 @@ class ClinicalRuleEngine:
             self._reasoner.configure_registry(self.registry.diseases)
         except Exception as exc:
             logger.warning("Reasoner registry configuration failed: %s", exc)
-        # The engine-side interval tables cover ~40 analytes; the feature
-        # registry carries numeric adult / sex-specific intervals for ~520
-        # more. Hydrate once so severity, direction and fuzzy membership exist
-        # for them instead of silently reading as 'no interval'.
         try:
             hydrate_reference_ranges_from_registry(
                 getattr(self.registry, "features", {}) or {})
@@ -12474,24 +11486,19 @@ class ClinicalRuleEngine:
             if preg is True:
                 return False, missing, 'Rule excludes pregnancy.'
 
-        # TARGET POPULATION & AGE-SPECIFIC GATING
         rule_id = str(rule.get("rule_id") or "")
         disease_id = str(rule.get("disease_id") or "")
         limitations = str(rule.get("limitations") or "").casefold()
 
-        # Anatomical / Sex-specific disease gating
         if sex == "female" and any(k in disease_id for k in ("prostate", "testicular", "epididymitis", "benign_prostatic")):
             return False, missing, "Male-specific condition not applicable to female patient."
         if sex == "male" and any(k in disease_id for k in ("ovarian", "cervical", "uterine", "endometriosis", "preeclampsia")):
             return False, missing, "Female-specific condition not applicable to male patient."
 
-        # Pregnancy-specific condition gating
         is_preg_dis = any(k in disease_id for k in ("_in_pregnancy", "gestational", "preeclampsia", "eclampsia", "peripartum", "postpartum", "hellp"))
         if is_preg_dis and not context.pregnant:
             return False, missing, "Pregnancy-specific condition not applicable to non-pregnant patient."
 
-        # Pediatric Adult-Malignancy & Chronic Degenerative Gating:
-        # Diseases that are strictly adult/geriatric or adult carcinomas/hematologic malignancies
         # must not be screened on isolated routine laboratory variations in pediatric patients.
         if context.age_years is not None and context.age_years < 18.0:
             pediatric_inapplicable_diseases = {
@@ -12719,11 +11726,6 @@ class ClinicalRuleEngine:
         links = disease.get("feature_links") or {}
         required = set(links.get("required") or ())
 
-        # The registry names, for 5810 diseases, the features whose abnormal
-        # value refutes that disease. Ignoring them let a rule fire on
-        # supportive evidence while a contradicting measurement sat in the
-        # same panel unread.
-        # Exclusion guard: Only truly external refuting features (never required hallmark criteria) can refute
         excluded = (set(links.get("excluded") or ()) - required - set(links.get("optional") or ()) - set(rule.get("_feature_ids") or ()))
         if excluded:
             refuting = sorted(
@@ -12738,13 +11740,9 @@ class ClinicalRuleEngine:
                 return "conflicting_data", warnings, False
 
         # Curated guideline rules (curation 13.0.0) already carry their own
-        # exclusions and population limits; the heuristics below exist to
-        # tame the AI-assembled remainder of the registry, not these.
         if str(rule.get("status") or "") == "curated_guideline_anchored":
             return status, warnings, True
 
-        # Template-stamped single-analyte "diagnostic criteria" (FPG >= 126
-        # under 28 unrelated endocrinopathies) are at most compatible.
         if (status in ("criterion_met", "urgent_pattern")
                 and str(rule.get("rule_id") or "") in getattr(self.registry, "rule_stamped", ())
                 and str(rule.get("rule_id") or "") not in getattr(self.registry, "rule_defines_entity", ())):
@@ -12753,8 +11751,6 @@ class ClinicalRuleEngine:
                 f">= {STAMPED_SIGNATURE_MIN} unrelated entities; it is a non-specific screen -> compatible_pattern.")
             status = "compatible_pattern"
 
-        # Routine-panel-only "diagnostic criteria" for a specific aetiology
-        # (malaria <- platelets + LDH) are compatible patterns, not criteria.
         if (status in ("criterion_met", "urgent_pattern")
                 and not rule.get("_supplemental")
                 and str(rule.get("rule_type") or "") == "diagnostic_criterion"
@@ -12767,14 +11763,10 @@ class ClinicalRuleEngine:
                     "diagnostic criterion for a specific aetiology -> compatible_pattern.")
                 status = "compatible_pattern"
 
-        # Code-level curated rules (SUPPLEMENTAL_RULES) are written against
         # the guideline itself; the registry's AI-filled feature_links
-        # ("multiple_myeloma requires ferritin", "excluded: m_spike") and the
         # source-domain heuristics below must not re-grade them.
         if rule.get("_supplemental"):
             return status, warnings, True
-        # A TRUE pathogen / decisive marker is the criterion whatever the
-        # registry lists as "required".
         for e in true_ev:
             if (_PATHOGEN_MARKER_RE.search(e.feature_id) or _DECISIVE_MARKER_RE.search(e.feature_id)) \
                     and str(e.operator or "") in (">", ">=", "=="):
@@ -12793,7 +11785,6 @@ class ClinicalRuleEngine:
             return "insufficient_data", warnings, False
 
         # Medical Guideline Domain & Hallmark Criteria Guards:
-        # A. If disease defines required hallmark features and none were observed as TRUE:
         if required and not (true_feats & required):
             if status in ("criterion_met", "urgent_pattern"):
                 warnings.append(
@@ -12806,9 +11797,6 @@ class ClinicalRuleEngine:
         rule_sources = [str(s).lower() for s in (rule.get("source_ids") or [])]
         disease_id = str((disease.get("identity") or {}).get("disease_id", "") or rule.get("disease_id", "")).lower()
 
-        # Prediabetes clinical range guard:
-        # Prediabetes requires HbA1c 5.7% - 6.4% or FPG 100 - 125 mg/dL.
-        # Patients with HbA1c < 5.7% or FPG < 100 mg/dL are normoglycemic.
         if "prediabetes" in disease_id:
             for ev in true_ev:
                 if ev.feature_id == "hemoglobin_a1c" and ev.actual_value is not None and ev.actual_value < 5.7:
@@ -12818,13 +11806,11 @@ class ClinicalRuleEngine:
                     warnings.append(f"Prediabetes guard: Glucose {ev.actual_value:.1f} mg/dL is normoglycemic (<100) -> criterion_not_met.")
                     return "criterion_not_met", warnings, False
 
-        # ADA diabetes rules:
         is_diabetes_entity = (
             ("diabetes" in disease_id and "insipidus" not in disease_id) or
             any(k in disease_id for k in ("hyperglycemia", "impaired_fasting", "impaired_glucose", "insulin_resistance", "metabolic_syndrome", "hhs", "ketoacidosis",
                                            "hypoglyc", "glycemi", "glucose", "insulinoma", "dysglyc", "gestational", "mody", "lada", "prediabet"))
         )
-        # Hypoglycemia / urgent glycemic alerts are primary glycemic findings, never "secondary dysglycemia".
         if any("ada" in s for s in rule_sources) and not is_diabetes_entity and status != "urgent_pattern":
             if status in ("criterion_met",):
                 status = "compatible_pattern"
@@ -12843,7 +11829,6 @@ class ClinicalRuleEngine:
                     status = "compatible_pattern"
                     warnings.append("KDIGO renal rule reflects secondary azotemia/clearance reduction; specific etiologic diagnosis requires targeted testing.")
 
-        # AASLD liver rules:
         is_liver_syndrome = any(k in disease_id for k in (
             "liver_injury", "hepatitis_pattern", "steatos", "masld", "nafld", "nash", "transaminitis", "cirrhosis_pattern"
         ))
@@ -12866,7 +11851,6 @@ class ClinicalRuleEngine:
                     status = "compatible_pattern"
                     warnings.append("ATA thyroid rule reflects secondary endocrine response or hypopituitarism check; not diagnostic of non-thyroid entity.")
 
-        # Endocrine Cross-Screening Rule Boundary Guards:
         r_id_str = str(rule.get("rule_id", "")).lower()
         if "addison_morning_cortisol" in r_id_str:
             is_adrenal = any(k in disease_id for k in ("adrenal_insufficiency", "addison", "hypoadrenal")) and "pheochromocytoma" not in disease_id
@@ -12903,9 +11887,6 @@ class ClinicalRuleEngine:
                 status = "compatible_pattern"
                 warnings.append("Hypoglycemia alert rule represents acute glycemic triage, not primary etiology.")
 
-        # Non-specific inflammatory marker guard:
-        # Rules relying solely on ESR and/or CRP represent generalized systemic inflammation.
-        # They cannot provide definitive diagnostic criteria (criterion_met) for specific clinical entities.
         non_specific_inflam = {"erythrocyte_sedimentation_rate", "c_reactive_protein", "erythrocyte_sedimentation_rate_2hr", "high_sensitivity_c_reactive_protein"}
         if solid_feats and solid_feats.issubset(non_specific_inflam):
             is_inflam_pattern = any(k in disease_id for k in ("inflammation", "inflammatory_response", "acute_phase", "elevated_crp", "elevated_esr", "systemic_inflammatory"))
@@ -12913,7 +11894,6 @@ class ClinicalRuleEngine:
                 status = "compatible_pattern"
                 warnings.append("Systemic inflammation guard: isolated ESR/CRP elevation is non-specific; compatible with systemic inflammation but not definitive for specific etiology.")
 
-        # Biological Sex Gating
         p_sex = str(getattr(context, "sex_at_birth", "") or getattr(context, "gender", "")).lower()
         if hasattr(context, "normalized_jensiat") and callable(context.normalized_jensiat):
             p_sex = context.normalized_jensiat() or p_sex
@@ -12922,15 +11902,10 @@ class ClinicalRuleEngine:
         if p_sex == "female" and any(k in disease_id for k in ("prostate", "prostatic", "testicular")):
             return "not_applicable", ["Condition is male-specific; patient is biologically female -> not_applicable."], False
 
-        # Pregnancy Gating
         p_preg = getattr(context, "pregnant", None)
         if (p_preg is False or str(p_preg).lower() in ("no", "0", "false")) and any(k in disease_id for k in ("_in_pregnancy", "gestational", "preeclampsia", "eclampsia")):
             return "not_applicable", ["Patient is confirmed non-pregnant; pregnancy-specific condition not applicable."], False
 
-        # Cerebrovascular & Acute Neurological Gating:
-        # Ischemic stroke, TIA, intracerebral hemorrhage, subarachnoid hemorrhage:
-        # Laboratory markers (glucose, lipid, coagulation, CBC) represent risk factors or acute metabolic triage,
-        # never primary diagnostic confirmation (which requires focal neurological deficit and brain CT/MRI).
         is_neuro_vascular = any(k in disease_id for k in (
             "stroke", "transient_ischemic_attack", "subarachnoid_hemorrhage",
             "intracranial_hemorrhage", "cerebrovascular"
@@ -12943,7 +11918,6 @@ class ClinicalRuleEngine:
                     "not primary diagnostic confirmation of stroke/TIA (which requires neuroimaging) -> compatible_pattern."
                 )
 
-        # Specific etiologic / iatrogenic entities that cannot be definitively diagnosed on isolated routine chemistry:
         isolated_etiologies = {
             "contrast_induced_nephropathy", "calcineurin_inhibitor_nephrotoxicity",
             "drug_induced_liver_injury", "rhabdomyolysis_associated_kidney_injury",
@@ -12964,13 +11938,11 @@ class ClinicalRuleEngine:
                     "routine chemistry abnormality is a compatible finding -> compatible_pattern."
                 )
 
-        # C. Rule specificity check:
         specificity = (rule.get("specificity") or "").lower()
         if status == "criterion_met" and specificity in ("general", "non_specific"):
             status = "compatible_pattern"
             warnings.append(f"Rule specificity is '{specificity}'; positive finding clamped to compatible_pattern.")
 
-        # D. Borderline & Single-marker urgency checks:
         if not solid_feats and status in (
                 "urgent_pattern", "criterion_met",
                 'screening_positive'):
@@ -12999,7 +11971,7 @@ class ClinicalRuleEngine:
         context: 'ClinicalContext',
         observations: Mapping[str, 'ObservationRecord'],
     ) -> tuple[str, list[str]]:
-        """ULTRA-PRECISE: Suppress pediatric false positives.
+        """Suppress paediatric false positives.
         Returns (new_status, additional_warnings) or (original_status, []) if no change.
         For children, ALP up to 800 is normal bone growth, phosphorus up to 6.5 normal,
         low creatinine due to low muscle mass, etc.
@@ -13013,21 +11985,17 @@ class ClinicalRuleEngine:
         if age is None or age >= 18:
             return None, []
 
-        # Get true feature ids
         true_feats = {e.feature_id for e in node.evidence if hasattr(e, 'truth') and str(e.truth) == 'TruthValue.TRUE' or getattr(e, 'truth', None) == 1}
-        # Simpler: collect feature_ids from evidence where truth is TRUE
         try:
             from enum import Enum
             true_feature_ids = set()
             for ev in node.evidence:
                 t = getattr(ev, 'truth', None)
-                # TruthValue.TRUE is 1
                 if str(t) == 'TruthValue.TRUE' or (hasattr(t, 'value') and t.value==1) or t==1:
                     true_feature_ids.add(ev.feature_id)
         except:
             true_feature_ids = set()
 
-        # If rule is based ONLY on ALP (or ALP + urea etc) and child has ALP <800, suppress
         alp_obs = observations.get("alkaline_phosphatase")
         if alp_obs and age < 18:
             try:
@@ -13035,11 +12003,8 @@ class ClinicalRuleEngine:
             except:
                 alp_val = None
             if alp_val is not None:
-                # Pediatric ALP normal thresholds
                 normal_alp_max = 800 if age < 12 else 500
                 if alp_val < normal_alp_max:
-                    # Check if rule's only abnormal is ALP (or ALP + non-specific like urea)
-                    # If bilirubin and GGT are normal, it's not cholestasis
                     bili = observations.get("bilirubin_total")
                     ggt = observations.get("gamma_glutamyl_transferase")
                     bili_normal = True
@@ -13053,10 +12018,7 @@ class ClinicalRuleEngine:
                         pass
 
                     if bili_normal and ggt_normal:
-                        # This is likely pediatric physiological ALP
-                        # Check if rule is for pancreatitis, celiac, etc that shouldn't be based on ALP alone
                         disease_id = rule.get("disease_id", "")
-                        # List of diseases that are often falsely triggered by ALP alone
                         false_positive_diseases = {
                             "acute_pancreatitis", "pancreatitis",
                             "celiac_disease", "celiac",
@@ -13064,8 +12026,6 @@ class ClinicalRuleEngine:
                             "cholestasis", "primary_biliary_cholangitis"
                         }
                         if disease_id in false_positive_diseases or "alkaline_phosphatase" in str(rule.get("_feature_ids", "")):
-                            # Only ALP or ALP + mild urea elevation (urea 32 is normal for child)
-                            # Suppress if no other specific markers
                             other_specific = [fid for fid in true_feature_ids if fid not in ("alkaline_phosphatase", "urea", "blood_urea_nitrogen", "urea_nitrogen")]
                             if not other_specific:
                                 warnings.append(
@@ -13074,7 +12034,6 @@ class ClinicalRuleEngine:
                                 )
                                 return "not_applicable", warnings
 
-        # Phosphorus: pediatric normal up to 6.5
         phos_obs = observations.get("phosphate") or observations.get("phosphorus")
         if phos_obs and age < 18:
             try:
@@ -13084,10 +12043,8 @@ class ClinicalRuleEngine:
             if phos_val is not None:
                 normal_phos_max = 6.5 if age < 12 else 5.5
                 if phos_val <= normal_phos_max:
-                    # If rule is tumor lysis based only on phosphorus, suppress
                     disease_id = rule.get("disease_id", "")
                     if "tumor_lysis" in disease_id or "hyperphosphatemia" in disease_id:
-                        # Need other markers: hyperuricemia, hyperkalemia, etc
                         true_other = [fid for fid in true_feature_ids if fid not in ("phosphate", "phosphorus")]
                         if not true_other:
                             warnings.append(
@@ -13096,7 +12053,6 @@ class ClinicalRuleEngine:
                             )
                             return "not_applicable", warnings
 
-        # BUN/Cr ratio: low creatinine in children
         cr_obs = observations.get("creatinine")
         bun_obs = observations.get("blood_urea_nitrogen") or observations.get("urea") or observations.get("urea_nitrogen")
         if cr_obs and bun_obs and age < 18:
@@ -13106,7 +12062,6 @@ class ClinicalRuleEngine:
             except:
                 cr_val = bun_val = None
             if cr_val is not None and cr_val < 0.7 and bun_val is not None and bun_val < 35:
-                # Low muscle mass, not prerenal
                 disease_id = rule.get("disease_id", "")
                 if "acute_kidney_injury" in disease_id or "prerenal" in str(rule.get("rule_id", "")):
                     warnings.append(
@@ -13119,7 +12074,6 @@ class ClinicalRuleEngine:
                     )
                     return "not_applicable", warnings
 
-        # Neonatal physiological hematocrit (up to 65% normal in neonates)
         hct_obs = observations.get("hematocrit")
         if hct_obs and age < (28.0 / 365.25):
             try:
@@ -13135,7 +12089,6 @@ class ClinicalRuleEngine:
                     )
                     return "not_applicable", warnings
 
-        # Neonatal physiological leukocytosis (up to 30k normal in neonates)
         wbc_obs = observations.get("white_blood_cell_count") or observations.get("wbc")
         if wbc_obs and age < (28.0 / 365.25):
             try:
@@ -13173,7 +12126,6 @@ class ClinicalRuleEngine:
 
         disease_id = str(rule.get("disease_id") or "")
 
-        # 1. Isolated ALP elevation during pregnancy (placental ALP up to 400 U/L)
         if any(k in disease_id for k in ("cholestasis", "cirrhosis", "pancreatitis", "biliary")):
             alp_obs = observations.get("alkaline_phosphatase")
             if alp_obs and alp_obs.value is not None:
@@ -13202,7 +12154,6 @@ class ClinicalRuleEngine:
                 except Exception:
                     pass
 
-        # 2. Mild gestational thrombocytopenia (PLT 100k - 150k)
         if any(k in disease_id for k in ("purpura", "disseminated_intravascular_coagulation", "thrombocytopenia", "myeloproliferative", "decreased_platelet", "platelet")):
             plt_obs = observations.get("platelet_count") or observations.get("platelets") or observations.get("plt")
             if plt_obs and plt_obs.value is not None:
@@ -13222,7 +12173,6 @@ class ClinicalRuleEngine:
                 except Exception:
                     pass
 
-        # 3. Pregnancy hemodilution (Hb 10.5 - 11.5 g/dL)
         if any(k in disease_id for k in ("pancytopenia", "aplastic_anemia", "myelodysplastic")):
             hb_obs = observations.get("hemoglobin")
             if hb_obs and hb_obs.value is not None:
@@ -13252,10 +12202,6 @@ class ClinicalRuleEngine:
                 aggregated.append(group[0])
                 continue
 
-            # Pairwise synthetic combination diseases (co_*):
-            # A co-derangement disease represents the combination of BOTH markers.
-            # If ANY constituent rule is insufficient_data, or not all required features are measured,
-            # or if any rule is negative, the combined disease CANNOT be declared positive!
             if did.startswith("co_"):
                 has_insufficient = any(it.status == "insufficient_data" for it in group)
                 has_not_met = any(it.status in ("criterion_not_met", "not_applicable") for it in group)
@@ -13353,24 +12299,22 @@ class ClinicalRuleEngine:
         sex = context.normalized_jensiat()
         pregnant = context.pregnant
 
-        # 1. PEDIATRIC TARGET POPULATION (age < 18)
         if age is not None and age < 18.0:
-            # A. Hemoglobin (WHO pediatric cutoffs)
             if feature_id in ("hemoglobin", "hb"):
                 if op in ("<", "<="):
-                    if age < 0.08: # Neonate (< 28d): normal Hb 14.0 - 22.0
+                    if age < 0.08:
                         ped_lower = 13.5
-                    elif age < 0.5: # 1-6 months (physiological nadir): normal down to 9.5
+                    elif age < 0.5:
                         ped_lower = 9.5
-                    elif age < 5.0: # 6m - 5y: WHO cutoff 11.0
+                    elif age < 5.0:
                         ped_lower = 11.0
-                    elif age < 12.0: # 5y - 11y: WHO cutoff 11.5
+                    elif age < 12.0:
                         ped_lower = 11.5
-                    elif age < 15.0: # 12y - 14y: WHO cutoff 12.0
+                    elif age < 15.0:
                         ped_lower = 12.0
-                    elif sex == "female": # Adolescent female (15-17): WHO cutoff 12.0
+                    elif sex == "female":
                         ped_lower = 12.0
-                    else: # Adolescent male (15-17): WHO cutoff 13.0
+                    else:
                         ped_lower = 13.0
 
                     if val >= ped_lower:
@@ -13429,7 +12373,6 @@ class ClinicalRuleEngine:
                         f"(age {age:.1f}y reference {ped_low}–{ped_high} mg/dL)."
                     )
 
-            # C. Alkaline Phosphatase (Active osteoblastic bone growth spurt)
             elif feature_id in ("alkaline_phosphatase", "alp"):
                 if op in (">", ">="):
                     ped_alp_max = 450.0 if age < 10.0 else 850.0
@@ -13439,7 +12382,6 @@ class ClinicalRuleEngine:
                             f"activity during pediatric bone growth (normal pediatric upper limit up to {ped_alp_max} U/L)."
                         )
 
-            # D. Phosphate / Phosphorus (Growth hormone & skeletal mineralization)
             elif feature_id in ("phosphate", "phosphorus"):
                 if op in (">", ">="):
                     ped_phos_max = 5.8 if age < 12.0 else 4.8
@@ -13449,7 +12391,6 @@ class ClinicalRuleEngine:
                             f"(pediatric upper limit up to {ped_phos_max} mg/dL)."
                         )
 
-            # E. Blood Urea Nitrogen & Urea
             elif feature_id in ("blood_urea_nitrogen", "bun"):
                 if op in (">", ">=") and val <= 18.0:
                     return True, f"BUN {val:.1f} mg/dL is within normal pediatric limits (upper limit 18 mg/dL)."
@@ -13457,11 +12398,7 @@ class ClinicalRuleEngine:
                 if op in (">", ">=") and val <= 38.0:
                     return True, f"Urea {val:.1f} mg/dL is within normal pediatric limits (upper limit 38 mg/dL)."
 
-            # F. White Blood Cell Count
             elif feature_id in ("white_blood_cell_count", "wbc"):
-                # Canonical WBC is 10^9/L (7.5), but legacy inputs may be
-                # /uL (7500). Compare on the same scale or a count of 22
-                # x10^9/L in a child is declared "normal".
                 wbc_per_ul = val * 1000.0 if val < 500.0 else val
                 if op in (">", ">="):
                     ped_wbc_max = 30000.0 if age < 0.08 else (17500.0 if age < 1.0 else (14500.0 if age < 6.0 else 13500.0))
@@ -13472,7 +12409,6 @@ class ClinicalRuleEngine:
                     if wbc_per_ul >= ped_wbc_min:
                         return True, f"WBC {wbc_per_ul:.0f} /uL is normal for pediatric age."
 
-        # 2. ADULT FEMALE TARGET POPULATION (age >= 15, female, non-pregnant)
         elif sex == "female" and not pregnant:
             if feature_id in ("hemoglobin", "hb") and op in ("<", "<="):
                 if val >= 12.0:
@@ -13484,12 +12420,8 @@ class ClinicalRuleEngine:
                 if val >= 0.50:
                     return True, f"Creatinine {val:.2f} mg/dL is normal for female muscle mass (ref 0.50–1.00 mg/dL)."
 
-        # 3. PREGNANCY TARGET POPULATION
         elif pregnant:
             if feature_id in ("hemoglobin", "hb") and op in ("<", "<="):
-                # WHO / ACOG: anaemia in pregnancy is Hb < 11.0 g/dL in the
-                # first and third trimesters and < 10.5 g/dL in the second.
-                # Without a trimester the 10.5-10.9 band cannot be called
                 # normal; it is left to the guideline rule (and flagged).
                 trimester = getattr(context, "pregnancy_trimester", None)
                 preg_lower = 10.5 if trimester == 2 else 11.0
@@ -13599,10 +12531,6 @@ class ClinicalRuleEngine:
         else:
             actual = _float(record.value)
             expected = _float(threshold)
-            # Serology / qualitative results arrive as "positive" /
-            # "negative" while the registry encodes them as 1 / 0 (unit
-            # "1"). Coerce instead of dropping the condition as "needs a
-            # number" - that silently discarded anti-HAV IgM, HBsAg, DAT...
             if actual is None and expected is not None and expected in (0.0, 1.0):
                 q = _qualitative(record.value)
                 if q == "positive":
@@ -13709,12 +12637,7 @@ class ClinicalRuleEngine:
                 and source_unit == target_unit
                 and (record.reference_high is not None
                      or record.reference_low is not None)):
-            # Method-dependent analyte with the performing laboratory's own
-            # interval on the report: an absolute cut-off in the registry
-            # (e.g. ALT > 45) is an upper-reference-limit criterion written
-            # against ONE method. Re-express it as the same multiple of the
             # laboratory's limit (CLSI EP28-A3c). CDL-locked analytes never
-            # reach this branch.
             lo_ratio, hi_ratio = local_reference_scale(
                 feature_id, record, context)
             ratio = hi_ratio if op in (">", ">=") else lo_ratio
@@ -13762,7 +12685,6 @@ class ClinicalRuleEngine:
                 TruthValue.UNKNOWN, [evidence],
                 warnings=[str(exc)])
 
-        # TARGET POPULATION & AGE-STRATIFIED PHYSIOLOGICAL NORMAL VERIFICATION
         if passed and actual is not None and isinstance(actual, (int, float)):
             phys_normal, phys_reason = self._is_target_population_physiological_normal(
                 feature_id, str(op), float(actual), context)
@@ -13853,10 +12775,6 @@ class ClinicalRuleEngine:
                           if child.score is not None else None)
             return node
         if "n_of" in expression:
-            # k-of-n junction ("two concordant abnormal tests", "2 of 4
-            # SIRS criteria"). TRUE when >= n children are TRUE; FALSE when
-            # even counting every undetermined child as TRUE cannot reach
-            # n; otherwise UNKNOWN (more data could still satisfy it).
             spec = expression["n_of"] or {}
             subs = list(spec.get("conditions") or spec.get("all") or [])
             try:
@@ -13915,7 +12833,6 @@ class ClinicalRuleEngine:
         if status in permitted:
             return status, []
 
-        # Strict directional preservation: negative or ruled-out findings must NEVER clamp to positive patterns!
         if status in ("criterion_not_met", "not_applicable", "ruled_out", "excluded"):
             fallbacks = ["not_applicable", "criterion_not_met", "insufficient_data"]
         elif status == "insufficient_data":
@@ -13957,12 +12874,6 @@ class ClinicalRuleEngine:
         }
 
 
-        # Unit invariance (audit 2026-10-20): the rule layer converts every
-        # value to the registry's canonical unit before comparing, but the
-        # Bayesian / fuzzy / derived-pattern layers received the *raw* value,
-        # so a haemoglobin of 91 g/L or a creatinine of 389 umol/L was scored
-        # against mg/dL / g/dL thresholds. Canonicalise once here; the
-        # original unit is kept in metadata for the report.
         _canon_obs: dict[str, ObservationRecord] = {}
         for _fid, _rec in observations.items():
             try:
@@ -13977,7 +12888,6 @@ class ClinicalRuleEngine:
                         _nr.metadata = dict(_rec.metadata or {})
                         _nr.metadata["reported_value"] = _raw
                         _nr.metadata["reported_unit"] = _rec.unit
-                        # a printed interval travels with the printed unit
                         if _nr.reference_low is not None:
                             _nr.reference_low = _float(self._coerce_canonical(_fid, _nr.reference_low, _rec.unit))
                         if _nr.reference_high is not None:
@@ -14013,8 +12923,6 @@ class ClinicalRuleEngine:
         for corr in corrections:
             raw_values[corr["feature_id"]] = corr["corrected_value"]
         patterns = tahlil_olgoo_haye_moshtagh(raw_values, context)
-        # The pattern list is consumed in several places downstream; emit
-        # each index once so a ratio is never shown twice.
         _seen_pat: set = set()
         patterns = [pt for pt in patterns
                     if not (pt.pattern_id in _seen_pat
@@ -14049,9 +12957,6 @@ class ClinicalRuleEngine:
                 "type": "derived_pattern",
                 "effect": f"{'+' if adj > 0 else ''}{adj:.2f} log-odds",
             })
-        # Count-defined syndromes (ATP-III / IDF metabolic syndrome = any 3
-        # of 5 components) cannot be near-certain from fewer positive
-        # components than the definition needs, however strong the LRs are.
         for br in bayesian_results:
             spec = COUNT_DEFINED_NODES.get(br.disease_id)
             if not spec:
@@ -14078,7 +12983,6 @@ class ClinicalRuleEngine:
             }
 
 
-        # --- carry input uncertainty and laboratory intervals forward ----
         feature_reliability = {fid: obs.reliability
                                for fid, obs in enriched.items()}
         reference_scale = {
@@ -14110,8 +13014,6 @@ class ClinicalRuleEngine:
             }
             fuzzy_min_rel[fr.disease_id] = fr.min_reliability
 
-        # Per-disease input reliability = weakest piece of evidence that
-        # actually drove that disease in Bayes or fuzzy.
         finding_rel = {k: float(v.get("reliability", 1.0))
                        for k, v in findings.items()}
         disease_input_rel: dict[str, float] = dict(fuzzy_min_rel)
@@ -14168,7 +13070,6 @@ class ClinicalRuleEngine:
                     if did in rule_scores:
                         rule_scores[did] = min(rule_scores[did], 0.20)
 
-        # Domain profile per disease (drives the weight table used).
         domain_of: dict[str, list[str]] = {}
         try:
             reg_diseases = self.registry.diseases
@@ -14366,7 +13267,6 @@ class ClinicalRuleEngine:
                     status = TRUE_STATUS.get(
                         rule_type, "compatible_pattern")
 
-                    # Pairwise co_ disease gating: requires ALL required features to be in observations
                     did = str(rule.get("disease_id") or "")
                     if did.startswith("co_"):
                         req_fids = (disease.get("feature_links") or {}).get("required") or []
@@ -14403,7 +13303,6 @@ class ClinicalRuleEngine:
                     if protected:
                         protected_ids.add(rule_id)
 
-                    # ULTRA-PRECISE: Pediatric false positive guard
                     ped_status, ped_warnings = self._pediatric_false_positive_guard(
                         rule, node, context, observations)
                     if ped_status is not None:
@@ -14411,7 +13310,6 @@ class ClinicalRuleEngine:
                         if ped_warnings:
                             node.warnings.extend(ped_warnings)
 
-                    # ULTRA-PRECISE: Pregnancy physiological false positive guard
                     preg_status, preg_warnings = self._pregnancy_false_positive_guard(
                         rule, node, context, observations)
                     if preg_status is not None:
@@ -14456,38 +13354,12 @@ class ClinicalRuleEngine:
             score = base if soft is None else (
                 0.5 * base + 0.5 * _clamp01(soft) * base / 0.95)
 
-            # The registry grades its own rules and we were discarding that
-            # grading. A general screening rule and a disease-specific
-            # diagnostic criterion arrived at the ensemble carrying equal
-            # authority, which across tens of thousands of rules lets broad
-            # low-information rules outvote the precise ones.
             rule_type = str(_rule.get("rule_type") or "").lower()
             score *= _SPECIFICITY_FACTOR.get(
                 str(_rule.get("specificity") or "").lower(), 1.0)
             score *= _RULE_TYPE_FACTOR.get(rule_type, 1.0)
 
-            # A lone non-specific threshold is a doorway, not evidence.
-            # "haemoglobin < 13" appears as a screening rule for 658
-            # diseases and "ferritin < 15" as a *diagnostic* criterion for
-            # 628, so on their own they say only that the patient is
-            # anaemic - never which anaemia. Left at full weight they let
-            # hereditary spherocytosis tie with iron deficiency on
-            # identical evidence.
-            #
-            # The test is the rule's own grading, not its label: one
-            # condition and specificity "general" means non-discriminating
-            # whatever layer it claims to belong to. Conjunctions and
-            # rules the registry marks "specific" keep their full weight.
-            # Measured, not declared, specificity. The registry marks
-            # 31,394 of 33,875 rules "specific" - including "glucose <= 70"
-            # stamped verbatim onto HHS, Addison's and euthyroid-sick
-            # syndrome. A rule's vote for *one* disease is discounted by
-            # how many diseases carry the identical threshold.
             emp_spec = registry.rule_empirical_specificity.get(_rid, 1.0)
-            # A positive pathogen-specific marker (HBsAg, anti-HCV, HIV Ag/Ab,
-            # culture, PCR, malaria smear) is not a "doorway" threshold such as
-            # Hb < 13: it names the organism. It keeps its weight even when it is
-            # the only condition and is shared by a handful of related entities.
             _pathogen_single = (
                 _shomar_shart(_rule) < 2
                 and _node.truth == TruthValue.TRUE
@@ -14504,17 +13376,12 @@ class ClinicalRuleEngine:
                     or str(_rule.get("specificity") or "").lower() != "specific"):
                 score *= _TAK_SHART_SCREENING_FACTOR
             score *= emp_spec
-            # A finding that is the entity's own definition and is TRUE is an
-            # established fact, not a hypothesis: potassium 6.0 *is*
-            # hyperkalaemia. It must clear the red-flag floor on its own.
             if (_rid in registry.rule_defines_entity
                     and _st in ("criterion_met", "screening_positive", "urgent_pattern")
                     and _node.truth == TruthValue.TRUE):
                 score = max(score, DEFINITIONAL_FINDING_SCORE)
 
             # A met *curated* guideline criterion (curation 13.0.0) is the
-            # published decision limit itself - it is not diluted by the
-            # soft-membership blend meant for AI-assembled thresholds.
             if (str(_rule.get("status") or "") == "curated_guideline_anchored"
                     and _st in ("criterion_met", "urgent_pattern")
                     and _node.truth == TruthValue.TRUE):
@@ -14530,15 +13397,11 @@ class ClinicalRuleEngine:
             if _HG_DEBUG_RULES and did in _HG_DEBUG_RULES:
                 print(f"[rule] {did} {_rid} st={_st} truth={_node.truth} soft={_node.score} -> {score:.3f}")
 
-        # --- Expert Syndrome Layer: constellation-level diagnoses -----------
-        # A met constellation enters the fusion as a curated anchored rule
         # vote (the same path a `curated_guideline_anchored` registry rule
-        # takes) and carries the observation ids it consumed so evidence
-        # subsumption lists the constituent findings beneath it.
         esl_hits: list[dict[str, Any]] = []
         try:
             esl_hits = self._esl.evaluate(observations, context)
-        except Exception as exc:  # never let the layer break interpretation
+        except Exception as exc:
             logger.warning("Expert syndrome layer failed: %s", exc)
         for hit in esl_hits:
             for i, did in enumerate(hit["dx"]):
@@ -14624,9 +13487,6 @@ class ClinicalRuleEngine:
             "Single-time-point analysis: each report is interpreted on its "
             "own; criteria that require a prior baseline are reported as "
             "insufficient data rather than inferred.")
-        # Reference-interval policy and evidence-reliability notes: the
-        # clinician must see which interval governed and which values were
-        # down-weighted because the OCR read them with low confidence.
         for fid, pol in (advanced.get("reference_policy") or {}).items():
             if pol.get("note"):
                 report_warnings.append(str(pol["note"]))
@@ -14641,11 +13501,6 @@ class ClinicalRuleEngine:
                 f"{collapsed} additional rules had no matching "
                 f"measurement and are included in the counts but "
                 f"not listed individually.")
-        # A high-significance derived index is a finding in its own right.
-        # Glycaemic discordance, iron overload or a FIB-4 past the
-        # cirrhosis threshold each warrant the clinician's eye even when
-        # no single analyte hit a panic limit, so surface them alongside
-        # the critical values rather than burying them in a sub-list.
         for _pat in (advanced.get("derived_patterns") or []):
             if _pat.get("significance") != "high":
                 continue
@@ -14667,7 +13522,7 @@ class ClinicalRuleEngine:
         completeness = self._arzyabi_completeness(
             observations, results, self._hame_vizhegi_ha_ghaede())
 
-        try:  # ESL extension 8 — next-test layer
+        try:
             def _val_mgdl(fid):
                 _o = observations.get(fid)
                 if _o is None:
@@ -14685,16 +13540,8 @@ class ClinicalRuleEngine:
                 if isinstance(_d, dict) and not _d.get("recommended_tests"):
                     _k = _NEXT_TEST_ALIASES.get(_d.get("disease_id"), _d.get("disease_id"))
                     _d["recommended_tests"] = [r["test"] for r in _NEXT_TEST_LIBRARY.get(_k, []) if not any(f in observations for f in r["features"])][:4]
-        except Exception:  # never let a recommendation break the report
+        except Exception:
             _nt = []
-        # v8 presentation layer (2026-10-26): a confidence band per entry and a
-        # 'concise' flag so a viewer can show the short list without changing
-        # ranking. Bands are DESCRIPTIVE, calibrated on the eICU development
-        # set (precision of coded match within band, labs only):
-        # >=0.70 -> 'high' (~23 %), 0.60-0.70 -> 'moderate' (~19 % cumulative),
-        # 0.50-0.60 -> 'low', <0.50 -> 'consider'. Truncating to the concise
-        # list raised precision@5 from 14 % to 19 % at the cost of 7 recall
-        # points (60.8 -> 53.5), so the full list is always retained.
         try:
             for _d in differential_list:
                 if not isinstance(_d, dict):
@@ -14758,7 +13605,6 @@ class ClinicalRuleEngine:
     ) -> str:
         L: list[str] = []
 
-        # 1. Critical Panic Alerts
         if panic_alerts:
             items = "، ".join(
                 f"{a['feature_id']} = {a['value']:.3g} {a.get('unit','')}"
@@ -14766,7 +13612,6 @@ class ClinicalRuleEngine:
             L.append(
                 f"🚨 هشدار بحرانی / CRITICAL ALERTS: {items}. ارزیابی بالینی فوری و مداخله درمانی اورژانس لازم است.")
 
-        # 2. Definitive Criteria Met (معیارهای تشخیصی برآورده‌شده)
         definitive = [r for r in results if r.status in ("urgent_pattern", "criterion_met")]
         if definitive:
             names_fa = "، ".join(f"{r.name_fa or r.name_en}" for r in definitive[:5])
@@ -14776,7 +13621,6 @@ class ClinicalRuleEngine:
             L.append(
                 f"★ معیارهای تشخیصی برآورده‌شده (Definitive Criteria Met): {names_fa}{more_str} [{names_en}].")
 
-        # 3. Compatible / Supportive Patterns (الگوهای بیوشیمیایی و پاتوفیزیولوژیک سازگار)
         compatible = [r for r in results if r.status in ("compatible_pattern", "screening_positive")]
         if compatible:
             c_names = "، ".join(f"{r.name_fa or r.name_en}" for r in compatible[:4])
@@ -14785,10 +13629,8 @@ class ClinicalRuleEngine:
         elif not definitive:
             L.append("هیچ الگوی آزمایشگاهی غیرطبیعی مطابق معیارهای معتبر راهنماها شناسایی نشد.")
 
-        # 4. Bayesian & Differential Diagnosis Priority
         if differential:
             top = differential[0]
-            # Only report differential diagnosis if there are active findings, or if top probability >= 0.30 and not unlikely
             has_substantive_support = (
                 definitive
                 or compatible
@@ -14808,12 +13650,10 @@ class ClinicalRuleEngine:
             else:
                 L.append("✅ کلیه شاخص‌های بیوشیمیایی، مینرال‌ها و سلولی در محدوده مرجع فیزیولوژیک سن و جنس بیمار قرار دارند؛ هیچ تشخیص افتراقی یا الگوی بیماری‌زای فعالی مطرح نیست.")
 
-        # 5. High-Significance Clinical Patterns
         key_patterns = [pt for pt in patterns if pt.get('significance') == "high"]
         for pt in key_patterns[:3]:
             L.append(f"📊 الگوی بالینی کلیدی: {pt.get('interpretation')}")
 
-        # 6. Pharmacology & Drug Interactions
         if drug_interactions:
             feats = _dedupe(d.get("feature_id") for d in drug_interactions)
             L.append(
@@ -14826,7 +13666,6 @@ class ClinicalRuleEngine:
                 + "، ".join(f"{c['feature_id']} ({c['correction']})"
                             for c in corrections) + ".")
 
-        # 7. Diagnostic Gaps & Recommended Additional Tests (Only if active or possible patterns exist)
         if definitive or compatible or (differential and differential[0].get("probability", 0) >= 0.35 and differential[0].get("status") != "unlikely"):
             gaps: dict[str, int] = {}
             for r in results:
@@ -14856,9 +13695,7 @@ class ClinicalRuleEngine:
             known |= set(self.registry.rules_by_feature)
         except Exception:
             pass
-        # The Bayesian and fuzzy layers understand far more features than
         # the guideline registry lists; an observation only one of them can
-        # use is still worth keeping.
         try:
             known |= set(ClinicalBayesianNetwork.FEATURE_TO_FINDING)
         except Exception:
@@ -14882,9 +13719,6 @@ class ClinicalRuleEngine:
         requested: set = set()
         for r in results:
             requested.update(r.missing_features)
-        # A rule that never fired reports no missing_features, so counting
-        # only fired rules made a single-test panel look 100% complete.
-        # `wanted` carries every feature the whole ruleset asks about.
         if wanted:
             requested |= {f for f in wanted if f not in observations}
         supplied = set(observations)

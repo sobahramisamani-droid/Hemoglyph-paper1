@@ -69,7 +69,6 @@ def report(title, pairs, n_stays):
     return "\n".join(lines), dict(n_labels=N, engine=E, llm=L, b=b, c=c, p=mcnemar(b, c))
 
 
-# ---- B8
 llm = {c["case"]: c["llm"] for c in json.load(open(os.path.join(R, "b8_llm_blind_n240.json")))["cases"]}
 key = json.load(open(os.path.join(R, "b8_key_n240.json")))
 panels = {p["case"]: p for p in json.load(open(os.path.join(R, "b8_blind_panels_n240.json")))}
@@ -78,7 +77,6 @@ p8 = pairs_from(rows8, "llm", "gr")
 t8, s8 = report("B8 — blind LLM vs Hemoglyph v5.1 (labs-only), 240 new eICU-demo stays", p8, 240)
 open(os.path.join(R, "b8_score_n240.md"), "w").write(t8 + "\n")
 
-# ---- B3 / B4 (engine ranks: v5.1 per-stay where available, else stored)
 v51 = {r["stay"]: r for r in json.load(open(os.path.join(ROOT, "eval/results/run_20261023_v5/eicu_per_stay_v5_1.json")))}
 def load_b(path):
     rows = json.load(open(os.path.join(R, path))); out = []

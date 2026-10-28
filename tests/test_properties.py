@@ -31,23 +31,19 @@ def prob(d, *ids):
 def jitter(rng):
     return {k: (round(v * rng.uniform(0.97, 1.03), 2), u) for k, (v, u) in BASE.items()}
 
-# ---- P1 ----
 def test_p1_determinism():
     rng = random.Random(1)
     for _ in range(5):
         p = panel(jitter(rng)); a = diff(p); b = diff(p)
         assert [(x["disease_id"], round(x["probability"], 6)) for x in a] == [(x["disease_id"], round(x["probability"], 6)) for x in b]
 
-# ---- P2 ----
 @pytest.mark.parametrize("feat,conv,si,unit_si", [("glucose", 300, 16.65, "mmol/L"), ("creatinine", 2.7, 238.7, "umol/L")])
 def test_p2_unit_invariance(feat, conv, si, unit_si):
     a = diff(panel({feat: (conv, BASE[feat][1])})); b = diff(panel({feat: (si, unit_si)}))
     assert [x["disease_id"] for x in a[:10]] == [x["disease_id"] for x in b[:10]]
-    assert all(abs(x["probability"] - y["probability"]) < 1e-3 for x, y in zip(a[:10], b[:10]))  # 16.65 mmol/L = 299.97 mg/dL; fuzzy memberships are continuous
+    assert all(abs(x["probability"] - y["probability"]) < 1e-3 for x, y in zip(a[:10], b[:10]))
 
-# v8.2 regression (black-box property benchmark, 2026-10-27): analytes that also exist under an engine-internal
 # legacy id (bilirubin_total, urea_nitrogen, phosphate_inorganic, mchc) must be unit-invariant too; before the fix a
-# normal bilirubin reported in µmol/L was mirrored with its raw value and scored as critically high (8 mg/dL panic).
 @pytest.mark.parametrize("feat,conv,unit_c,si,unit_si", [("total_bilirubin", 0.5, "mg/dL", 8.55, "umol/L"),
                                                          ("total_bilirubin", 2.3, "mg/dL", 39.3, "umol/L"),
                                                          ("blood_urea_nitrogen", 42, "mg/dL", 15.0, "mmol/L"),
@@ -60,8 +56,7 @@ def test_p2_unit_invariance_legacy_alias_ids(feat, conv, unit_c, si, unit_si):
     assert all(abs(x["probability"] - y["probability"]) < 1e-2 for x, y in zip(a[:10], b[:10]))
     assert sorted(c["feature_id"] for c in ra["critical_alerts"]) == sorted(c["feature_id"] for c in rb["critical_alerts"])
 
-# ---- P3 ----
-MONO = [  # feature, unit, start, steps (further past threshold), entity ids
+MONO = [
     ("potassium", "mmol/L", [5.6, 6.0, 6.5, 7.0], ("hyperkalemia",)),
     ("creatinine", "mg/dL", [1.6, 2.2, 3.0, 4.5], ("acute_kidney_injury", "reduced_gfr_chronicity_undetermined", "chronic_kidney_disease", "renal_impairment")),
     ("hemoglobin", "g/dL", [11.5, 10.0, 8.5, 7.0], ("anemia", "anemia_pattern")),
@@ -77,12 +72,7 @@ MONO += [
     ("white_blood_cell_count", "10^9/L", [3.5, 2.8, 2.0, 1.2], ("leukopenia", "leukopenia_pattern")),
     ("glucose", "mg/dL", [65, 55, 45, 35], ("fasting_hypoglycemia", "hypoglycemia", "severe_hypoglycemia")),
     ("platelet_count", "10^9/L", [460, 550, 700, 900], ("thrombocytosis", "thrombocytosis_pattern")),
-    # albumin: no `hypoalbuminemia` finding entity exists in registry 14.2 (isolated albumin 1.8 g/dL lists only
-    # cirrhosis 0.30 / malnutrition 0.27) - recorded as an open registry gap in docs/V8_LOGIC_ALGORITHM_FACTCHECK.md
 ]
-# v8.1 (2026-10-26): the creatinine inversion found by this test (renal lead 0.828 -> 0.792) was traced to the
-# finding-demotion passes capping a strong finding to 95 % of a presumptive (< 0.80) AKI; fixed by applying the
-# existing "a weak explainer organises but does not lower a better-established finding" rule uniformly.
 @pytest.mark.parametrize("feat,unit,steps,ids", MONO, ids=[f"{m[0]}-{m[3][0]}" for m in MONO])
 def test_p3_directional_monotonicity(feat, unit, steps, ids):
     rng = random.Random(hash(feat) & 0xffff)
@@ -91,13 +81,12 @@ def test_p3_directional_monotonicity(feat, unit, steps, ids):
         base = jitter(rng); prev = -1.0
         for v in steps:
             base[feat] = (v, unit); pr = prob(diff(panel(base)), *ids)
-            if pr + 1e-9 < prev - 0.02:  # tolerate 2-point jitter from covering logic
+            if pr + 1e-9 < prev - 0.02:
                 viol.append((rep, v, round(prev, 3), round(pr, 3)))
             prev = max(prev, pr)
         assert prev >= 0.5, f"{feat}: entity {ids} never asserted (>= 0.5) even at {steps[-1]} {unit} - stale id or missing rule"
     assert not viol, f"{feat}: probability fell when moving further past threshold: {viol}"
 
-# ---- P4 ----
 @pytest.mark.parametrize("feat,unit,val,ids", [("potassium", "mmol/L", 6.4, ("hyperkalemia",)), ("hemoglobin", "g/dL", 8.0, ("anemia", "anemia_pattern")),
                                                 ("platelet_count", "10^9/L", 45, ("thrombocytopenia", "thrombocytopenia_pattern"))])
 def test_p4_absent_key_analyte_never_raises(feat, unit, val, ids):
@@ -120,4 +109,4 @@ def test_p6_borderline_flags_are_consistent():
     assert "sodium" in b and 0.10 < b["sodium"]["p_below_low"] < 0.90
     assert "potassium" in b and 0.10 < b["potassium"]["p_above_high"] < 0.90
     r2 = E.interpret(panel({"sodium": (120, "mmol/L")}), None, CTX).to_dict()
-    assert all(x["feature_id"] != "sodium" for x in r2["borderline_values"])  # 7 sigma below: not borderline
+    assert all(x["feature_id"] != "sodium" for x in r2["borderline_values"])

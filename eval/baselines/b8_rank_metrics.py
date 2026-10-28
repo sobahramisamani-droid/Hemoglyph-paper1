@@ -69,7 +69,6 @@ def main():
     pooled = label_ranks(rows3 + rows4 + rows8); r8 = label_ranks(rows8)
     S = {"pooled_n400": summarise(pooled), "b8_n240": summarise(r8)}
     S["pooled_n400"]["mrr_diff_engine_minus_llm_ci95"] = bootstrap_mrr_diff(pooled)
-    # ---- LLM test-retest on 40 panels
     first = {c["case"]: c["llm"] for c in json.load(open(os.path.join(R, "b8_llm_blind_n240.json")))["cases"]}
     second = {c["case"]: c["llm"] for c in json.load(open(os.path.join(R, "b8_llm_rerun40.json")))["cases"]}
     key = {k["case"]: k for k in json.load(open(os.path.join(R, "b8_key_n240.json")))}

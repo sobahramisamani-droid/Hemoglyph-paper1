@@ -21,7 +21,6 @@ for field,name in (("gr","flat"),("gr3","grouped")):
                 if ha and not hb: l+=1; drv[lab]-=1
         p=binomtest(g,g+l).pvalue if g+l else 1.0
         print(f"{name}@{k}: +{g} -{l} p={p:.3g} drivers={drv.most_common(3)} {drv.most_common()[-3:]}")
-# top5 co_ and distinct
 def co(rows): 
     t=sum(len(r["top5"]) for r in rows); c=sum(1 for r in rows for e in r["top5"] if e[0].startswith("co_")); return c,t
 print("co_ top5",co(A),co(B)); print("distinct top5",len({e[0] for r in A for e in r["top5"]}),len({e[0] for r in B for e in r["top5"]}))

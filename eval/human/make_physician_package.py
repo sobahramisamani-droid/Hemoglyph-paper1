@@ -86,10 +86,9 @@ def main():
 
     wb = Workbook()
     bold = Font(bold=True); wrap = Alignment(wrap_text=True, vertical="top")
-    fill_in = PatternFill("solid", fgColor="FFF2CC")   # cells the reviewer fills
+    fill_in = PatternFill("solid", fgColor="FFF2CC")
     fill_hd = PatternFill("solid", fgColor="D9E1F2")
 
-    # ---------------- Instructions
     ws = wb.active; ws.title = "Instructions"
     lines = [
         "Hemoglyph — physician review package v1 (2026-10-27). Please read PHYSICIAN_REVIEW_INSTRUCTIONS.md (Persian + English) first.",
@@ -108,7 +107,6 @@ def main():
         ws.cell(i, 1, l).alignment = wrap
     ws.column_dimensions["A"].width = 150
 
-    # ---------------- P1 panels (reference)
     wp = wb.create_sheet("P1_panels")
     wp.append(["case", "age", "sex", "n analytes", "panel (analyte = value unit; first admission panel)"])
     for c in wp[1]: c.font = bold; c.fill = fill_hd
@@ -118,7 +116,6 @@ def main():
         wp.cell(k + 1, 5).alignment = wrap
     wp.column_dimensions["E"].width = 70
 
-    # ---------------- P1 output review
     wo = wb.create_sheet("P1_output_review")
     hdr = ["case", "age", "sex", "panel (compact)", "rank", "engine suggestion", "engine score",
            "VERDICT (1 reasonable / 2 unsupported / 3 potentially harmful / 4 outside expertise)", "reason (optional, one phrase)"]
@@ -135,7 +132,6 @@ def main():
     for col, w in zip("ABCDEFGHI", (6, 5, 8, 60, 5, 38, 8, 22, 30)): wo.column_dimensions[col].width = w
     wo.freeze_panes = "A2"
 
-    # ---------------- P1 case summary
     wc = wb.create_sheet("P1_case_summary")
     wc.append(["case", "MISSED: important diagnosis evident from this panel that the engine did not list ('none' if none)",
                "OVERALL quality of the 5 suggestions for this panel (1 poor … 5 excellent)", "minutes spent"])
@@ -147,10 +143,9 @@ def main():
         dv5.add(wc.cell(k + 1, 3))
     wc.column_dimensions["B"].width = 70; wc.column_dimensions["C"].width = 30
 
-    # ---------------- P2 haematology rule audit
     wr = wb.create_sheet("P2_rule_audit_heme")
     rows = list(csv.DictReader(open(os.path.join(ROOT, "eval", "source_audit", "sample_200.csv"), encoding="utf-8")))
-    heme_rules = [x for x in rows if heme(x["disease_id"] + " " + x["rule_id"])]   # both strata; stratum shown
+    heme_rules = [x for x in rows if heme(x["disease_id"] + " " + x["rule_id"])]
     wr.append(["#", "rule id", "stratum (A curated anchor / B AI-drafted candidate)", "disease", "rule type", "rule statement (analyte operator threshold unit)", "population", "source id(s)", "source URL(s)",
                "LABEL (CONCORDANT / DISCORDANT / UNRESOLVABLE)", "EXACT quoted sentence from the source (required for C/D) + page/section",
                "if UNRESOLVABLE, reason (403-blocked / landing page / abstract only / generic standard / no threshold found / ambiguous)",
@@ -165,7 +160,6 @@ def main():
     for col, w in zip("ABCDEFGHIJKLM", (4, 30, 10, 24, 16, 50, 24, 20, 40, 18, 60, 22, 30)): wr.column_dimensions[col].width = w
     wr.freeze_panes = "A2"
 
-    # ---------------- Reviewer
     wv = wb.create_sheet("Reviewer")
     for i, (k, v) in enumerate([("Name", ""), ("Specialty / board certification", ""), ("Affiliation (hospital / university)", ""), ("ORCID", ""), ("Email", ""),
                                 ("Relationship to the first author (none / family / colleague / other)", ""), ("Date started", ""), ("Date completed", ""),

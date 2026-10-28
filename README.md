@@ -1,364 +1,60 @@
-# HEMOGLYPH CDSS
+# Hemoglyph — verifying an AI-drafted laboratory-interpretation rule base
 
-### Next-Generation Clinical Decision Support & Multi-System Laboratory Intelligence Suite
-**Production Release v1.3.1 (Windows x64)**
+Code, rule registries, frozen evaluation outputs and manuscript sources for:
 
-[![Release: v1.3.1](https://img.shields.io/badge/Release-v1.3.1-blue.svg)](https://github.com/sobahramisamani-droid/Hemoglyph-AlA_1.3/releases)
-[![Code: AGPL-3.0](https://img.shields.io/badge/Code-AGPL--3.0-blue.svg)](LICENSE) [![Registry: CC BY-SA 4.0](https://img.shields.io/badge/Registry-CC%20BY--SA%204.0-green.svg)](LICENSE-DATA.md) [![Desktop build: Proprietary / RSA-4096 Node-Locked](https://img.shields.io/badge/Desktop%20build-Proprietary%20%2F%20RSA--4096%20Node--Locked-lightgrey.svg)](#licensing-and-activation)
-[![Platform: Windows 10 / 11 (64-bit)](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20(64--bit)-0078D6.svg?logo=windows)](#system-requirements)
-[![Privacy: Zero-Medical Telemetry](https://img.shields.io/badge/Privacy-Zero--Medical--Data%20Telemetry-10B981.svg)](#privacy-policy--data-governance)
-[![Architecture: 100% On-Device CDS](https://img.shields.io/badge/Architecture-100%25%20On--Device%20Core-emerald.svg)](#core-clinical-capabilities)
-[![AI Assistant: In Active Development](https://img.shields.io/badge/AI%20Assistant-Under%20Development%20(v1.3.1)-orange.svg)](#conversational-ai-assistant-roadmap)
+**Verifying an AI-drafted laboratory-interpretation rule base before clinical audit: executable invariants, frozen source-concordance protocols and a hash-frozen benchmark applied to the open Hemoglyph engine** — Bahrami, Tahmasebinejad, Bahrami Samani; submitted to *Computer Methods and Programs in Biomedicine*, 2026.
 
-**Author & System Architect:** Sobhan Bahrami  
-**Inquiries & Licensing:** [sobahramisamani@gmail.com](mailto:sobahramisamani@gmail.com)
+Research prototype. Not a medical device; not approved or intended for clinical use. The rule base is largely AI-drafted and carries the status `candidate_requires_specialist_validation`; the paper is about how such a rule base can be verified, not a claim that it is correct.
 
----
+**Start here:** `README_REPRODUCE.md` (one command, `bash reproduce.sh quick`, re-derives the main tables from a clean clone) and `REPRODUCTION_LOG.md` (the authors' own clean-clone run).
 
-## 1. Executive Summary & Clinical Philosophy
+## What is here
 
-Routine clinical laboratory testing accounts for over 70% of downstream diagnostic decisions, yet laboratory data is routinely reported and interpreted in fragmented silos. Clinicians are presented with disconnected analyte lists—CBC, comprehensive metabolic panels, lipid profiles, liver chemistry, renal biomarkers, and arterial blood gases—where each parameter is judged solely against a static population reference range. 
+| Component | Path | Licence |
+|---|---|---|
+| Inference engine (single file, no training, no network) | `analyse_gidlines.py` (+ `calcu.py`, `cache_registry.py`) | AGPL-3.0-or-later |
+| Rule registries, release 14.1.0 (33,183 executable rules, 785 sources; 99.2 % AI-drafted, status `candidate_requires_specialist_validation`) | `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br`, `HEMOGLYPH_GUIDELINE_REGISTRY.json.br` | CC BY-SA 4.0 |
+| Verification method 1 — property-based invariant suite (21 tests) | `tests/test_properties.py`, `tests/test_bayes_properties.py` | AGPL-3.0 |
+| Safety and regression batteries | `tests/hard_battery.py`, `hard_battery2.py`, `hard_battery3.py`, `tests/healthy_sweep.py`, `tests/perturbation_fuzz.py` | AGPL-3.0 |
+| Verification method 2 — source-concordance protocol and frozen sample | `eval/source_audit/PROTOCOL.md`, `eval/source_audit/sample_200.csv`, `eval/registry_source_verify.py` | CC BY-SA 4.0 |
+| Verification method 3 — frozen benchmark scripts | `eval/realdata/*.py`, `eval/baselines/*.py`, `eval/ablation/run_ablation.py`, `eval/calibration_dca.py`, `eval/subgroup_fairness.py` | AGPL-3.0 |
+| Statistical analysis plan with dated amendments | `docs/paper1/supplement/SAP_Hemoglyph_v1.md` | CC BY-SA 4.0 |
+| Freeze manifests (SHA-256) | `FREEZE_v14_20261025_*`, `FREEZE_v15_20261025_*` | — |
+| Manuscript, supplement, figures | `docs/paper1/v7/` | CC BY 4.0 (text) |
 
-**HEMOGLYPH** fundamentally shifts laboratory evaluation from passive threshold-checking to active, multi-parametric pathophysiological synthesis. Engineered as an executive Clinical Decision Support System (CDSS), HEMOGLYPH synthesizes routine laboratory biomarkers into a unified diagnostic picture. It calculates over 100 peer-reviewed, scientifically validated clinical risk equations, performs multi-organ cross-analyte correlation, screens for subtle and subclinical patterns, and delivers grounded pathophysiological insights directly at the point of care.
+## Requirements
 
-HEMOGLYPH is built from the ground up on a **strict privacy-preserving, air-gapped architecture**: all clinical algorithms, patient database storage, and diagnostic reasoning execute locally on your physical workstation.
+Python ≥ 3.11; `numpy`, `pandas`, `brotli` for the engine; additionally `scikit-learn`, `scipy`, `pytest`, `matplotlib`, `openpyxl` for the evaluation. No GPU. One panel is processed in about one second on one CPU core.
 
----
-
-## 2. Core Clinical Capabilities
-
-HEMOGLYPH operates as a multi-specialty clinical consilium across eight major physiological domains:
-
-### A. Over 100 Peer-Reviewed Disease Risk & Physiological Models
-* **Cardiology & Atherosclerosis:**  
-  AHA PREVENT 2023 Equations (10-year and 30-year total CVD risk with eGFR and UACR integration), Framingham 30-Year Cardiovascular Risk, ACC/AHA 2013 ASCVD Pooled Cohort Equations, European SCORE2 & SCORE2-OP (Older Persons), Reynolds Risk Score (high-sensitivity CRP-integrated), and atherogenic ratios (AIP, Castelli I & II, Non-HDL-C, Chol/HDL).
-* **Nephrology & Renal Hemodynamics:**  
-  2021/2024 KDIGO CKD-EPI Creatinine-Cystatin C refitted equations, Bedside CKiD Schwartz Pediatric eGFR, Kidney Failure Risk Equation (KFRE 4-Variable 2-Year & 5-Year probability of ESRD), and Fractional Excretion of Sodium/Urea (FENa, FEUrea) for acute kidney injury discrimination.
-* **Hepatology & Hepatic Fibrosis:**  
-  FIB-4 Index, NAFLD Fibrosis Score (NFS), AST-to-Platelet Ratio Index (APRI), De Ritis Ratio (AST/ALT), Model for End-Stage Liver Disease (MELD 3.0 & MELD-Na), and ALBI (Albumin-Bilirubin) Grade for hepatocellular function.
-* **Endocrinology & Metabolic Syndrome:**  
-  HOMA2-IR (Homeostatic Model Assessment of Insulin Resistance via non-linear computer model approximation), Quantitative Insulin Sensitivity Check Index (QUICKI), Triglyceride-Glucose (TyG) Index with BMI and waist adaptations, and Finnish Diabetes Risk Score (FINDRISC).
-* **Hematology & Hemoglobinopathy Screening:**  
-  Multi-parametric differentiation of Iron Deficiency Anemia versus Beta-Thalassemia Trait using Mentzer Index, Srivastava Index, Green & King Index, Ricerca Index, and Red Cell Distribution Width Index (RDWI).
-* **Critical Care, Acid-Base & Electrolyte Balance:**  
-  Albumin-Corrected Anion Gap (Figge-Jabor-Kazda-Fencl formula), Serum Osmolar Gap, Delta-Delta ($\Delta\text{AG}/\Delta\text{HCO}_3^-$) Ratio for mixed acid-base disorders, and Winter’s Formula for respiratory compensation assessment.
-* **Systemic Inflammation & Immuno-Oncology:**  
-  Neutrophil-to-Lymphocyte Ratio (NLR), Platelet-to-Lymphocyte Ratio (PLR), and Systemic Immune-Inflammation Index (SII).
-
-### B. Adaptive Physiological Guardrails
-Reference ranges and mathematical models dynamically adapt based on physiological context:
-* **Pediatric Gating:** Enforces pediatric-specific validation routines (e.g., preventing inappropriate adult CKD-EPI usage in pediatric patients, automatically substituting bedside Schwartz equations).
-* **Trimester-Specific Obstetric Adaptations:** Automatically accounts for maternal hemodilution, gestational alkaline phosphatase production, and trimester-specific thyroid-stimulating hormone (TSH) dynamics during pregnancy.
-
-### C. Pre-Analytical Quality Interceptors
-Before executing clinical reasoning, HEMOGLYPH evaluates sample integrity by screening for physiological plausibility thresholds (e.g., potassium concentrations incompatible with life without immediate notification) and highlighting potential in-vitro artifacts, including hemolysis, gross lipemia, and hyperbilirubinemic optical interference.
-
-### D. Conversational AI Assistant (Under Development in v1.3.1)
-> ⚠️ **Release Notice (v1.3.1):** The local on-device Conversational AI module is currently under active development and disabled in Release v1.3.1 to guarantee zero runtime setup friction and lightning-fast performance across all standard clinical laptops.
->
-> All core diagnostic reasoning engines—including 101 Bayesian Network models, 33,170 evidence rules across 781 guideline sources, and 100 chronic disease risk models—remain 100% active, fully verified, and operational offline. Full on-device conversational AI features are scheduled for an upcoming update.
-
----
-
-## 3. Privacy Policy & Data Governance
-
-HEMOGLYPH adheres to the highest medical confidentiality and data privacy principles (HIPAA, GDPR, and ISO 27001 medical software guidelines):
-
-1. **Zero External Cloud Telemetry:**  
-   The application operates completely offline. No patient identifiers, laboratory values, demographics, or diagnostic calculations are ever transmitted across external networks.
-2. **Local Cryptographic Node-Locked Licensing:**  
-   Licensing relies strictly on deterministic hardware identifiers (Motherboard BIOS UUID, CPU Serial, Volume Serial Number, and Windows MachineGuid) signed with asymmetric Military-Grade **RSA-4096 / SHA-512** digital signatures.
-3. **Local Database Security:**  
-   Patient records and test histories are stored exclusively in a local SQLite database with PBKDF2-HMAC-SHA256 authenticated user encryption.
-
----
-
-## 4. Software Architecture & Security Topology
-
-```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      HEMOGLYPH CDSS WORKSTATION (v1.3.1)                    │
-│                                                                             │
-│  ┌───────────────────────────┐              ┌────────────────────────────┐  │
-│  │   Presentation Layer      │              │   Clinical Core Engine     │  │
-│  │     PySide6 / QML         │              │ (101 Bayesian Models,      │  │
-│  │  (Zero Bytecode, Native)  │              │  33,170 Evidence Rules)    │  │
-│  └──────────┬────────────────┘              └────────────┬───────────────┘  │
-│             │                                            │                  │
-│             ▼                                            ▼                  │
-│  ┌───────────────────────────┐              ┌────────────────────────────┐  │
-│  │    Local Patient DB       │              │  Conversational AI Copilot │  │
-│  │   (hemoglyph.db)          │              │  (Under Active Development)│  │
-│  └───────────────────────────┘              └────────────────────────────┘  │
-│             ▲                                                               │
-│             │ Cryptographic Verification (RSA-4096 / SHA-512 Node Lock)      │
-│             ▼                                                               │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │    Hardware Security Core (license_engine.py / Native C++ Machine)    │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
+```bash
+pip install numpy pandas brotli scikit-learn scipy pytest matplotlib openpyxl
 ```
 
----
+## Ten-minute check
 
-## 5. System Requirements
-
-* **Operating System:** Microsoft Windows 10 (64-bit) or Windows 11 (64-bit).
-* **Processor (CPU):** Intel Core i3 (6th Gen or newer) / AMD Ryzen 3 or equivalent.
-* **Memory (RAM):** 4 GB RAM minimum (8 GB recommended).
-* **Disk Space:** ~500 MB free storage for the core executable and Brotli clinical registries.
-* **Display Resolution:** $1280 \times 720$ minimum ($1920 \times 1080$ Full HD recommended).
-
----
-
-## 6. Licensing & Activation Guide
-
-1. **Launch HEMOGLYPH:** On first launch, the Security Gate displays your workstation's unique **Machine ID** (e.g. `HG-XXXX-XXXX-XXXX-XXXX`).
-2. **Copy Machine ID:** Click **Copy ID** and email it to the system architect at [sobahramisamani@gmail.com](mailto:sobahramisamani@gmail.com).
-3. **Receive Activation Key:** You will receive a node-locked asymmetric RSA-4096 activation token (`HGLIC4K-...`).
-4. **Permanent Offline Activation:** Paste the token and click **Activate HEMOGLYPH**. The clinical engine is permanently unlocked on your hardware.
-
----
-
-## 7. Conversational AI Assistant Roadmap
-
-The local AI copilot module is being tuned for fast, zero-dependency offline execution on standard clinical hardware. In Release v1.3.1, the Chat section displays an explicit **Under Development** notice. Full local conversational explanations will be enabled in an upcoming release.
-
----
-
-## 8. Clinical Disclaimer
-
-*HEMOGLYPH CDSS is an analytical decision-support tool designed for healthcare professionals. It does not replace clinical judgment, physical examination, or comprehensive medical evaluation.*
-
----
-
-## 9. Comprehensive Clinical User Manual & Step-by-Step Tutorial
-
-This operational guide provides clinicians, clinical pathologists, and healthcare personnel with a structured, practical walk-through to maximize diagnostic yields using HEMOGLYPH CDSS v1.3.1.
-
-### Operational Clinical Workflow
-
-```text
-┌────────────────────────────────────────────────────────┐
-│  Step 1: Launch & Authenticate Session                 │
-└───────────────────────────┬────────────────────────────┘
-                            │
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│  Step 2: Enter Patient Profile & Guardrails            │
-│  (Age, Sex, Height, Weight, Pregnancy Status)          │
-└───────────────────────────┬────────────────────────────┘
-                            │
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│  Step 3: Laboratory Data Input                         │
-│  • Smart Search Manual Entry (19 Panels, Auto-Units)   │
-│  • OCR Lab Report Scanner (Vision Table Extraction)    │
-└───────────────────────────┬────────────────────────────┘
-                            │
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│  Step 4: Execute Real-Time Synthesis Engine            │
-│  • 100 Clinical Risk Equations (AHA, KDIGO, MELD, etc.)│
-│  • 33,170 Evidence Rules across 781 Global Sources     │
-└───────────────────────────┬────────────────────────────┘
-                            │
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│  Step 5: Review Differentials & Actionable Next Steps  │
-│  • Ranked Differential Diagnoses with Evidence Links   │
-│  • Confirmatory Laboratory Tests Suggested             │
-└───────────────────────────┬────────────────────────────┘
-                            │
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│  Step 6: Longitudinal Trends & Clinical Report Export  │
-│  • Track Biomarker Trajectories Across Visits          │
-│  • Export Formal Signed PDF / Physical Printout        │
-└────────────────────────────────────────────────────────┘
+```bash
+sha256sum -c --ignore-missing FREEZE_v15_20261025_sha256.txt   # expected differences (engine now v8.2, registries 15.x, amended SAP) are listed in REPRODUCTION_LOG.md; engine v7 is rebuilt from tag engine-v7-frozen by reproduce.sh
+python -m pytest tests/test_properties.py -q        # the 21 invariants of Section 2.3
+python tests/hard_battery.py && python tests/healthy_sweep.py
+python examples_quickstart.py                       # one panel in, cited differential out (~1 s)
 ```
 
----
+## Reproducing the tables and figures
 
-### Step 1: Launch & Workspace Authentication
-1. **Launch the Application:**  
-   Double-click the **Hemoglyph CDSS** desktop shortcut (or run `Hemoglyph.vbs` from the root of your release folder). The application opens in a hardware-accelerated, maximized Fusion layout.
-2. **First-Time Node Activation:**  
-   If launching on a newly licensed workstation, copy the unique **Machine ID** and email it to `sobahramisamani@gmail.com` to receive your RSA-4096 activation key. Paste the key to permanently unlock the CDSS core.
-3. **Sign In or Register:**  
-   On first use, toggle to **Create Account** to register your clinician profile (Full Name, Clinical Email, and Secure Password). All credentials and patient histories are salted with PBKDF2-HMAC-SHA256 and stored strictly on-device in `hemoglyph.db`.
+The mapping from every table and figure to its script, input data and engine version is the *Reproducibility map* at the end of the Supplementary Information (`docs/paper1/v7/submission_CMPB/Supplementary_Information_R8.md`); `reproduce.sh` automates the frozen-engine steps. Public inputs: eICU-CRD demo v2.0.1 and MIMIC-IV demo (PhysioNet, credential-free), NHANES 2013–14 / 2015–16 / 2017–18 (CDC), PhysioNet/CinC 2019, UCI thyroid0387, UCI HCV, ILPD, PMC-Patients. Download helpers are in `eval/realdata/`. The 400 blinded LLM prompts and raw outputs are frozen artefacts under `eval/results/eicu_demo/` and are re-scored, never regenerated.
 
----
+Full run on one core: about 10 h. `eval/realdata/eval_eicu.py --encounter icu` alone reproduces Table 3 in about 40 min.
 
-### Step 2: Patient Profile & Physiological Guardrails
-Before entering numerical laboratory data, establishing the clinical baseline in the **Patient Profile** panel is vital:
-* **Age & Biological Sex:**  
-  These parameters govern dynamic reference ranges. In pediatric patients, the system automatically engages pediatric guardrails, blocking invalid adult equations (e.g., CKD-EPI) and substituting the bedside **CKiD Schwartz** formula. Age- and sex-stratified normal ranges for alkaline phosphatase, ferritin, and reproductive hormones are automatically selected.
-* **Height & Weight (BMI & BSA):**  
-  Essential for calculating Body Surface Area (DuBois formula) and Body Mass Index, required for normalizing renal clearance, adjusted ideal body weight, and cardiovascular risk stratification.
-* **Blood Pressure & Waist Circumference:**  
-  Required to activate the **AHA PREVENT 2023** and **Framingham 30-Year** cardiovascular risk estimators.
-* **Obstetric Guardrail (Pregnancy Status):**  
-  Toggling pregnancy activates trimester-specific physiological adjustments. This prevents false-positive alerts caused by normal gestational changes (e.g., plasma volume expansion hemodilution, transient first-trimester TSH reduction, and placental alkaline phosphatase elevation).
+## What is not here
 
----
+Patient data (download from the sources above); the desktop application built on this engine (separate, proprietary, not part of the paper); any clinician evaluation (none was performed for this paper — the pre-specified protocol is Supplementary Note 19).
 
-### Step 3: Laboratory Data Input
+## Contact
 
-HEMOGLYPH provides two flexible, point-of-care data entry modes:
-
-#### Option A: Smart Manual Entry
-1. Navigate to the **Manual Entry** tab.
-2. Select from 19 comprehensive clinical panels (CBC, Complete Urinalysis, Comprehensive Metabolic Panel, Hepatic Function, Renal Biomarkers, Thyroid Profile, Coagulation, Blood Gas, Cardiac Enzymes, Toxicology, etc.).
-3. Use the **Intelligent Search Bar** to quickly locate analytes by clinical name or common abbreviation (e.g., `FBS`, `HbA1c`, `ALT`, `eGFR`, `Troponin-I`, `Ferritin`, `D-Dimer`, `NT-proBNP`).
-4. Enter the reported numerical value. The system instantly highlights normal, abnormal, and critical panic values using international clinical color codes.
-5. **Automated Unit Conversion:** If your laboratory reports values in different units (e.g., glucose in `mmol/L` vs `mg/dL`, or creatinine in `μmol/L` vs `mg/dL`), HEMOGLYPH executes standard mathematical conversion automatically.
-
-#### Option B: Vision OCR Report Scanner (Image / PDF Upload)
-1. Navigate to the **Upload** tab.
-2. Select and upload a digital image or scan of the patient's paper report (`.jpg`, `.png`, or `.pdf`).
-3. The embedded OCR engine preprocesses the document, isolates tabular boundaries, and extracts analyte names and values.
-4. **Pre-Commit Verification Table:** Extracted results are presented in an editable review table. Verify the numbers against the source document and click **Confirm & Import** to transfer values into the analytical pipeline.
-
----
-
-### Step 4: Multi-System Synthesis & Clinical Risk Engine Execution
-Click **Analyze & Generate Report**. Within two seconds, HEMOGLYPH’s multi-layered decision engine delivers comprehensive findings:
-
-1. **Multi-System Organ Radar:**  
-   Visualizes the integrity of six primary physiological axes:
-   * **Hepatic Integrity:** Hepatocellular necrosis (ALT/AST), cholestatic patterns (ALP/GGT/Bilirubin), and protein synthetic capacity.
-   * **Renal Hemodynamics:** Glomerular filtration rate (CKD-EPI 2021/2024), tubular handling, and microalbuminuria staging.
-   * **Cardiometabolic Axis:** Atherogenic risk, insulin resistance, and glycemic stability.
-   * **Hematopoiesis & Erythrocytes:** Morphological anemia categorization, hemolytic screening, and iron kinetics.
-   * **Acid-Base & Fluid Homeostasis:** Albumin-corrected anion gap, delta-delta ratio, and respiratory compensation adequacy.
-2. **Validated Risk Scores Calculated On-The-Fly:**  
-   * **AHA PREVENT 2023 & ASCVD:** 10-year and 30-year risk of myocardial infarction, stroke, and heart failure with eGFR integration.
-   * **FIB-4 & APRI Scores:** Evidence-based staging of hepatic fibrosis without invasive biopsy.
-   * **KFRE (Kidney Failure Risk Equation):** 2-year and 5-year statistical probability of end-stage renal disease (dialysis/transplantation).
-   * **HOMA2-IR & TyG Index:** Cellular insulin resistance and subclinical metabolic syndrome quantification.
-
----
-
-### Step 5: Evidence-Based Differential Diagnoses & Actionable Next Steps
-Below the multi-system synthesis, the report provides direct clinical guidance:
-
-1. **Ranked Differential Diagnoses:**  
-   Conditions are ranked by mathematical likelihood based on Bayesian cross-correlation against 33,170 clinical decision rules. Each entry lists supporting and opposing laboratory evidence.
-2. **Actionable Next Steps:**  
-   Provides concise recommendations for confirmatory testing (e.g., recommending Serum Free Light Chains and Serum Protein Electrophoresis when unexplained anemia is accompanied by an elevated total protein and ESR).
-3. **Peer-Reviewed Reference Citations:**  
-   Every diagnostic insight is indexed to authoritative clinical guidelines (UpToDate, CLSI, Tietz Textbook of Clinical Chemistry, KDIGO, ADA Standards of Care, ACC/AHA).
-
----
-
-### Step 6: Longitudinal Tracking & Clinical Report Export
-* **Historical Trajectory Analysis (History Tab):**  
-  Access archived visits for the selected patient. Compare past and present values via interactive trend graphs to evaluate therapeutic response (e.g., monitoring eGFR trajectory, lipid reduction under statin therapy, or glycemic control across consecutive quarters).
-* **Formal Medical Export (Print / PDF):**  
-  Generate an executive, professional clinical report formatted for physical printing or inclusion in the patient’s permanent electronic medical record (EMR).
-
----
-
-### Step 7: Guideline Explorer & Risk Model Catalog
-* **Guidelines Browser:** Search across 781 indexed guideline source records and diagnostic algorithms.
-* **Risk Model Catalog:** Review the mathematical formulas, clinical indications, validation cohorts, and cut-off values for all 100 integrated clinical risk calculators.
-
----
-
-## 10. Scientific Transparency, Honest Disclosures & Pre-Analytical Quality
-
-To maintain absolute medical integrity and transparency:
-
-1. **Conversational AI Assistant Status (v1.3.1):**  
-   The natural-language Conversational AI Copilot is currently under development and intentionally disabled in Release v1.3.1. This ensures that the application remains extremely lightweight (~130 MB executable), starts instantly, and runs reliably on standard clinical laptops without requiring gigabytes of GPU weights or runtime dependencies.  
-   **Crucially:** All 101 Bayesian diagnostic models, 100 disease risk equations, and 33,170 evidence rules are **100% active, deterministic, and fully operational offline**.
-2. **Pre-Analytical Interference Warning:**  
-   Diagnostic inferences assume sample integrity. Specimen hemolysis, marked lipemia, icterus, or high-dose biotin therapy may distort laboratory measurements. HEMOGLYPH features pre-analytical plausibility checks, but final interpretations must always be reconciled with patient history and physical examination.
-3. **Strict Data Privacy:**  
-   Zero patient data leaves your workstation. No external cloud endpoints, no third-party telemetry, and no remote data storage. Your clinical data remains completely sovereign.
-
----
-*Copyright © 2026 Sobhan Bahrami. All rights reserved.*
-
-## 11. Decision-Fusion Layer: Mathematics, Conflict Handling & Known Limits
-
-Hemoglyph does **not** average its reasoning layers. Per disease the engine performs:
-
-1. **Domain weight profile.** Layer weights are selected per clinical domain
-   (`WEIGHT_PROFILES` in `analyse_gidlines.py`): e.g. toxicology/critical-care give the
-   explicit guideline rule layer 0.50–0.55; autoimmune disease gives the knowledge graph 0.25;
-   tumour markers give the Bayesian prior 0.35. Weights are renormalised over the layers
-   that actually voted and scaled by the share of ensemble weight that spoke.
-2. **Weighted pairwise conflict** `K = Σ w_i w_j |v_i − v_j| / Σ w_i w_j`. Unlike a
-   standard deviation this distinguishes "one layer dissents from four" from a 50/50 split.
-3. **Sceptical pull.** With conflict present the score is pulled toward the weighted mean of
-   the sceptical cluster, bounded at 45 %. A **red-flag floor** prevents over-conservatism:
-   when explicit guideline criteria are met (rule vote ≥ 0.70) a low population prior may
-   lower but not bury the finding (floor = 0.65 × rule vote).
-4. **Binary-frame evidence theory.** In parallel, each layer's vote is turned into a mass
-   function on {D, ¬D, Θ} with Shafer discounting (layer reliability × input reliability) and
-   combined with **Yager's rule** — conflicting mass is assigned to ignorance Θ, never
-   renormalised away, so Zadeh's paradox cannot occur and the cost is O(layers) per disease.
-   The report exposes **Belief**, **Plausibility**, **ignorance**, **conflict** and an
-   `evidence_state` ∈ {supported, refuted, conflicting, insufficient, weak}. A wide
-   Belief–Plausibility interval is reported as *insufficient evidence*, not as a probability.
-5. **Input-uncertainty propagation.** OCR confidence, unconfirmed values and conflicting
-   duplicates become a continuous reliability (0–1) that discounts the Bayesian likelihood
-   ratios, the fuzzy memberships and the fusion masses, and is listed in the report warnings.
-
-**Reference-interval policy (CLSI EP28-A3c).** *Clinical decision limits* (ADA glucose /
-HbA1c, WHO haemoglobin, KDIGO creatinine, ACC/AHA lipids, electrolytes) are locked to the
-guideline value; a differing laboratory interval only raises a warning. *Method-dependent
-analytes* (aminotransferases, ALP, GGT, TSH and other immunoassays, troponin, tumour markers,
-CRP…) are interpreted against the interval printed by the performing laboratory, and rule
-thresholds expressed as ULN multiples are rescaled accordingly. Implausible printed
-intervals (likely OCR column errors) are rejected.
-
-**Regional priors.** Bayesian priors are literature (largely Western) prevalences. A
-provisional odds table re-anchors them per region (`HEMOGLYPH_REGION=IR` or patient
-`region`), e.g. β-thalassaemia trait ×8, G6PD deficiency ×5 for Iran; hospitals can replace
-it with local data via `regional_priors.json`.
-
-**Honest limits.** The remaining weights and the 0.45 / 0.65 constants are engineering
-judgement, not fitted parameters; the regional multipliers are literature estimates, not
-local surveillance data; and **no prospective clinical validation has been performed** —
-the retrospective, non-interventional evaluation below is the only evidence of performance.
-`ablation_harness.py` measures layer contribution on synthetic textbook cases; `eval/` holds the
-real-data evaluation; `test_fusion_math.py` verifies the fusion
-mathematics (including the Zadeh-paradox case).
-
-**Temporal analysis (v1.3.1).** Each report is interpreted as a single time point. Longitudinal trend analysis has been removed from this release because prior results are not persisted per patient; criteria that require a baseline (e.g. KDIGO creatinine change) are reported as *insufficient data*, never inferred.
-
-## 12. Retrospective Evaluation (engine v5.3, registry 13.3.0, frozen 2026-10-24)
-
-Full details, statistical analysis plan (with Amendments 1–12), per-encounter outputs and the manuscript are in
-`docs/paper1/` and `eval/`; `reproduce.sh` re-runs the whole chain. Headline results on public, de-identified data
-that the engine had never seen; **no parameter was tuned on any of them**:
-
-| Dataset | n | Task | Result |
-|---|---:|---|---|
-| eICU-CRD demo (186 US hospitals) | 2,314 ICU stays / 2,432 clinician-listed diagnoses | top-5 recall, labs only | **63.8 %** (@3 49.3, @10 77.2; mean AUROC 0.767 over 24 groups) |
-| same | same | + documented history & home medications | 66.6 % |
-| same, blinded subset | 400 stays | vs. a frontier LLM given identical inputs | 64.4 % vs 59.6 % (McNemar p = 0.0093) |
-| NHANES 2017-18 | 5,103 adults | guideline-defined diabetes / CKD / anaemia / iron deficiency (AUROC) | 0.94 / 0.95 / 0.97 / 0.99; 1/274 false assertions in healthy adults |
-| Garvan thyroid (UCI) | 3,162 records | hypothyroidism (AUROC) | 0.98 |
-| HCV cohort (UCI) | 615 | any liver disease vs donors / cirrhosis vs rest | 0.93 / 0.91 |
-| ILPD (India) | 583 | liver patient vs not | 0.70 |
-
-Known weaknesses, stated plainly: raw probabilities are over-confident and need recalibration (ECE 0.16 → 0.003 after
-isotonic recalibration); two thirds of misses have no laboratory signature at all; a pre-registered attempt to close a
-4.3-point male–female recall gap **failed**; a supervised model trained on the target data usually discriminates better;
-switching the entire disease–guideline registry off costs only 1.8 points of top-5 recall (most performance comes from the
-expert syndrome layer); the knowledge base was LLM-drafted and curated by a single non-physician author and has **not**
-been reviewed by an independent expert panel. Registry 13.3.0 (frozen for Paper 1) carries 34,548 rules of which 33,230 are executable (1,318 retired after a scripted defect scan).
-The **shipped registry is 13.4.2** (34,659 rules, 33,170 executable, 781 source records): 13.4.0 clean-up + 13.4.1 provenance fix (9 fabricated DOIs
-removed, found by `eval/registry_source_verify.py`) + 13.4.2 regression fix (nine re-anchored finding rules demoted after an eICU top-5 crowding
-regression) — see `release/registry_13.4.2/CHANGELOG_13_4_*.md` and `docs/paper1/supplement/Supplementary_Data_1_sources_13.4.1.xlsx`
-(source table unchanged in 13.4.2); all product counts in this README refer to 13.4.2 (updated 2026-10-24).
+Sobhan Bahrami — sobahramisamani@gmail.com — ORCID 0009-0004-6639-5081
 
 ## Licence
 
-- **Engine source code** in this repository: **GNU AGPL-3.0-or-later** (`LICENSE`). Anyone who redistributes or offers this code as a service must release their complete corresponding source under the same licence. Dual/commercial licensing available from the author (`NOTICE`).
-- **Clinical registries** (`HEMOGLYPH_*_REGISTRY.json.br`, `release/registry_*`) and aggregated evaluation outputs: **CC BY-SA 4.0** (`LICENSE-DATA.md`) — any modified or derived registry that is distributed must be released under the same licence — with a mandatory provenance notice (AI-assisted drafting, single-author curation, not a medical device).
-- **Desktop distribution v1.3.1** (binaries, UI assets, OCR packaging, hardware-bound activation): proprietary, not part of the open release.
+- Engine source code: GNU AGPL-3.0-or-later (`LICENSE`).
+- Rule registries (`HEMOGLYPH_*_REGISTRY.json.br`, `release/registry_*`) and aggregated evaluation outputs: CC BY-SA 4.0 (`LICENSE-DATA.md`), with the provenance notice that the registries were AI-drafted and single-author curated.
+- Manuscript text and figures: CC BY 4.0.

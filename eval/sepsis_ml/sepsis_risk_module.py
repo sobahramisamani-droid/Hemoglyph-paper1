@@ -62,7 +62,7 @@ def utility(df, pred, dt_early=-12, dt_opt=-6, dt_late=3, max_u_tp=1, min_u_fn=-
     for pid, g in df.assign(pred=pred).groupby("pid", sort=False):
         lab = g.SepsisLabel.values; p = g.pred.values; n = len(lab)
         if lab.any():
-            t_s = int(np.argmax(lab)) + 6  # t_sepsis = first label hour + 6 (label shifted early)
+            t_s = int(np.argmax(lab)) + 6
             u = np.zeros(n); ub = np.zeros(n)
             for t in range(n):
                 rel = t - t_s
@@ -76,7 +76,6 @@ def utility(df, pred, dt_early=-12, dt_opt=-6, dt_late=3, max_u_tp=1, min_u_fn=-
                     elif rel <= dt_opt: u[t] = 0
                     elif rel <= dt_late: u[t] = min_u_fn * (rel - dt_opt) / (dt_late - dt_opt)
                     else: u[t] = min_u_fn
-                # best: predict 1 from dt_early onward
                 if rel >= dt_early:
                     ub[t] = max_u_tp * (rel - dt_early) / (dt_opt - dt_early) if rel <= dt_opt else (max_u_tp * (1 - (rel - dt_opt) / (dt_late - dt_opt)) if rel <= dt_late else 0)
                 else: ub[t] = u_tn
@@ -91,7 +90,7 @@ def patient_auc(df, score):
     rows = []
     for pid, g in df.groupby("pid", sort=False):
         if g.SepsisLabel.any():
-            pre = g[g.SepsisLabel == 0]  # hours before the (shifted) label
+            pre = g[g.SepsisLabel == 0]
             rows.append((1, s[pre.index].max() if len(pre) else s[g.index].iloc[0]))
         else:
             rows.append((0, s[g.index].max()))
@@ -104,7 +103,7 @@ def horizon_auc(df, score, h):
     on = onset_hour(df)
     for pid, g in df.groupby("pid", sort=False):
         if pid in on.index:
-            t = on[pid] + 6 - h  # t_sepsis − h
+            t = on[pid] + 6 - h
             row = g[g.ICULOS == t]
             if len(row): pos.append(s[row.index[0]])
         else:
@@ -119,7 +118,6 @@ def main():
     lr.fit(XA.fillna(med), yA)
     gb = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.05, max_depth=4, max_leaf_nodes=15, min_samples_leaf=300, l2_regularization=5.0, class_weight="balanced", early_stopping=True, validation_fraction=0.15, n_iter_no_change=20, random_state=0)
     gb.fit(XA, yA)
-    # threshold for utility chosen on set A only (grid on predicted-probability quantiles)
     pA_lr = lr.predict_proba(XA.fillna(med))[:, 1]; pA_gb = gb.predict_proba(XA)[:, 1]
     def best_thr(p):
         best = (-9, None)

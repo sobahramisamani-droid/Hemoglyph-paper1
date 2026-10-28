@@ -51,7 +51,7 @@ for gi, g in enumerate(groups):
     y[idx, gi] = yy; scorable[idx, gi] = True
     eng[:, gi] = [r["gp"].get(g, 0.0) for r in rows]
     if yy.sum() < 15 or (len(yy) - yy.sum()) < 15:
-        continue  # too rare to train: ml stays 0 → hybrid falls back to engine
+        continue
     oof = np.zeros(len(yy))
     for tr, te in StratifiedKFold(5, shuffle=True, random_state=20261021).split(X[idx], yy):
         m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.05, max_leaf_nodes=15, random_state=1)
@@ -75,7 +75,6 @@ def recall_at(score, k):
     return hit / tot, tot, per
 
 
-# recall_at uses global rows/scorable/y; for bootstrap we index arrays consistently
 def recall_idx(score, k, s):
     hit = tot = 0
     for i in s:

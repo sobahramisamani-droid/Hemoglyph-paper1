@@ -1,5 +1,5 @@
 {
-  "title": "Hemoglyph v1.3.1 — knowledge-based laboratory-interpretation engine, registries and multi-dataset evaluation harness (frozen v1 e0231327…, v2 48313758…)",
+  "title": "Hemoglyph: engine, AI-drafted laboratory-interpretation rule registries, verification protocols and frozen evaluation outputs (Paper 1, CMPB submission R9)",
   "upload_type": "software",
   "creators": [
     {
@@ -16,15 +16,17 @@
       "affiliation": "Statistics & Data Science Clinic, Shahid Beheshti University, Tehran, Iran"
     }
   ],
-  "description": "Engine (analyse_gidlines.py, calcu.py), Brotli-compressed feature (12.1.0) and disease-guideline (13.3.0 frozen for Paper 1; 13.4.2 shipped) registries, expert syndrome library, statistical analysis plan, SHA-256 freeze manifests, test batteries and evaluation scripts for eICU-CRD demo, NHANES 2017-18, UCI thyroid0387, UCI HCV, ILPD, PMC-Patients case reports and PhysioNet Sepsis-2019, plus per-encounter outputs. Companion to the manuscript 'Design and multi-dataset retrospective evaluation of Hemoglyph'.",
+  "description": "Code and data companion to 'Verifying an AI-drafted laboratory-interpretation rule base before clinical audit: executable invariants, frozen source-concordance protocols and a hash-frozen benchmark applied to the open Hemoglyph engine' (Bahrami, Tahmasebinejad, Bahrami Samani, 2026). Contains the single-file inference engine (frozen v7 at git tag engine-v7-frozen; current v8.2), Brotli-compressed rule registries 14.1.0 to 15.3.0, the property-based invariant suite, the frozen source-concordance and audit-study protocols and outputs, the verification ledger, the LabPanel-Check conformance package, the pre-specified human-audit protocol and sample, the statistical analysis plan with dated amendments, SHA-256 freeze manifests, and reproduce.sh, which rebuilds the frozen engine and re-derives the main benchmark tables from a clean clone. Patient-level inputs (eICU-CRD demo, MIMIC-IV demo, NHANES, PhysioNet/CinC 2019, UCI, ILPD, PMC-Patients) are not redistributed; download helpers are included.",
   "keywords": [
     "laboratory medicine",
     "clinical decision support",
     "knowledge-based system",
-    "calibration"
+    "verification",
+    "provenance audit",
+    "reproducibility"
   ],
   "access_right": "open",
-  "version": "1.3.1",
+  "version": "paper1-R9",
   "license": "AGPL-3.0-or-later",
-  "notes": "Code: GNU AGPL-3.0-or-later (LICENSE). Clinical registries (13.3.0 frozen for Paper 1; 13.4.2 release) and aggregated evaluation outputs: CC BY-SA 4.0 (LICENSE-DATA.md). The commercial desktop distribution is proprietary and not part of this deposit (NOTICE)."
+  "notes": "Code: GNU AGPL-3.0-or-later (LICENSE). Rule registries and aggregated evaluation outputs: CC BY-SA 4.0 (LICENSE-DATA.md); the registries are AI-drafted and single-author curated, status candidate_requires_specialist_validation. Not a medical device. The desktop application built on this engine is separate and not part of this deposit."
 }

@@ -25,7 +25,6 @@ def box(ax, x, y, w, h, title, body, fc=LIGHT, ec=ENG, fs=7.2, tfs=8):
 def arrow(ax, p, q, color=GREY, lw=0.9, style="-|>", ms=7):
     ax.add_patch(FancyArrowPatch(p, q, arrowstyle=style, mutation_scale=ms, color=color, lw=lw, shrinkA=0, shrinkB=0))
 
-# ------------------------------------------------------------------------------------------------ Figure 1 architecture
 def fig1():
     fig, ax = plt.subplots(figsize=(300 * MM, 165 * MM)); ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
     box(ax, 0.02, 0.78, 0.20, 0.17, "Input", "laboratory panel + age/sex\noptional context, time series", fc="#fdf3dc", ec="#b8860b")
@@ -50,7 +49,6 @@ def fig1():
     ax.plot([0.83, 0.83, 0.50], [0.21, 0.175, 0.175], color=GREY, lw=0.9); arrow(ax, (0.50, 0.175), (0.50, 0.14))
     save(fig, 1)
 
-# ------------------------------------------------------------------------------------------------ Figure 2 workflow + ceiling
 def fig2():
     fig = plt.figure(figsize=(270 * MM, 150 * MM)); gs = fig.add_gridspec(2, 2, height_ratios=[0.9, 1.25], hspace=0.55, wspace=0.35)
     ax = fig.add_subplot(gs[0, :]); ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off"); label(ax, "a", x=-0.02, y=0.98)
@@ -69,7 +67,6 @@ def fig2():
         ax.text(x + w / 2, 0.42, b, ha="center", va="center", fontsize=6.6, linespacing=1.3)
         if i < n - 1: arrow(ax, (x + w, 0.5), (x + w + gap, 0.5), ms=8)
     ax.text(0, 0.0, "Frozen artefacts are the ones the four verification methods were later applied to; the LLM comparison, the audits and the audit study came after the freezes.", fontsize=6.6, color=GREY)
-    # (b) ceiling
     ax = fig.add_subplot(gs[1, 0]); label(ax, "b")
     parts = [("no single laboratory criterion for the group", 541, "#9e9e9e"), ("key analyte absent from the first panel", 275, "#cfcfcf"),
              ("contradicted by the panel values", 431, "#e8a19c"), ("panel-supported", 1460, "#5f9e55")]
@@ -81,7 +78,6 @@ def fig2():
     ax.set_yticks([]); ax.set_xlim(0, 2707); ax.set_xlabel("clinician-coded label targets, eICU-CRD demo (n = 2,707)")
     ax.set_title("Why laboratory-only recall saturates near 60 %", loc="left")
     ax.legend([plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in parts], [p[0] for p in parts], loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=2, frameon=False, handlelength=1)
-    # (c) panel-supported
     ax = fig.add_subplot(gs[1, 1]); label(ax, "c")
     cols = ["13.4.2\n(product)", "14.1 / v6", "v7\n(frozen)", "registry\nOFF"]
     top5 = [81.6, 78.0, 78.0, 75.3]; top10 = [95.1, 91.8, 91.8, 89.9];     x = np.arange(4); bw = 0.26
@@ -95,10 +91,8 @@ def fig2():
     ax.set_title("Panel-supported labels (n = 1,460)", loc="left"); ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3)
     save(fig, 2)
 
-# ------------------------------------------------------------------------------------------------ Figure 3 verification results (new)
 def fig3():
     fig = plt.figure(figsize=(270 * MM, 165 * MM)); gs = fig.add_gridspec(2, 2, hspace=0.6, wspace=0.42)
-    # (a) activity + provenance
     ax = fig.add_subplot(gs[0, 0]); label(ax, "a")
     sets = [("dormant (never fired)", 31192), ("fired, never in a top-10", 1627), ("active core (≥1 top-10 contribution)", 364), ("hot core (≥10)", 174)]
     cols = ["#d0d0d0", "#9fb3d9", ENG, "#0d1f45"]
@@ -120,7 +114,6 @@ def fig3():
         ax.text(50, 1 - i - 0.40, f"{c} concordant · {d} discordant · {u} unresolvable  (n = {n})", fontsize=6.4, color=GREY, ha="center", va="top")
     ax.set_yticks([1, 0]); ax.set_yticklabels([r[0] for r in rows]); ax.set_xlim(0, 100); ax.set_xlabel("% of sampled rules (single declared AI rater)")
     ax.set_title("Source concordance against the cited locator", loc="left"); ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.3), ncol=3)
-    # (c) mutation recall
     ax = fig.add_subplot(gs[1, 0]); label(ax, "c")
     mut = [("M7 tier order impossible", 1.000, 301), ("M6 ubiquitous single analyte", 0.979, 141), ("M4 wrong unit", 0.743, 152),
            ("M1 threshold beyond physiology", 0.548, 73), ("M8 source from other domain", 0.455, 88), ("M3 operator flipped", 0.131, 274), ("M2 plausible wrong threshold", 0.003, 303)]
@@ -129,7 +122,6 @@ def fig3():
     for yi, m in zip(y, mut): ax.text(min(m[1], 0.97) + 0.02 if m[1] < 0.9 else 0.5, yi, f"{m[1]:.2f}  (n = {m[2]})", va="center", fontsize=6.6, color="#222" if m[1] < 0.9 else "white")
     ax.set_yticks(y); ax.set_yticklabels([m[0] for m in mut]); ax.set_xlim(0, 1); ax.set_xlabel("recall of seeded defects by the static detectors")
     ax.set_title("Mutation testing of the detectors", loc="left")
-    # (d) ledger
     ax = fig.add_subplot(gs[1, 1]); label(ax, "d")
     C = json.load(open(os.path.join(HG, "eval/verification_ledger/ledger_counts.json")))["by_set"]
     order = ["quote_verified", "discordant_corrected", "discordant_open", "flagged_open", "source_reachable_unverified", "unresolvable", "retired"]
@@ -147,7 +139,6 @@ def fig3():
     ax.set_title("What is known per rule", loc="left"); ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.3), ncol=3, handlelength=1)
     save(fig, 3)
 
-# ------------------------------------------------------------------------------------------------ Figure 4 supervised comparison
 def fig4():
     m = json.load(open(os.path.join(HG, "eval/results/eicu_demo/ml_baseline.json")))
     nice = {"acute_kidney_injury": "AKI", "chronic_kidney_disease": "CKD", "renal_impairment": "renal impairment", "diabetic_ketoacidosis": "DKA", "acute_myocardial_infarction": "AMI",
@@ -169,7 +160,6 @@ def fig4():
     ax.set_title("Groups with ≥ 25 labelled stays; ordered by engine AUROC", loc="right", fontsize=7.5, color=GREY)
     save(fig, 4)
 
-# ------------------------------------------------------------------------------------------------ Figure 5 NHANES cycles
 def fig5():
     J = {"diabetes": .946, "ckd": .959, "anemia": .972, "iron_deficiency": .989, "hyperuricemia": .943, "hypercholesterolemia": .905, "alt_elevation": .872, "diabetes_selfreport": .919, "ckd_selfreport": .816}
     H = {"diabetes": .938, "ckd": .968, "anemia": .994, "iron_deficiency": None, "hyperuricemia": .958, "hypercholesterolemia": .883, "alt_elevation": .880, "diabetes_selfreport": .914, "ckd_selfreport": .748}
@@ -187,7 +177,6 @@ def fig5():
     ax.text(1.0, -0.2, "y-axis starts at chance (0.5). Self-reported outcomes are independent of the laboratory values. Healthy adults asserted with a disease at p ≥ 0.5: 2/485.", transform=ax.transAxes, ha="right", fontsize=6.3, color=GREY)
     save(fig, 5)
 
-# ------------------------------------------------------------------------------------------------ Figure 6 sepsis
 def fig6():
     sets = ["set A\n(development)", "set B\n(quarantine 1)", "set B2\n(quarantine 2)"]
     pred_e = [(.600, .575, .625), (.610, .583, .640), (.588, .559, .616)]; pred_l = [.691, .712, .679]
@@ -209,7 +198,6 @@ def fig6():
     fig.text(0.01, -0.04, "PhysioNet/CinC 2019; the pre-specified criterion (AUROC ≥ 0.65 in set B, concurrent frame) was not met: a negative result reported as such.", fontsize=6.5, color=GREY)
     save(fig, 6)
 
-# ------------------------------------------------------------------------------------------------ Figure 7 LLM + properties
 def fig7():
     L = json.load(open(os.path.join(HG, "eval/results/eicu_demo/llm_vs_v7_cluster_n400.json")))["gr"]
     pg = {k: v for k, v in L["per_group"].items() if v[0] >= 10}
@@ -243,7 +231,6 @@ def fig7():
     ax.set_title("Black-box property conformance (Table 6)", loc="left"); ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.25), ncol=2, fontsize=6.4)
     save(fig, 7)
 
-# ------------------------------------------------------------------------------------------------ Figure 8 calibration + DCA
 def fig8():
     md = open(os.path.join(HG, "eval/results/eicu_demo/calibration_dca_v7.md"), encoding="utf-8").read()
     dec = re.findall(r"^\| (\d+) \| ([\d.]+) \| ([\d.]+) \| ([\d.]+) \| ([\d.]+) \|$", md, flags=re.M)

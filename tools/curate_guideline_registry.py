@@ -35,9 +35,6 @@ REPORT = ROOT / "docs" / "GUIDELINE_REGISTRY_CURATION_13.0.0.json"
 NEW_VERSION = "13.0.0-CLINICAL-CURATED"
 TODAY = _dt.date.today().isoformat()
 
-# --------------------------------------------------------------------------
-# helpers
-# --------------------------------------------------------------------------
 
 def load_br(p: Path) -> dict:
     return json.loads(brotli.decompress(p.read_bytes()).decode("utf-8"))
@@ -59,8 +56,6 @@ def direction(op: str) -> str:
     return "high" if op in (">", ">=") else "low" if op in ("<", "<=") else "eq"
 
 
-# Analytes every routine panel carries. A combination of these is a
-# compatible pattern for a specific aetiology, never its diagnostic criterion.
 ROUTINE = frozenset("""
 hemoglobin hematocrit red_blood_cell_count mean_corpuscular_volume mean_corpuscular_hemoglobin
 mean_corpuscular_hemoglobin_concentration red_cell_distribution_width_cv red_cell_distribution_width
@@ -119,8 +114,6 @@ DECISIVE_RE = re.compile(
 
 STAMPED_MIN = 5
 
-# pairs that the engine already treats as equivalent; we consolidate the
-# minority spelling in the registry so a value is matched once, not twice.
 CANONICAL_MERGE = {
     "parathyroid_hormone_intact": "intact_parathyroid_hormone",
     "cortisol_8am": "morning_cortisol",
@@ -134,7 +127,6 @@ CANONICAL_MERGE = {
     "serum_haptoglobin": "haptoglobin_serum_quantitative",
 }
 
-# unit normalisation: (feature_id, unit) -> (canonical unit, multiplier)
 UNIT_FIX = {
     ("alkaline_phosphatase", "IU/L"): ("U/L", 1.0),
     ("lymphocyte_count_absolute", "10*3/uL"): ("10*9/L", 1.0),
@@ -144,7 +136,7 @@ UNIT_FIX = {
     ("basophil_count_absolute", "10*3/uL"): ("10*9/L", 1.0),
     ("arterial_ph", "1"): ("[pH]", 1.0),
     ("stool_ph", "1"): ("[pH]", 1.0),
-    ("transferrin_saturation", "1"): ("%", 1.0),        # values already in %
+    ("transferrin_saturation", "1"): ("%", 1.0),
     ("d_dimer", "ug{FEU}/mL"): ("ug/mL", 1.0),
     ("free_light_chain_ratio", "1"): ("ratio", 1.0),
     ("aldosterone_renin_ratio", "1"): ("ratio", 1.0),
@@ -156,11 +148,7 @@ UNIT_FIX = {
     ("syphilis_rpr", "mg/dL"): ("1", 1.0),
 }
 
-# --------------------------------------------------------------------------
 # curated guideline rule set
-# --------------------------------------------------------------------------
-# DSL:  L(fid, op, value, unit=None)   ALL(...)   ANY(...)
-# unit=None -> feature canonical unit.
 
 def L(fid, op, value, unit=None, weight=3.0):
     return {"feature_id": fid, "operator": op, "value": value, "unit": unit, "weight": weight}
@@ -263,7 +251,6 @@ def rule(did, suffix, rtype, urgent, expr, src, title, expl, lim=None, specifici
     CURATED.append((did, suffix, rtype, urgent, expr, src, title, expl, lim or [], specificity))
 
 
-# ---- Diabetes & glycaemic crises (ADA/EASD 2024, ADA SoC 2025) ----------------
 rule("diabetic_ketoacidosis", "ada_easd_2024_dka_triad", "diagnostic_criterion", True,
      ALL(ANY(L("glucose", ">=", 200, "mg/dL"), L("fasting_plasma_glucose", ">=", 200, "mg/dL"), L("glucose_random", ">=", 200, "mg/dL")),
          ANY(L("beta_hydroxybutyrate", ">=", 3.0, "mmol/L"), L("urine_ketones_qualitative", "==", 1, "1")),
@@ -318,7 +305,6 @@ rule("fasting_hypoglycemia", "ada_2025_level2_hypoglycemia", "diagnostic_criteri
      "endo_hypoglycemia_2009_ada_2025", "Clinically significant (level 2) hypoglycaemia < 54 mg/dL",
      "Glucose < 54 mg/dL (3.0 mmol/L) is level 2, clinically significant hypoglycaemia; < 70 mg/dL is level 1 (alert value). Whipple triad required for a hypoglycaemic disorder in non-diabetic patients.")
 
-# ---- Kidney ------------------------------------------------------------------
 rule("chronic_kidney_disease", "kdigo_2024_g3_plus", "diagnostic_criterion", False,
      L("egfr_ckd_epi_creatinine", "<", 60, "mL/min/{1.73_m2}"),
      "kdigo_ckd_2024", "CKD - eGFR < 60 mL/min/1.73 m2 (GFR category G3a-G5)",
@@ -349,7 +335,6 @@ rule("tumor_lysis_syndrome", "cairo_bishop_laboratory_tls", "diagnostic_criterio
      ANY(ALL(L("uric_acid", ">=", 8.0, "mg/dL"), L("potassium", ">=", 6.0, "mmol/L")),
          ALL(L("uric_acid", ">=", 8.0, "mg/dL"), L("phosphate", ">=", 4.5, "mg/dL")),
          ALL(L("uric_acid", ">=", 8.0, "mg/dL"), L("corrected_calcium_for_serum_albumin", "<=", 7.0, "mg/dL")),
-         # K + P without hyperuricaemia is the everyday CKD-MBD pattern; demand a tumour-burden marker
          ALL(L("potassium", ">=", 6.0, "mmol/L"), L("phosphate", ">=", 4.5, "mg/dL"), L("lactate_dehydrogenase", ">", 500, "U/L")),
          ALL(L("phosphate", ">=", 4.5, "mg/dL"), L("corrected_calcium_for_serum_albumin", "<=", 7.0, "mg/dL"), L("lactate_dehydrogenase", ">", 500, "U/L"))),
      "cairo_bishop_2004", "Laboratory TLS - Cairo-Bishop (>= 2 of: UA >= 8, K >= 6, P >= 4.5 adult, Ca <= 7)",
@@ -365,7 +350,6 @@ rule("rhabdomyolysis", "ck_5000_aki_risk", "staging_severity", True,
      "rhabdo_review_2020", "Rhabdomyolysis - CK >= 5,000 U/L: high AKI risk",
      "CK >= 5,000 U/L identifies patients at high risk of pigment nephropathy; aggressive isotonic fluids and electrolyte monitoring are indicated.")
 
-# ---- GI / liver -----------------------------------------------------------------
 rule("acute_pancreatitis", "atlanta_2012_lipase_3x_uln", "diagnostic_criterion", True,
      L("lipase", ">=", 180, "U/L"),
      "atlanta_pancreatitis_2012", "Acute pancreatitis - lipase >= 3x ULN (Atlanta 2012)",
@@ -437,7 +421,7 @@ rule("primary_biliary_cholangitis", "easl_2017_ama_alp", "diagnostic_criterion",
      "easl_pbc_2017", "PBC - AMA positive (>= 1:40) with cholestatic ALP > 1.5x ULN",
      "EASL 2017: PBC is diagnosed with cholestatic ALP elevation plus AMA >= 1:40 (or PBC-specific ANA sp100/gp210); biopsy not required.")
 rule("autoimmine_hepatitis_placeholder", "skip", "screening", False, L("albumin", ">", 0), "aasld_aih_2019", "", "")
-CURATED.pop()  # (placeholder removed - keeps the numbering stable in the audit)
+CURATED.pop()
 rule("autoimmune_hepatitis", "aasld_2019_sma_ana_igg", "diagnostic_criterion", False,
      ALL(ANY(L("smooth_muscle_antibody", ">=", 40, "titer"), L("antinuclear_antibody_titer", ">=", 40, "titer")),
          L("alanine_aminotransferase", ">", 90, "U/L")),
@@ -471,7 +455,6 @@ rule("acute_liver_failure", "aasld_2011_inr_encephalopathy_surrogate", "diagnost
      "ALF = INR >= 1.5 with hepatic encephalopathy within 26 weeks of illness onset in a patient without pre-existing cirrhosis. Encephalopathy is clinical and must be confirmed.",
      ["Encephalopathy cannot be read from laboratory data; without it the pattern is severe acute liver injury (ALI)."])
 
-# ---- Cardiac / vascular -------------------------------------------------------
 rule("acute_myocardial_infarction", "esc_2023_hs_tnt_rule_in", "diagnostic_criterion", True,
      L("high_sensitivity_troponin_t", ">=", 0.052, "ng/mL"),
      "esc_acs_2023", "NSTEMI - hs-cTnT >= 52 ng/L (ESC 0/1-h rule-in level)",
@@ -521,7 +504,6 @@ rule("pulmonary_embolism", "esc_2019_risk_troponin_bnp", "staging_severity", Tru
      "esc_pe_2019", "PE risk stratification - troponin and natriuretic peptide both elevated (intermediate-high risk if PE confirmed)",
      "ESC 2019: in confirmed PE, elevated troponin plus RV dysfunction/NT-proBNP >= 600 pg/mL defines intermediate-high risk.")
 
-# ---- Sepsis / DIC ------------------------------------------------------------------
 rule("sepsis", "sepsis3_lactate_2_with_infection_marker", "diagnostic_criterion", True,
      ALL(L("lactate", ">", 2.0, "mmol/L"), ANY(L("procalcitonin", ">=", 0.5, "ng/mL"), L("blood_culture", "==", 1, "1"), L("white_blood_cell_count", ">", 12, "10*3/uL"), L("white_blood_cell_count", "<", 4, "10*3/uL"))),
      "sepsis3_2016", "Sepsis - hyperlactataemia with infection marker (Sepsis-3 laboratory support)",
@@ -537,7 +519,6 @@ rule("disseminated_intravascular_coagulation", "isth_overt_dic_score_surrogate",
      "ISTH overt DIC score: platelets < 100 (1) / < 50 (2); fibrin marker moderate (2) / strong (3); PT prolonged 3-6 s (1) / > 6 s (2); fibrinogen < 100 mg/dL (1). Score >= 5 = overt DIC. This pattern scores >= 5.",
      ["Requires an underlying disorder known to be associated with DIC."])
 
-# ---- Haematology / oncology ----------------------------------------------------------
 rule("multiple_myeloma", "imwg_2014_flc_ratio_100", "diagnostic_criterion", False,
      ALL(L("free_light_chain_ratio", ">=", 100, "ratio"), L("free_kappa_light_chains", ">=", 10, "mg/dL")),
      "imwg_2014", "Multiple myeloma - involved/uninvolved FLC ratio >= 100 with involved FLC >= 100 mg/L (SLiM biomarker)",
@@ -644,7 +625,6 @@ rule("antiphospholipid_syndrome", "acr_eular_2023_lab_criteria", "diagnostic_cri
      "ACR/EULAR 2023: moderate (40-79 U) or high (>= 80 U) aCL/anti-B2GPI IgG, or persistent lupus anticoagulant, on two occasions >= 12 weeks apart, with a clinical criterion.",
      ["Persistence at >= 12 weeks and a clinical event (thrombosis/pregnancy morbidity) are required."])
 
-# ---- Thyroid ---------------------------------------------------------------------
 rule("primary_hypothyroidism", "ata_2014_overt", "diagnostic_criterion", False,
      ALL(L("thyroid_stimulating_hormone", ">", 10.0, "u[IU]/mL"), L("free_thyroxine", "<", 0.8, "ng/dL")),
      "ata_hypothyroid_2014", "Overt primary hypothyroidism - TSH > 10 mIU/L with low free T4",
@@ -670,7 +650,6 @@ rule("hashimoto_thyroiditis", "ata_2014_tpo_positive_hypothyroid", "diagnostic_c
      "ata_hypothyroid_2014", "Hashimoto thyroiditis - TPO antibody positive with elevated TSH",
      "Positive TPOAb with raised TSH indicates autoimmune (Hashimoto) hypothyroidism; TPOAb positivity alone predicts progression (~4 %/year).")
 
-# ---- Adrenal / pituitary ------------------------------------------------------------
 rule("cushing_syndrome", "endo_2008_first_line_tests", "diagnostic_criterion", False,
      ANY(L("cortisol_after_dexamethasone", ">", 1.8, "ug/dL"), L("urine_free_cortisol_24h", ">", 100, "ug/24h"), L("cortisol_salivary_midnight", ">", 4.0, "nmol/L")),
      "endo_cushing_2008_2021", "Cushing syndrome - abnormal first-line test (1-mg DST > 1.8 ug/dL, UFC > ULN, LNSC > 145 ng/dL)",
@@ -746,7 +725,6 @@ rule("osteomalacia", "vitamin_d_12_alp_phosphate", "diagnostic_criterion", False
      "endo_vitamin_d_2011_2024", "Osteomalacia - severe vitamin D deficiency with raised ALP and hypophosphataemia/secondary hyperparathyroidism",
      "25-OH-D < 12 ng/mL with elevated ALP, low/low-normal phosphate and secondary hyperparathyroidism is the biochemical signature of nutritional osteomalacia.")
 
-# ---- Electrolytes / acid-base -----------------------------------------------
 rule("hyperkalemia", "kdigo_2020_severe", "staging_severity", True, L("potassium", ">=", 6.0, "mmol/L"),
      "kdigo_potassium_2020", "Severe hyperkalaemia - potassium >= 6.0 mmol/L", "K >= 6.0 mmol/L (or any level with ECG changes) requires immediate ECG, membrane stabilisation and shifting therapy; exclude haemolysed sample.")
 rule("hypokalemia", "kdigo_2020_severe", "staging_severity", True, L("potassium", "<", 2.5, "mmol/L"),
@@ -786,7 +764,6 @@ rule("diabetes_insipidus_central", "ese_2022_hypernatremia_dilute_urine", "diagn
      "ese_dm_insipidus_2022", "AVP deficiency / DI - hypernatraemic hyperosmolality with inappropriately dilute urine",
      "Serum osmolality > 295 mOsm/kg (Na > 145) with urine osmolality < 300 mOsm/kg indicates diabetes insipidus; hypertonic saline-stimulated copeptin < 4.9 pmol/L confirms central DI.")
 
-# ---- Rheumatology -------------------------------------------------------------------
 rule("systemic_lupus_erythematosus", "eular_acr_2019_ana_dsdna_complement", "diagnostic_criterion", False,
      ALL(L("antinuclear_antibody_titer", ">=", 80, "titer"), ANY(L("double_stranded_dna_antibody", ">", 30, "IU/mL"), ALL(L("complement_c3", "<", 90, "mg/dL"), L("complement_c4", "<", 10, "mg/dL")))),
      "eular_acr_sle_2019", "SLE - ANA >= 1:80 (entry) with anti-dsDNA or low C3 and C4 (immunology domains)",
@@ -820,7 +797,6 @@ rule("sjogren_syndrome", "acr_eular_2016_high_titre_ana_prompt", "screening", Fa
      "acr_sjogren_2016", "High-titre ANA - prompt anti-SSA/Ro (SSA) and anti-SSB/La testing",
      "High-titre speckled ANA is not a classification item for Sjogren; it should prompt anti-SSA/Ro testing, which is the serological criterion.", specificity="general")
 
-# ---- Infectious disease ----------------------------------------------------------
 rule("malaria", "who_2023_parasitological_confirmation", "diagnostic_criterion", True,
      ANY(L("malaria_parasite_blood_smear", "==", 1, "1"), L("malaria_rapid_antigen", "==", 1, "1")),
      "who_malaria_2023", "Malaria - parasitological confirmation (microscopy or RDT positive)",
@@ -852,7 +828,6 @@ rule("covid_19", "sars_cov_2_rna_detected", "diagnostic_criterion", False,
      L("sars_cov_2_rna", ">", 0, "[IU]/mL"),
      "who_malaria_2023", "COVID-19 - SARS-CoV-2 RNA detected (NAAT)", "Detection of SARS-CoV-2 RNA by RT-PCR/NAAT confirms infection; lymphopenia, raised CRP, ferritin, D-dimer and LDH grade severity.")
 
-# ---- Toxicology ------------------------------------------------------------------
 rule("lead_poisoning", "cdc_2021_blood_lead_reference", "screening", False, L("blood_lead", ">=", 3.5, "ug/dL"),
      "cdc_lead_2021", "Elevated blood lead - >= 3.5 ug/dL (CDC 2021 reference value)", "CDC blood lead reference value 3.5 ug/dL (children); >= 45 ug/dL requires chelation; >= 70 ug/dL is a medical emergency.", specificity="general")
 rule("lead_poisoning", "cdc_chelation_45", "diagnostic_criterion", True, L("blood_lead", ">=", 45, "ug/dL"),
@@ -880,7 +855,6 @@ rule("ethylene_glycol_poisoning", "osmolal_gap_toxic_alcohol", "screening", True
      "acep_toxicology_consensus", "Toxic alcohol pattern - osmolal gap > 10 with high anion-gap acidosis",
      "Ethylene glycol: osmolal gap early, anion-gap acidosis later, calcium oxalate crystalluria, hypocalcaemia and AKI.", specificity="general")
 
-# ---- Obstetric / neonatal / metabolic ------------------------------------------
 rule("preeclampsia", "acog_2020_proteinuria", "diagnostic_criterion", False,
      ANY(L("urine_protein_to_creatinine_ratio", ">=", 300, "mg/g"), L("urine_protein_24_hour", ">=", 300, "mg/24h")),
      "acog_preeclampsia_2020", "Pre-eclampsia - proteinuria >= 300 mg/24 h or UPCR >= 0.3 mg/mg (with new hypertension >= 20 weeks)",
@@ -922,9 +896,6 @@ rule("metabolic_syndrome", "atp3_2005_three_of_five_lab", "diagnostic_criterion"
      "AHA/NHLBI ATP III: >= 3 of waist circumference, TG >= 150 mg/dL, HDL < 40 (men) / < 50 (women) mg/dL, BP >= 130/85, FPG >= 100 mg/dL. The three laboratory components alone satisfy the definition.",
      ["HDL cut-off is sex-specific; the second branch (HDL < 50) applies to women only."])
 
-# --------------------------------------------------------------------------
-# main
-# --------------------------------------------------------------------------
 
 def main(dry_run: bool = False) -> None:
     reg = load_br(SRC)
@@ -938,9 +909,6 @@ def main(dry_run: bool = False) -> None:
     changes = collections.Counter()
     detail: dict[str, list] = collections.defaultdict(list)
 
-    # ---- idempotence: a previous curation pass is stripped and re-applied ------
-    # (the registry may already be 13.x; curated rules are regenerated from the
-    # DSL below so DSL edits always win, and data repairs are no-ops second time)
     prev = [rid for rid in rules if rid.endswith("_cur13")]
     for rid in prev:
         did = rules[rid].get("disease_id")
@@ -955,7 +923,6 @@ def main(dry_run: bool = False) -> None:
         changes["previous_curated_rules_regenerated"] = len(prev)
         audit["note"] = "re-run over an already-curated registry: data-repair counts are incremental, curated rules regenerated"
 
-    # ---- 0. structural repairs -------------------------------------------------
     for did, d in diseases.items():
         if "identity" not in d:
             d["identity"] = {"disease_id": did, "name_en": did.replace("_", " ").capitalize(), "name_fa": did,
@@ -979,7 +946,6 @@ def main(dry_run: bool = False) -> None:
             changes["rule_retired_empty_expression"] += 1
             detail["rule_retired_empty_expression"].append(rid)
 
-    # ---- 1. feature-id consolidation ---------------------------------------
     for rid, r in rules.items():
         for lf in leaves(r["expression"]):
             fid = lf["feature_id"]
@@ -989,7 +955,6 @@ def main(dry_run: bool = False) -> None:
         if r.get("_feature_ids"):
             r.pop("_feature_ids", None)
 
-    # ---- 2. unit normalisation ---------------------------------------------------
     for rid, r in rules.items():
         for lf in leaves(r["expression"]):
             key = (lf["feature_id"], lf.get("unit"))
@@ -1000,7 +965,6 @@ def main(dry_run: bool = False) -> None:
                 lf["unit"] = unit
                 changes["leaf_unit_normalised"] += 1
 
-    # ---- 3. absurd pH multiples / wrong analyte --------------------------------
     for rid, r in rules.items():
         for lf in leaves(r["expression"]):
             if lf["feature_id"] == "arterial_ph" and isinstance(lf.get("value"), (int, float)):
@@ -1012,7 +976,6 @@ def main(dry_run: bool = False) -> None:
                     lf["value"] = 7.20
                     changes["ph_threshold_repaired"] += 1
                     detail["ph_threshold_repaired"].append(rid)
-            # "no haematuria" encoded as blood RBC count == 0 -> urine RBC
             if (lf["feature_id"] == "red_blood_cell_count" and lf.get("operator") == "=="
                     and lf.get("value") in (0, 0.0) and "hematuria" in rid):
                 lf["feature_id"] = "urine_rbc_count"
@@ -1021,14 +984,12 @@ def main(dry_run: bool = False) -> None:
                 lf["unit"] = "/HPF"
                 changes["hematuria_leaf_repaired"] += 1
                 detail["hematuria_leaf_repaired"].append(rid)
-            # acetaminophen "> 0" as diagnostic -> detectable screen handled by curated set
             if lf["feature_id"] == "acetaminophen" and lf.get("value") in (0, 0.0) and lf.get("operator") == ">":
                 lf["value"] = 10.0
                 r["rule_type"] = "screening"
                 r["specificity"] = "general"
                 changes["acetaminophen_rule_repaired"] += 1
 
-    # ---- 4. template-stamp detection ---------------------------------------------
     sig_diseases: dict[tuple, set] = collections.defaultdict(set)
     for rid, r in rules.items():
         if r.get("rule_type") != "diagnostic_criterion":
@@ -1052,7 +1013,6 @@ def main(dry_run: bool = False) -> None:
         did = r["disease_id"]
         fid = lf["feature_id"]
         entity_defined = ROUTINE_DEFINED_RE.search(did) is not None
-        # the feature actually names the entity (hyperkalaemia <- potassium)
         stem = re.sub(r"(_total|_calculated|_count|_absolute|_percent|_serum|_plasma)$", "", fid)
         names_entity = stem[:5] in did or did[:6] in fid
         if names_entity:
@@ -1074,7 +1034,6 @@ def main(dry_run: bool = False) -> None:
     detail["stamped_rules_retired"] = stamped_retired
     detail["stamped_rules_demoted_to_screening"] = stamped_demoted
 
-    # ---- 5. routine-only "diagnostic criteria" for specific aetiologies ---------------
     demoted_routine = []
     for rid, r in rules.items():
         if not r.get("executable", True) or r.get("rule_type") != "diagnostic_criterion":
@@ -1096,7 +1055,6 @@ def main(dry_run: bool = False) -> None:
     changes["routine_only_diagnostic_demoted"] = len(demoted_routine)
     detail["routine_only_diagnostic_demoted"] = demoted_routine
 
-    # ---- 6. urgent flag on critical thresholds ----------------------------------------
     urgent_set = []
     for rid, r in rules.items():
         if r.get("urgent") or not r.get("executable", True):
@@ -1118,7 +1076,6 @@ def main(dry_run: bool = False) -> None:
     changes["urgent_flag_set_on_critical_threshold"] = len(urgent_set)
     detail["urgent_flag_set_on_critical_threshold"] = urgent_set
 
-    # ---- 7. curated rules --------------------------------------------------------------------
     gs = reg["guideline_sources"]
     for sid, (org, title, year, url) in SOURCES.items():
         if sid not in gs:
@@ -1147,7 +1104,7 @@ def main(dry_run: bool = False) -> None:
             if lf.get("unit") is None:
                 lf["unit"] = canon or "1"
             elif lf["unit"] == "1":
-                pass  # qualitative
+                pass
             elif acc and lf["unit"] not in acc:
                 bad.append(f"{lf['feature_id']}:{lf['unit']} not in {sorted(acc)}")
         if bad:
@@ -1179,7 +1136,6 @@ def main(dry_run: bool = False) -> None:
     detail["curated_rules_added"] = added
     detail["curated_rules_skipped"] = skipped
 
-    # ---- 8. layers / feature_links rebuild --------------------------------------------
     for did, d in diseases.items():
         layers = {"screening": [], "diagnostic_criterion": [], "exclusion_criterion": [], "staging_severity": []}
         req, opt, exc = [], [], []
@@ -1199,8 +1155,6 @@ def main(dry_run: bool = False) -> None:
                 opt += fids
         req_s = list(dict.fromkeys(req))
         opt_s = [f for f in dict.fromkeys(opt) if f not in req_s]
-        # Only non-routine, non-required markers may refute (engine treats
-        # `excluded` as direction-agnostic abnormality -> conflicting_data).
         exc_s = [f for f in dict.fromkeys(exc) if f not in req_s and f not in opt_s and f not in ROUTINE]
         old = d.get("feature_links") or {}
         new = {"required": req_s, "optional": opt_s, "excluded": exc_s}
@@ -1214,7 +1168,6 @@ def main(dry_run: bool = False) -> None:
         cov["status"] = "executable_rule_active" if n_exec else "catalogued_only"
         cov["reason"] = f"{n_exec} executable guideline rule(s)."
 
-    # ---- 9. metadata / QA ----------------------------------------------------------------
     rt = collections.Counter(r["rule_type"] for r in rules.values())
     sp = collections.Counter(r.get("specificity") for r in rules.values())
     n_exec = sum(1 for r in rules.values() if r.get("executable", True))

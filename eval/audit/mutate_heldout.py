@@ -100,7 +100,7 @@ def run_pool(name, reg, feats, seeds, rng):
     rows = []
     for fam in FAMILIES:
         n, da, by = tab[fam]; lo, hi = wilson(da, n)
-        if fam == "H4":   # specificity probe: report fraction NOT flagged
+        if fam == "H4":
             k = n - da; lo, hi = wilson(k, n)
             rows.append({"fam": fam, "n": n, "unflagged": k, "specificity": round(k / n, 3) if n else None, "ci": [lo, hi], "by_detector": dict(by)})
         else:
@@ -130,7 +130,6 @@ def main():
     out_dir = a[a.index("--out-dir") + 1] if "--out-dir" in a else HERE
     feats = load_br(os.path.join(HG, "HEMOGLYPH_FEATURE_REGISTRY.json.br"))["features"]
     results = []
-    # P1
     reg = load_br(p1); R = reg["rules"]
     pool = sorted(rid for rid, r in R.items() if r.get("executable") and not rid.startswith("co_")
                   and not str(r.get("status", "")).startswith("curated") and not (r.get("provenance") or {}).get("verified_quote")
@@ -138,7 +137,6 @@ def main():
     rng = random.Random(20261028); seeds = sorted(rng.sample(pool, 300))
     print("P1 eligible", len(pool), "sampled", len(seeds)); results.append(run_pool("P1 registry 15.3.0, AI-drafted non-curated rules", reg, feats, seeds, rng))
     del reg, R
-    # P2
     reg = json.load(gzip.open(p2, "rt")); R = reg["rules"]
     seeds = sorted(rid for rid, r in R.items() if r.get("executable") and numeric_leaf_paths(r.get("expression")))
     print("P2 seeds", len(seeds)); results.append(run_pool("P2 external LLM corpus (Note 17)", reg, feats, seeds, random.Random(20261028)))
