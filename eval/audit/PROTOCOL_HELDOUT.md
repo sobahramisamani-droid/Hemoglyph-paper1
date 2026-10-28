@@ -61,3 +61,11 @@ to bound what the static layer *cannot* see, not to produce a flattering table.
 - No detector will be modified in response to these results in this paper. If a result motivates a new detector, it
   is future work and will be labelled as such.
 - The study does not test clinical correctness of any rule; it tests whether the audit notices a *change*.
+
+## 6. Amendment log
+
+- **2026-10-28, after the first run:** H4 as written was applicable to 0 seeds, because almost every seed already
+  states its threshold in the canonical unit (the `CONV` table maps *non-canonical → canonical*). The family was
+  extended to convert canonical seeds *to* an accepted alternative unit (value ÷ factor). This changes only the
+  applicability of the specificity probe; no recall family and no detector was touched. Both runs' other rows were
+  identical.

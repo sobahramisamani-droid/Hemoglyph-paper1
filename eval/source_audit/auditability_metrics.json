@@ -1,0 +1,1899 @@
+{
+"n": 200,
+"definitions": "Two-level auditability metrics for the frozen 200-rule concordance sample (Supplementary Note 8), computed\nfrom the committed files only \u2014 no new rating, no new retrieval.\n\nLevel 1  Locator granularity (from the URL string of every cited source):\n           doi_or_pmc (document-level persistent identifier) | document_page (a specific page/PDF) | organisation_landing.\nLevel 2  Source retrievability: at least one cited URL returned document text in the frozen retrieval log\n           (source_access_status.json: ok == True and >= 500 characters).\nLevel 3  Statement located = rule verifiable: the rater found the statement (verdict CONCORDANT or DISCORDANT).\n           Otherwise the frozen reason code of the UNRESOLVABLE verdict is kept.\n\nVerifiable Evidence Coverage (VEC) = rules whose statement was located / all sampled rules (denominator = n sampled,\nnot the retrievable subset). Wilson 95% CIs. Output: auditability_metrics.{json,md}.",
+"by_stratum": {
+"A": {
+"n": 100,
+"retrievable": 92,
+"located": 8,
+"C": 1,
+"D": 7,
+"U": 92,
+"VEC": 0.08,
+"VEC_ci": [
+0.04109296948581091,
+0.14998266879403072
+]
+},
+"B1": {
+"n": 50,
+"retrievable": 47,
+"located": 7,
+"C": 0,
+"D": 7,
+"U": 43,
+"VEC": 0.14,
+"VEC_ci": [
+0.06950745262022862,
+0.2618645719852809
+]
+},
+"B2": {
+"n": 50,
+"retrievable": 49,
+"located": 1,
+"C": 0,
+"D": 1,
+"U": 49,
+"VEC": 0.02,
+"VEC_ci": [
+0.0035391680889764604,
+0.10495686471836953
+]
+},
+"all": {
+"n": 200,
+"retrievable": 188,
+"located": 16,
+"C": 1,
+"D": 15,
+"U": 184,
+"VEC": 0.08,
+"VEC_ci": [
+0.04984015517626642,
+0.12599048979512317
+]
+}
+},
+"by_locator": {
+"doi_or_pmc": {
+"n": 70,
+"retrievable": 70,
+"located": 7
+},
+"document_page": {
+"n": 89,
+"retrievable": 85,
+"located": 9
+},
+"organisation_landing": {
+"n": 35,
+"retrievable": 33,
+"located": 0
+}
+},
+"reasons_by_locator": {
+"doi_or_pmc": {
+"abstract_or_title_only": 55,
+"landing_page_or_full_text_without_the_statement": 8
+},
+"document_page": {
+"landing_page_or_full_text_without_the_statement": 31,
+"no_text_retrieved": 4,
+"generic_methodological_source_cannot_contain_statement": 45
+},
+"organisation_landing": {
+"landing_page_or_full_text_without_the_statement": 32,
+"no_text_retrieved": 2,
+"generic_methodological_source_cannot_contain_statement": 1
+}
+},
+"reasons_all": {
+"landing_page_or_full_text_without_the_statement": 71,
+"no_text_retrieved": 12,
+"abstract_or_title_only": 55,
+"generic_methodological_source_cannot_contain_statement": 46
+},
+"per_rule": [
+{
+"rule_id": "cushing_syndrome_screening_pattern_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypernatremia_severe_155_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "digoxin_toxicity_digoxin_2_0_cur13",
+"stratum": "A",
+"best_locator": "none",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "thiamine_deficiency_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "psgn_low_c3_haematuria_v14",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "chronic_kidney_disease_kdigo_2024_albuminuria_a2_cur13",
+"stratum": "A",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "CONCORDANT",
+"reason": ""
+},
+{
+"rule_id": "acute_heart_failure_support_pattern_esc_2021_acute_ntprobnp_age_tiered_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "pseudohypoparathyroidism_hypocalcemia_high_pth_normal_renal_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "non_thyroidal_illness_syndrome_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "mixed_dyslipidemia_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "multiple_myeloma_imwg_2014_m_spike_crab_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hemolysis_related_hyperbilirubinemia_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "insulinoma_support_pattern_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "ulcerative_colitis_ecco_2019_calprotectin_active_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "vitamin_b12_deficiency_bsh_2014_b12_200_mma_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "pheochromocytoma_endo_2014_metanephrines_3x_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "autoimmune_hemolytic_anemia_eha_2023_dat_positive_hemolysis_cur13_f13_3",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "tachycardia_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "cryoglobulinemia_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "helicobacter_pylori_infection_acg_2024_active_infection_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypomagnesemia_severe_1_2_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "masld_alt_above_acg_uln_female_with_cardiometabolic_v14",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "covid_19_reanchor_diag_v13_4_graft",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "type_1_diabetes_autoantibody_positivity_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "document_page",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "thrombotic_thrombocytopenic_purpura_isth_2020_mahat_pattern_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "carbon_monoxide_poisoning_cohb_10_percent_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "preeclampsia_acog_2020_severe_features_lab_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hemolytic_anemia_eha_2023_hemolysis_triad_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hepatitis_c_aasld_idsa_2023_antibody_screen_cur13",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "septic_shock_severe_lactic_acidosis_sepsis3_lactate_4_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "preeclampsia_acog_2020_proteinuria_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "familial_hypercholesterolemia_dlcn_ldl_190_possible_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "tumor_lysis_syndrome_cairo_bishop_laboratory_tls_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "polycythemia_vera_who_2022_hb_jak2_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "immune_mediated_necrotizing_myopathy_support_pattern_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hemolytic_anemia_eha_2023_hemolysis_triad_cur13_f13_3",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hiv_viremia_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "female_hypogonadotropic_hypogonadism_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "ethylene_glycol_poisoning_osmolal_gap_toxic_alcohol_cur13",
+"stratum": "A",
+"best_locator": "none",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "alcoholic_ketoacidosis_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "gestational_diabetes_mellitus_iadpsg_2010_one_step_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "primary_hypothyroidism_ata_2014_overt_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "rubella_susceptibility_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "platelet_function_disorder_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "tuberculosis_nice_2016_igra_positive_cur13",
+"stratum": "A",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "celiac_disease_espghan_2020_ttg_10x_uln_cur13",
+"stratum": "A",
+"best_locator": "none",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "hereditary_angioedema_laboratory_pattern_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "sickle_cell_disease_ash_2020_hb_s_electrophoresis_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "subclinical_hypothyroidism_ata_2014_subclinical_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "lead_poisoning_cdc_chelation_45_cur13",
+"stratum": "A",
+"best_locator": "document_page",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "rickets_support_pattern_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "opportunistic_infection_immunodeficiency_pattern_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypertriglyceridemia_eas_2019_severe_pancreatitis_risk_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "heart_failure_esc_2021_ntprobnp_elevated_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hyperprolactinemia_pituitary_2023_prolactin_elevated_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "systemic_lupus_erythematosus_eular_acr_2019_ana_dsdna_complement_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "congenital_adrenal_hyperplasia_screening_pattern_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "acute_pancreatitis_atlanta_2012_lipase_3x_uln_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "celiac_disease_serologic_pattern_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "iodine_deficiency_support_pattern_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "thrombotic_microangiopathy_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "iron_deficiency_anemia_bsg_2021_inflammation_adjusted_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "refeeding_endocrine_electrolyte_pattern_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "cushing_syndrome_endo_2008_first_line_tests_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyperthyroidism_ata_2016_overt_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "multiple_myeloma_support_pattern_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "diabetes_insipidus_central_ese_2022_hypernatremia_dilute_urine_cur13",
+"stratum": "A",
+"best_locator": "none",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "starvation_ketoacidosis_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "addison_disease_endo_2016_morning_cortisol_acth_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "selenium_deficiency_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "psgn_low_c3_haematuria_renal_impairment_v14",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "sjogren_syndrome_acr_eular_2016_high_titre_ana_prompt_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "autoimmune_hepatitis_aasld_2019_sma_ana_igg_cur13",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hepatitis_a_igm_anti_hav_positive_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "familial_hypercholesterolemia_dlcn_ldl_330_probable_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "masld_exclusion_viral_hepatitis_v14",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "infectious_mononucleosis_vca_igm_or_heterophile_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "acquired_hemophilia_a_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "mixed_metabolic_and_respiratory_alkalosis_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyponatremia_ese_2014_siadh_pattern_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "pulmonary_embolism_esc_2019_d_dimer_positive_screen_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "siadh_ese_2014_full_criteria_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hyperkalemia_kdigo_2020_severe_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "monoclonal_gammopathy_of_undetermined_significance_imwg_2014_mgus_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "carbamazepine_toxicity_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "primary_aldosteronism_endo_2016_arr_aldosterone_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "cholestatic_liver_injury_pattern_easl_2009_alp_ggt_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "rhabdomyolysis_ck_5000_aki_risk_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "essential_thrombocythemia_who_2022_platelets_450_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "elevated_prolactin_macroprolactin_reanchor_diag_v13_4_graft",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "malaria_who_2023_parasitological_confirmation_cur13",
+"stratum": "A",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "metabolic_syndrome_atp3_2005_three_of_five_lab_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "atherogenic_dyslipidemia_reanchor_scre_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "graves_disease_ata_2016_trab_positive_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "antisynthetase_syndrome_serologic_pattern_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "low_molecular_weight_heparin_accumulation_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "organisation_landing",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "diabetes_mellitus_ada_2025_random_glucose_symptomatic_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "factor_vii_deficiency_reanchor_diag_v13_4",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "hyperosmolar_hyperglycemic_state_ada_easd_2024_hhs_ketoacidosis_exclusion_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "nephrotic_syndrome_kdigo_2021_nephrotic_range_cur13",
+"stratum": "A",
+"best_locator": "doi_or_pmc",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "abstract_or_title_only"
+},
+{
+"rule_id": "diabetes_insipidus_nephrogenic_hypokalemia_risk",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "pernicious_anemia_screening_5_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "warm_autoimmune_hemolytic_anemia_hb_male_anemia_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyponatremia_hyperkalemia_pattern_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "acute_kidney_injury_v1_f13_3",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "hyponatremia_pattern_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "type_1_diabetes_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyponatremia_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "type_1_diabetes_staging_severity_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypokalemia_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "aplastic_anemia_hb_male_anemia_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "acute_pancreatitis_alt_hepatitis_screen_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "severe_hyponatremia_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "autoimmune_hemolytic_anemia_hb_male_anemia_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "severe_hypokalemia_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "protein_energy_malnutrition_screening_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "sepsis_screening_3_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "pseudohyponatremia_screen_p131",
+"stratum": "B1",
+"best_locator": "none",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "hyperinsulinemic_hypoglycemia_pattern_screening_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "megaloblastic_anemia_vitamin_b12_deficiency_hb_male_anemia_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "iron_deficiency_anemia_v1_f13_3",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "protein_energy_malnutrition_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "diabetes_insipidus_support_pattern_guideline_criterion_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "hypocalcemia_exclusion_normal_calcium_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "sepsis_staging_severity_3_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyperkalemia_pattern_staging_severity_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "hypokalemia_alkalosis_pattern_screening_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "acute_pancreatitis_total_bilirubin_jaundice_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "diamond_blackfan_anemia_screening_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "anemia_of_prematurity_screening_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyperosmolar_hyperglycemia_pattern_screening_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "gestational_diabetes_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypomagnesemia_pattern_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "hemolytic_anemia_hb_male_anemia_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "neonatal_hypoglycemia_pes_2015_v2",
+"stratum": "B1",
+"best_locator": "none",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "iron_deficiency_anemia_hb_male_anemia_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypokalemia_alkalosis_pattern_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypernatremia_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "diabetes_insipidus_screening_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyperkalemia_acidosis_pattern_screening_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "iron_refractory_iron_deficiency_anemia_staging_severity_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "gestational_diabetes_screening_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hyperkalemia_pattern_diagnostic_criterion_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "sepsis_support_pattern_exclusion_no_inflammatory_response_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypernatremia_pattern_screening_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "megaloblastic_anemia_b12_v1_f13_3",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "hypokalemia_pattern_screening_1_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "megaloblastic_anemia_hb_male_anemia_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "protein_energy_malnutrition_exclusion_criterion_2_v1",
+"stratum": "B1",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "congenital_dyserythropoietic_anemia_screening_1_v1",
+"stratum": "B1",
+"best_locator": "organisation_landing",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "co_decreased_urine_magnesium_24h_with_elevated_urine_osmolar_gap_screening_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_vitamin_e_alpha_tocopherol_serum_with_elevated_zeaxanthin_screening_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "sunflower_seed_allergy_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "pregabalin_toxicity_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_arterial_pco2_with_decreased_arterial_ph_staging_severity_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_s100_protein_with_decreased_serum_free_light_chain_kappa_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "ckd_stage_g2_hypokalemia_risk_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": true,
+"verdict": "DISCORDANT",
+"reason": ""
+},
+{
+"rule_id": "co_elevated_cystathionine_plasma_with_elevated_cysteine_plasma_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_uroporphyrin_urine_with_elevated_visceral_adiposity_index_staging_severity_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "decreased_urine_magnesium_24h_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "quantiferon_tb_gold_plus_seropositivity_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "co_elevated_amylase_with_elevated_ascitic_fluid_albumin_gradient_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_sorbitol_dehydrogenase_with_elevated_triose_phosphate_isomerase_staging_severity_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "elevated_basophils_percent_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_albumin_with_decreased_amylase_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_hypoxanthine_serum_with_decreased_isoleucine_plasma_screening_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "elevated_apolipoprotein_c_i_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_total_testosterone_with_elevated_total_thyroxine_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_total_immunoglobulin_m_with_decreased_transforming_growth_factor_beta_1_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_tubular_reabsorption_of_phosphate_with_decreased_urea_screening_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_heart_type_fatty_acid_binding_protein_with_elevated_high_sensitivity_troponin_t_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_protein_z_with_decreased_prothrombin_index_screening_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_fecal_osmotic_gap_with_elevated_hydrogen_breath_test_staging_severity_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_urine_microalbumin_24h_with_decreased_urine_oxalate_24h_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_tissue_plasminogen_activator_activity_with_elevated_von_willebrand_factor_activity_staging_severity_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_follicle_stimulating_hormone_with_elevated_glucagon_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_alanine_plasma_with_decreased_anion_gap_staging_severity_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_serum_zinc_with_elevated_synovial_fluid_wbc_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_activated_partial_thromboplastin_time_with_decreased_von_willebrand_factor_antigen_screening_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_serum_zinc_with_decreased_sodium_screening_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_serum_amyloid_p_component_with_elevated_soluble_st2_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_arterial_blood_ph_with_decreased_arterial_oxygen_content_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "nasopharyngeal_carcinoma_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "landing_page_or_full_text_without_the_statement"
+},
+{
+"rule_id": "co_elevated_fractional_excretion_of_phosphate_with_elevated_tubular_reabsorption_of_phosphate_screening_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_basophils_percent_with_elevated_cd55_cd59_pnh_flow_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_complement_c1q_with_decreased_complement_c3_staging_severity_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_immature_platelet_fraction_with_elevated_mean_corpuscular_hemoglobin_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "glycosuria_pattern_screening_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": false,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "no_text_retrieved"
+},
+{
+"rule_id": "co_elevated_ferritin_with_decreased_fluoride_urine_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_alkaline_phosphatase_with_elevated_alpha_1_antitrypsin_serum_screening_2_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_brain_derived_neurotrophic_factor_with_decreased_c1_esterase_inhibitor_functional_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_neutrophils_percent_with_elevated_p50_oxygen_hemoglobin_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_protein_s_activity_functional_with_elevated_protein_z_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_urine_prostaglandin_e2_with_elevated_visceral_adiposity_index_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "elevated_hdl_subfraction_2_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_total_iron_binding_capacity_with_elevated_unsaturated_iron_binding_capacity_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_decreased_factor_ix_activity_with_decreased_fibrinogen_diagnostic_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_prothrombin_fragment_1_2_with_elevated_thrombin_antithrombin_complex_screening_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "co_elevated_high_sensitivity_troponin_t_with_elevated_mmp_9_staging_severity_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+},
+{
+"rule_id": "elevated_urine_uric_acid_creatinine_ratio_exclusion_criterion_1_v1",
+"stratum": "B2",
+"best_locator": "document_page",
+"retrievable": true,
+"located": false,
+"verdict": "UNRESOLVABLE",
+"reason": "generic_methodological_source_cannot_contain_statement"
+}
+]
+}
