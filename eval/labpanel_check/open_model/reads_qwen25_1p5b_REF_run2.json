@@ -1,0 +1,1278 @@
+{
+"REF:1081610": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypovolemia",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+}
+],
+"REF:1260940": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.95
+}
+],
+"REF:1307826": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.9
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.8
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.7
+},
+{
+"name": "Acute liver failure",
+"probability": 0.6
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.5
+},
+{
+"name": "Acute coronary syndrome",
+"probability": 0.4
+},
+{
+"name": "Acute myocardial infarction",
+"probability": 0.3
+},
+{
+"name": "Acute pulmonary embolism",
+"probability": 0.2
+},
+{
+"name": "Acute pancreatitis",
+"probability": 0.1
+}
+],
+"REF:1334350": [
+{
+"name": "Disseminated Intravascular Coagulation (DIC)",
+"probability": 0.95
+}
+],
+"REF:1712442": [
+{
+"name": "Acute renal failure",
+"probability": 0.95
+},
+{
+"name": "Hypovolemic shock",
+"probability": 0.85
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.8
+},
+{
+"name": "Hypokalemia",
+"probability": 0.7
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.6
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.5
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.4
+},
+{
+"name": "Hypoglycemic coma",
+"probability": 0.3
+},
+{
+"name": "Hypokalemic hypochloremic metabolic acidosis",
+"probability": 0.2
+},
+{
+"name": "Hypokalemic metabolic acidosis",
+"probability": 0.1
+}
+],
+"REF:1785012": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hepatic encephalopathy",
+"probability": 0.85
+},
+{
+"name": "Hepatitis",
+"probability": 0.85
+},
+{
+"name": "Acute pancreatitis",
+"probability": 0.85
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.85
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.85
+}
+],
+"REF:1820689": [
+{
+"name": "Acute Hematopoietic Disorder",
+"probability": 0.9
+},
+{
+"name": "Acute Renal Failure",
+"probability": 0.8
+},
+{
+"name": "Acute Respiratory Distress Syndrome",
+"probability": 0.7
+},
+{
+"name": "Acute Hepatic Failure",
+"probability": 0.6
+},
+{
+"name": "Acute Cardiogenic Shock",
+"probability": 0.5
+},
+{
+"name": "Acute Pancreatitis",
+"probability": 0.4
+},
+{
+"name": "Acute Gastroenteritis",
+"probability": 0.3
+},
+{
+"name": "Acute Hepatitis",
+"probability": 0.2
+},
+{
+"name": "Acute Cerebrovascular Accident",
+"probability": 0.1
+}
+],
+"REF:1855918": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.9
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.9
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.9
+},
+{
+"name": "Hypokalemia",
+"probability": 0.9
+},
+{
+"name": "Acute liver failure",
+"probability": 0.85
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.8
+},
+{
+"name": "Acute coronary syndrome",
+"probability": 0.7
+},
+{
+"name": "Acute pancreatitis",
+"probability": 0.6
+},
+{
+"name": "Acute myocardial infarction",
+"probability": 0.5
+},
+{
+"name": "Acute cholecystitis",
+"probability": 0.4
+},
+{
+"name": "Acute bacterial endocarditis",
+"probability": 0.3
+},
+{
+"name": "Acute pulmonary embolism",
+"probability": 0.2
+}
+],
+"REF:2010574": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypovolemic shock",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+}
+],
+"REF:2103754": [
+{
+"name": "Acute myocardial infarction",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+}
+],
+"REF:2114686": [
+{
+"name": "Acute Coronary Syndrome",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.9
+},
+{
+"name": "Hypokalemia",
+"probability": 0.9
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.9
+},
+{
+"name": "Hypocalcemic Crisis",
+"probability": 0.9
+},
+{
+"name": "Hypokalemic Periodic Paralysis",
+"probability": 0.9
+},
+{
+"name": "Hypomagnesemic Periodic Paralysis",
+"probability": 0.9
+},
+{
+"name": "Hypocalcemic Periodic Paralysis",
+"probability": 0.9
+},
+{
+"name": "Hypokalemic Periodic Paralysis",
+"probability": 0.9
+},
+{
+"name": "Hypomagnesemic Periodic Paralysis",
+"probability": 0.9
+}
+],
+"REF:220469": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+},
+{
+"name": "Acute coronary syndrome",
+"probability": 0.95
+},
+{
+"name": "Acute pancreatitis",
+"probability": 0.95
+},
+{
+"name": "Acute cholecystitis",
+"probability": 0.95
+},
+{
+"name": "Acute myocardial infarction",
+"probability": 0.95
+},
+{
+"name": "Acute pulmonary embolism",
+"probability": 0.95
+},
+{
+"name": "Acute bacterial endocarditis",
+"probability": 0.95
+}
+],
+"REF:2308573": [
+{
+"name": "Thrombocytopenia",
+"probability": 0.9
+},
+{
+"name": "Hemolytic anemia",
+"probability": 0.8
+},
+{
+"name": "Hypokalemia",
+"probability": 0.7
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.6
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.5
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.4
+}
+],
+"REF:2523738": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Acute liver injury",
+"probability": 0.95
+},
+{
+"name": "Acute pulmonary edema",
+"probability": 0.95
+}
+],
+"REF:2587791": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+}
+],
+"REF:2595771": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.9
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.85
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.8
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.7
+},
+{
+"name": "Hypokalemia",
+"probability": 0.6
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.5
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.4
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.3
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.2
+}
+],
+"REF:2596753": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.95
+},
+{
+"name": "Acute myocardial infarction",
+"probability": 0.95
+}
+],
+"REF:260961": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.95
+}
+],
+"REF:264276": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+}
+],
+"REF:2685325": [
+{
+"name": "Acute renal failure",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypovolemia",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+}
+],
+"REF:2695180": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypokalemic periodic paralysis",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypomagnesemic crisis",
+"probability": 0.95
+}
+],
+"REF:2756945": [
+{
+"name": "Acute pancreatitis",
+"probability": 0.95
+},
+{
+"name": "Hepatitis",
+"probability": 0.95
+},
+{
+"name": "Chronic kidney disease",
+"probability": 0.95
+},
+{
+"name": "Diabetes",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+}
+],
+"REF:2786504": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+}
+],
+"REF:2825734": [
+{
+"name": "Thrombocytopenia",
+"probability": 0.95
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypoproteinemia",
+"probability": 0.95
+}
+],
+"REF:2857326": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.9
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.9
+},
+{
+"name": "Acute liver failure",
+"probability": 0.8
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.7
+},
+{
+"name": "Acute coronary syndrome",
+"probability": 0.6
+},
+{
+"name": "Acute pancreatitis",
+"probability": 0.5
+},
+{
+"name": "Acute cholecystitis",
+"probability": 0.4
+},
+{
+"name": "Acute bacterial sepsis",
+"probability": 0.3
+},
+{
+"name": "Acute myocardial infarction",
+"probability": 0.2
+}
+],
+"REF:2886662": [
+{
+"name": "Hyperkalemia",
+"probability": 0.9
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.9
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.9
+},
+{
+"name": "Acute kidney injury",
+"probability": 0.8
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.7
+},
+{
+"name": "Acute liver failure",
+"probability": 0.6
+},
+{
+"name": "Acute coronary syndrome",
+"probability": 0.5
+},
+{
+"name": "Acute pancreatitis",
+"probability": 0.4
+},
+{
+"name": "Acute sepsis",
+"probability": 0.3
+},
+{
+"name": "Acute lymphoblastic leukemia",
+"probability": 0.2
+}
+],
+"REF:3021362": [
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Acute renal failure",
+"probability": 0.85
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.85
+},
+{
+"name": "Metabolic acidosis",
+"probability": 0.85
+},
+{
+"name": "Diabetic ketoacidosis",
+"probability": 0.75
+}
+],
+"REF:310446": [
+{
+"name": "Acute renal failure",
+"probability": 0.95
+},
+{
+"name": "Diabetes mellitus",
+"probability": 0.95
+},
+{
+"name": "Hypoxemia",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+},
+{
+"name": "Acute myocardial infarction",
+"probability": 0.95
+},
+{
+"name": "Acute coronary syndrome",
+"probability": 0.95
+},
+{
+"name": "Acute pancreatitis",
+"probability": 0.95
+},
+{
+"name": "Acute cholecystitis",
+"probability": 0.95
+}
+],
+"REF:3112826": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Acute liver failure",
+"probability": 0.95
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.95
+}
+],
+"REF:3211766": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia with hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia with hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia with hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia with hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia with hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia with hypokalemia",
+"probability": 0.95
+}
+],
+"REF:450383": [
+{
+"name": "Acute renal failure",
+"probability": 0.95
+},
+{
+"name": "Hemolytic anemia",
+"probability": 0.85
+},
+{
+"name": "Hemochromatosis",
+"probability": 0.75
+},
+{
+"name": "Hemoglobinopathy",
+"probability": 0.65
+},
+{
+"name": "Hemoglobinopathies",
+"probability": 0.55
+},
+{
+"name": "Hemoglobinopathy",
+"probability": 0.45
+},
+{
+"name": "Hemoglobinopathy",
+"probability": 0.35
+},
+{
+"name": "Hemoglobinopathy",
+"probability": 0.25
+},
+{
+"name": "Hemoglobinopathy",
+"probability": 0.15
+},
+{
+"name": "Hemoglobinopathy",
+"probability": 0.05
+}
+],
+"REF:494366": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hepatic encephalopathy",
+"probability": 0.85
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.8
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.7
+},
+{
+"name": "Hypokalemia",
+"probability": 0.6
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.5
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.4
+},
+{
+"name": "Hypokalemia",
+"probability": 0.3
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.2
+}
+],
+"REF:508973": [
+{
+"name": "Acute Coronary Syndrome",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+},
+{
+"name": "Hemochromatosis",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+},
+{
+"name": "Hemolytic Anemia",
+"probability": 0.95
+}
+],
+"REF:562011": [
+{
+"name": "Acute kidney injury",
+"probability": 0.9
+},
+{
+"name": "Hemolysis",
+"probability": 0.8
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.7
+},
+{
+"name": "Liver dysfunction",
+"probability": 0.6
+},
+{
+"name": "Hepatic encephalopathy",
+"probability": 0.5
+},
+{
+"name": "Acute respiratory distress syndrome",
+"probability": 0.4
+},
+{
+"name": "Hepatitis",
+"probability": 0.3
+},
+{
+"name": "Hemophilia",
+"probability": 0.2
+},
+{
+"name": "Hemophilia",
+"probability": 0.2
+},
+{
+"name": "Hemophilia",
+"probability": 0.2
+}
+],
+"REF:562305": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hepatic encephalopathy",
+"probability": 0.85
+},
+{
+"name": "Hepatitis",
+"probability": 0.75
+},
+{
+"name": "Hemolysis",
+"probability": 0.65
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.55
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.45
+},
+{
+"name": "Hypokalemia",
+"probability": 0.35
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.25
+},
+{
+"name": "Hypomelanosis",
+"probability": 0.15
+}
+],
+"REF:599651": [
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+}
+],
+"REF:807440": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Metabolic acidosis",
+"probability": 0.95
+},
+{
+"name": "Nephrotic syndrome",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+}
+],
+"REF:807441": [
+{
+"name": "Acute kidney injury",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.95
+},
+{
+"name": "Hypokalemia",
+"probability": 0.95
+},
+{
+"name": "Hypomagnesemia",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+},
+{
+"name": "Hypocalcemic crisis",
+"probability": 0.95
+}
+],
+"REF:838187": [
+{
+"name": "Acute renal failure with hyperkalemia",
+"probability": 0.95
+},
+{
+"name": "Hypovolemic shock",
+"probability": 0.05
+}
+],
+"REF:845145": [
+{
+"name": "Acute renal failure",
+"probability": 0.95
+},
+{
+"name": "Hepatic encephalopathy",
+"probability": 0.85
+},
+{
+"name": "Hepatitis",
+"probability": 0.75
+},
+{
+"name": "Diabetes",
+"probability": 0.65
+},
+{
+"name": "Hyperkalemia",
+"probability": 0.55
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.45
+},
+{
+"name": "Hypovolemia",
+"probability": 0.35
+},
+{
+"name": "Hypoglycemia",
+"probability": 0.25
+},
+{
+"name": "Acute liver failure",
+"probability": 0.15
+},
+{
+"name": "Hypocalcemia",
+"probability": 0.05
+}
+]
+}

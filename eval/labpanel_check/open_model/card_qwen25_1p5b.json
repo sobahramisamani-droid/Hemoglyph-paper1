@@ -1,0 +1,962 @@
+{
+ "P2_unit_invariance": {
+  "mean_jaccard": 0.6542559523809524,
+  "identical": 12,
+  "n": 40,
+  "non_identical_pairs": [
+   {
+    "id": "P2:1081610",
+    "only_perturbed": [],
+    "only_reference": [
+     "hyperkalemia",
+     "hypocalcemia",
+     "hypoglycemia"
+    ]
+   },
+   {
+    "id": "P2:1307826",
+    "only_perturbed": [],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P2:1334350",
+    "only_perturbed": [
+     "anemia"
+    ],
+    "only_reference": [
+     "coagulopathy"
+    ]
+   },
+   {
+    "id": "P2:1785012",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypokalemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "acute_pancreatitis",
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P2:1855918",
+    "only_perturbed": [
+     "hyperkalemia"
+    ],
+    "only_reference": [
+     "hypoglycemia",
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P2:2103754",
+    "only_perturbed": [],
+    "only_reference": [
+     "hypocalcemia"
+    ]
+   },
+   {
+    "id": "P2:2114686",
+    "only_perturbed": [
+     "acute_kidney_injury",
+     "renal_impairment"
+    ],
+    "only_reference": []
+   },
+   {
+    "id": "P2:2308573",
+    "only_perturbed": [
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "anemia",
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P2:2523738",
+    "only_perturbed": [
+     "hypokalemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P2:2587791",
+    "only_perturbed": [],
+    "only_reference": [
+     "hypokalemia"
+    ]
+   },
+   {
+    "id": "P2:2595771",
+    "only_perturbed": [
+     "hyperkalemia"
+    ],
+    "only_reference": [
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P2:2596753",
+    "only_perturbed": [
+     "anemia",
+     "hyperkalemia"
+    ],
+    "only_reference": [
+     "acute_myocardial_infarction",
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P2:264276",
+    "only_perturbed": [],
+    "only_reference": [
+     "hypocalcemia",
+     "hypokalemia"
+    ]
+   },
+   {
+    "id": "P2:2685325",
+    "only_perturbed": [],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P2:2695180",
+    "only_perturbed": [
+     "acute_myocardial_infarction"
+    ],
+    "only_reference": [
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia",
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P2:2756945",
+    "only_perturbed": [
+     "acute_kidney_injury"
+    ],
+    "only_reference": [
+     "chronic_kidney_disease",
+     "diabetes"
+    ]
+   },
+   {
+    "id": "P2:2786504",
+    "only_perturbed": [],
+    "only_reference": [
+     "acute_kidney_injury",
+     "hypocalcemia",
+     "hypoglycemia",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P2:2825734",
+    "only_perturbed": [
+     "cirrhosis_liver_failure",
+     "coagulopathy",
+     "hypokalemia"
+    ],
+    "only_reference": [
+     "hyperkalemia",
+     "hypocalcemia",
+     "thrombocytopenia"
+    ]
+   },
+   {
+    "id": "P2:2857326",
+    "only_perturbed": [],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P2:3021362",
+    "only_perturbed": [],
+    "only_reference": [
+     "acute_kidney_injury",
+     "diabetic_ketoacidosis",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P2:310446",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia"
+    ],
+    "only_reference": [
+     "diabetes",
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P2:3112826",
+    "only_perturbed": [
+     "hypokalemia"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P2:494366",
+    "only_perturbed": [
+     "acute_pancreatitis"
+    ],
+    "only_reference": [
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia"
+    ]
+   },
+   {
+    "id": "P2:508973",
+    "only_perturbed": [
+     "acute_kidney_injury",
+     "cirrhosis_liver_failure",
+     "coagulopathy",
+     "hypoglycemia",
+     "renal_impairment"
+    ],
+    "only_reference": []
+   },
+   {
+    "id": "P2:562011",
+    "only_perturbed": [
+     "anemia"
+    ],
+    "only_reference": []
+   },
+   {
+    "id": "P2:807440",
+    "only_perturbed": [
+     "hypokalemia"
+    ],
+    "only_reference": [
+     "acute_kidney_injury",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P2:838187",
+    "only_perturbed": [
+     "anemia",
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P2:845145",
+    "only_perturbed": [
+     "acute_pancreatitis"
+    ],
+    "only_reference": [
+     "diabetes"
+    ]
+   }
+  ]
+ },
+ "P3_presentation_invariance": {
+  "mean_jaccard": 0.43801587301587297,
+  "identical": 0,
+  "n": 40,
+  "non_identical_pairs": [
+   {
+    "id": "P3:1081610",
+    "only_perturbed": [
+     "hypokalemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:1260940",
+    "only_perturbed": [],
+    "only_reference": [
+     "hypoglycemia",
+     "hypokalemia"
+    ]
+   },
+   {
+    "id": "P3:1307826",
+    "only_perturbed": [
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "acute_kidney_injury",
+     "cirrhosis_liver_failure",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P3:1334350",
+    "only_perturbed": [
+     "cirrhosis_liver_failure"
+    ],
+    "only_reference": [
+     "coagulopathy"
+    ]
+   },
+   {
+    "id": "P3:1712442",
+    "only_perturbed": [],
+    "only_reference": [
+     "acute_kidney_injury",
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P3:1785012",
+    "only_perturbed": [
+     "acute_myocardial_infarction"
+    ],
+    "only_reference": [
+     "acute_pancreatitis"
+    ]
+   },
+   {
+    "id": "P3:1820689",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "acute_kidney_injury",
+     "cirrhosis_liver_failure",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P3:1855918",
+    "only_perturbed": [
+     "acute_pancreatitis"
+    ],
+    "only_reference": [
+     "acute_kidney_injury",
+     "hypocalcemia",
+     "hypomagnesemia",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P3:2010574",
+    "only_perturbed": [],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:2103754",
+    "only_perturbed": [
+     "acute_pancreatitis",
+     "cirrhosis_liver_failure"
+    ],
+    "only_reference": [
+     "hypocalcemia",
+     "hypokalemia"
+    ]
+   },
+   {
+    "id": "P3:2114686",
+    "only_perturbed": [],
+    "only_reference": [
+     "hypocalcemia",
+     "hypokalemia",
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P3:220469",
+    "only_perturbed": [
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P3:2308573",
+    "only_perturbed": [
+     "acute_kidney_injury",
+     "hypoglycemia",
+     "hypothyroidism",
+     "renal_impairment"
+    ],
+    "only_reference": [
+     "anemia",
+     "hypokalemia",
+     "hypomagnesemia",
+     "thrombocytopenia"
+    ]
+   },
+   {
+    "id": "P3:2523738",
+    "only_perturbed": [
+     "hypoglycemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:2587791",
+    "only_perturbed": [
+     "hyperkalemia",
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "hypokalemia",
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P3:2595771",
+    "only_perturbed": [
+     "hyperkalemia"
+    ],
+    "only_reference": [
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P3:2596753",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "acute_myocardial_infarction",
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P3:260961",
+    "only_perturbed": [
+     "hypoglycemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P3:264276",
+    "only_perturbed": [],
+    "only_reference": [
+     "acute_kidney_injury",
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P3:2685325",
+    "only_perturbed": [],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P3:2695180",
+    "only_perturbed": [],
+    "only_reference": [
+     "hypokalemia"
+    ]
+   },
+   {
+    "id": "P3:2756945",
+    "only_perturbed": [
+     "acute_kidney_injury",
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "acute_pancreatitis",
+     "chronic_kidney_disease",
+     "diabetes"
+    ]
+   },
+   {
+    "id": "P3:2786504",
+    "only_perturbed": [
+     "hypokalemia"
+    ],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P3:2825734",
+    "only_perturbed": [
+     "acute_kidney_injury",
+     "hypokalemia",
+     "hypomagnesemia",
+     "renal_impairment"
+    ],
+    "only_reference": [
+     "hyperkalemia",
+     "thrombocytopenia"
+    ]
+   },
+   {
+    "id": "P3:2857326",
+    "only_perturbed": [
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "cirrhosis_liver_failure",
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:2886662",
+    "only_perturbed": [
+     "cirrhosis_liver_failure"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:3021362",
+    "only_perturbed": [],
+    "only_reference": [
+     "diabetic_ketoacidosis"
+    ]
+   },
+   {
+    "id": "P3:310446",
+    "only_perturbed": [
+     "hypocalcemia"
+    ],
+    "only_reference": []
+   },
+   {
+    "id": "P3:3112826",
+    "only_perturbed": [
+     "anemia",
+     "hypercalcemia",
+     "hypoglycemia"
+    ],
+    "only_reference": [
+     "cirrhosis_liver_failure",
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:3211766",
+    "only_perturbed": [
+     "hypoglycemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": []
+   },
+   {
+    "id": "P3:450383",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "anemia"
+    ]
+   },
+   {
+    "id": "P3:494366",
+    "only_perturbed": [
+     "acute_pancreatitis"
+    ],
+    "only_reference": [
+     "acute_kidney_injury",
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia",
+     "renal_impairment"
+    ]
+   },
+   {
+    "id": "P3:508973",
+    "only_perturbed": [
+     "acute_kidney_injury",
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia",
+     "hypomagnesemia",
+     "renal_impairment"
+    ],
+    "only_reference": [
+     "anemia"
+    ]
+   },
+   {
+    "id": "P3:562011",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:562305",
+    "only_perturbed": [
+     "anemia"
+    ],
+    "only_reference": [
+     "cirrhosis_liver_failure"
+    ]
+   },
+   {
+    "id": "P3:599651",
+    "only_perturbed": [
+     "acute_kidney_injury",
+     "hypoglycemia",
+     "hypokalemia",
+     "renal_impairment"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:807440",
+    "only_perturbed": [
+     "hypothyroidism"
+    ],
+    "only_reference": []
+   },
+   {
+    "id": "P3:807441",
+    "only_perturbed": [
+     "hypoglycemia",
+     "hypothyroidism"
+    ],
+    "only_reference": [
+     "hypokalemia",
+     "hypomagnesemia"
+    ]
+   },
+   {
+    "id": "P3:838187",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia",
+     "hypomagnesemia"
+    ],
+    "only_reference": [
+     "hyperkalemia"
+    ]
+   },
+   {
+    "id": "P3:845145",
+    "only_perturbed": [
+     "hypocalcemia",
+     "hypoglycemia",
+     "hypokalemia"
+    ],
+    "only_reference": [
+     "diabetes",
+     "hyperkalemia"
+    ]
+   }
+  ]
+ },
+ "P4_monotonicity": {
+  "violations": 2,
+  "n": 20,
+  "violating_ladders": [
+   "P4:1771521",
+   "P4:2219934"
+  ]
+ },
+ "P5_absent_analyte": {
+  "unsupported": 3,
+  "n": 40,
+  "strict_unsupported": 3,
+  "strict_n": 29,
+  "unsupported_panels": [
+   {
+    "id": "P5:2935023",
+    "target": "acute_kidney_injury",
+    "removed": "creatinine",
+    "redundant_present": []
+   },
+   {
+    "id": "P5:3009480",
+    "target": "renal_impairment",
+    "removed": "creatinine",
+    "redundant_present": []
+   },
+   {
+    "id": "P5:3214314",
+    "target": "acute_kidney_injury",
+    "removed": "creatinine",
+    "redundant_present": []
+   }
+  ]
+ },
+ "P6_healthy": {
+  "false_assertions": 26,
+  "n_healthy": 40,
+  "false_assertion_panels": [
+   {
+    "id": "P6:00",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:03",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hypertension"
+    ]
+   },
+   {
+    "id": "P6:06",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:10",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hyperuricemia"
+    ]
+   },
+   {
+    "id": "P6:15",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:19",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Anemia"
+    ]
+   },
+   {
+    "id": "P6:23",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:24",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hypertension"
+    ]
+   },
+   {
+    "id": "P6:26",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hyperuricemia"
+    ]
+   },
+   {
+    "id": "P6:27",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:28",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hypoglycemia"
+    ]
+   },
+   {
+    "id": "P6:29",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hypertension"
+    ]
+   },
+   {
+    "id": "P6:32",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Anemia"
+    ]
+   },
+   {
+    "id": "P6:36",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:40",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Anemia"
+    ]
+   },
+   {
+    "id": "P6:45",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:47",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hypertension"
+    ]
+   },
+   {
+    "id": "P6:48",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hyperuricemia"
+    ]
+   },
+   {
+    "id": "P6:51",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hyperuricemia"
+    ]
+   },
+   {
+    "id": "P6:54",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hyperuricemia"
+    ]
+   },
+   {
+    "id": "P6:60",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hypertension"
+    ]
+   },
+   {
+    "id": "P6:61",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Hypertension"
+    ]
+   },
+   {
+    "id": "P6:64",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:66",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:67",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   },
+   {
+    "id": "P6:68",
+    "asserted": [
+     "Diabetes Mellitus",
+     "Hyperlipidemia",
+     "Osteoporosis"
+    ]
+   }
+  ],
+  "detection": {
+   "anemia": {
+    "detected": 7,
+    "n": 13
+   },
+   "ckd": {
+    "detected": 3,
+    "n": 18
+   },
+   "diabetes": {
+    "detected": 8,
+    "n": 16
+   },
+   "hypercholesterolemia": {
+    "detected": 4,
+    "n": 7
+   },
+   "iron_deficiency": {
+    "detected": 0,
+    "n": 8
+   }
+  }
+ },
+ "missing_panel_ids": []
+}

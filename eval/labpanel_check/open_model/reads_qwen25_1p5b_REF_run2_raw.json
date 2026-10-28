@@ -1,0 +1,202 @@
+{
+"REF:1081610": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypovolemia\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:1260940": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Hypomagnesemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:1307826": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.9},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.8},{\"name\":\"Hypocalcemia\",\"probability\":0.7},{\"name\":\"Acute liver failure\",\"probability\":0.6},{\"name\":\"Hypoglycemia\",\"probability\":0.5},{\"name\":\"Acute coronary syndrome\",\"probability\":0.4},{\"name\":\"Acute myocardial infarction\",\"probability\":0.3},{\"name\":\"Acute pulmonary embolism\",\"probability\":0.2},{\"name\":\"Acute pancreatitis\",\"probability\":0.1}]}\"",
+"parsed": true,
+"retried": false
+},
+"REF:1334350": {
+"reply": "{\"diagnoses\":[{\"name\":\"Disseminated Intravascular Coagulation (DIC)\", \"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:1712442": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute renal failure\",\"probability\":0.95},{\"name\":\"Hypovolemic shock\",\"probability\":0.85},{\"name\":\"Hypoglycemia\",\"probability\":0.8},{\"name\":\"Hypokalemia\",\"probability\":0.7},{\"name\":\"Hypocalcemia\",\"probability\":0.6},{\"name\":\"Hypomagnesemia\",\"probability\":0.5},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.4},{\"name\":\"Hypoglycemic coma\",\"probability\":0.3},{\"name\":\"Hypokalemic hypochloremic metabolic acidosis\",\"probability\":0.2},{\"name\":\"Hypokalemic metabolic acidosis\",\"probability\":0.1}]}",
+"parsed": true,
+"retried": false
+},
+"REF:1785012": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hepatic encephalopathy\",\"probability\":0.85},{\"name\":\"Hepatitis\",\"probability\":0.85},{\"name\":\"Acute pancreatitis\",\"probability\":0.85},{\"name\":\"Hypoglycemia\",\"probability\":0.85},{\"name\":\"Hypocalcemia\",\"probability\":0.85}]}\"",
+"parsed": true,
+"retried": false
+},
+"REF:1820689": {
+"reply": "```json\n{\n  \"diagnoses\": [\n    {\n      \"name\": \"Acute Hematopoietic Disorder\",\n      \"probability\": 0.9\n    },\n    {\n      \"name\": \"Acute Renal Failure\",\n      \"probability\": 0.8\n    },\n    {\n      \"name\": \"Acute Respiratory Distress Syndrome\",\n      \"probability\": 0.7\n    },\n    {\n      \"name\": \"Acute Hepatic Failure\",\n      \"probability\": 0.6\n    },\n    {\n      \"name\": \"Acute Cardiogenic Shock\",\n      \"probability\": 0.5\n    },\n    {\n      \"name\": \"Acute Pancreatitis\",\n      \"probability\": 0.4\n    },\n    {\n      \"name\": \"Acute Gastroenteritis\",\n      \"probability\": 0.3\n    },\n    {\n      \"name\": \"Acute Hepatitis\",\n      \"probability\": 0.2\n    },\n    {\n      \"name\": \"Acute Cerebrovascular Accident\",\n      \"probability\": 0.1\n    }\n  ]\n}\n```",
+"parsed": true,
+"retried": false
+},
+"REF:1855918": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.9},{\"name\":\"Hypocalcemia\",\"probability\":0.9},{\"name\":\"Hypomagnesemia\",\"probability\":0.9},{\"name\":\"Hypokalemia\",\"probability\":0.9},{\"name\":\"Acute liver failure\",\"probability\":0.85},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.8},{\"name\":\"Acute coronary syndrome\",\"probability\":0.7},{\"name\":\"Acute pancreatitis\",\"probability\":0.6},{\"name\":\"Acute myocardial infarction\",\"probability\":0.5},{\"name\":\"Acute cholecystitis\",\"probability\":0.4},{\"name\":\"Acute bacterial endocarditis\",\"probability\":0.3},{\"name\":\"Acute pulmonary embolism\",\"probability\":0.2}]}\"",
+"parsed": true,
+"retried": false
+},
+"REF:2010574": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypovolemic shock\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2103754": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute myocardial infarction\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Acute kidney injury\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2114686": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute Coronary Syndrome\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.9},{\"name\":\"Hypokalemia\",\"probability\":0.9},{\"name\":\"Hypomagnesemia\",\"probability\":0.9},{\"name\":\"Hypocalcemic Crisis\",\"probability\":0.9},{\"name\":\"Hypokalemic Periodic Paralysis\",\"probability\":0.9},{\"name\":\"Hypomagnesemic Periodic Paralysis\",\"probability\":0.9},{\"name\":\"Hypocalcemic Periodic Paralysis\",\"probability\":0.9},{\"name\":\"Hypokalemic Periodic Paralysis\",\"probability\":0.9},{\"name\":\"Hypomagnesemic Periodic Paralysis\",\"probability\":0.9}]}",
+"parsed": true,
+"retried": false
+},
+"REF:220469": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95},{\"name\":\"Acute coronary syndrome\",\"probability\":0.95},{\"name\":\"Acute pancreatitis\",\"probability\":0.95},{\"name\":\"Acute cholecystitis\",\"probability\":0.95},{\"name\":\"Acute myocardial infarction\",\"probability\":0.95},{\"name\":\"Acute pulmonary embolism\",\"probability\":0.95},{\"name\":\"Acute bacterial endocarditis\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2308573": {
+"reply": "{\"diagnoses\":[{\"name\":\"Thrombocytopenia\",\"probability\":0.9},{\"name\":\"Hemolytic anemia\",\"probability\":0.8},{\"name\":\"Hypokalemia\",\"probability\":0.7},{\"name\":\"Hypocalcemia\",\"probability\":0.6},{\"name\":\"Hypomagnesemia\",\"probability\":0.5},{\"name\":\"Hypoglycemia\",\"probability\":0.4}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2523738": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Acute liver injury\",\"probability\":0.95},{\"name\":\"Acute pulmonary edema\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2587791": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Hypomagnesemia\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2595771": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.9},{\"name\":\"Hypoglycemia\",\"probability\":0.85},{\"name\":\"Hypomagnesemia\",\"probability\":0.8},{\"name\":\"Hypocalcemia\",\"probability\":0.7},{\"name\":\"Hypokalemia\",\"probability\":0.6},{\"name\":\"Hypocalcemia\",\"probability\":0.5},{\"name\":\"Hypocalcemia\",\"probability\":0.4},{\"name\":\"Hypocalcemia\",\"probability\":0.3},{\"name\":\"Hypocalcemia\",\"probability\":0.2}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2596753": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.95},{\"name\":\"Acute myocardial infarction\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:260961": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:264276": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2685325": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute renal failure\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypovolemia\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2695180": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Hypomagnesemia\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypokalemic periodic paralysis\",\"probability\":0.95},{\"name\":\"Hypoglycemic crisis\",\"probability\":0.95},{\"name\":\"Hypomagnesemic crisis\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2756945": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute pancreatitis\",\"probability\":0.95},{\"name\":\"Hepatitis\",\"probability\":0.95},{\"name\":\"Chronic kidney disease\",\"probability\":0.95},{\"name\":\"Diabetes\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2786504": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2825734": {
+"reply": "{\"diagnoses\":[{\"name\":\"Thrombocytopenia\",\"probability\":0.95},{\"name\":\"Hypoglycemia\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypoproteinemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:2857326": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.9},{\"name\":\"Hyperkalemia\",\"probability\":0.9},{\"name\":\"Acute liver failure\",\"probability\":0.8},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.7},{\"name\":\"Acute coronary syndrome\",\"probability\":0.6},{\"name\":\"Acute pancreatitis\",\"probability\":0.5},{\"name\":\"Acute cholecystitis\",\"probability\":0.4},{\"name\":\"Acute bacterial sepsis\",\"probability\":0.3},{\"name\":\"Acute myocardial infarction\",\"probability\":0.2}]}\"",
+"parsed": true,
+"retried": false
+},
+"REF:2886662": {
+"reply": "```json\n{\n  \"diagnoses\": [\n    {\n      \"name\": \"Hyperkalemia\",\n      \"probability\": 0.9\n    },\n    {\n      \"name\": \"Hypocalcemia\",\n      \"probability\": 0.9\n    },\n    {\n      \"name\": \"Hypoglycemia\",\n      \"probability\": 0.9\n    },\n    {\n      \"name\": \"Acute kidney injury\",\n      \"probability\": 0.8\n    },\n    {\n      \"name\": \"Acute respiratory distress syndrome\",\n      \"probability\": 0.7\n    },\n    {\n      \"name\": \"Acute liver failure\",\n      \"probability\": 0.6\n    },\n    {\n      \"name\": \"Acute coronary syndrome\",\n      \"probability\": 0.5\n    },\n    {\n      \"name\": \"Acute pancreatitis\",\n      \"probability\": 0.4\n    },\n    {\n      \"name\": \"Acute sepsis\",\n      \"probability\": 0.3\n    },\n    {\n      \"name\": \"Acute lymphoblastic leukemia\",\n      \"probability\": 0.2\n    }\n  ]\n}\n```",
+"parsed": true,
+"retried": false
+},
+"REF:3021362": {
+"reply": "{\"diagnoses\":[{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Acute renal failure\",\"probability\":0.85},{\"name\":\"Hypocalcemia\",\"probability\":0.85},{\"name\":\"Metabolic acidosis\",\"probability\":0.85},{\"name\":\"Diabetic ketoacidosis\",\"probability\":0.75}]}",
+"parsed": true,
+"retried": false
+},
+"REF:310446": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute renal failure\",\"probability\":0.95},{\"name\":\"Diabetes mellitus\",\"probability\":0.95},{\"name\":\"Hypoxemia\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95},{\"name\":\"Acute myocardial infarction\",\"probability\":0.95},{\"name\":\"Acute coronary syndrome\",\"probability\":0.95},{\"name\":\"Acute pancreatitis\",\"probability\":0.95},{\"name\":\"Acute cholecystitis\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:3112826": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Acute liver failure\",\"probability\":0.95},{\"name\":\"Acute respiratory distress syndrome\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:3211766": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemia with hypokalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia with hypokalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia with hypokalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia with hypokalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia with hypokalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia with hypokalemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:450383": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute renal failure\",\"probability\":0.95},{\"name\":\"Hemolytic anemia\",\"probability\":0.85},{\"name\":\"Hemochromatosis\",\"probability\":0.75},{\"name\":\"Hemoglobinopathy\",\"probability\":0.65},{\"name\":\"Hemoglobinopathies\",\"probability\":0.55},{\"name\":\"Hemoglobinopathy\",\"probability\":0.45},{\"name\":\"Hemoglobinopathy\",\"probability\":0.35},{\"name\":\"Hemoglobinopathy\",\"probability\":0.25},{\"name\":\"Hemoglobinopathy\",\"probability\":0.15},{\"name\":\"Hemoglobinopathy\",\"probability\":0.05}]}",
+"parsed": true,
+"retried": false
+},
+"REF:494366": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hepatic encephalopathy\",\"probability\":0.85},{\"name\":\"Hypoglycemia\",\"probability\":0.8},{\"name\":\"Hypocalcemia\",\"probability\":0.7},{\"name\":\"Hypokalemia\",\"probability\":0.6},{\"name\":\"Hypomagnesemia\",\"probability\":0.5},{\"name\":\"Hypocalcemia\",\"probability\":0.4},{\"name\":\"Hypokalemia\",\"probability\":0.3},{\"name\":\"Hypomagnesemia\",\"probability\":0.2}]}",
+"parsed": true,
+"retried": false
+},
+"REF:508973": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute Coronary Syndrome\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95},{\"name\":\"Hemochromatosis\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95},{\"name\":\"Hemolytic Anemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:562011": {
+"reply": "```json\n{\n  \"diagnoses\": [\n    {\n      \"name\": \"Acute kidney injury\",\n      \"probability\": 0.9\n    },\n    {\n      \"name\": \"Hemolysis\",\n      \"probability\": 0.8\n    },\n    {\n      \"name\": \"Hyperkalemia\",\n      \"probability\": 0.7\n    },\n    {\n      \"name\": \"Liver dysfunction\",\n      \"probability\": 0.6\n    },\n    {\n      \"name\": \"Hepatic encephalopathy\",\n      \"probability\": 0.5\n    },\n    {\n      \"name\": \"Acute respiratory distress syndrome\",\n      \"probability\": 0.4\n    },\n    {\n      \"name\": \"Hepatitis\",\n      \"probability\": 0.3\n    },\n    {\n      \"name\": \"Hemophilia\",\n      \"probability\": 0.2\n    },\n    {\n      \"name\": \"Hemophilia\",\n      \"probability\": 0.2\n    },\n    {\n      \"name\": \"Hemophilia\",\n      \"probability\": 0.2\n    }\n  ]\n}\n```",
+"parsed": true,
+"retried": false
+},
+"REF:562305": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hepatic encephalopathy\",\"probability\":0.85},{\"name\":\"Hepatitis\",\"probability\":0.75},{\"name\":\"Hemolysis\",\"probability\":0.65},{\"name\":\"Hypoglycemia\",\"probability\":0.55},{\"name\":\"Hypocalcemia\",\"probability\":0.45},{\"name\":\"Hypokalemia\",\"probability\":0.35},{\"name\":\"Hypomagnesemia\",\"probability\":0.25},{\"name\":\"Hypomelanosis\",\"probability\":0.15}]}",
+"parsed": true,
+"retried": false
+},
+"REF:599651": {
+"reply": "{\"diagnoses\":[{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:807440": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hyperkalemia\",\"probability\":0.95},{\"name\":\"Metabolic acidosis\",\"probability\":0.95},{\"name\":\"Nephrotic syndrome\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:807441": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute kidney injury\",\"probability\":0.95},{\"name\":\"Hypocalcemia\",\"probability\":0.95},{\"name\":\"Hypokalemia\",\"probability\":0.95},{\"name\":\"Hypomagnesemia\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95},{\"name\":\"Hypocalcemic crisis\",\"probability\":0.95}]}",
+"parsed": true,
+"retried": false
+},
+"REF:838187": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute renal failure with hyperkalemia\",\"probability\":0.95},{\"name\":\"Hypovolemic shock\",\"probability\":0.05}]}",
+"parsed": true,
+"retried": false
+},
+"REF:845145": {
+"reply": "{\"diagnoses\":[{\"name\":\"Acute renal failure\",\"probability\":0.95},{\"name\":\"Hepatic encephalopathy\",\"probability\":0.85},{\"name\":\"Hepatitis\",\"probability\":0.75},{\"name\":\"Diabetes\",\"probability\":0.65},{\"name\":\"Hyperkalemia\",\"probability\":0.55},{\"name\":\"Hypocalcemia\",\"probability\":0.45},{\"name\":\"Hypovolemia\",\"probability\":0.35},{\"name\":\"Hypoglycemia\",\"probability\":0.25},{\"name\":\"Acute liver failure\",\"probability\":0.15},{\"name\":\"Hypocalcemia\",\"probability\":0.05}]}",
+"parsed": true,
+"retried": false
+}
+}

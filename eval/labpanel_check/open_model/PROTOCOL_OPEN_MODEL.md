@@ -9,9 +9,9 @@ The column is a *reproducible floor*, not a representative of frontier capabilit
 
 | item | value |
 |---|---|
-| model | Qwen2.5-1.5B-Instruct, official GGUF release by the Qwen team (Apache-2.0), file `qwen2.5-1.5b-instruct-q4_k_m.gguf`, SHA-256 prefix `6a1a2eb6d15622bf` (full hash recorded in `RESULTS_OPEN_MODEL.md`) |
-| runtime | llama.cpp build b11966 (`llama-server`, CPU only, 2 threads), OpenAI-compatible chat endpoint, model's own chat template |
-| decoding | temperature 0 (greedy), top-k 1, seed 20261028, max 400 new tokens, context 2048 |
+| model | Qwen2.5-1.5B-Instruct, official GGUF release by the Qwen team (Apache-2.0), file `qwen2.5-1.5b-instruct-q3_k_m.gguf`, SHA-256 `58cb5c05ecef48e82961f1a2be6544145ea26136f69dddda4bbbd092f0e4b993` (amended from Q4_K_M before any result was examined: the Q4_K_M file, 1.12 GB, was killed by the 2 GB sandbox's out-of-memory handler after 10 panels when locked in RAM and thrashed when memory-mapped; Q3_K_M, 0.92 GB, is the largest official quantisation that fits; its 10 Q4_K_M readings were discarded) |
+| runtime | llama.cpp build b11966 (`llama-server`, CPU only, 2 threads, model locked in RAM), OpenAI-compatible chat endpoint, model's own chat template |
+| decoding | temperature 0 (greedy), top-k 1, seed 20261028, max 400 new tokens, context 1024 (amended from 2048 before any result was examined: with 2048 the 2 GB sandbox thrashed its page cache and generation fell from 12 to 1.3 tokens/s; the longest prompt is ≈ 410 tokens, so 1024 is sufficient; the 20 panels read under the first setting were discarded and the run restarted from the first panel) |
 | hardware | 2 vCPU Intel Xeon 2.60 GHz, 2 GB RAM (same sandbox as the manuscript's timings) |
 
 ## Inputs and prompt (fixed)
