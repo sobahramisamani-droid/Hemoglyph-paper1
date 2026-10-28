@@ -1,0 +1,400 @@
+community_acquired_pneumonia | Community-acquired pneumonia | infectious | clinical_entity | screening | all: white_blood_cell_count > 12 10*3/uL; c_reactive_protein > 50 mg/L | ats_idsa_cap_2019
+community_acquired_pneumonia | Community-acquired pneumonia | infectious | clinical_entity | staging_severity | all: blood_urea_nitrogen > 20 mg/dL; arterial_po2 < 60 mmHg | ats_idsa_cap_2019
+bacterial_sepsis | Bacterial sepsis | infectious | clinical_entity | screening | all: lactate > 2 mmol/L; white_blood_cell_count > 12 10*3/uL | surviving_sepsis_2024
+bacterial_sepsis | Bacterial sepsis | infectious | clinical_entity | staging_severity | lactate > 4 mmol/L | surviving_sepsis_2024
+septic_shock | Septic shock | infectious | clinical_entity | screening | lactate > 2 mmol/L | sccm_sepsis_2021
+septic_shock | Septic shock | infectious | clinical_entity | staging_severity | lactate > 4 mmol/L | sccm_sepsis_2021
+pyelonephritis | Acute pyelonephritis | infectious | clinical_entity | screening | all: urine_wbc_count > 10 /hpf; white_blood_cell_count > 11 10*3/uL | idsa_pyelonephritis_2011
+pyelonephritis | Acute pyelonephritis | infectious | clinical_entity | staging_severity | all: creatinine > 1.5 mg/dL; procalcitonin > 0.5 ng/mL | idsa_pyelonephritis_2011
+urinary_tract_infection | Urinary tract infection | infectious | clinical_entity | screening | urine_wbc_count > 10 /hpf | idsa_uti_2024
+urinary_tract_infection | Urinary tract infection | infectious | clinical_entity | diagnostic_criterion | all: urine_wbc_count > 10 /hpf; urine_nitrite >= 1 | idsa_uti_2024
+bacterial_meningitis | Bacterial meningitis | infectious | clinical_entity | screening | all: cerebrospinal_fluid_white_blood_cells > 100 /uL; cerebrospinal_fluid_glucose < 40 mg/dL | idsa_meningitis_2017
+bacterial_meningitis | Bacterial meningitis | infectious | clinical_entity | diagnostic_criterion | all: cerebrospinal_fluid_white_blood_cells > 1000 /uL; cerebrospinal_fluid_total_protein > 100 mg/dL | idsa_meningitis_2017
+viral_meningitis | Viral meningitis | infectious | clinical_entity | screening | all: cerebrospinal_fluid_white_blood_cells > 5 /uL; cerebrospinal_fluid_glucose >= 40 mg/dL | idsa_encephalitis_2008
+viral_meningitis | Viral meningitis | infectious | clinical_entity | diagnostic_criterion | all: cerebrospinal_fluid_white_blood_cells > 5 /uL; cerebrospinal_fluid_total_protein < 100 mg/dL; cerebrospinal_fluid_glucose >= 40 mg/dL | idsa_encephalitis_2008
+infective_endocarditis | Infective endocarditis | infectious | clinical_entity | screening | all: c_reactive_protein > 20 mg/L; erythrocyte_sedimentation_rate > 30 mm/h | esc_endocarditis_2023
+infective_endocarditis | Infective endocarditis | infectious | clinical_entity | diagnostic_criterion | blood_culture >= 1 | esc_endocarditis_2023
+clostridioides_difficile_infection | C. difficile infection | infectious | clinical_entity | screening | white_blood_cell_count > 15 10*3/uL | idsa_clostridioides_2021
+clostridioides_difficile_infection | C. difficile infection | infectious | clinical_entity | staging_severity | any: white_blood_cell_count >= 15 10*3/uL; creatinine > 1.5 mg/dL | idsa_clostridioides_2021
+cellulitis | Cellulitis | infectious | clinical_entity | screening | c_reactive_protein > 30 mg/L | idsa_skin_soft_tissue_2014
+cellulitis | Cellulitis | infectious | clinical_entity | staging_severity | all: c_reactive_protein > 150 mg/L; creatine_kinase_total > 600 U/L | idsa_skin_soft_tissue_2014
+necrotizing_fasciitis | Necrotising fasciitis | infectious | clinical_entity | screening | all: c_reactive_protein > 150 mg/L; white_blood_cell_count > 15 10*3/uL | idsa_skin_soft_tissue_2014
+necrotizing_fasciitis | Necrotising fasciitis | infectious | clinical_entity | staging_severity | all: c_reactive_protein > 150 mg/L; sodium < 135 mmol/L; creatinine > 1.6 mg/dL; glucose > 180 mg/dL | idsa_skin_soft_tissue_2014
+osteomyelitis | Osteomyelitis | infectious | clinical_entity | screening | all: erythrocyte_sedimentation_rate > 30 mm/h; c_reactive_protein > 10 mg/L | idsa_osteomyelitis_2015
+osteomyelitis | Osteomyelitis | infectious | clinical_entity | staging_severity | erythrocyte_sedimentation_rate > 70 mm/h | idsa_osteomyelitis_2015
+septic_arthritis | Septic arthritis | infectious | clinical_entity | screening | all: synovial_fluid_wbc > 50000 /uL; c_reactive_protein > 20 mg/L | idsa_guidelines
+septic_arthritis | Septic arthritis | infectious | clinical_entity | diagnostic_criterion | synovial_fluid_wbc > 50000 /uL | idsa_guidelines
+hiv_infection | HIV infection | infectious | clinical_entity | screening | hiv_1_and_hiv_2_antigen_antibody >= 1 | cdc_hiv_testing_2024
+hiv_infection | HIV infection | infectious | clinical_entity | staging_severity | cd4_t_cell_count_absolute < 200 /uL | who_hiv_2024
+tuberculosis_pulmonary | Pulmonary tuberculosis | infectious | clinical_entity | screening | all: erythrocyte_sedimentation_rate > 40 mm/h; albumin < 3.5 g/dL | who_tb_2024
+tuberculosis_pulmonary | Pulmonary tuberculosis | infectious | clinical_entity | diagnostic_criterion | acid_fast_bacilli_smear >= 1 | who_tb_2024
+malaria_falciparum | Falciparum malaria | infectious | clinical_entity | screening | all: platelets < 150 10*3/uL; total_bilirubin > 1.2 mg/dL | who_malaria_2024
+malaria_falciparum | Falciparum malaria | infectious | clinical_entity | staging_severity | any: hemoglobin < 7 g/dL; glucose < 40 mg/dL; creatinine > 3 mg/dL; lactate > 5 mmol/L; total_bilirubin > 3 mg/dL | who_malaria_2024
+dengue | Dengue | infectious | clinical_entity | screening | all: platelets < 100 10*3/uL; white_blood_cell_count < 4 10*3/uL | who_dengue_2009_2023
+dengue | Dengue | infectious | clinical_entity | staging_severity | all: platelets < 50 10*3/uL; hematocrit > 50 % | who_dengue_2009_2023
+typhoid_fever | Typhoid fever | infectious | clinical_entity | screening | all: white_blood_cell_count < 4.5 10*3/uL; alanine_aminotransferase > 60 U/L | idsa_guidelines
+typhoid_fever | Typhoid fever | infectious | clinical_entity | diagnostic_criterion | blood_culture >= 1 | idsa_guidelines
+leptospirosis | Leptospirosis | infectious | clinical_entity | screening | all: total_bilirubin > 2 mg/dL; creatinine > 1.5 mg/dL; creatine_kinase_total > 300 U/L | idsa_guidelines
+leptospirosis | Leptospirosis | infectious | clinical_entity | staging_severity | all: total_bilirubin > 10 mg/dL; creatinine > 3 mg/dL | idsa_guidelines
+brucellosis | Brucellosis | infectious | clinical_entity | screening | all: lymphocyte_count_absolute > 4 10*3/uL; alanine_aminotransferase > 50 U/L | who_brucellosis_2006
+brucellosis | Brucellosis | infectious | clinical_entity | diagnostic_criterion | brucella_agglutination_titer >= 160 titer | who_brucellosis_2006
+infectious_mononucleosis | Infectious mononucleosis | infectious | clinical_entity | screening | all: lymphocyte_count_absolute > 4.5 10*3/uL; alanine_aminotransferase > 50 U/L | ebv_idsa_review
+infectious_mononucleosis | Infectious mononucleosis | infectious | clinical_entity | diagnostic_criterion | heterophile_antibody >= 1 | ebv_idsa_review
+acute_hepatitis_a | Acute hepatitis A | infectious | clinical_entity | screening | alanine_aminotransferase > 500 U/L | aasld_hav_hev_2023
+acute_hepatitis_a | Acute hepatitis A | infectious | clinical_entity | diagnostic_criterion | hepatitis_a_igm_antibody >= 1 | aasld_hav_hev_2023
+chronic_hepatitis_b | Chronic hepatitis B | infectious | clinical_entity | screening | hepatitis_b_surface_antigen >= 1 | aasld_hbv_2025
+chronic_hepatitis_b | Chronic hepatitis B | infectious | clinical_entity | staging_severity | all: hepatitis_b_dna_quantitative > 2000 IU/mL; alanine_aminotransferase > 35 U/L | aasld_hbv_2025
+chronic_hepatitis_c | Chronic hepatitis C | infectious | clinical_entity | screening | hepatitis_c_antibody >= 1 | aasld_idsa_hcv_2023
+chronic_hepatitis_c | Chronic hepatitis C | infectious | clinical_entity | diagnostic_criterion | hepatitis_c_rna_quantitative > 15 IU/mL | aasld_idsa_hcv_2023
+covid_19 | COVID-19 | infectious | clinical_entity | screening | all: lymphocyte_count_absolute < 1 10*3/uL; c_reactive_protein > 20 mg/L | who_covid_clinical_2023
+covid_19 | COVID-19 | infectious | clinical_entity | staging_severity | all: d_dimer > 1 ug/mL; ferritin > 500 ng/mL; lactate_dehydrogenase > 350 U/L | who_covid_clinical_2023
+influenza | Influenza | infectious | clinical_entity | screening | all: white_blood_cell_count < 5 10*3/uL; lymphocyte_count_absolute < 1.2 10*3/uL | cdc_influenza_2024
+influenza | Influenza | infectious | clinical_entity | diagnostic_criterion | influenza_pcr >= 1 | cdc_influenza_2024
+pneumocystis_pneumonia | Pneumocystis pneumonia | infectious | clinical_entity | screening | all: lactate_dehydrogenase > 300 U/L; cd4_t_cell_count_absolute < 200 /uL | idsa_hiv_oi_2024
+pneumocystis_pneumonia | Pneumocystis pneumonia | infectious | clinical_entity | staging_severity | arterial_po2 < 70 mmHg | idsa_hiv_oi_2024
+candidemia | Candidaemia | infectious | clinical_entity | screening | beta_d_glucan > 80 pg/mL | idsa_candidemia_2016
+candidemia | Candidaemia | infectious | clinical_entity | diagnostic_criterion | blood_culture >= 1 | idsa_candidemia_2016
+invasive_aspergillosis | Invasive aspergillosis | infectious | clinical_entity | screening | galactomannan_index >= 0.5 index | idsa_aspergillosis_2016
+invasive_aspergillosis | Invasive aspergillosis | infectious | clinical_entity | diagnostic_criterion | galactomannan_index >= 1 index | idsa_aspergillosis_2016
+cryptococcal_meningitis | Cryptococcal meningitis | infectious | clinical_entity | screening | cryptococcal_antigen >= 1 | idsa_cryptococcus_2010
+cryptococcal_meningitis | Cryptococcal meningitis | infectious | clinical_entity | staging_severity | cerebrospinal_fluid_opening_pressure > 25 cmH2O | idsa_cryptococcus_2010
+lyme_disease | Lyme disease | infectious | clinical_entity | screening | lyme_antibody_screen >= 1 | idsa_lyme_2020
+lyme_disease | Lyme disease | infectious | clinical_entity | diagnostic_criterion | lyme_western_blot_igg >= 1 | idsa_lyme_2020
+syphilis | Syphilis | infectious | clinical_entity | screening | treponemal_antibody >= 1 | cdc_syphilis_2024
+syphilis | Syphilis | infectious | clinical_entity | diagnostic_criterion | rpr_titer >= 8 titer | cdc_syphilis_2024
+toxic_shock_syndrome | Toxic shock syndrome | infectious | clinical_entity | screening | all: platelets < 100 10*3/uL; creatinine > 2 mg/dL | cdc_tss_2011
+toxic_shock_syndrome | Toxic shock syndrome | infectious | clinical_entity | diagnostic_criterion | all: platelets < 100 10*3/uL; creatinine > 2 mg/dL; creatine_kinase_total > 400 U/L; total_bilirubin > 2.4 mg/dL | cdc_tss_2011
+neonatal_sepsis | Neonatal sepsis | infectious | clinical_entity | screening | any: white_blood_cell_count < 5 10*3/uL; c_reactive_protein > 10 mg/L | aap_neonatal_sepsis_2024
+neonatal_sepsis | Neonatal sepsis | infectious | clinical_entity | staging_severity | all: procalcitonin > 2 ng/mL; platelets < 100 10*3/uL | aap_neonatal_sepsis_2024
+spontaneous_bacterial_peritonitis | Spontaneous bacterial peritonitis | infectious | clinical_entity | screening | ascitic_fluid_pmn > 250 /uL | acg_sbp_2021
+spontaneous_bacterial_peritonitis | Spontaneous bacterial peritonitis | infectious | clinical_entity | staging_severity | all: ascitic_fluid_pmn > 250 /uL; creatinine > 1 mg/dL; total_bilirubin > 4 mg/dL | acg_sbp_2021
+acute_cholangitis | Acute cholangitis | infectious | clinical_entity | screening | all: alkaline_phosphatase > 150 U/L; total_bilirubin > 2 mg/dL; white_blood_cell_count > 10 10*3/uL | acg_cholecystitis_2018
+acute_cholangitis | Acute cholangitis | infectious | clinical_entity | staging_severity | all: platelets < 100 10*3/uL; creatinine > 2 mg/dL | acg_cholecystitis_2018
+liver_abscess | Pyogenic liver abscess | infectious | clinical_entity | screening | all: alkaline_phosphatase > 200 U/L; c_reactive_protein > 100 mg/L; albumin < 3 g/dL | idsa_guidelines
+liver_abscess | Pyogenic liver abscess | infectious | clinical_entity | staging_severity | all: total_bilirubin > 2 mg/dL; creatinine > 1.5 mg/dL | idsa_guidelines
+visceral_leishmaniasis | Visceral leishmaniasis | infectious | clinical_entity | screening | all: hemoglobin < 10 g/dL; platelets < 100 10*3/uL; white_blood_cell_count < 3 10*3/uL; total_protein > 8.5 g/dL | who_leishmaniasis_2022
+visceral_leishmaniasis | Visceral leishmaniasis | infectious | clinical_entity | diagnostic_criterion | rk39_antibody >= 1 | who_leishmaniasis_2022
+schistosomiasis | Schistosomiasis | infectious | clinical_entity | screening | all: eosinophil_count_absolute > 0.5 10*3/uL; urine_rbc_count > 5 /hpf | who_schistosomiasis_2022
+schistosomiasis | Schistosomiasis | infectious | clinical_entity | diagnostic_criterion | schistosoma_ova_urine >= 1 | who_schistosomiasis_2022
+strongyloidiasis | Strongyloidiasis | infectious | clinical_entity | screening | eosinophil_count_absolute > 0.5 10*3/uL | idsa_guidelines
+strongyloidiasis | Strongyloidiasis | infectious | clinical_entity | diagnostic_criterion | strongyloides_igg >= 1 | idsa_guidelines
+amoebic_liver_abscess | Amoebic liver abscess | infectious | clinical_entity | screening | all: alkaline_phosphatase > 150 U/L; white_blood_cell_count > 10 10*3/uL | idsa_guidelines
+amoebic_liver_abscess | Amoebic liver abscess | infectious | clinical_entity | diagnostic_criterion | entamoeba_histolytica_igg >= 1 | idsa_guidelines
+rickettsial_infection | Rickettsial infection | infectious | clinical_entity | screening | all: platelets < 150 10*3/uL; sodium < 135 mmol/L; alanine_aminotransferase > 50 U/L | idsa_tickborne_2021
+rickettsial_infection | Rickettsial infection | infectious | clinical_entity | staging_severity | all: platelets < 50 10*3/uL; creatinine > 2 mg/dL | idsa_tickborne_2021
+ehrlichiosis | Ehrlichiosis | infectious | clinical_entity | screening | all: white_blood_cell_count < 4 10*3/uL; platelets < 150 10*3/uL; aspartate_aminotransferase > 50 U/L | idsa_tickborne_2021
+ehrlichiosis | Ehrlichiosis | infectious | clinical_entity | diagnostic_criterion | ehrlichia_pcr >= 1 | idsa_tickborne_2021
+babesiosis | Babesiosis | infectious | clinical_entity | screening | all: hemoglobin < 12 g/dL; lactate_dehydrogenase > 250 U/L; platelets < 150 10*3/uL | idsa_tickborne_2021
+babesiosis | Babesiosis | infectious | clinical_entity | staging_severity | babesia_parasitemia_percent > 10 % | idsa_tickborne_2021
+histoplasmosis_disseminated | Disseminated histoplasmosis | infectious | clinical_entity | screening | all: lactate_dehydrogenase > 600 U/L; ferritin > 1000 ng/mL; alkaline_phosphatase > 200 U/L | idsa_histoplasma_2020
+histoplasmosis_disseminated | Disseminated histoplasmosis | infectious | clinical_entity | diagnostic_criterion | histoplasma_urine_antigen >= 1 | idsa_histoplasma_2020
+mucormycosis | Mucormycosis | infectious | clinical_entity | screening | all: glucose > 250 mg/dL; bicarbonate < 18 mmol/L; neutrophil_count_absolute < 0.5 10*3/uL | idsa_mucor_2019
+mucormycosis | Mucormycosis | infectious | clinical_entity | staging_severity | all: glucose > 250 mg/dL; arterial_ph < 7.3 | idsa_mucor_2019
+hantavirus_cardiopulmonary | Hantavirus cardiopulmonary syndrome | infectious | clinical_entity | screening | all: platelets < 150 10*3/uL; hematocrit > 50 %; white_blood_cell_count > 12 10*3/uL | cdc_respiratory_viruses_2024
+hantavirus_cardiopulmonary | Hantavirus cardiopulmonary syndrome | infectious | clinical_entity | staging_severity | all: lactate > 4 mmol/L; platelets < 50 10*3/uL | cdc_respiratory_viruses_2024
+whooping_cough | Pertussis | infectious | clinical_entity | screening | lymphocyte_count_absolute > 10 10*3/uL | cdc_pertussis_2024
+whooping_cough | Pertussis | infectious | clinical_entity | staging_severity | white_blood_cell_count > 30 10*3/uL | cdc_pertussis_2024
+hemolytic_uremic_syndrome_stec | STEC haemolytic uraemic syndrome | infectious | clinical_entity | screening | all: platelets < 150 10*3/uL; creatinine > 1.5 mg/dL; lactate_dehydrogenase > 250 U/L | ash_tma_2024
+hemolytic_uremic_syndrome_stec | STEC haemolytic uraemic syndrome | infectious | clinical_entity | diagnostic_criterion | all: platelets < 150 10*3/uL; creatinine > 1.5 mg/dL; haptoglobin_serum < 30 mg/dL; schistocytes >= 1 | ash_tma_2024
+cytomegalovirus_disease | CMV disease | infectious | clinical_entity | screening | all: lymphocyte_count_absolute > 4 10*3/uL; alanine_aminotransferase > 50 U/L | idsa_hiv_oi_2024
+cytomegalovirus_disease | CMV disease | infectious | clinical_entity | diagnostic_criterion | cmv_dna_quantitative > 1000 IU/mL | idsa_hiv_oi_2024
+diabetic_foot_infection | Diabetic foot infection | infectious | clinical_entity | screening | all: c_reactive_protein > 30 mg/L; glucose > 180 mg/dL | idsa_diabetic_foot_2012
+diabetic_foot_infection | Diabetic foot infection | infectious | clinical_entity | staging_severity | all: white_blood_cell_count > 12 10*3/uL; erythrocyte_sedimentation_rate > 70 mm/h | idsa_diabetic_foot_2012
+iron_deficiency_anemia | Iron deficiency anaemia | hematology | clinical_entity | screening | all: hemoglobin < 12 g/dL; mean_corpuscular_volume < 80 fL; ferritin < 30 ng/mL | ash_iron_deficiency_2024
+iron_deficiency_anemia | Iron deficiency anaemia | hematology | clinical_entity | diagnostic_criterion | all: hemoglobin < 12 g/dL; ferritin < 15 ng/mL | who_ferritin_2020
+anemia_of_chronic_disease | Anaemia of chronic disease | hematology | clinical_entity | screening | all: hemoglobin < 12 g/dL; ferritin > 100 ng/mL; transferrin_saturation < 20 % | ash_iron_deficiency_2024
+anemia_of_chronic_disease | Anaemia of chronic disease | hematology | clinical_entity | diagnostic_criterion | all: hemoglobin < 12 g/dL; ferritin > 100 ng/mL; transferrin_saturation < 20 %; c_reactive_protein > 5 mg/L | ash_iron_deficiency_2024
+vitamin_b12_deficiency_anemia | Vitamin B12 deficiency anaemia | hematology | clinical_entity | screening | all: mean_corpuscular_volume > 100 fL; vitamin_b12 < 200 pg/mL | bsh_b12_folate_2014
+vitamin_b12_deficiency_anemia | Vitamin B12 deficiency anaemia | hematology | clinical_entity | diagnostic_criterion | all: vitamin_b12 < 150 pg/mL; methylmalonic_acid > 0.4 umol/L | bsh_b12_folate_2014
+folate_deficiency_anemia | Folate deficiency anaemia | hematology | clinical_entity | screening | all: mean_corpuscular_volume > 100 fL; folate_serum < 4 ng/mL | bsh_b12_folate_2014
+folate_deficiency_anemia | Folate deficiency anaemia | hematology | clinical_entity | diagnostic_criterion | folate_serum < 2 ng/mL | bsh_b12_folate_2014
+autoimmune_hemolytic_anemia | Autoimmune haemolytic anaemia | hematology | clinical_entity | screening | all: hemoglobin < 12 g/dL; reticulocyte_percent > 2.5 %; lactate_dehydrogenase > 250 U/L; indirect_bilirubin > 1 mg/dL | ash_aiha_2024
+autoimmune_hemolytic_anemia | Autoimmune haemolytic anaemia | hematology | clinical_entity | diagnostic_criterion | all: direct_antiglobulin_test >= 1; haptoglobin_serum < 30 mg/dL | ash_aiha_2024
+hereditary_spherocytosis | Hereditary spherocytosis | hematology | clinical_entity | screening | all: mean_corpuscular_hemoglobin_concentration > 36 g/dL; reticulocyte_percent > 2.5 % | bsh_hematology_2024
+hereditary_spherocytosis | Hereditary spherocytosis | hematology | clinical_entity | diagnostic_criterion | eosin_5_maleimide_binding < 0.8 ratio | bsh_hematology_2024
+g6pd_deficiency | G6PD deficiency | hematology | clinical_entity | screening | all: hemoglobin < 12 g/dL; lactate_dehydrogenase > 250 U/L; indirect_bilirubin > 1 mg/dL | g6pd_who_2022
+g6pd_deficiency | G6PD deficiency | hematology | clinical_entity | diagnostic_criterion | g6pd_enzyme_activity < 30 % | g6pd_who_2022
+sickle_cell_disease | Sickle cell disease | hematology | clinical_entity | screening | all: hemoglobin < 10 g/dL; reticulocyte_percent > 5 % | ash_sickle_cell_2024
+sickle_cell_disease | Sickle cell disease | hematology | clinical_entity | diagnostic_criterion | hemoglobin_s_percent > 50 % | ash_sickle_cell_2024
+beta_thalassemia_trait | Beta-thalassaemia trait | hematology | clinical_entity | screening | all: mean_corpuscular_volume < 75 fL; red_blood_cell_count > 5 10*6/uL; ferritin >= 30 ng/mL | ash_thalassemia_2024
+beta_thalassemia_trait | Beta-thalassaemia trait | hematology | clinical_entity | diagnostic_criterion | hemoglobin_a2_percent > 3.5 % | ash_thalassemia_2024
+aplastic_anemia | Aplastic anaemia | hematology | clinical_entity | screening | all: hemoglobin < 10 g/dL; platelets < 50 10*3/uL; neutrophil_count_absolute < 1.5 10*3/uL | ash_aplastic_2026
+aplastic_anemia | Aplastic anaemia | hematology | clinical_entity | staging_severity | all: neutrophil_count_absolute < 0.5 10*3/uL; platelets < 20 10*3/uL; reticulocyte_percent < 1 % | ash_aplastic_2026
+immune_thrombocytopenia | Immune thrombocytopenia | hematology | clinical_entity | screening | all: platelets < 100 10*3/uL; hemoglobin >= 12 g/dL; white_blood_cell_count >= 4 10*3/uL | ash_immune_thrombocytopenia_2024
+immune_thrombocytopenia | Immune thrombocytopenia | hematology | clinical_entity | staging_severity | platelets < 20 10*3/uL | ash_immune_thrombocytopenia_2024
+thrombotic_thrombocytopenic_purpura | Thrombotic thrombocytopenic purpura | hematology | clinical_entity | screening | all: platelets < 30 10*3/uL; lactate_dehydrogenase > 250 U/L; creatinine < 2 mg/dL | isth_ttp_2024
+thrombotic_thrombocytopenic_purpura | Thrombotic thrombocytopenic purpura | hematology | clinical_entity | diagnostic_criterion | adamts13_activity < 10 % | isth_ttp_2024
+disseminated_intravascular_coagulation | Disseminated intravascular coagulation | hematology | clinical_entity | screening | all: platelets < 100 10*3/uL; d_dimer > 1 ug/mL; fibrinogen < 150 mg/dL | isth_dic_2024
+disseminated_intravascular_coagulation | Disseminated intravascular coagulation | hematology | clinical_entity | diagnostic_criterion | all: platelets < 50 10*3/uL; d_dimer > 5 ug/mL; prothrombin_time > 18 s; fibrinogen < 100 mg/dL | isth_dic_2024
+heparin_induced_thrombocytopenia | Heparin-induced thrombocytopenia | hematology | clinical_entity | screening | platelets < 100 10*3/uL | ash_heparin_htp_2018
+heparin_induced_thrombocytopenia | Heparin-induced thrombocytopenia | hematology | clinical_entity | diagnostic_criterion | pf4_heparin_antibody_od > 1 OD | ash_heparin_htp_2018
+hemophilia_a | Haemophilia A | hematology | clinical_entity | screening | all: activated_partial_thromboplastin_time > 40 s; prothrombin_time <= 13 s | ash_hemophilia_2024
+hemophilia_a | Haemophilia A | hematology | clinical_entity | diagnostic_criterion | factor_viii_activity < 40 % | ash_hemophilia_2024
+von_willebrand_disease | Von Willebrand disease | hematology | clinical_entity | screening | activated_partial_thromboplastin_time > 40 s | ash_von_willebrand_2024
+von_willebrand_disease | Von Willebrand disease | hematology | clinical_entity | diagnostic_criterion | von_willebrand_factor_antigen < 30 IU/dL | ash_von_willebrand_2024
+polycythemia_vera | Polycythaemia vera | hematology | clinical_entity | screening | any: hemoglobin > 16.5 g/dL; hematocrit > 49 % | who_haem_2022
+polycythemia_vera | Polycythaemia vera | hematology | clinical_entity | diagnostic_criterion | all: hemoglobin > 16.5 g/dL; jak2_v617f_mutation >= 1; erythropoietin < 4 mIU/mL | who_haem_2022
+essential_thrombocythemia | Essential thrombocythaemia | hematology | clinical_entity | screening | platelets >= 450 10*3/uL | who_haem_2022
+essential_thrombocythemia | Essential thrombocythaemia | hematology | clinical_entity | diagnostic_criterion | all: platelets >= 450 10*3/uL; jak2_v617f_mutation >= 1 | who_haem_2022
+chronic_myeloid_leukemia | Chronic myeloid leukaemia | hematology | clinical_entity | screening | all: white_blood_cell_count > 25 10*3/uL; basophils_percent > 2 % | who_haem_2022
+chronic_myeloid_leukemia | Chronic myeloid leukaemia | hematology | clinical_entity | diagnostic_criterion | bcr_abl1_transcript >= 1 | who_haem_2022
+chronic_lymphocytic_leukemia | Chronic lymphocytic leukaemia | hematology | clinical_entity | screening | lymphocyte_count_absolute > 5 10*3/uL | eha_cll_2024
+chronic_lymphocytic_leukemia | Chronic lymphocytic leukaemia | hematology | clinical_entity | staging_severity | all: lymphocyte_count_absolute > 5 10*3/uL; hemoglobin < 11 g/dL; platelets < 100 10*3/uL | eha_cll_2024
+acute_myeloid_leukemia | Acute myeloid leukaemia | hematology | clinical_entity | screening | all: white_blood_cell_count > 30 10*3/uL; hemoglobin < 10 g/dL; platelets < 100 10*3/uL | ash_aml_2024
+acute_myeloid_leukemia | Acute myeloid leukaemia | hematology | clinical_entity | diagnostic_criterion | bone_marrow_blasts_percent >= 20 % | ash_aml_2024
+acute_lymphoblastic_leukemia | Acute lymphoblastic leukaemia | hematology | clinical_entity | screening | all: white_blood_cell_count > 30 10*3/uL; lactate_dehydrogenase > 500 U/L; platelets < 100 10*3/uL | nccn_all_2024
+acute_lymphoblastic_leukemia | Acute lymphoblastic leukaemia | hematology | clinical_entity | diagnostic_criterion | bone_marrow_blasts_percent >= 20 % | nccn_all_2024
+multiple_myeloma | Multiple myeloma | hematology | clinical_entity | screening | all: calcium_total > 11 mg/dL; creatinine > 2 mg/dL; hemoglobin < 10 g/dL; total_protein > 8.5 g/dL | nccn_myeloma_2024
+multiple_myeloma | Multiple myeloma | hematology | clinical_entity | diagnostic_criterion | any: bone_marrow_plasma_cells_percent >= 10 %; serum_free_light_chain_ratio >= 100 ratio | nccn_myeloma_2024
+myelodysplastic_syndrome | Myelodysplastic syndrome | hematology | clinical_entity | screening | all: hemoglobin < 10 g/dL; mean_corpuscular_volume > 100 fL; platelets < 100 10*3/uL | ash_mds_2024
+myelodysplastic_syndrome | Myelodysplastic syndrome | hematology | clinical_entity | staging_severity | all: hemoglobin < 8 g/dL; neutrophil_count_absolute < 0.8 10*3/uL; platelets < 50 10*3/uL | ash_mds_2024
+hemophagocytic_lymphohistiocytosis | Haemophagocytic lymphohistiocytosis | hematology | clinical_entity | screening | all: ferritin > 500 ng/mL; triglycerides > 265 mg/dL; fibrinogen < 150 mg/dL | bsh_hematology_2024
+hemophagocytic_lymphohistiocytosis | Haemophagocytic lymphohistiocytosis | hematology | clinical_entity | diagnostic_criterion | all: ferritin > 10000 ng/mL; soluble_cd25 > 2400 U/mL | bsh_hematology_2024
+hereditary_hemochromatosis | Hereditary haemochromatosis | hematology | clinical_entity | screening | all: transferrin_saturation > 45 %; ferritin > 300 ng/mL | aasld_hh_2011_easl_2022
+hereditary_hemochromatosis | Hereditary haemochromatosis | hematology | clinical_entity | diagnostic_criterion | hfe_c282y_homozygous >= 1 | aasld_hh_2011_easl_2022
+paroxysmal_nocturnal_hemoglobinuria | Paroxysmal nocturnal haemoglobinuria | hematology | clinical_entity | screening | all: lactate_dehydrogenase > 500 U/L; haptoglobin_serum < 30 mg/dL; direct_antiglobulin_test < 1 | bsh_hematology_2024
+paroxysmal_nocturnal_hemoglobinuria | Paroxysmal nocturnal haemoglobinuria | hematology | clinical_entity | diagnostic_criterion | pnh_clone_granulocytes_percent > 1 % | bsh_hematology_2024
+waldenstrom_macroglobulinemia | Waldenström macroglobulinaemia | hematology | clinical_entity | screening | all: total_immunoglobulin_m > 3000 mg/dL; hemoglobin < 11 g/dL | bsh_waldenstrom_2022
+waldenstrom_macroglobulinemia | Waldenström macroglobulinaemia | hematology | clinical_entity | staging_severity | all: total_immunoglobulin_m > 7000 mg/dL; beta_2_microglobulin > 3 mg/L | bsh_waldenstrom_2022
+antiphospholipid_syndrome | Antiphospholipid syndrome | hematology | clinical_entity | screening | all: activated_partial_thromboplastin_time > 40 s; platelets < 150 10*3/uL | acr_eular_aps_2023
+antiphospholipid_syndrome | Antiphospholipid syndrome | hematology | clinical_entity | diagnostic_criterion | any: anticardiolipin_igg > 40 GPL; lupus_anticoagulant >= 1 | acr_eular_aps_2023
+neutropenic_fever | Febrile neutropenia | hematology | clinical_entity | screening | neutrophil_count_absolute < 0.5 10*3/uL | idsa_guidelines
+neutropenic_fever | Febrile neutropenia | hematology | clinical_entity | staging_severity | all: neutrophil_count_absolute < 0.1 10*3/uL; c_reactive_protein > 100 mg/L | idsa_guidelines
+methemoglobinemia | Methaemoglobinaemia | hematology | clinical_entity | screening | methemoglobin_percent > 3 % | tietz_7e_2023
+methemoglobinemia | Methaemoglobinaemia | hematology | clinical_entity | staging_severity | methemoglobin_percent > 30 % | tietz_7e_2023
+lead_poisoning | Lead poisoning | hematology | clinical_entity | screening | all: hemoglobin < 12 g/dL; mean_corpuscular_volume < 80 fL; ferritin >= 30 ng/mL | cdc_lead_2024
+lead_poisoning | Lead poisoning | hematology | clinical_entity | diagnostic_criterion | blood_lead > 5 ug/dL | cdc_lead_2024
+transfusion_dependent_thalassemia | Transfusion-dependent thalassaemia | hematology | clinical_entity | screening | all: hemoglobin < 7 g/dL; mean_corpuscular_volume < 70 fL | ash_thalassemia_2024
+transfusion_dependent_thalassemia | Transfusion-dependent thalassaemia | hematology | clinical_entity | staging_severity | ferritin > 2500 ng/mL | ash_thalassemia_2024
+cold_agglutinin_disease | Cold agglutinin disease | hematology | clinical_entity | screening | all: hemoglobin < 12 g/dL; mean_corpuscular_hemoglobin_concentration > 36 g/dL; lactate_dehydrogenase > 250 U/L | ash_aiha_2024
+cold_agglutinin_disease | Cold agglutinin disease | hematology | clinical_entity | diagnostic_criterion | cold_agglutinin_titer >= 64 titer | ash_aiha_2024
+acute_kidney_injury | Acute kidney injury | renal | clinical_entity | screening | creatinine > 1.5 mg/dL | kdigo_aki_2012
+acute_kidney_injury | Acute kidney injury | renal | clinical_entity | staging_severity | any: creatinine > 4 mg/dL; potassium > 6 mmol/L | kdigo_aki_2012
+chronic_kidney_disease | Chronic kidney disease | renal | clinical_entity | screening | any: egfr_ckd_epi_creatinine < 60 mL/min/1.73m2; urine_albumin_to_creatinine_ratio >= 30 mg/g | kdigo_ckd_2024
+chronic_kidney_disease | Chronic kidney disease | renal | clinical_entity | staging_severity | egfr_ckd_epi_creatinine < 30 mL/min/1.73m2 | kdigo_ckd_2024
+kidney_failure | Kidney failure | renal | clinical_entity | screening | egfr_ckd_epi_creatinine < 15 mL/min/1.73m2 | kdigo_ckd_2024
+kidney_failure | Kidney failure | renal | clinical_entity | staging_severity | all: egfr_ckd_epi_creatinine < 15 mL/min/1.73m2; potassium > 5.5 mmol/L; bicarbonate < 18 mmol/L | kdigo_ckd_2024
+diabetic_kidney_disease | Diabetic kidney disease | renal | clinical_entity | screening | all: urine_albumin_to_creatinine_ratio >= 30 mg/g; hemoglobin_a1c >= 6.5 % | kdigo_diabetes_ckd_2022
+diabetic_kidney_disease | Diabetic kidney disease | renal | clinical_entity | staging_severity | all: urine_albumin_to_creatinine_ratio >= 300 mg/g; egfr_ckd_epi_creatinine < 60 mL/min/1.73m2 | kdigo_diabetes_ckd_2022
+nephrotic_syndrome | Nephrotic syndrome | renal | clinical_entity | screening | all: albumin < 3 g/dL; urine_protein_to_creatinine_ratio > 3 g/g | kdigo_glomerular_2021
+nephrotic_syndrome | Nephrotic syndrome | renal | clinical_entity | diagnostic_criterion | all: albumin < 3 g/dL; urine_protein_to_creatinine_ratio > 3.5 g/g; total_cholesterol > 240 mg/dL | kdigo_glomerular_2021
+nephritic_syndrome | Nephritic syndrome | renal | clinical_entity | screening | all: urine_rbc_count > 5 /hpf; creatinine > 1.3 mg/dL | kdigo_glomerular_2021
+nephritic_syndrome | Nephritic syndrome | renal | clinical_entity | staging_severity | all: urine_rbc_count > 5 /hpf; creatinine > 3 mg/dL | kdigo_glomerular_2021
+iga_nephropathy | IgA nephropathy | renal | clinical_entity | screening | all: urine_rbc_count > 5 /hpf; urine_protein_to_creatinine_ratio > 0.5 g/g | kdigo_iga_2021
+iga_nephropathy | IgA nephropathy | renal | clinical_entity | staging_severity | urine_protein_to_creatinine_ratio > 1 g/g | kdigo_iga_2021
+lupus_nephritis | Lupus nephritis | renal | clinical_entity | screening | all: urine_protein_to_creatinine_ratio > 0.5 g/g; complement_c3 < 90 mg/dL | kdigo_lupus_nephritis_2024
+lupus_nephritis | Lupus nephritis | renal | clinical_entity | staging_severity | all: creatinine > 1.5 mg/dL; urine_protein_to_creatinine_ratio > 3 g/g | kdigo_lupus_nephritis_2024
+anca_vasculitis_renal | ANCA-associated vasculitis (renal) | renal | clinical_entity | screening | all: creatinine > 1.5 mg/dL; urine_rbc_count > 5 /hpf; c_reactive_protein > 20 mg/L | acr_anca_vasculitis_2024
+anca_vasculitis_renal | ANCA-associated vasculitis (renal) | renal | clinical_entity | diagnostic_criterion | any: anti_pr3_antibody >= 1; anti_mpo_antibody >= 1 | acr_anca_vasculitis_2024
+anti_gbm_disease | Anti-GBM disease | renal | clinical_entity | screening | all: creatinine > 2 mg/dL; urine_rbc_count > 5 /hpf | kdigo_glomerular_2021
+anti_gbm_disease | Anti-GBM disease | renal | clinical_entity | diagnostic_criterion | anti_gbm_antibody >= 1 | kdigo_glomerular_2021
+acute_tubular_necrosis | Acute tubular necrosis | renal | clinical_entity | screening | all: creatinine > 1.5 mg/dL; fractional_excretion_sodium > 2 % | kdigo_aki_2012
+acute_tubular_necrosis | Acute tubular necrosis | renal | clinical_entity | staging_severity | creatinine > 4 mg/dL | kdigo_aki_2012
+prerenal_azotemia | Prerenal azotaemia | renal | clinical_entity | screening | all: blood_urea_nitrogen > 20 mg/dL; fractional_excretion_sodium < 1 % | kdigo_aki_2012
+prerenal_azotemia | Prerenal azotaemia | renal | clinical_entity | diagnostic_criterion | all: blood_urea_nitrogen > 20 mg/dL; creatinine > 1.3 mg/dL; fractional_excretion_sodium < 1 %; urine_sodium < 20 mmol/L | kdigo_aki_2012
+hepatorenal_syndrome | Hepatorenal syndrome | renal | clinical_entity | screening | all: creatinine > 1.5 mg/dL; total_bilirubin > 3 mg/dL; albumin < 3 g/dL | easl_cirrhosis_2024
+hepatorenal_syndrome | Hepatorenal syndrome | renal | clinical_entity | staging_severity | all: creatinine > 2.5 mg/dL; sodium < 130 mmol/L | easl_cirrhosis_2024
+acute_interstitial_nephritis | Acute interstitial nephritis | renal | clinical_entity | screening | all: creatinine > 1.5 mg/dL; eosinophil_count_absolute > 0.5 10*3/uL | kdigo_aki_2012
+acute_interstitial_nephritis | Acute interstitial nephritis | renal | clinical_entity | diagnostic_criterion | all: creatinine > 1.5 mg/dL; urine_wbc_count > 5 /hpf; urine_eosinophils >= 1 | kdigo_aki_2012
+renal_tubular_acidosis_distal | Distal renal tubular acidosis | renal | clinical_entity | screening | all: bicarbonate < 22 mmol/L; potassium < 3.5 mmol/L; chloride > 106 mmol/L | kdigo_potassium_2020
+renal_tubular_acidosis_distal | Distal renal tubular acidosis | renal | clinical_entity | diagnostic_criterion | all: bicarbonate < 22 mmol/L; urine_ph > 5.5 | kdigo_potassium_2020
+renal_tubular_acidosis_type_4 | Type 4 renal tubular acidosis | renal | clinical_entity | screening | all: bicarbonate < 22 mmol/L; potassium > 5 mmol/L; chloride > 106 mmol/L | kdigo_potassium_2020
+renal_tubular_acidosis_type_4 | Type 4 renal tubular acidosis | renal | clinical_entity | diagnostic_criterion | all: bicarbonate < 22 mmol/L; potassium > 5.5 mmol/L; urine_ph < 5.5 | kdigo_potassium_2020
+fanconi_syndrome | Fanconi syndrome | renal | clinical_entity | screening | all: phosphate < 2.5 mg/dL; bicarbonate < 22 mmol/L; uric_acid < 2.5 mg/dL | kdigo_glomerular_2021
+fanconi_syndrome | Fanconi syndrome | renal | clinical_entity | diagnostic_criterion | all: phosphate < 2.5 mg/dL; urine_glucose >= 1; glucose < 126 mg/dL | kdigo_glomerular_2021
+rhabdomyolysis_aki | Rhabdomyolysis with kidney injury | renal | clinical_entity | screening | all: creatine_kinase_total > 5000 U/L; creatinine > 1.5 mg/dL | sccm_rhabdomyolysis_2024
+rhabdomyolysis_aki | Rhabdomyolysis with kidney injury | renal | clinical_entity | staging_severity | all: creatine_kinase_total > 20000 U/L; potassium > 6 mmol/L | sccm_rhabdomyolysis_2024
+tumor_lysis_syndrome | Tumour lysis syndrome | renal | clinical_entity | screening | all: uric_acid > 8 mg/dL; potassium > 6 mmol/L; phosphate > 4.5 mg/dL | nccn_all_2024
+tumor_lysis_syndrome | Tumour lysis syndrome | renal | clinical_entity | diagnostic_criterion | all: uric_acid > 8 mg/dL; potassium > 6 mmol/L; phosphate > 4.5 mg/dL; calcium_total < 7 mg/dL; creatinine > 1.5 mg/dL | nccn_all_2024
+contrast_nephropathy | Contrast-associated AKI | renal | clinical_entity | screening | creatinine > 1.5 mg/dL | kdigo_aki_2012
+contrast_nephropathy | Contrast-associated AKI | renal | clinical_entity | staging_severity | creatinine > 3 mg/dL | kdigo_aki_2012
+polycystic_kidney_disease | Polycystic kidney disease | renal | clinical_entity | screening | all: creatinine > 1.3 mg/dL; hemoglobin > 16 g/dL | kdigo_ckd_2024
+polycystic_kidney_disease | Polycystic kidney disease | renal | clinical_entity | staging_severity | egfr_ckd_epi_creatinine < 45 mL/min/1.73m2 | kdigo_ckd_2024
+renal_anemia | Anaemia of CKD | renal | clinical_entity | screening | all: hemoglobin < 12 g/dL; egfr_ckd_epi_creatinine < 60 mL/min/1.73m2 | kdigo_anemia_2012
+renal_anemia | Anaemia of CKD | renal | clinical_entity | staging_severity | all: hemoglobin < 10 g/dL; egfr_ckd_epi_creatinine < 30 mL/min/1.73m2 | kdigo_anemia_2012
+ckd_mineral_bone_disorder | CKD mineral and bone disorder | renal | clinical_entity | screening | all: egfr_ckd_epi_creatinine < 45 mL/min/1.73m2; phosphate > 4.5 mg/dL; intact_parathyroid_hormone > 65 pg/mL | kdigo_ckd_mbd_2017
+ckd_mineral_bone_disorder | CKD mineral and bone disorder | renal | clinical_entity | staging_severity | all: phosphate > 5.5 mg/dL; intact_parathyroid_hormone > 300 pg/mL; calcium_total < 8.5 mg/dL | kdigo_ckd_mbd_2017
+nephrolithiasis_uric_acid | Uric acid nephrolithiasis | renal | clinical_entity | screening | all: uric_acid > 7 mg/dL; urine_ph < 5.5 | acr_gout_2024
+nephrolithiasis_uric_acid | Uric acid nephrolithiasis | renal | clinical_entity | diagnostic_criterion | all: uric_acid > 7 mg/dL; urine_uric_acid_24h > 800 mg/24h | acr_gout_2024
+hyperkalemia_renal | Hyperkalaemia of renal failure | renal | laboratory_finding | screening | all: potassium > 5.5 mmol/L; egfr_ckd_epi_creatinine < 30 mL/min/1.73m2 | kdigo_potassium_2020
+hyperkalemia_renal | Hyperkalaemia of renal failure | renal | laboratory_finding | staging_severity | potassium > 6.5 mmol/L | kdigo_potassium_2020
+metabolic_acidosis_ckd | Metabolic acidosis of CKD | renal | laboratory_finding | screening | all: bicarbonate < 22 mmol/L; egfr_ckd_epi_creatinine < 30 mL/min/1.73m2 | kdigo_ckd_2024
+metabolic_acidosis_ckd | Metabolic acidosis of CKD | renal | laboratory_finding | staging_severity | bicarbonate < 15 mmol/L | kdigo_ckd_2024
+renal_transplant_rejection | Kidney transplant rejection | renal | clinical_entity | screening | all: creatinine > 1.5 mg/dL; tacrolimus_trough < 5 ng/mL | kdigo_transplant_2020
+renal_transplant_rejection | Kidney transplant rejection | renal | clinical_entity | staging_severity | creatinine > 3 mg/dL | kdigo_transplant_2020
+cardiorenal_syndrome | Cardiorenal syndrome | renal | clinical_entity | screening | all: creatinine > 1.5 mg/dL; n_terminal_pro_bnp > 900 pg/mL | esc_heart_failure_2024
+cardiorenal_syndrome | Cardiorenal syndrome | renal | clinical_entity | staging_severity | all: creatinine > 2.5 mg/dL; n_terminal_pro_bnp > 5000 pg/mL; sodium < 135 mmol/L | esc_heart_failure_2024
+hypertensive_nephrosclerosis | Hypertensive nephrosclerosis | renal | clinical_entity | screening | all: egfr_ckd_epi_creatinine < 60 mL/min/1.73m2; urine_albumin_to_creatinine_ratio >= 30 mg/g; urine_albumin_to_creatinine_ratio < 300 mg/g | kdigo_blood_pressure_ckd_2021
+hypertensive_nephrosclerosis | Hypertensive nephrosclerosis | renal | clinical_entity | staging_severity | egfr_ckd_epi_creatinine < 30 mL/min/1.73m2 | kdigo_blood_pressure_ckd_2021
+type_2_diabetes_mellitus | Type 2 diabetes mellitus | endocrine | clinical_entity | screening | any: hemoglobin_a1c >= 6.5 %; fasting_plasma_glucose >= 126 mg/dL | ada_2026
+type_2_diabetes_mellitus | Type 2 diabetes mellitus | endocrine | clinical_entity | staging_severity | hemoglobin_a1c >= 9 % | ada_2026
+prediabetes | Prediabetes | endocrine | clinical_entity | screening | any: hemoglobin_a1c >= 5.7 %; fasting_plasma_glucose >= 100 mg/dL | ada_2026
+prediabetes | Prediabetes | endocrine | clinical_entity | diagnostic_criterion | all: hemoglobin_a1c >= 5.7 %; hemoglobin_a1c < 6.5 % | ada_2026
+diabetic_ketoacidosis | Diabetic ketoacidosis | endocrine | clinical_entity | screening | all: glucose > 200 mg/dL; bicarbonate < 18 mmol/L; anion_gap > 12 mmol/L | ada_easd_hyperglycemic_crises_2024
+diabetic_ketoacidosis | Diabetic ketoacidosis | endocrine | clinical_entity | staging_severity | all: arterial_ph < 7 ; bicarbonate < 10 mmol/L | ada_easd_hyperglycemic_crises_2024
+hyperosmolar_hyperglycemic_state | Hyperosmolar hyperglycaemic state | endocrine | clinical_entity | screening | all: glucose > 600 mg/dL; serum_osmolality > 320 mOsm/kg | ada_easd_hyperglycemic_crises_2024
+hyperosmolar_hyperglycemic_state | Hyperosmolar hyperglycaemic state | endocrine | clinical_entity | diagnostic_criterion | all: glucose > 600 mg/dL; serum_osmolality > 320 mOsm/kg; bicarbonate > 18 mmol/L; arterial_ph > 7.3 | ada_easd_hyperglycemic_crises_2024
+hypoglycemia | Hypoglycaemia | endocrine | laboratory_finding | screening | glucose < 70 mg/dL | ada_2026_s6_glycemic_goals
+hypoglycemia | Hypoglycaemia | endocrine | laboratory_finding | staging_severity | glucose < 54 mg/dL | ada_2026_s6_glycemic_goals
+insulinoma | Insulinoma | endocrine | clinical_entity | screening | all: glucose < 55 mg/dL; insulin > 3 uIU/mL | endocrine_society_hypoglycemia_2024
+insulinoma | Insulinoma | endocrine | clinical_entity | diagnostic_criterion | all: glucose < 55 mg/dL; insulin >= 3 uIU/mL; c_peptide >= 0.6 ng/mL; beta_hydroxybutyrate < 2.7 mmol/L | endocrine_society_hypoglycemia_2024
+primary_hypothyroidism | Primary hypothyroidism | endocrine | clinical_entity | screening | thyroid_stimulating_hormone > 4.5 mIU/L | ata_hypothyroid_2014
+primary_hypothyroidism | Primary hypothyroidism | endocrine | clinical_entity | diagnostic_criterion | all: thyroid_stimulating_hormone > 10 mIU/L; free_thyroxine < 0.8 ng/dL | ata_hypothyroid_2014
+subclinical_hypothyroidism | Subclinical hypothyroidism | endocrine | clinical_entity | screening | all: thyroid_stimulating_hormone > 4.5 mIU/L; free_thyroxine >= 0.8 ng/dL | ata_hypothyroid_2014
+subclinical_hypothyroidism | Subclinical hypothyroidism | endocrine | clinical_entity | diagnostic_criterion | all: thyroid_stimulating_hormone > 4.5 mIU/L; thyroid_stimulating_hormone <= 10 mIU/L; free_thyroxine >= 0.8 ng/dL | ata_hypothyroid_2014
+graves_disease | Graves disease | endocrine | clinical_entity | screening | all: thyroid_stimulating_hormone < 0.1 mIU/L; free_thyroxine > 1.8 ng/dL | ata_hyperthyroid_2016
+graves_disease | Graves disease | endocrine | clinical_entity | diagnostic_criterion | all: thyroid_stimulating_hormone < 0.1 mIU/L; tsh_receptor_antibody >= 1 | ata_hyperthyroid_2016
+thyroid_storm | Thyroid storm | endocrine | clinical_entity | screening | all: thyroid_stimulating_hormone < 0.01 mIU/L; free_thyroxine > 3 ng/dL | ata_hyperthyroid_2016
+thyroid_storm | Thyroid storm | endocrine | clinical_entity | staging_severity | all: free_thyroxine > 3 ng/dL; total_bilirubin > 3 mg/dL | ata_hyperthyroid_2016
+central_hypothyroidism | Central hypothyroidism | endocrine | clinical_entity | screening | all: free_thyroxine < 0.8 ng/dL; thyroid_stimulating_hormone <= 4.5 mIU/L | endocrine_society_hypopituitarism_2016
+central_hypothyroidism | Central hypothyroidism | endocrine | clinical_entity | diagnostic_criterion | all: free_thyroxine < 0.8 ng/dL; thyroid_stimulating_hormone <= 4.5 mIU/L; morning_cortisol < 5 ug/dL | endocrine_society_hypopituitarism_2016
+primary_adrenal_insufficiency | Primary adrenal insufficiency | endocrine | clinical_entity | screening | all: sodium < 135 mmol/L; potassium > 5 mmol/L; morning_cortisol < 5 ug/dL | endocrine_society_adrenal_2024
+primary_adrenal_insufficiency | Primary adrenal insufficiency | endocrine | clinical_entity | diagnostic_criterion | all: morning_cortisol < 3 ug/dL; adrenocorticotropic_hormone > 100 pg/mL | endocrine_society_adrenal_2024
+cushing_syndrome | Cushing syndrome | endocrine | clinical_entity | screening | all: glucose > 126 mg/dL; potassium < 3.5 mmol/L | endocrine_society_cushing_2024
+cushing_syndrome | Cushing syndrome | endocrine | clinical_entity | diagnostic_criterion | any: late_night_salivary_cortisol > 0.145 ug/dL; urine_free_cortisol_24h > 50 ug/24h | endocrine_society_cushing_2024
+primary_hyperaldosteronism | Primary aldosteronism | endocrine | clinical_entity | screening | all: potassium < 3.5 mmol/L; bicarbonate > 28 mmol/L | endocrine_society_aldosterone_2024
+primary_hyperaldosteronism | Primary aldosteronism | endocrine | clinical_entity | diagnostic_criterion | all: aldosterone > 15 ng/dL; aldosterone_renin_ratio > 30 ratio | endocrine_society_aldosterone_2024
+pheochromocytoma | Phaeochromocytoma | endocrine | clinical_entity | screening | plasma_free_metanephrines > 0.5 nmol/L | endocrine_society_pheochromocytoma_2014
+pheochromocytoma | Phaeochromocytoma | endocrine | clinical_entity | diagnostic_criterion | plasma_free_metanephrines > 1.5 nmol/L | endocrine_society_pheochromocytoma_2014
+primary_hyperparathyroidism | Primary hyperparathyroidism | endocrine | clinical_entity | screening | all: calcium_total > 10.5 mg/dL; intact_parathyroid_hormone > 65 pg/mL | asbmr_hypopara_2022
+primary_hyperparathyroidism | Primary hyperparathyroidism | endocrine | clinical_entity | staging_severity | calcium_total > 12 mg/dL | asbmr_hypopara_2022
+hypoparathyroidism | Hypoparathyroidism | endocrine | clinical_entity | screening | all: calcium_total < 8.5 mg/dL; phosphate > 4.5 mg/dL; intact_parathyroid_hormone < 15 pg/mL | asbmr_hypopara_2022
+hypoparathyroidism | Hypoparathyroidism | endocrine | clinical_entity | staging_severity | calcium_total < 7 mg/dL | asbmr_hypopara_2022
+vitamin_d_deficiency | Vitamin D deficiency | endocrine | laboratory_finding | screening | 25_hydroxyvitamin_d < 20 ng/mL | endocrine_society_vitamin_d_2011
+vitamin_d_deficiency | Vitamin D deficiency | endocrine | laboratory_finding | staging_severity | 25_hydroxyvitamin_d < 10 ng/mL | endocrine_society_vitamin_d_2011
+osteomalacia | Osteomalacia | endocrine | clinical_entity | screening | all: alkaline_phosphatase > 130 U/L; 25_hydroxyvitamin_d < 20 ng/mL; phosphate < 2.5 mg/dL | endocrine_society_vitamin_d_2011
+osteomalacia | Osteomalacia | endocrine | clinical_entity | diagnostic_criterion | all: alkaline_phosphatase > 130 U/L; 25_hydroxyvitamin_d < 10 ng/mL; intact_parathyroid_hormone > 65 pg/mL | endocrine_society_vitamin_d_2011
+acromegaly | Acromegaly | endocrine | clinical_entity | screening | insulin_like_growth_factor_1 > 300 ng/mL | endocrine_society_hypopituitarism_2016
+acromegaly | Acromegaly | endocrine | clinical_entity | diagnostic_criterion | growth_hormone > 1 ng/mL | endocrine_society_hypopituitarism_2016
+prolactinoma | Prolactinoma | endocrine | clinical_entity | screening | prolactin > 25 ng/mL | endocrine_society_hypopituitarism_2016
+prolactinoma | Prolactinoma | endocrine | clinical_entity | diagnostic_criterion | prolactin > 200 ng/mL | endocrine_society_hypopituitarism_2016
+diabetes_insipidus | Diabetes insipidus | endocrine | clinical_entity | screening | all: sodium > 145 mmol/L; urine_osmolality < 300 mOsm/kg | endocrine_society_hypopituitarism_2016
+diabetes_insipidus | Diabetes insipidus | endocrine | clinical_entity | diagnostic_criterion | all: serum_osmolality > 295 mOsm/kg; urine_osmolality < 300 mOsm/kg | endocrine_society_hypopituitarism_2016
+siadh | SIADH | endocrine | clinical_entity | screening | all: sodium < 135 mmol/L; serum_osmolality < 275 mOsm/kg; urine_osmolality > 100 mOsm/kg | endocrine_guidelines
+siadh | SIADH | endocrine | clinical_entity | diagnostic_criterion | all: sodium < 135 mmol/L; serum_osmolality < 275 mOsm/kg; urine_osmolality > 100 mOsm/kg; urine_sodium > 30 mmol/L; uric_acid < 4 mg/dL | endocrine_guidelines
+congenital_adrenal_hyperplasia | Congenital adrenal hyperplasia | endocrine | clinical_entity | screening | 17_hydroxyprogesterone > 200 ng/dL | endocrine_society_cah_2018
+congenital_adrenal_hyperplasia | Congenital adrenal hyperplasia | endocrine | clinical_entity | diagnostic_criterion | 17_hydroxyprogesterone > 1000 ng/dL | endocrine_society_cah_2018
+polycystic_ovary_syndrome | Polycystic ovary syndrome | endocrine | clinical_entity | screening | total_testosterone > 50 ng/dL | endocrine_society_pcos_2023
+polycystic_ovary_syndrome | Polycystic ovary syndrome | endocrine | clinical_entity | diagnostic_criterion | all: total_testosterone > 50 ng/dL; luteinizing_hormone > 10 mIU/mL | endocrine_society_pcos_2023
+male_hypogonadism | Male hypogonadism | endocrine | clinical_entity | screening | total_testosterone < 300 ng/dL | endocrine_society_testosterone_2018
+male_hypogonadism | Male hypogonadism | endocrine | clinical_entity | diagnostic_criterion | all: total_testosterone < 300 ng/dL; luteinizing_hormone > 10 mIU/mL | endocrine_society_testosterone_2018
+familial_hypercholesterolemia | Familial hypercholesterolaemia | endocrine | clinical_entity | screening | ldl_cholesterol_calculated >= 190 mg/dL | esc_eas_dyslipidemia_2024
+familial_hypercholesterolemia | Familial hypercholesterolaemia | endocrine | clinical_entity | diagnostic_criterion | ldl_cholesterol_calculated >= 330 mg/dL | esc_eas_dyslipidemia_2024
+severe_hypertriglyceridemia | Severe hypertriglyceridaemia | endocrine | laboratory_finding | screening | triglycerides >= 500 mg/dL | esc_eas_dyslipidemia_2024
+severe_hypertriglyceridemia | Severe hypertriglyceridaemia | endocrine | laboratory_finding | staging_severity | triglycerides >= 1000 mg/dL | esc_eas_dyslipidemia_2024
+metabolic_syndrome | Metabolic syndrome | endocrine | clinical_entity | screening | all: triglycerides >= 150 mg/dL; hdl_cholesterol < 40 mg/dL; fasting_plasma_glucose >= 100 mg/dL | acc_aha_cholesterol_2018
+metabolic_syndrome | Metabolic syndrome | endocrine | clinical_entity | diagnostic_criterion | all: triglycerides >= 150 mg/dL; hdl_cholesterol < 40 mg/dL; fasting_plasma_glucose >= 100 mg/dL; hemoglobin_a1c >= 5.7 % | acc_aha_cholesterol_2018
+gestational_diabetes | Gestational diabetes | endocrine | clinical_entity | screening | fasting_plasma_glucose >= 92 mg/dL | acog_gestational_diabetes_2023
+gestational_diabetes | Gestational diabetes | endocrine | clinical_entity | diagnostic_criterion | any: fasting_plasma_glucose >= 92 mg/dL; glucose_1h_ogtt >= 180 mg/dL; glucose_2h_ogtt >= 153 mg/dL | acog_gestational_diabetes_2023
+acute_pancreatitis | Acute pancreatitis | other | clinical_entity | screening | lipase > 180 U/L | atlanta_pancreatitis_2012
+acute_pancreatitis | Acute pancreatitis | other | clinical_entity | staging_severity | all: blood_urea_nitrogen > 20 mg/dL; hematocrit > 44 %; c_reactive_protein > 150 mg/L | atlanta_pancreatitis_2012
+alcoholic_hepatitis | Alcoholic hepatitis | other | clinical_entity | screening | all: aspartate_aminotransferase > 50 U/L; aspartate_aminotransferase < 400 U/L; total_bilirubin > 3 mg/dL | aasld_alcoholic_liver_2019
+alcoholic_hepatitis | Alcoholic hepatitis | other | clinical_entity | staging_severity | all: total_bilirubin > 3 mg/dL; prothrombin_time > 17 s | aasld_alcoholic_liver_2019
+cirrhosis | Cirrhosis | other | clinical_entity | screening | all: platelets < 150 10*3/uL; albumin < 3.5 g/dL; international_normalized_ratio > 1.2 | easl_cirrhosis_2024
+cirrhosis | Cirrhosis | other | clinical_entity | staging_severity | all: total_bilirubin > 3 mg/dL; albumin < 2.8 g/dL; international_normalized_ratio > 2.3 | easl_cirrhosis_2024
+acute_liver_failure | Acute liver failure | other | clinical_entity | screening | all: international_normalized_ratio >= 1.5; alanine_aminotransferase > 500 U/L | aasld_alf_2011
+acute_liver_failure | Acute liver failure | other | clinical_entity | staging_severity | all: international_normalized_ratio > 6.5; total_bilirubin > 17.5 mg/dL; creatinine > 3.4 mg/dL | aasld_alf_2011
+primary_biliary_cholangitis | Primary biliary cholangitis | other | clinical_entity | screening | all: alkaline_phosphatase > 150 U/L; gamma_glutamyl_transferase > 60 U/L | aasld_pbc_2018
+primary_biliary_cholangitis | Primary biliary cholangitis | other | clinical_entity | diagnostic_criterion | all: alkaline_phosphatase > 150 U/L; antimitochondrial_antibody >= 1 | aasld_pbc_2018
+autoimmune_hepatitis | Autoimmune hepatitis | other | clinical_entity | screening | all: alanine_aminotransferase > 100 U/L; total_immunoglobulin_g > 1600 mg/dL | aasld_aih_2019
+autoimmune_hepatitis | Autoimmune hepatitis | other | clinical_entity | diagnostic_criterion | all: alanine_aminotransferase > 100 U/L; total_immunoglobulin_g > 1600 mg/dL; anti_smooth_muscle_antibody >= 1 | aasld_aih_2019
+wilson_disease | Wilson disease | other | clinical_entity | screening | all: ceruloplasmin < 20 mg/dL; alanine_aminotransferase > 40 U/L | easl_wilson_2012
+wilson_disease | Wilson disease | other | clinical_entity | diagnostic_criterion | all: ceruloplasmin < 10 mg/dL; urine_copper_24h > 100 ug/24h | easl_wilson_2012
+masld | Metabolic dysfunction-associated steatotic liver disease | other | clinical_entity | screening | all: alanine_aminotransferase > 30 U/L; triglycerides >= 150 mg/dL; hemoglobin_a1c >= 5.7 % | aasld_masld_2025
+masld | Metabolic dysfunction-associated steatotic liver disease | other | clinical_entity | staging_severity | fib4_index > 2.67 index | aasld_masld_2025
+hepatocellular_carcinoma | Hepatocellular carcinoma | other | clinical_entity | screening | alpha_fetoprotein > 20 ng/mL | aasld_hcc_2023
+hepatocellular_carcinoma | Hepatocellular carcinoma | other | clinical_entity | diagnostic_criterion | alpha_fetoprotein > 400 ng/mL | aasld_hcc_2023
+acute_myocardial_infarction | Acute myocardial infarction | other | clinical_entity | screening | high_sensitivity_troponin_t > 14 ng/L | esc_acs_2023
+acute_myocardial_infarction | Acute myocardial infarction | other | clinical_entity | diagnostic_criterion | high_sensitivity_troponin_t > 52 ng/L | esc_acs_2023
+heart_failure | Heart failure | other | clinical_entity | screening | n_terminal_pro_bnp > 125 pg/mL | esc_heart_failure_2024
+heart_failure | Heart failure | other | clinical_entity | diagnostic_criterion | n_terminal_pro_bnp > 450 pg/mL | esc_heart_failure_2024
+pulmonary_embolism | Pulmonary embolism | other | clinical_entity | screening | d_dimer > 0.5 ug/mL | esc_pulmonary_embolism_2019
+pulmonary_embolism | Pulmonary embolism | other | clinical_entity | staging_severity | all: d_dimer > 0.5 ug/mL; high_sensitivity_troponin_t > 14 ng/L; n_terminal_pro_bnp > 600 pg/mL | esc_pulmonary_embolism_2019
+myocarditis | Myocarditis | other | clinical_entity | screening | all: high_sensitivity_troponin_t > 14 ng/L; c_reactive_protein > 10 mg/L | esc_myocarditis_2013
+myocarditis | Myocarditis | other | clinical_entity | staging_severity | all: high_sensitivity_troponin_t > 100 ng/L; n_terminal_pro_bnp > 900 pg/mL | esc_myocarditis_2013
+systemic_lupus_erythematosus | Systemic lupus erythematosus | other | clinical_entity | screening | all: antinuclear_antibody_titer >= 80 titer; white_blood_cell_count < 4 10*3/uL | acr_eular_sle_2024
+systemic_lupus_erythematosus | Systemic lupus erythematosus | other | clinical_entity | diagnostic_criterion | all: antinuclear_antibody_titer >= 80 titer; anti_double_stranded_dna >= 1; complement_c3 < 90 mg/dL | acr_eular_sle_2024
+rheumatoid_arthritis | Rheumatoid arthritis | other | clinical_entity | screening | all: rheumatoid_factor >= 1; c_reactive_protein > 10 mg/L | acr_eular_ra_2024
+rheumatoid_arthritis | Rheumatoid arthritis | other | clinical_entity | diagnostic_criterion | all: anti_cyclic_citrullinated_peptide > 20 U/mL; c_reactive_protein > 10 mg/L | acr_eular_ra_2024
+gout | Gout | other | clinical_entity | screening | uric_acid > 6.8 mg/dL | acr_gout_2024
+gout | Gout | other | clinical_entity | diagnostic_criterion | all: uric_acid > 6.8 mg/dL; synovial_fluid_urate_crystals >= 1 | acr_gout_2024
+polymyalgia_rheumatica | Polymyalgia rheumatica | other | clinical_entity | screening | all: erythrocyte_sedimentation_rate > 40 mm/h; c_reactive_protein > 10 mg/L | acr_pmr_2015
+polymyalgia_rheumatica | Polymyalgia rheumatica | other | clinical_entity | staging_severity | erythrocyte_sedimentation_rate > 100 mm/h | acr_pmr_2015
+dermatomyositis | Dermatomyositis | other | clinical_entity | screening | all: creatine_kinase_total > 300 U/L; aldolase > 8 U/L | acr_eular_myositis_2017
+dermatomyositis | Dermatomyositis | other | clinical_entity | diagnostic_criterion | all: creatine_kinase_total > 1000 U/L; anti_jo1_antibody >= 1 | acr_eular_myositis_2017
+celiac_disease | Coeliac disease | other | clinical_entity | screening | anti_tissue_transglutaminase_iga > 10 U/mL | acg_celiac_2023
+celiac_disease | Coeliac disease | other | clinical_entity | diagnostic_criterion | anti_tissue_transglutaminase_iga > 100 U/mL | espghan_celiac_2020
+inflammatory_bowel_disease | Inflammatory bowel disease | other | clinical_entity | screening | all: fecal_calprotectin > 50 ug/g; c_reactive_protein > 10 mg/L | ecco_ibd_2024
+inflammatory_bowel_disease | Inflammatory bowel disease | other | clinical_entity | staging_severity | all: fecal_calprotectin > 250 ug/g; albumin < 3 g/dL; hemoglobin < 10 g/dL | ecco_ibd_2024
+acetaminophen_toxicity | Paracetamol toxicity | other | clinical_entity | screening | acetaminophen > 20 ug/mL | acmt_toxic_alcohols_2024
+acetaminophen_toxicity | Paracetamol toxicity | other | clinical_entity | staging_severity | all: alanine_aminotransferase > 1000 U/L; international_normalized_ratio > 1.5 | acmt_toxic_alcohols_2024
+salicylate_toxicity | Salicylate toxicity | other | clinical_entity | screening | salicylate > 30 mg/dL | acmt_toxic_alcohols_2024
+salicylate_toxicity | Salicylate toxicity | other | clinical_entity | staging_severity | all: salicylate > 70 mg/dL; arterial_ph < 7.3 | acmt_toxic_alcohols_2024
+methanol_poisoning | Methanol poisoning | other | clinical_entity | screening | all: anion_gap > 16 mmol/L; osmolal_gap > 10 mOsm/kg | acmt_toxic_alcohols_2024
+methanol_poisoning | Methanol poisoning | other | clinical_entity | diagnostic_criterion | methanol > 20 mg/dL | acmt_toxic_alcohols_2024
+ethylene_glycol_poisoning | Ethylene glycol poisoning | other | clinical_entity | screening | all: anion_gap > 16 mmol/L; osmolal_gap > 10 mOsm/kg; calcium_total < 8.5 mg/dL | acmt_toxic_alcohols_2024
+ethylene_glycol_poisoning | Ethylene glycol poisoning | other | clinical_entity | diagnostic_criterion | ethylene_glycol > 20 mg/dL | acmt_toxic_alcohols_2024
+lithium_toxicity | Lithium toxicity | other | clinical_entity | screening | lithium > 1.2 mmol/L | tietz_7e_2023
+lithium_toxicity | Lithium toxicity | other | clinical_entity | staging_severity | lithium > 2.5 mmol/L | tietz_7e_2023
+digoxin_toxicity | Digoxin toxicity | other | clinical_entity | screening | digoxin > 2 ng/mL | tietz_7e_2023
+digoxin_toxicity | Digoxin toxicity | other | clinical_entity | staging_severity | all: digoxin > 2 ng/mL; potassium > 5.5 mmol/L | tietz_7e_2023
+carbon_monoxide_poisoning | Carbon monoxide poisoning | other | clinical_entity | screening | carboxyhemoglobin_percent > 10 % | tietz_7e_2023
+carbon_monoxide_poisoning | Carbon monoxide poisoning | other | clinical_entity | staging_severity | all: carboxyhemoglobin_percent > 25 %; lactate > 4 mmol/L | tietz_7e_2023
+preeclampsia | Pre-eclampsia | other | clinical_entity | screening | urine_protein_to_creatinine_ratio >= 0.3 mg/mg | acog_preeclampsia_2024
+preeclampsia | Pre-eclampsia | other | clinical_entity | staging_severity | any: platelets < 100 10*3/uL; creatinine > 1.1 mg/dL; alanine_aminotransferase > 80 U/L | acog_preeclampsia_2024
+hellp_syndrome | HELLP syndrome | other | clinical_entity | screening | all: platelets < 100 10*3/uL; aspartate_aminotransferase > 70 U/L; lactate_dehydrogenase > 600 U/L | acog_preeclampsia_2024
+hellp_syndrome | HELLP syndrome | other | clinical_entity | diagnostic_criterion | all: platelets < 100 10*3/uL; aspartate_aminotransferase > 70 U/L; lactate_dehydrogenase > 600 U/L; haptoglobin_serum < 30 mg/dL | acog_preeclampsia_2024
+ectopic_pregnancy | Ectopic pregnancy | other | clinical_entity | screening | all: human_chorionic_gonadotropin_quantitative > 5 mIU/mL; hemoglobin < 12 g/dL | acog_ectopic_2018
+ectopic_pregnancy | Ectopic pregnancy | other | clinical_entity | diagnostic_criterion | human_chorionic_gonadotropin_quantitative > 3500 mIU/mL | acog_ectopic_2018
+hyperemesis_gravidarum | Hyperemesis gravidarum | other | clinical_entity | screening | all: potassium < 3.5 mmol/L; urine_ketones >= 1 | acog_hyperemesis_2024
+hyperemesis_gravidarum | Hyperemesis gravidarum | other | clinical_entity | staging_severity | all: potassium < 3 mmol/L; thyroid_stimulating_hormone < 0.1 mIU/L; alanine_aminotransferase > 50 U/L | acog_hyperemesis_2024
+prostate_cancer | Prostate cancer | other | clinical_entity | screening | total_prostate_specific_antigen > 4 ng/mL | nccn_prostate_2024
+prostate_cancer | Prostate cancer | other | clinical_entity | staging_severity | total_prostate_specific_antigen > 20 ng/mL | nccn_prostate_2024
+ovarian_cancer | Ovarian cancer | other | clinical_entity | screening | ca_125 > 35 U/mL | nccn_ovarian_2024
+ovarian_cancer | Ovarian cancer | other | clinical_entity | staging_severity | ca_125 > 200 U/mL | nccn_ovarian_2024
+pancreatic_cancer | Pancreatic cancer | other | clinical_entity | screening | all: ca_19_9 > 37 U/mL; total_bilirubin > 2 mg/dL | nccn_pancreatic_2024
+pancreatic_cancer | Pancreatic cancer | other | clinical_entity | staging_severity | ca_19_9 > 1000 U/mL | nccn_pancreatic_2024
+colorectal_cancer | Colorectal cancer | other | clinical_entity | screening | all: carcinoembryonic_antigen > 5 ng/mL; hemoglobin < 12 g/dL; mean_corpuscular_volume < 80 fL | nccn_colorectal_2024
+colorectal_cancer | Colorectal cancer | other | clinical_entity | staging_severity | carcinoembryonic_antigen > 20 ng/mL | nccn_colorectal_2024
+testicular_germ_cell_tumor | Testicular germ cell tumour | other | clinical_entity | screening | any: alpha_fetoprotein > 10 ng/mL; human_chorionic_gonadotropin_quantitative > 5 mIU/mL | nccn_testicular_2024
+testicular_germ_cell_tumor | Testicular germ cell tumour | other | clinical_entity | staging_severity | any: alpha_fetoprotein > 10000 ng/mL; human_chorionic_gonadotropin_quantitative > 50000 mIU/mL; lactate_dehydrogenase > 2500 U/L | nccn_testicular_2024
+carcinoid_syndrome | Carcinoid syndrome | other | clinical_entity | screening | serum_chromogranin_a > 100 ng/mL | nccn_neuroendocrine_2024
+carcinoid_syndrome | Carcinoid syndrome | other | clinical_entity | diagnostic_criterion | urine_5_hiaa_24h > 25 mg/24h | nccn_neuroendocrine_2024
+medullary_thyroid_cancer | Medullary thyroid cancer | other | clinical_entity | screening | calcitonin > 10 pg/mL | ata_medullary_thyroid_2015
+medullary_thyroid_cancer | Medullary thyroid cancer | other | clinical_entity | staging_severity | calcitonin > 500 pg/mL | ata_medullary_thyroid_2015
+sarcoidosis | Sarcoidosis | other | clinical_entity | screening | all: angiotensin_converting_enzyme > 65 U/L; calcium_total > 10.5 mg/dL | ats_ers_sarcoidosis_2020
+sarcoidosis | Sarcoidosis | other | clinical_entity | staging_severity | all: calcium_total > 11.5 mg/dL; creatinine > 1.5 mg/dL | ats_ers_sarcoidosis_2020
+refeeding_syndrome | Refeeding syndrome | other | clinical_entity | screening | all: phosphate < 2.5 mg/dL; potassium < 3.5 mmol/L; magnesium < 1.7 mg/dL | sccm_nutrition_2016
+refeeding_syndrome | Refeeding syndrome | other | clinical_entity | staging_severity | phosphate < 1.5 mg/dL | sccm_nutrition_2016
+acute_otitis_media_complicated | Complicated acute otitis media (mastoiditis) | infectious | clinical_entity | screening | all: c_reactive_protein > 40 mg/L; white_blood_cell_count > 15 10*3/uL | aap_otitis_2023
+acute_otitis_media_complicated | Complicated acute otitis media (mastoiditis) | infectious | clinical_entity | staging_severity | c_reactive_protein > 100 mg/L | aap_otitis_2023
+streptococcal_pharyngitis | Streptococcal pharyngitis | infectious | clinical_entity | screening | white_blood_cell_count > 12 10*3/uL | aap_pharyngitis_2021
+streptococcal_pharyngitis | Streptococcal pharyngitis | infectious | clinical_entity | diagnostic_criterion | group_a_streptococcus_rapid_antigen >= 1 | aap_pharyngitis_2021
+acute_rheumatic_fever | Acute rheumatic fever | infectious | clinical_entity | screening | all: erythrocyte_sedimentation_rate > 60 mm/h; c_reactive_protein > 30 mg/L | aha_2017
+acute_rheumatic_fever | Acute rheumatic fever | infectious | clinical_entity | diagnostic_criterion | all: antistreptolysin_o_titer > 200 IU/mL; erythrocyte_sedimentation_rate > 60 mm/h | aha_2017
+post_streptococcal_glomerulonephritis | Post-streptococcal glomerulonephritis | infectious | clinical_entity | screening | all: urine_rbc_count > 5 /hpf; complement_c3 < 90 mg/dL | kdigo_glomerular_2021
+post_streptococcal_glomerulonephritis | Post-streptococcal glomerulonephritis | infectious | clinical_entity | diagnostic_criterion | all: antistreptolysin_o_titer > 200 IU/mL; complement_c3 < 90 mg/dL; urine_rbc_count > 5 /hpf | kdigo_glomerular_2021
+helicobacter_pylori_infection | Helicobacter pylori infection | infectious | clinical_entity | screening | helicobacter_pylori_stool_antigen >= 1 | acg_hpylori_2024
+helicobacter_pylori_infection | Helicobacter pylori infection | infectious | clinical_entity | diagnostic_criterion | urea_breath_test >= 1 | acg_hpylori_2024
+giardiasis | Giardiasis | infectious | clinical_entity | screening | all: eosinophil_count_absolute <= 0.5 10*3/uL; albumin < 3.5 g/dL | idsa_guidelines
+giardiasis | Giardiasis | infectious | clinical_entity | diagnostic_criterion | giardia_stool_antigen >= 1 | idsa_guidelines
+cholera | Cholera | infectious | clinical_entity | screening | all: bicarbonate < 18 mmol/L; potassium < 3.5 mmol/L; creatinine > 1.3 mg/dL | who_cholera_2024
+cholera | Cholera | infectious | clinical_entity | staging_severity | all: bicarbonate < 12 mmol/L; creatinine > 2 mg/dL | who_cholera_2024
+tetanus | Tetanus | infectious | clinical_entity | screening | creatine_kinase_total > 500 U/L | idsa_guidelines
+tetanus | Tetanus | infectious | clinical_entity | staging_severity | all: creatine_kinase_total > 5000 U/L; creatinine > 1.5 mg/dL | idsa_guidelines
+congenital_toxoplasmosis | Congenital toxoplasmosis | infectious | clinical_entity | screening | toxoplasma_igm >= 1 | idsa_hiv_oi_2024
+congenital_toxoplasmosis | Congenital toxoplasmosis | infectious | clinical_entity | diagnostic_criterion | all: toxoplasma_igm >= 1; platelets < 150 10*3/uL; total_bilirubin > 2 mg/dL | idsa_hiv_oi_2024
+hemolytic_disease_of_newborn | Haemolytic disease of the newborn | hematology | clinical_entity | screening | all: total_bilirubin > 12 mg/dL; direct_antiglobulin_test >= 1 | aap_hyperbilirubinemia_2022
+hemolytic_disease_of_newborn | Haemolytic disease of the newborn | hematology | clinical_entity | staging_severity | all: total_bilirubin > 20 mg/dL; hemoglobin < 10 g/dL | aap_hyperbilirubinemia_2022
+alpha_thalassemia_trait | Alpha-thalassaemia trait | hematology | clinical_entity | screening | all: mean_corpuscular_volume < 75 fL; red_blood_cell_count > 5 10*6/uL; hemoglobin_a2 <= 3.5 % | ash_thalassemia_2024
+alpha_thalassemia_trait | Alpha-thalassaemia trait | hematology | clinical_entity | diagnostic_criterion | alpha_globin_gene_deletion >= 1 | ash_thalassemia_2024
+sideroblastic_anemia | Sideroblastic anaemia | hematology | clinical_entity | screening | all: hemoglobin < 12 g/dL; mean_corpuscular_volume < 80 fL; ferritin > 300 ng/mL; transferrin_saturation > 45 % | bsh_hematology_2024
+sideroblastic_anemia | Sideroblastic anaemia | hematology | clinical_entity | diagnostic_criterion | ring_sideroblasts_percent >= 15 % | bsh_hematology_2024
+factor_v_leiden_thrombophilia | Factor V Leiden thrombophilia | hematology | clinical_entity | screening | activated_protein_c_resistance < 2 ratio | ash_vte
+factor_v_leiden_thrombophilia | Factor V Leiden thrombophilia | hematology | clinical_entity | diagnostic_criterion | factor_v_leiden_mutation >= 1 | ash_vte
+vitamin_k_deficiency_bleeding | Vitamin K deficiency | hematology | clinical_entity | screening | all: prothrombin_time > 15 s; activated_partial_thromboplastin_time > 40 s; fibrinogen >= 150 mg/dL; platelets >= 150 10*3/uL | bsh_hematology_2024
+vitamin_k_deficiency_bleeding | Vitamin K deficiency | hematology | clinical_entity | staging_severity | international_normalized_ratio > 4 | bsh_hematology_2024
+eosinophilia_hypereosinophilic_syndrome | Hypereosinophilic syndrome | hematology | clinical_entity | screening | eosinophil_count_absolute > 1.5 10*3/uL | who_haem_2022
+eosinophilia_hypereosinophilic_syndrome | Hypereosinophilic syndrome | hematology | clinical_entity | staging_severity | all: eosinophil_count_absolute > 5 10*3/uL; high_sensitivity_troponin_t > 14 ng/L | who_haem_2022
+obstructive_uropathy | Obstructive uropathy | renal | clinical_entity | screening | all: creatinine > 1.5 mg/dL; potassium > 5 mmol/L; bicarbonate < 22 mmol/L | kdigo_aki_2012
+obstructive_uropathy | Obstructive uropathy | renal | clinical_entity | staging_severity | all: creatinine > 4 mg/dL; potassium > 6 mmol/L | kdigo_aki_2012

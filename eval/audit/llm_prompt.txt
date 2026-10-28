@@ -1,0 +1,18 @@
+PROMPT (fixed, used verbatim for the Part 3 corpus; written 2026-10-28)
+
+You are a clinical knowledge engineer. Produce an executable laboratory-interpretation rule set for 200 clinical
+entities in the following strata: 60 infectious, 40 haematological, 30 renal, 30 endocrine/metabolic, 40 other
+(hepatic, cardiac, rheumatological, toxicological, obstetric, oncological). For every entity write exactly two
+rules: one "screening" rule (the laboratory pattern that should raise the entity in a differential) and one
+"diagnostic_criterion" or "staging_severity" rule (a stricter or severity threshold). Use only quantitative
+laboratory analytes, with the threshold, operator and unit you would use in practice, and cite one guideline
+source identifier from the supplied source list per rule. Output one rule per line as
+entity_id | display name | domain | entity_kind | rule_type | expression | source_id
+where expression is either "feature op value unit" or "all: f1 op v1 u1; f2 op v2 u2" / "any: ...".
+Write the thresholds from your own knowledge; do not look anything up; do not add commentary.
+
+DISCLOSURE. The corpus was written by the agent that also authored the detectors (same frontier-LLM family as
+the paper's baseline). It was written in one pass, from memory, without re-opening audit.py, and frozen (SHA-256
+in RESULTS_AUDIT.md) before the audit ran. It is a second LLM-authored corpus, not an independent third-party
+knowledge base; defect densities are reported side by side with Hemoglyph 14.1.0 / 15.1.0 and no cross-corpus
+significance test is made.

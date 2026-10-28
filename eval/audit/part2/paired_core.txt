@@ -1,0 +1,14 @@
+n 2314 2314
+recall {'3': ([1167, 2432], [1167, 2432]), '5': ([1488, 2432], [1488, 2432]), '10': ([1807, 2432], [1807, 2432])}
+recall_two_tier {'1': ([809, 2432], [809, 2432]), '3': ([1515, 2432], [1515, 2432]), '5': ([1762, 2432], [1762, 2432])}
+recall_grouped {'1': ([705, 2432], [705, 2432]), '3': ([1334, 2432], [1334, 2432]), '5': ([1632, 2432], [1632, 2432]), '10': ([1895, 2432], [1895, 2432])}
+flat@1: +25 -9 p=0.00904 drivers=[('renal_impairment', 14), ('acute_kidney_injury', 10), ('diabetes', 0)] [('leukocytosis', -1), ('diabetic_ketoacidosis', -2), ('sepsis', -5)]
+flat@3: +40 -35 p=0.644 drivers=[('acute_kidney_injury', 9), ('renal_impairment', 9), ('chronic_kidney_disease', 4)] [('alcohol_withdrawal', -2), ('sepsis', -5), ('anemia', -6)]
+flat@5: +45 -49 p=0.757 drivers=[('diabetes', 9), ('chronic_kidney_disease', 8), ('hyperglycemia', 6)] [('sepsis', -4), ('anemia', -5), ('gi_bleeding', -5)]
+flat@10: +65 -36 p=0.00508 drivers=[('diabetes', 28), ('hyperglycemia', 7), ('sepsis', 7)] [('gi_bleeding', -3), ('renal_impairment', -3), ('acute_kidney_injury', -4)]
+grouped@1: +24 -18 p=0.441 drivers=[('acute_kidney_injury', 12), ('renal_impairment', 6), ('hyperkalemia', 2)] [('diabetic_ketoacidosis', -2), ('leukocytosis', -2), ('sepsis', -10)]
+grouped@3: +40 -52 p=0.251 drivers=[('acute_kidney_injury', 8), ('chronic_kidney_disease', 4), ('hyperglycemia', 3)] [('sepsis', -3), ('leukocytosis', -4), ('anemia', -8)]
+grouped@5: +47 -49 p=0.919 drivers=[('diabetes', 15), ('hyperglycemia', 6), ('thrombocytopenia', 5)] [('gi_bleeding', -3), ('sepsis', -3), ('anemia', -5)]
+grouped@10: +69 -28 p=3.8e-05 drivers=[('diabetes', 31), ('hyperglycemia', 11), ('sepsis', 7)] [('chronic_kidney_disease', -3), ('malnutrition', -3), ('cirrhosis_liver_failure', -3)]
+co_ top5 (0, 10829) (88, 11020)
+distinct top5 123 165
