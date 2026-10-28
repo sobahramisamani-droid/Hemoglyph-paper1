@@ -4,7 +4,7 @@
 |---|---|---|
 | Cover letter (why CMPB / what is known / what this adds / not published elsewhere) | `../COVER_LETTER_CMPB.md` | ready |
 | Title page, separate, single corresponding author, full postal addresses | `TITLE_PAGE.md` | **needs**: telephone, postal address, Z.T. affiliation wording, co-author ORCIDs |
-| Manuscript (.docx, single column, double spaced, numbered sections, no author names in main file for blinding not required — CMPB is single-anonymised) | `../Paper1_Hemoglyph_CMPB_EN_v7_R6.docx` | ready (≈3,700 words; CMPB norm 3,500 — stated in cover letter) |
+| Manuscript (.docx, single column, double spaced, numbered sections, no author names in main file for blinding not required — CMPB is single-anonymised) | `../Paper1_Hemoglyph_CMPB_EN_v7_R6.docx` | ready (main text ≈5,000 words excl. abstract, tables, declarations and references; CMPB norm ≈3,500 — excess justified in cover letter) |
 | Structured abstract ≤350 w (Background and Objective / Methods / Results / Conclusions) | in manuscript | 350 w (recounted 2026-10-28 after the audit-study sentence; earlier figure was wrong) |
 | Keywords 3–6 | in manuscript | 6 |
 | Highlights (optional, ≤85 chars each) | `highlights.txt` | ready |
@@ -22,7 +22,7 @@
 
 | File | Status |
 |---|---|
-| `Paper1_Hemoglyph_CMPB_EN_v7_R6.docx` (manuscript, double spaced, 34 refs, main text 3,814 w) | ready |
+| `Paper1_Hemoglyph_CMPB_EN_v7_R6.docx` (manuscript, double spaced, 34 refs, main text ≈5,000 w) | ready |
 | `TITLE_PAGE.md` | needs phone/postal address, Z.T. affiliation, ORCIDs |
 | `highlights.txt` (5 × ≤ 85 chars) | ready |
 | `Figure_1.png … Figure_7.png` (Fig1, Fig3, Fig4, Fig5, Fig6, Fig7_llm_v7, Fig8_calibration_dca; 1,360–2,080 px wide, tagged 300 dpi) | ready; if EM flags resolution, re-export from the matplotlib scripts at dpi=600 |

@@ -81,9 +81,7 @@ FIGS = """## Supplementary Figures
 
 ![Fig. S5. Context-echo analysis: the gain of the context arm is concentrated in labels that are restatements of documented history.](../fig/src_fig13_context_echo.png)
 
-![Fig. S6. Historical LLM comparison against the superseded engine v5.1 (n = 100 + 60 + 240 panels; see Table S12b); superseded by the v7 re-scoring in Note 2 and main-text Table 2.](../fig/Fig6_llm_v51.png)
-
-![Fig. S7. Participant flow for all evaluation cohorts (TRIPOD+AI 14a; counts in Table S3).](../../figures/figS1_participant_flow.png)"""
+![Fig. S6. Participant flow for all evaluation cohorts (TRIPOD+AI 14a; counts in Table S3).](../../figures/figS1_participant_flow.png)"""
 
 
 HYBRID = """
@@ -159,9 +157,9 @@ parts = [
 md = "\n\n".join(parts) + "\n"
 md = md.replace("**Labels (rater 1 = AI agent, declared; rater 2 = human non-clinician co-author, pending).**", "**Labels (single rater: AI agent, declared; see Addendum).**")
 md = md.replace("GPT-4-class general-purpose model accessed through the Arena.ai Agent Mode interface; model identity withheld", "frontier-tier general-purpose LLM accessed through the Arena.ai Agent Mode interface; model identity not disclosed by the platform and withheld")
-md = md.replace("![Fig S](../v7/fig/Fig6_llm_v51.png)", "(image: Fig. S6)")
-md = md.replace("## Supplementary Figure S — Historical LLM comparison against the superseded engine v5.1", "## Supplementary Figure S6 (text) — Historical LLM comparison against the superseded engine v5.1 (image in the Supplementary Figures section)")
-md = md.replace("Supplementary Fig. S1 (figS1_participant_flow.png)", "Supplementary Fig. S7 (participant flow)")
+md = md.replace("![Fig S](../v7/fig/Fig6_llm_v51.png)", "(figure withdrawn in R8: the superseded numbers are in Table S12b)")
+md = md.replace("## Supplementary Figure S — Historical LLM comparison against the superseded engine v5.1", "## Supplementary Table S12b addendum — Historical LLM comparison against the superseded engine v5.1 (text only; superseded)")
+md = md.replace("Supplementary Fig. S1 (figS1_participant_flow.png)", "Supplementary Fig. S6 (participant flow)")
 md = md.replace("Table S1 (TABLE_S1_cohort_flow.md)", "Table S3 (cohort flow)")
 
 # ---- de-clutter: internal report/data file names are removed; scripts (.py/.sh) and the audit protocol are kept
@@ -172,13 +170,13 @@ def _strip_files(s):
         return m.group(0) if any(k in m.group(1) for k in _KEEP) else ""
     s = pat.sub(rep, s)
     s = re.sub(r"; script (?=`)", "; script ", s)
-    s = re.sub(r"\((?:\s*[;,]\s*)+", "(", s)          # "(; script …" → "(script …"
-    s = re.sub(r"\(\s*\)", "", s)                        # empty parentheses
-    s = re.sub(r"\(\s*[;,]?\s*(?=[^()\n]*\))", "(", s)
+    s = re.sub(r"\((?:[ \t]*[;,][ \t]*)+", "(", s)          # "(; script …" → "(script …"
+    s = re.sub(r"\([ \t]*\)", "", s)                        # empty parentheses
+    s = re.sub(r"\([ \t]*[;,]?[ \t]*(?=[^()\n]*\))", "(", s)
     s = re.sub(r"[ \t]+([;,.)])", r"\1", s)
-    s = re.sub(r"\s{2,}", " ", s)
-    s = re.sub(r"\(\s*[;,]\s*", "(", s)
-    s = re.sub(r"[;,]\s*\)", ")", s)
+    s = re.sub(r"[ \t]{2,}", " ", s)
+    s = re.sub(r"\([ \t]*[;,][ \t]*", "(", s)
+    s = re.sub(r"[;,][ \t]*\)", ")", s)
     s = s.replace("Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length —", "Full-length Methods and Results text of revision R5 (verbatim; condensed in the main text for length —")
     return s
 # apply to everything except Note 1 (the SAP is a dated protocol document and is reproduced verbatim) and Note 12 (verbatim R5)
@@ -197,11 +195,11 @@ Every number in the main text and in this file is produced by a script in the pu
 
 | Item | Script (repository path) | Input data | Engine / registry |
 |---|---|---|---|
-| Table 1, Fig. 2, Fig. S2, Table S4, Table S6–S6c, Table S8, Table S11 | `eval/realdata/eval_eicu.py` (`--encounter icu`), `eval/realdata/panel_supported_metric.py`, `eval/subgroup_fairness.py`, `eval/reviewer_r2_metrics.py`, `eval/calibration_dca.py` | eICU-CRD demo v2.0.1 (2,314 ICU stays) | v7 / 14.1.0 |
-| Table 2, Fig. 6, Note 2, Fig. S6 | `eval/baselines/llm_zero_shot.py`, `b8_score.py`, `b8_v7_cluster.py`, `b8_rank_metrics.py`, `b8_prompt_sensitivity.py` | 400 blinded eICU panels (Data 1) | v7 / 14.1.0 (historical: v5.1) |
-| Table 3 | `eval/ablation/run_ablation.py` | eICU-CRD demo | v7 / 14.1.0 |
-| Table 5, Fig. 4, Fig. 3 (ML baseline: `eval/baselines/ml_baseline_eicu.py`), Table S7, Table S13, Note 10 | `eval/realdata/eval_nhanes.py`, `eval_uci_thyroid.py`, `eval_uci_hcv.py`, `eval_ilpd.py`, `eval_pmc_cases.py`, `eval/mimic/run_retrospective.py` | NHANES H/I/J, UCI thyroid0387, UCI HCV, ILPD, MIMIC-IV demo, PMC case reports | v7 / 14.1.0 |
-| Fig. 5, Table S16 | `eval/realdata/eval_sepsis2019.py`, `eval_sepsis2019_concurrent.py`, `eval/sepsis_ml/sepsis_risk_module.py` | PhysioNet Sepsis-2019 sets A, B, B2 | v7 / 14.1.0 |
+| Table 3, Fig. 2, Fig. S2, Table S4, Table S6–S6c, Table S8, Table S11 | `eval/realdata/eval_eicu.py` (`--encounter icu`), `eval/realdata/panel_supported_metric.py`, `eval/subgroup_fairness.py`, `eval/reviewer_r2_metrics.py`, `eval/calibration_dca.py` | eICU-CRD demo v2.0.1 (2,314 ICU stays) | v7 / 14.1.0 |
+| Table 5, Fig. 7, Note 2, Table S12b | `eval/baselines/llm_zero_shot.py`, `b8_score.py`, `b8_v7_cluster.py`, `b8_rank_metrics.py`, `b8_prompt_sensitivity.py` | 400 blinded eICU panels (Data 1) | v7 / 14.1.0 (historical: v5.1) |
+| Table 1 | `eval/ablation/run_ablation.py` | eICU-CRD demo | v7 / 14.1.0 |
+| Table 4, Fig. 5, Fig. 4 (ML baseline: `eval/baselines/ml_baseline_eicu.py`), Table S7, Table S13, Note 10 | `eval/realdata/eval_nhanes.py`, `eval_uci_thyroid.py`, `eval_uci_hcv.py`, `eval_ilpd.py`, `eval_pmc_cases.py`, `eval/mimic/run_retrospective.py` | NHANES H/I/J, UCI thyroid0387, UCI HCV, ILPD, MIMIC-IV demo, PMC case reports | v7 / 14.1.0 |
+| Fig. 6, Table S16 | `eval/realdata/eval_sepsis2019.py`, `eval_sepsis2019_concurrent.py`, `eval/sepsis_ml/sepsis_risk_module.py` | PhysioNet Sepsis-2019 sets A, B, B2 | v7 / 14.1.0 |
 | Section 3.1, Note 4 | `tests/test_properties.py`, `tests/test_bayes_properties.py`, `tests/hard_battery.py`, `hard_battery2.py`, `hard_battery3.py`, `tests/healthy_sweep.py`, `tests/perturbation_fuzz.py` | synthetic panels (seeded) | v7, v8, v8.1 |
 | Section 3.7, Table 6, Note 13 | `eval/blackbox/make_property_panels.py`, `eval/blackbox/score_property_panels.py`; package `eval/labpanel_check/score.py` (`build_package.py`); healthy-adult row: `eval/baselines/b5_nhanes_blind.py` | 40/40/60/40 perturbed eICU panels from the 400 blinded stays; NHANES 2017–18 | v8.1 (first run) and v8.2; LLM as Note 2 |
 | Section 3.8, Table 7, Note 14 | `eval/verifier/verify_llm_output.py`, `eval/consensus/verified_consensus.py` (protocols `PROTOCOL.md` in each folder) | the 400 blind LLM readings and engine v7 outputs of Table 5 | v7; no new LLM call |

@@ -59,7 +59,7 @@ while i<len(lines):
         p=doc.add_paragraph(); inline(p,l)
     i+=1
 doc.add_page_break(); h=doc.add_heading("Figures",1); h.runs[0].font.color.rgb=RGBColor(0,0,0)
-NPJ=["fig/Fig1.png","fig/Fig3.png","fig/Fig4.png","fig/Fig5.png","fig/Fig6.png","fig/Fig7_llm_v7.png","fig/Fig8_calibration_dca.png"]
+NPJ=[f"fig/Figure_{i}.png" for i in range(1,9)]
 LEG={}
 for l in lines:
     m=re.match(r"\*\*Fig\. (\d+) \| ([^*]+)\*\*(.*)",l)
