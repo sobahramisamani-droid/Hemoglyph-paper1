@@ -1,0 +1,52 @@
+{
+ "r150": {
+  "executable": 32905,
+  "fired": 1555,
+  "active_core": 193,
+  "hot_core": 83,
+  "dormant": 31350,
+  "core_co": 89,
+  "hot_co": 21,
+  "core_cls_by_150_labels": {
+   "reference_interval_convention": 25,
+   "generated_template": 89,
+   "other_unverified": 52,
+   "locator_only": 3,
+   "rule_text_verified": 18,
+   "source_text_verified_rule_not_checked": 6
+  },
+  "hot_cls_by_150_labels": {
+   "reference_interval_convention": 20,
+   "other_unverified": 23,
+   "locator_only": 2,
+   "generated_template": 21,
+   "rule_text_verified": 14,
+   "source_text_verified_rule_not_checked": 3
+  },
+  "anchors_in_core": 41
+ },
+ "r1510": {
+  "executable": 31070,
+  "fired": 1046,
+  "active_core": 192,
+  "hot_core": 82,
+  "dormant": 30024,
+  "core_co": 90,
+  "hot_co": 21,
+  "core_cls": {
+   "other_unverified": 56,
+   "generated_template": 90,
+   "reference_interval_convention": 25,
+   "rule_text_verified": 18,
+   "locator_only": 3
+  },
+  "hot_cls": {
+   "other_unverified": 25,
+   "generated_template": 21,
+   "rule_text_verified": 14,
+   "reference_interval_convention": 20,
+   "locator_only": 2
+  },
+  "anchors_in_core": 37
+ }
+}

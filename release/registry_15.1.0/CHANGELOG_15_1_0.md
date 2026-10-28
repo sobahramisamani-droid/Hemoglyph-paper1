@@ -1,0 +1,11 @@
+# Registry 15.1.0 — 2026-10-28 (second fidelity patch)
+- Protocol `eval/registry_patches/PROTOCOL_15_0_0.md` applied unchanged; patch `eval/registry_patches/patch_15_1_0.py` (deterministic, re-runnable with `--dry-run`); review `REVIEW_15_1_0.md`; gate `eval/provenance/REGISTRY_15_1_RESULTS.md`.
+- Only retirements (`executable: false`, `retired_reason` on every rule). No threshold changed, no rule added, no source record changed. Curated and text-verified rules untouched.
+- R7: 1,217 arithmetic-tier artefacts — candidate `staging_severity`/`diagnostic_criterion` rules whose every threshold is exactly 1.5× or 0.5× the same entity's own screening threshold for the same analyte (CRP >15, WBC >16.5, AST >60, Ca >15.75, K <1.75, Hb <6.5, drug-level "subtherapeutic" at half the trough floor, …). Real cut-offs that happen to coincide (eGFR 45/30/15, faecal elastase 100, UPCR 0.3, Hb 8/7, ANC 1.0/0.5, lactate 4, …) are on an allow-list and kept.
+- R2a-wide: 585 nonspecific single-analyte rules on clinical entities (one ubiquitous analyte voting for a specific disease: CRP >10 → reactive arthritis, Hb <13 → AML, platelets <100 → amyloidosis, "normal ALP" → echinococcosis, FPG ≥126 → central diabetes insipidus, TSAT <20 → haemochromatosis …). Finding entities are excluded by name; 11 entity-defining single-analyte rules are kept by explicit keep-list.
+- R8: 30 placeholder entities `uptodate_condition_01..30` (one `CRP > n` rule each, n = 11…40) retired; disease coverage marked `retired_placeholder_v15_1_0`.
+- R9: 3 impossible thresholds (`faecal calprotectin < 0`, `CRP < 0` for IBS) retired.
+- Executable rules 32,905 → 31,070; retired total 3,600; sources 792 (unchanged).
+- Gate: pytest 709 passed / 9 skipped; eICU 2,314 stays — every recall metric identical to 15.0.0 (0 paired gains, 0 paired losses at every k; 2 stays with a changed 5th slot); NHANES n=1,000 see results file.
+- Not changed, documented as open: 139 `_f13_3` sex-specific variants (13.3.0 derivation from female reference limits), the per-entity Hb/platelet clone rules attached to finding-type entities, troponin/eGFR/ACR single-analyte rules (organ-specific; left for text verification), `acute_kidney_injury_v1` surrogate.
+- Previous release: `release/registry_15.0.0/`.
