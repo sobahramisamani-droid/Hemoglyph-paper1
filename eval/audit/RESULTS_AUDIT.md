@@ -70,12 +70,16 @@ is necessary, not sufficient; a plausibly wrong number passes.* A first version 
 source from the detector's own scope table was discarded as circular (recall 0.989) and replaced by the random
 swap reported above.
 
-Defects in curated rules found incidentally during calibration (to be fixed in 15.2.0, not in this study):
-`rhabdomyolysis_v1` CK > 0.0; MCV > 200 / < 20 fL and total protein > 16.6 / < 1.5 g/dL severity tiers;
-rule-versus-feature-registry unit inconsistencies for PTH (ng/mL vs pg/mL, 13 rules), cortisol (µg/dL vs ng/mL),
-ACTH (pg/mL vs ng/mL) and β2-microglobulin (mg/L vs mg/dL) — which side is wrong is undetermined;
-`acute_pancreatitis_exclusion_normal_lipase_v1` cites a GERD guideline; hyponatraemia cites a sodium-guideline
-identifier that does not exist as a document.
+Defects in rules found incidentally during calibration, re-inspected against the engine and the sources before
+release 15.2.0 (`eval/registry_patches/PROTOCOL_15_2_0.md`): MCV > 200 / < 20 fL and total protein > 16.6 / < 1.5
+g/dL severity tiers (4 rules, retired); unit labels — ACTH thresholds numerically in pg/mL but labelled ng/mL (93
+rules; the feature registry's canonical ng/mL was the wrong side, corrected to pg/mL), PTH ng/mL for pg/mL values
+(14 rules), cortisol 60/230 ng/mL converted exactly to 6/23 µg/dL (19 rules); wrong sources — four pancreatitis
+rules citing a GERD guideline, ten sodium/osmolality pattern rules citing a paediatric liver entry mis-keyed as a
+sodium guideline. Two items first listed as defects were withdrawn on inspection: `rhabdomyolysis_v1` ("CK > 0")
+carries a 5 × ULN context flag that the engine applies at run time (the static detector does not read `context` —
+an audit false positive), and the β2-microglobulin inconsistency is on a different feature id (`beta_2_microglobulin_tumor`, 2 rules), left open. The four `_cur13` anaemia
+rules with a neonatal population were restricted to ≥ adolescent.
 
 ## Part 3 — Application to a second LLM-authored corpus
 
@@ -145,3 +149,12 @@ the 0.974 specificity measured in Part 1 on unmutated seeds (which are a much ea
    (single-analyte screens and missing population gates) at 6.0 and 3.3 per 100, and the detector false-positive
    pattern recurs (Part 3). The defect classes are properties of LLM-drafted rules, not of Hemoglyph's template
    generator; the fix (population gates, multi-analyte patterns, section-level locators) is generic.
+
+## Release 15.2.0 (2026-10-28, after this study)
+
+The defects above were corrected under a written protocol (`eval/registry_patches/PROTOCOL_15_2_0.md`): 4 tiers
+retired, 4 population gates, 126 unit labels (ACTH 93, PTH 14, cortisol 19), 14 source corrections; no threshold
+tuned. Frozen detectors re-run on 15.2.0: 68 flagged of 6,773 (1.00 per 100; was 1.28). Non-regression gate:
+pytest 709/9; eICU every count identical to 15.1.0; NHANES all AUROCs identical; healthy 0/51 — as expected, since
+none of the touched analytes fires on these panels. The paper's frozen results are unaffected.
+

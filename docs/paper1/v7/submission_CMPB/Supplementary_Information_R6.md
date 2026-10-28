@@ -1159,7 +1159,7 @@ DIR direction contradiction, UNIT unit–physiology mismatch, POP adult threshol
 mismatch) were calibrated on registry 15.1.0 **before** freezing. The first raw run flagged 1,241 rules (unit 713,
 src 349, r9 188, dir 40), the overwhelming majority false positives of the heuristics (unit-string synonyms,
 domain neighbours such as hepatology↔gastroenterology, deliberate multi-tier severities). Calibration consisted of
-whitelists and synonym tables (`QUANT_UNITS`, `CONV`, `DOM_NEIGHBOURS`, `SCOPE2DOM`, `KEEP_SINGLE`, `UBIQUITOUS`);
+whitelists and synonym tables;
 no rule was changed. Final density on 15.1.0 after calibration: 87 flagged rules of 6,777 non-template executable
 rules (1.28 per 100). Consequence, stated in advance: the 15.1.0 density is a *trained-on* number and is a lower
 bound for the detectors' true positive rate on that registry; the 14.1.0 and Part 3 densities are out-of-sample
@@ -1215,12 +1215,16 @@ is necessary, not sufficient; a plausibly wrong number passes.* A first version 
 source from the detector's own scope table was discarded as circular (recall 0.989) and replaced by the random
 swap reported above.
 
-Defects in curated rules found incidentally during calibration (to be fixed in 15.2.0, not in this study):
-`rhabdomyolysis_v1` CK > 0.0; MCV > 200 / < 20 fL and total protein > 16.6 / < 1.5 g/dL severity tiers;
-rule-versus-feature-registry unit inconsistencies for PTH (ng/mL vs pg/mL, 13 rules), cortisol (µg/dL vs ng/mL),
-ACTH (pg/mL vs ng/mL) and β2-microglobulin (mg/L vs mg/dL) — which side is wrong is undetermined;
-`acute_pancreatitis_exclusion_normal_lipase_v1` cites a GERD guideline; hyponatraemia cites a sodium-guideline
-identifier that does not exist as a document.
+Defects in rules found incidentally during calibration, re-inspected against the engine and the sources before
+release 15.2.0 (protocol in the repository): MCV > 200 / < 20 fL and total protein > 16.6 / < 1.5
+g/dL severity tiers (4 rules, retired); unit labels — ACTH thresholds numerically in pg/mL but labelled ng/mL (93
+rules; the feature registry's canonical ng/mL was the wrong side, corrected to pg/mL), PTH ng/mL for pg/mL values
+(14 rules), cortisol 60/230 ng/mL converted exactly to 6/23 µg/dL (19 rules); wrong sources — four pancreatitis
+rules citing a GERD guideline, ten sodium/osmolality pattern rules citing a paediatric liver entry mis-keyed as a
+sodium guideline. Two items first listed as defects were withdrawn on inspection: `rhabdomyolysis_v1` ("CK > 0")
+carries a 5 × ULN context flag that the engine applies at run time (the static detector does not read `context` —
+an audit false positive), and the β2-microglobulin inconsistency is on a different feature id (`beta_2_microglobulin_tumor`, 2 rules), left open. The four `_cur13` anaemia
+rules with a neonatal population were restricted to ≥ adolescent.
 
 ### Part 3 — Application to a second LLM-authored corpus
 
@@ -1290,6 +1294,14 @@ the 0.974 specificity measured in Part 1 on unmutated seeds (which are a much ea
    pattern recurs (Part 3). The defect classes are properties of LLM-drafted rules, not of Hemoglyph's template
    generator; the fix (population gates, multi-analyte patterns, section-level locators) is generic.
 
+### Release 15.2.0 (2026-10-28, after this study)
+
+The defects above were corrected under a written protocol: 4 tiers
+retired, 4 population gates, 126 unit labels (ACTH 93, PTH 14, cortisol 19), 14 source corrections; no threshold
+tuned. Frozen detectors re-run on 15.2.0: 68 flagged of 6,773 (1.00 per 100; was 1.28). Non-regression gate:
+pytest 709/9; eICU every count identical to 15.1.0; NHANES all AUROCs identical; healthy 0/51 — as expected, since
+none of the touched analytes fires on these panels. The paper's frozen results are unaffected.
+
 ### Fixed generation prompt for the second corpus
 
 ```
@@ -1324,6 +1336,7 @@ Every number in the main text and in this file is produced by a script in the pu
 | Section 3.2, Fig. S1, Note 8, Table S10 | `eval/source_audit/PROTOCOL.md` with the frozen sample `eval/source_audit/sample_200.csv` (seed 20261026), `eval/registry_source_verify.py` | registry 14.1.0 (seed 20261026) | 14.1.0 |
 | Section 3.10, Note 15 | `eval/provenance/PROTOCOL.md`, `eval/provenance/activity_log.py`, `core_analysis.py`, `resource_core.py`; frozen sample `eval/provenance/phase_c_sample_100.csv` (seed 20261028) | eICU-CRD demo first panels; NHANES 2015–16 and 2017–18 | registry 14.2.0; harness v8.2 (activity only; no v7 metric affected) |
 | Section 3.11, Note 16 | `eval/audit/PROTOCOL_AUDIT.md`, `make_core_registry.py`, `audit.py`, `mutate.py`, `convert_llm_corpus.py`; CORE arm re-runs with `eval/realdata/eval_eicu.py --encounter icu` and `eval/realdata/eval_nhanes.py --n-max 1000 --encounter community`; paired comparison as for the 15.1.0 gate | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults); registries 14.1.0 and 15.1.0; second LLM-written corpus (400 rules, hash-frozen) | registry 15.1.0 vs its 335-rule audited core, engine v8.2 in both arms (development; no v7 metric affected) |
+| Note 16, release 15.2.0 | `eval/registry_patches/PROTOCOL_15_2_0.md`, `patch_15_2_0.py`, `gate_compare.py`; gate re-runs as for 15.1.0 | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults) | registry 15.1.0 vs 15.2.0, engine v8.2 (development; no v7 metric affected) |
 | Note 15, post-audit release | `eval/registry_patches/PROTOCOL_15_0_0.md`, `patch_15_0_0.py`; gate re-runs with `eval/realdata/eval_eicu.py --encounter icu`, `eval/realdata/eval_nhanes.py --n-max 1000 --encounter community`, `eval/provenance/activity_log.py --corpus eicu` | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults) | registry 14.2.0 vs 15.0.0, engine v8.2 in both arms (development; no v7 metric affected) |
 | Table S1, Table S2, Note 1 | SAP document (dated amendments); freeze manifests | — | 14.0.0 → 14.1.0; v6 → v7 |
 | Table S5 | `eval/next_test_utility.py` | eICU-CRD demo audit sample | v5.3 (superseded) |

@@ -1,0 +1,11 @@
+# Registry 15.2.0 — 2026-10-28 (audit-study corrections)
+- Protocol `eval/registry_patches/PROTOCOL_15_2_0.md` (written before the patch ran); patch `eval/registry_patches/patch_15_2_0.py` (deterministic, `--dry-run`); review `review_15_2_0.json`; gate logs `gate_15_2_0_{eicu,nhanes}.log`, comparison `gate_compare.py _r1510 _r1520`.
+- C1 retired 4 implausible severity tiers (MCV > 200 / < 20 fL; total protein > 16.6 / < 1.5 g/dL).
+- C2 population gate on 4 curated adult anaemia rules (`_cur13`, BSG 2021 / EHA 2023): neonate/infant/child removed.
+- C3 unit labels: ACTH ng/mL → pg/mL on 93 rules (values unchanged; feature registry canonical corrected from ng/mL to pg/mL, accepted pg/mL, ng/L, pmol/L ×4.541); PTH ng/mL → pg/mL on 14 rules; morning cortisol 60/230 ng/mL → 6/23 µg/dL on 19 rules (exact conversion).
+- C4 sources: 4 pancreatitis rules GERD guideline → ACG acute pancreatitis 2024 / ACG pancreatitis; 10 sodium/osmolality pattern rules mis-keyed paediatric liver entry → ESE hyponatraemia 2014 (hypernatraemia → reference-interval convention).
+- No threshold tuned, no rule added. Executable rules 31,070 → 31,066; sources 792 (unchanged). Feature registry sha recorded in `SHA256SUMS.txt`.
+- Static detectors (`eval/audit/audit.py`, frozen) re-run: flagged rules 87 → 68 (r9 6→2, unit 16→5, pop 10→6, src 54 unchanged); remaining items listed in the protocol.
+- Gate: pytest 709 passed / 9 skipped; eICU 2,314 stays — every count identical to 15.1.0 (flat 1167/1488/1807; two-tier 809/1515/1762; grouped 705/1334/1632/1895 of 2,432; support 1113/4822; mean AUROC unchanged); NHANES 2017–18 n=1,000 — all nine AUROCs identical; healthy 0/51.
+- Withdrawn as defects after inspection: `rhabdomyolysis_v1` (5 × ULN context flag honoured by the engine); β2-microglobulin on `beta_2_microglobulin` (consistent). Open: `beta_2_microglobulin_tumor` unit (2 rules), `cortisol_morning` unit (3 rules), 6 candidate Hb < 12 rules without population gate, IBS CRP ≥ 0 exclusion.
+- Previous release: `release/registry_15.1.0/`.
