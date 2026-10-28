@@ -2,7 +2,7 @@
 
 *Verifying an AI-drafted laboratory-interpretation rule base before clinical audit: executable invariants, frozen source-concordance protocols and a hash-frozen benchmark applied to the open Hemoglyph engine — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R8 (2026-10-28), Computer Methods and Programs in Biomedicine.*
 
-**Index.** Notes: Note 1 SAP and amendments; Table S1 engine change log C1–C16 with sources; Table S2 quarantine criteria and outcomes (rounds 1 and 2); Note 2 LLM comparison protocol; Table S3 participant flow and baseline characteristics; Note 3 fusion/Theory-of-Evidence algorithm and consistency identities; Table S4 subgroup recall; Table S5 next-test utility (engine v5.3, superseded metric); Tables S6–S6c calibration, recalibration, decision curves, multiplicity and panel-size sensitivity; Table S7 survey-weighted NHANES AUROC; Table S8 per-group calibration; Table S9 label-mapping audit (400 stays); Table S10 registry count reconciliation; Table S11 precision/F1/NDCG, alert burden, per-group PPV and prevalence baseline; Table S12 fusion-weight sensitivity; Table S12b historical comparisons (superseded); Table S13 participant flow for the UCI cohorts; Table S15 open vs proprietary components; Table S16 sepsis companion model; Note 4 regression gate; Note 5 definitions, audits and completed TRIPOD+AI checklist; Note 6 version manifest; Note 7 evidence triage of twelve proposals; Note 8 source-concordance audit; Notes 9–12 material moved from the main text; Note 13 black-box property-conformance benchmark (engine and LLM on identical perturbed panels); Note 14 executable verifier behind the LLM and verified-consensus arm; Note 15 activity-guided provenance audit; Note 16 audit study (core sufficiency, mutation testing, second LLM-written corpus); Note 18 per-rule verification ledger and its closure in registry 15.3.0; Note 19 pre-specified protocol for the independent clinical concordance audit (sample frozen, not yet executed); Table S17 reproducibility and version map; Note 17 component ablation, community survey and external cohorts (R6 §3.5–3.6 verbatim) and earlier-release eICU rows; Fig. S1 provenance audit; Fig. S2 per-release eICU metrics; Fig. S3 per-group panel-supported recall; Fig. S4 per-group calibration; Fig. S5 context-echo analysis; Fig. S6 participant flow; Data 1 per-stay outputs and LLM prompts/outputs.
+**Index.** Notes: Note 1 SAP and amendments; Table S1 engine change log C1–C16 with sources; Table S2 quarantine criteria and outcomes (rounds 1 and 2); Note 2 LLM comparison protocol; Table S3 participant flow and baseline characteristics; Note 3 fusion/Theory-of-Evidence algorithm and consistency identities; Table S4 subgroup recall; Table S5 next-test utility (engine v5.3, superseded metric); Tables S6–S6c calibration, recalibration, decision curves, multiplicity and panel-size sensitivity; Table S7 survey-weighted NHANES AUROC; Table S8 per-group calibration; Table S9 label-mapping audit (400 stays); Table S10 registry count reconciliation; Table S11 precision/F1/NDCG, alert burden, per-group PPV and prevalence baseline; Table S12 fusion-weight sensitivity; Table S12b historical comparisons (superseded); Table S13 participant flow for the UCI cohorts; Table S15 open vs proprietary components; Table S16 sepsis companion model; Note 4 regression gate; Note 5 definitions, audits and completed TRIPOD+AI checklist; Note 6 version manifest; Note 7 evidence triage of twelve proposals; Note 8 source-concordance audit; Notes 9–12 material moved from the main text; Note 13 black-box property-conformance benchmark (engine and LLM on identical perturbed panels); Note 14 executable verifier behind the LLM and verified-consensus arm; Note 15 activity-guided provenance audit; Note 16 audit study (core sufficiency, mutation testing, second LLM-written corpus); Note 18 per-rule verification ledger and its closure in registry 15.3.0; Note 19 pre-specified protocol for the independent clinical concordance audit (sample frozen, not yet executed); Note 20 held-out mutation test of the static detectors (pre-registered; eight new families, two seed pools); Note 21 clean-environment reproduction log; Table S17 reproducibility and version map; Table S18 two-level auditability (retrievable vs statement located) of the Note 8 sample; Note 17 component ablation, community survey and external cohorts (R6 §3.5–3.6 verbatim) and earlier-release eICU rows; Fig. S1 provenance audit; Fig. S2 per-release eICU metrics; Fig. S3 per-group panel-supported recall; Fig. S4 per-group calibration; Fig. S5 context-echo analysis; Fig. S6 participant flow; Data 1 per-stay outputs and LLM prompts/outputs.
 
 ## Supplementary Note 1 — Statistical analysis plan and amendments
 
@@ -1768,6 +1768,53 @@ D1, the six Note 8 attribution discordances: pseudohypoparathyroidism re-sourced
 
 **Files.** `eval/audit/human_audit/sample_rules.py` (sampling, deterministic), `human_audit_sample_100.csv` (rater form, no AI verdicts), `ai_verdicts_sealed.json` (sealed; opened only for the agreement analysis), `SHA256SUMS`.
 
+## Supplementary Note 20 — Held-out mutation test of the static detectors (protocol committed before the run; detectors unchanged; no frozen number affected)
+
+**Why.** Note 16 estimated detector recall on the curated / quote-verified rules of registry 15.1.0, the same registry whose flag output was inspected while the detectors' physiological bounds, direction rule and domain-neighbour table were written. Those recalls are therefore in-sample. Section 4.1 already states this; the present note measures it. The protocol (`eval/audit/PROTOCOL_HELDOUT.md`) was written and committed before `mutate_heldout.py` was run and pre-states, family by family, what the detectors were expected to miss.
+
+**Seed pools.** *P1*: 300 rules drawn uniformly (seed 20261028) from the 6,470 executable rules of registry 15.3.0 that are neither `curated_*` nor quote-verified, i.e. AI-drafted rules never used as seeds in Note 16. P1 is only partially independent: the rules are new, but they belong to the registry lineage the detectors were tuned on. *P2*: all 400 rules of the second LLM-written corpus (Note 17), produced after the detectors were frozen and never used for calibration; P2 is the stronger test.
+
+**Families.** Eight mutation families, none of which appears in Note 16: H1 population gate removed; H2 source replaced by another source *of the same domain*; H3 the leaf duplicated into a contradictory conjunction (`x > v` AND `x < v`); H4 a *benign* unit conversion in which unit and value are converted together (a specificity probe that must not be flagged); H5 threshold ±20 %; H6 decimal-place error (×10 or ÷10); H7 unit swapped without converting the value (the analogue of M4); H8 operator flipped (the analogue of M3). One mutant per applicable seed, first numeric leaf, only flags that were not already present on the unmutated seed count, exactly as in Note 16. The protocol pre-stated recall near zero for H1, H2, H3 and H5.
+
+**Results.**
+
+| family | P1 (15.3.0, AI-drafted) n | recall-any (95 % CI) | P2 (external LLM corpus) n | recall-any (95 % CI) | fired |
+|---|---|---|---|---|---|
+| H1 population gate removed | 300 | 0.000 (0.000–0.013) | 400 | 0.000 (0.000–0.010) | — |
+| H2 same-domain source swap | 142 | 0.014 (0.004–0.050) | 280 | 0.018 (0.008–0.041) | src |
+| H3 contradictory conjunction | 255 | 0.000 (0.000–0.015) | 400 | 0.000 (0.000–0.010) | — |
+| H5 threshold ±20 % | 300 | 0.003 (0.001–0.019) | 400 | 0.010 (0.004–0.025) | r9, pop |
+| H6 decimal error ×10/÷10 | 300 | 0.127 (0.094–0.169) | 400 | 0.155 (0.123–0.194) | r9, dir, r7 |
+| H7 unit swap, value unchanged (cf. M4 0.743) | 108 | 0.806 (0.721–0.869) | 158 | 0.696 (0.621–0.763) | unit |
+| H8 operator flip (cf. M3 0.131) | 255 | 0.235 (0.187–0.291) | 400 | 0.035 (0.021–0.058) | dir |
+| H4 benign conversion — *specificity* | 25 | 1.000 unflagged (0.867–1.000) | 107 | 1.000 unflagged (0.965–1.000) | — |
+| unmutated seeds unflagged | 300 | 0.987 (0.966–0.995) | 400 | 0.875 (0.839–0.904) | (P2: the Note 17 findings) |
+
+**Reading.** (i) For the two families with a Note 16 analogue, recall on held-out material was within or above the in-sample figure for unit swaps (0.81 and 0.70 against 0.74) and, for operator flips, higher on P1 (0.24) but much lower on the external corpus (0.035 against 0.13): the direction detector depends on an entity having at least three other rules on the same analyte, which the 2-rules-per-entity LLM corpus almost never provides. The operator-flip recall of Note 16 should therefore be read as an upper bound for sparse registries. (ii) The decimal-place family, not anticipated when the detectors were written, is caught in only 13–16 % of cases, because a ×10 error leaves most thresholds inside the wide physiological bounds the detectors use. (iii) H1, H2, H3 and H5 are at or near zero in both pools, as pre-stated; removing a population gate, citing a plausible but wrong source, encoding an unsatisfiable conjunction and shifting a threshold by 20 % are invisible to the static layer. These are the defect classes that only the source-concordance audit (Notes 8, 15, 19) can reach, and three of them are exactly the classes found there. (iv) The benign-conversion probe was never flagged, so the unit detector responds to inconsistency, not to the mere presence of a non-canonical unit. No detector was changed in response to these results.
+
+Scripts and inputs: Table S17.
+
+## Supplementary Note 21 — Clean-environment reproduction of the frozen results (one command; log of the authors' run)
+
+**What was done.** The repository was cloned into an empty directory on a fresh machine image (Python 3.13, 2 vCPU, 2 GB RAM, no GPU) and `bash reproduce.sh` was run in its `quick`, `v7` and `eicu` modes. The script (i) rebuilds engine v7 from the git tag `engine-v7-frozen` and registry 14.1.0 into a separate directory and checks every file against the freeze manifest, (ii) runs the 729 tests including the property-based invariants and the LabPanel-Check reference cards, (iii) rebuilds the verification ledger (Note 18) and the mutation table (Note 16) from the committed frozen inputs and requires them to be identical to the committed outputs, (iv) runs the frozen v7 engine on NHANES 2017–18 (downloaded from CDC by the script) and (v) on the eICU-CRD demo (PhysioNet CSVs supplied by the user), and compares the headline numbers with the frozen reports of Tables 3 and 4 by exact string match, failing on any difference. The full log of this run is `REPRODUCTION_LOG.md` in the repository.
+
+**Results.**
+
+| step | outcome | time |
+|---|---|---|
+| 0 integrity (freeze manifest; three registry `SHA256SUMS`) | PASS; feature registry reported as a documented difference (below) | seconds |
+| 1 tests | 720 passed, 9 skipped | 6 min |
+| 2 verification ledger rebuilt | identical to the committed Note 18 counts | 20 s |
+| 3 mutation table rebuilt | identical to the committed Note 16 table | 1 min |
+| 4 NHANES 2017–18, n = 3,000, frozen v7 | all nine AUROCs identical to Table 4 (0.946, 0.919, 0.959, 0.816, 0.972, 0.989, 0.905, 0.943, 0.872) | 61 min |
+| 5 eICU-CRD demo, 2,314 stays, frozen v7 | flat recall@3/5/10 47.9/60.8/74.1, two-tier @1/3/5 33.1/62.0/71.9 and grouped @1/3/5/10 30.1/55.6/67.4/77.9 — all identical to Table 3 | 41 min |
+
+**What the run exposed.** The first clean-clone attempt failed at step 2 because two inputs of the ledger build existed only in the authors' working copy (one registry snapshot excluded by a `.gitignore` pattern and one source-verification file). They were committed and the run repeated; no number changed. We report this because it is precisely the class of defect that a clean-environment run exists to find, and because an earlier revision of this paper cited those files as if they were public.
+
+**Documented difference.** The freeze manifest of 2026-10-25 records the feature registry at SHA-256 `953d8daa…`; the repository holds `115427e7…`. The 15.2.0 patch rewrote the file in place to correct the ACTH unit entry and the pre-patch bytes were not archived, so the original hash cannot be reproduced. ACTH occurs in no cohort of this paper, and steps 4 and 5 reproduce the frozen v7 numbers with the current file, which is the empirical evidence that the difference is immaterial. Both registries are now tracked in git, so the loss cannot recur in the same way.
+
+**Not covered.** MIMIC-IV demo, the sepsis sets, UCI/ILPD, the PMC case series, the ablation and calibration analyses and the 400 blind LLM readings (frozen artefacts; Note 2) are not part of `reproduce.sh`; their scripts and inputs are listed in Table S17 and were not re-run in the clean environment.
+
 ## Supplementary Table S17 — Reproducibility and version map
 
 Every number in the main text and in this file is produced by a script in the public repository from a hash-frozen engine and registry (SHA-256 manifests `FREEZE_v15_20261025`; Note 6). Internal report file names are omitted throughout; the table below is the single place that links each item to its generating script and input.
@@ -1780,6 +1827,8 @@ Every number in the main text and in this file is produced by a script in the pu
 | Fig. 8, Table S6–S6c | `eval/calibration_dca.py` outputs (`eval/results/eicu_demo/calibration_dca_v7.md`, `reviewer_b5_calibration_v7.json`) | eICU-CRD demo (2,314 stays; 52,689 label scores) | v7 / 14.1.0 |
 | Fig. 3 | `docs/paper1/v7/make_figures_R8.py` reading the frozen outputs of Notes 8, 15, 16 and 18 (no new measurement) | — | 14.1.0 (a, b); 15.1.0 (c); 15.2.0 (d) |
 | Figs. 1–8 (rendering only) | `docs/paper1/v7/make_figures_R8.py` (reads `eval/results/eicu_demo/{ml_baseline.json, llm_vs_v7_cluster_n400.json, calibration_dca_v7.md}` and `eval/verification_ledger/ledger_counts.json`; NHANES, sepsis and recall values are transcribed from the frozen reports of the rows above and asserted against them in the script's constants) | frozen result files listed in this table | as per source row |
+| Note 20 | `eval/audit/PROTOCOL_HELDOUT.md`, `mutate_heldout.py` (seed 20261028) | registry 15.3.0 (300 AI-drafted rules); second LLM-written corpus (400 rules) | detectors frozen; registry 15.3.0 (no v7 metric affected) |
+| Note 21, Table S18 | `reproduce.sh` (modes `quick`, `v7`, `eicu`, `all`), `tools/make_frozen_engine_dir.py`, `tools/compare_reports.py`; `eval/source_audit/auditability_metrics.py` (reads the committed Note 8 files) | clean `git clone` of the repository; NHANES 2017–18; eICU-CRD demo | git tag `engine-v7-frozen`; registries 14.1.0, 15.1.0, 15.3.0 |
 | Note 19 (protocol only; no result) | `eval/audit/human_audit/sample_rules.py`; frozen sample `human_audit_sample_100.csv` (seed 20261028; SHA-256 in `SHA256SUMS`) | verification ledger at 15.2.0 | 15.2.0 |
 | Table 4, Fig. 5, Fig. 4 (ML baseline: `eval/baselines/ml_baseline_eicu.py`), Table S7, Table S13, Note 10 | `eval/realdata/eval_nhanes.py`, `eval_uci_thyroid.py`, `eval_uci_hcv.py`, `eval_ilpd.py`, `eval_pmc_cases.py`, `eval/mimic/run_retrospective.py` | NHANES H/I/J, UCI thyroid0387, UCI HCV, ILPD, MIMIC-IV demo, PMC case reports | v7 / 14.1.0 |
 | Fig. 6, Table S16 | `eval/realdata/eval_sepsis2019.py`, `eval_sepsis2019_concurrent.py`, `eval/sepsis_ml/sepsis_risk_module.py` | PhysioNet Sepsis-2019 sets A, B, B2 | v7 / 14.1.0 |
@@ -1797,6 +1846,26 @@ Every number in the main text and in this file is produced by a script in the pu
 | Table S5 | `eval/next_test_utility.py` | eICU-CRD demo audit sample | v5.3 (superseded) |
 | Table S9 | `eval/label_audit_300.py` (seed 11; the first 100 stays by the author adjudication described in Table S9) | 400 eICU stays | v7 |
 | Fig. S5 | `eval/deep_review_ctx_sex.py` | eICU-CRD demo, context arm | v5.2 |
+
+## Supplementary Table S18 — Two-level auditability of the frozen 200-rule sample (computed from the committed Note 8 files; no new rating)
+
+| Stratum | n | Level 2: source retrievable | Level 3: statement located (VEC) | concordant | discordant | unresolvable |
+|---|---|---|---|---|---|---|
+| A curated anchors | 100 | 92.0% (85.0–95.9) | 8.0% (4.1–15.0) | 1 | 7 | 92 |
+| B1 eICU-relevant AI-drafted | 50 | 94.0% (83.8–97.9) | 14.0% (7.0–26.2) | 0 | 7 | 43 |
+| B2 uniform AI-drafted | 50 | 98.0% (89.5–99.6) | 2.0% (0.4–10.5) | 0 | 1 | 49 |
+| **All** | 200 | 94.0% (89.8–96.5) | 8.0% (5.0–12.6) | 1 | 15 | 184 |
+
+| Level 1: best locator class among the rule's sources | n rules | source retrievable | statement located | most frequent unresolvable reason |
+|---|---|---|---|---|
+| doi_or_pmc | 70 | 100.0% (94.8–100.0) | 10.0% (4.9–19.2) | abstract or title only (55) |
+| document_page | 89 | 95.5% (89.0–98.2) | 10.1% (5.4–18.1) | generic methodological source cannot contain statement (45) |
+| organisation_landing | 35 | 94.3% (81.4–98.4) | 0.0% (0.0–9.9) | landing page or full text without the statement (32) |
+| no URL locator (free-text citation only) | 6 | 0.0% (0.0–39.0) | 0.0% (0.0–39.0) | no text retrieved (6) |
+
+Unresolvable reason codes (frozen with the verdicts): landing page or full text without the statement 71; abstract or title only 55; generic methodological source cannot contain statement 46; no text retrieved 12.
+
+Reading: retrievability (a document opens) and verifiability (the document contains the encoded threshold, operator, unit and population) are different properties; the gap between the two columns is the cost of organisation-level and methodological locators. VEC uses all sampled rules as denominator. These are properties of the registry's locators as rated by the single declared AI rater (Note 8); they are not clinical validity.
 
 ## Supplementary Figures
 
