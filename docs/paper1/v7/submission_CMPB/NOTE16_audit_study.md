@@ -1,4 +1,4 @@
-## Supplementary Note 16 — Audit study: sufficiency of the audited core, mutation testing of the static detectors and transfer to a second LLM-written corpus (protocol frozen 2026-10-28 before any run; registry 15.1.0, harness v8.2; frozen v7 results untouched)
+## Supplementary Note 16 — Audit study: sufficiency of the curated/quote-verified core, mutation testing of the static detectors and transfer to a second LLM-written corpus (protocol frozen 2026-10-28 before any run; registry 15.1.0, harness v8.2; frozen v7 results untouched)
 
 Protocol frozen and committed with the detector code before any result was computed (scripts listed in the Reproducibility map). Frozen v7 results are untouched; every run here uses the v8.2 harness and registry 15.1.0 (or the stated
 comparison registry). Reported in the order the parts were executed (2 → 1 → 3), because Part 1 could only be run
@@ -19,8 +19,10 @@ with respect to the whitelists, except that a named-rule exemption list covers 1
 
 ### Part 2 — Sufficiency of the audited core (registry arm CORE vs full 15.1.0)
 
-CORE = the 335 executable rules of 15.1.0 that are either curated anchors or belong to the activity-defined active
-core (every other rule set non-executable; sources untouched). Same harness, same cohorts, same seeds.
+CORE = the 335 executable rules of 15.1.0 that are curated (284), carry a verbatim source quote from the 15.0.0
+re-sourcing of the active core (19 further rules) or are reference-interval conventions (32); it is **not** the
+activity-defined active core — only 94 of the 364 active-core rules are in it (Note 18). Every other rule is set
+non-executable; sources untouched. Same harness, same cohorts, same seeds.
 
 | metric | full 15.1.0 | CORE (335 rules) | Δ (pts) | paired full−CORE (gained / lost, exact McNemar p) |
 |---|---|---|---|---|
@@ -37,7 +39,7 @@ Denominator 2,432 labelled stay–diagnosis pairs in 2,314 stays. The gains of t
 diabetes (+28 grouped@10, +31 flat@10) and AKI/renal pattern templates; no `co_` template appears in any CORE top-5
 (0 vs 88 in the full arm). Verdict under the protocol's pre-stated thresholds: the un-audited 30,735 executable
 rules are **not load-bearing at @3/@5 (|Δ| ≤ 0.5 pt)** and **partially load-bearing at @10 and in the two-tier
-metric (1.0–2.3 pt, significant)**. The activity-defined core of 1.1 % of rules therefore carries the ranking at the
+metric (1.0–2.3 pt, significant)**. The curated/quote-verified 1.1 % of rules therefore carries the ranking at the
 cut-offs the paper reports as primary.
 
 ### Part 1 — Mutation testing of the frozen detectors (registry 15.1.0, detectors `9c87645`)
@@ -137,8 +139,8 @@ the 0.974 specificity measured in Part 1 on unmutated seeds (which are a much ea
 
 ### What the three parts say together
 
-1. The un-audited bulk of the registry is not load-bearing at the primary cut-offs (Part 2), so the audit effort
-   concentrated on the active core was aimed at the rules that matter.
+1. The bulk of the registry outside the curated/quote-verified set is not load-bearing at the primary cut-offs
+   (Part 2); the activity-defined active core overlaps that set only partly (94/364), which the ledger (Note 18) makes explicit.
 2. The static detectors catch the structural defect classes they were designed for with recall 0.74–1.00 and are
    blind to plausible wrong numbers (recall ≤ 0.13) — the honest ceiling of static verification (Part 1).
 3. A second LLM-authored corpus written without templates shows the same two dominant defect classes

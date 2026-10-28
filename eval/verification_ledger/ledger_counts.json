@@ -1,0 +1,79 @@
+{
+ "active_core": 364,
+ "active_core_executable_15_2_0": 219,
+ "active_core_in_core_arm": 94,
+ "active_core_locator_classes": {
+  "doi_resolved": 38,
+  "generic_landing_page": 199,
+  "landing_page": 69,
+  "no_locator": 10,
+  "other": 4,
+  "unreachable": 44
+ },
+ "anchors": 272,
+ "by_set": {
+  "CORE arm of the sufficiency study (335, 15.1.0)": {
+   "discordant_corrected": 1,
+   "discordant_open": 8,
+   "flagged_open": 3,
+   "quote_verified": 37,
+   "source_reachable_unverified": 108,
+   "unresolvable": 178
+  },
+  "active core (364)": {
+   "discordant_corrected": 1,
+   "discordant_open": 4,
+   "flagged_open": 3,
+   "quote_verified": 37,
+   "retired": 145,
+   "source_reachable_unverified": 17,
+   "unresolvable": 157
+  },
+  "curated anchors (272, 14.1.0)": {
+   "discordant_corrected": 1,
+   "discordant_open": 7,
+   "flagged_open": 3,
+   "quote_verified": 18,
+   "retired": 1,
+   "source_reachable_unverified": 101,
+   "unresolvable": 141
+  },
+  "hot core (174)": {
+   "discordant_corrected": 1,
+   "discordant_open": 4,
+   "flagged_open": 1,
+   "quote_verified": 30,
+   "retired": 71,
+   "source_reachable_unverified": 10,
+   "unresolvable": 57
+  },
+  "union (all ledger rows)": {
+   "discordant_corrected": 1,
+   "discordant_open": 8,
+   "flagged_open": 5,
+   "quote_verified": 37,
+   "retired": 145,
+   "source_reachable_unverified": 115,
+   "unresolvable": 294
+  }
+ },
+ "concordance_rows": {
+  "note15": 100,
+  "note8": 116
+ },
+ "core_arm": 335,
+ "core_arm_composition": {
+  "convention_only": 32,
+  "curated_any": 284,
+  "verified_quote_not_curated": 19
+ },
+ "curated_any": 285,
+ "detector_flags_14_1_0_rows": 120,
+ "detector_flags_15_2_0_rows": 6,
+ "hot_core": 174,
+ "invariant_coverage_active_core_executable": {
+  "covered": 104,
+  "not_covered": 115
+ },
+ "scope": 605
+}

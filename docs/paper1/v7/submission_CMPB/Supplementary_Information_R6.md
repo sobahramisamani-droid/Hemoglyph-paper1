@@ -1,4 +1,4 @@
-# Supplementary Information *Hemoglyph: an offline, guideline-traceable laboratory-panel interpretation engine and four methods for verifying it — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R7 (2026-10-28), Computer Methods and Programs in Biomedicine.* **Index.** Notes: Note 1 SAP and amendments; Table S1 engine change log C1–C16 with sources; Table S2 quarantine criteria and outcomes (rounds 1 and 2); Note 2 LLM comparison protocol; Table S3 participant flow and baseline characteristics; Note 3 fusion/Theory-of-Evidence algorithm and consistency identities; Table S4 subgroup recall; Table S5 next-test utility (engine v5.3, superseded metric); Tables S6–S6c calibration, recalibration, decision curves, multiplicity and panel-size sensitivity; Table S7 survey-weighted NHANES AUROC; Table S8 per-group calibration; Table S9 label-mapping audit (400 stays); Table S10 registry count reconciliation; Table S11 precision/F1/NDCG, alert burden, per-group PPV and prevalence baseline; Table S12 fusion-weight sensitivity; Table S12b historical comparisons (superseded); Table S13 participant flow for the UCI cohorts; Table S15 open vs proprietary components; Table S16 sepsis companion model; Note 4 regression gate; Note 5 definitions, audits and completed TRIPOD+AI checklist; Note 6 version manifest; Note 7 evidence triage of twelve proposals; Note 8 source-concordance audit; Notes 9–12 material moved from the main text; Note 13 black-box property-conformance benchmark (engine and LLM on identical perturbed panels); Note 14 executable verifier behind the LLM and verified-consensus arm; Note 15 activity-guided provenance audit; Note 16 audit study (core sufficiency, mutation testing, second LLM-written corpus); Note 17 component ablation, community survey and external cohorts (R6 §3.5–3.6 verbatim) and earlier-release eICU rows; Fig. S1 provenance audit; Fig. S2 per-release eICU metrics; Fig. S3 per-group panel-supported recall; Fig. S4 per-group calibration; Fig. S5 context-echo analysis; Fig. S6 historical LLM comparison vs engine v5.1; Fig. S7 participant flow; Data 1 per-stay outputs and LLM prompts/outputs. ## Supplementary Note 1 — Statistical analysis plan and amendments
+# Supplementary Information *Hemoglyph: an offline, guideline-traceable laboratory-panel interpretation engine and four methods for verifying it — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R7 (2026-10-28), Computer Methods and Programs in Biomedicine.* **Index.** Notes: Note 1 SAP and amendments; Table S1 engine change log C1–C16 with sources; Table S2 quarantine criteria and outcomes (rounds 1 and 2); Note 2 LLM comparison protocol; Table S3 participant flow and baseline characteristics; Note 3 fusion/Theory-of-Evidence algorithm and consistency identities; Table S4 subgroup recall; Table S5 next-test utility (engine v5.3, superseded metric); Tables S6–S6c calibration, recalibration, decision curves, multiplicity and panel-size sensitivity; Table S7 survey-weighted NHANES AUROC; Table S8 per-group calibration; Table S9 label-mapping audit (400 stays); Table S10 registry count reconciliation; Table S11 precision/F1/NDCG, alert burden, per-group PPV and prevalence baseline; Table S12 fusion-weight sensitivity; Table S12b historical comparisons (superseded); Table S13 participant flow for the UCI cohorts; Table S15 open vs proprietary components; Table S16 sepsis companion model; Note 4 regression gate; Note 5 definitions, audits and completed TRIPOD+AI checklist; Note 6 version manifest; Note 7 evidence triage of twelve proposals; Note 8 source-concordance audit; Notes 9–12 material moved from the main text; Note 13 black-box property-conformance benchmark (engine and LLM on identical perturbed panels); Note 14 executable verifier behind the LLM and verified-consensus arm; Note 15 activity-guided provenance audit; Note 16 audit study (core sufficiency, mutation testing, second LLM-written corpus); Note 18 per-rule verification ledger; Note 17 component ablation, community survey and external cohorts (R6 §3.5–3.6 verbatim) and earlier-release eICU rows; Fig. S1 provenance audit; Fig. S2 per-release eICU metrics; Fig. S3 per-group panel-supported recall; Fig. S4 per-group calibration; Fig. S5 context-echo analysis; Fig. S6 historical LLM comparison vs engine v5.1; Fig. S7 participant flow; Data 1 per-stay outputs and LLM prompts/outputs. ## Supplementary Note 1 — Statistical analysis plan and amendments
 
 ### Statistical Analysis Plan (SAP) — Hemoglyph v1.3.1 retrospective diagnostic-accuracy evaluation
 
@@ -1166,7 +1166,7 @@ Concordant: ADA Standards of Care 2026 diabetes criteria (two rules; the random-
 
 The release was then evaluated once, with the current development engine (v8.2) in both arms so that only the registry differed. Unit tests (709), the three hard batteries (151/151, 124/124, 77/78 with the same pre-existing failure) and the healthy sweep (0/200) did not regress. On the 2,314 eICU-CRD demo stays, flat recall@5 moved from 61.0 % to 61.2 % and recall@10 from 74.1 % to 74.3 %, while top-1 (two-tier 33.5 % → 33.3 %; grouped 30.2 % → 29.0 %) and grouped recall@3 (55.6 % → 54.9 %) fell; the paired losses (34 grouped top-1 labels lost, 4 gained; exact sign test p < 0.001) sit almost entirely in the renal and sepsis groups and trace to the retired fixed-threshold AKI variant and to retired sepsis tiers with unsourced thresholds. Per-group AUROCs were unchanged to two decimals (mean 0.766 in both arms), and the chart-support rate of confident outputs was 23.1 % in both arms. On 1,000 NHANES 2017–18 adults every AUROC changed by ≤ 0.012 (CKD 0.971 → 0.959; diabetes 0.946, anaemia 0.972 and iron deficiency 0.991 unchanged), and a CK-only McArdle rule disappeared from the outputs of guideline-healthy participants. Re-running the activity log on the same eICU panels, the eICU-only active core shrank from 293 to 193 rules and the hot core from 120 to 83; within the hot core the share of rules with no verifiable provenance fell from 59/120 to 23/83, and 34/83 now carry either a verbatim quote or an explicit convention record. The template layer was not retired (its provenance label changed, its logic did not), and it occupies slightly more top-5 slots afterwards (0.65 % → 0.80 %). These numbers are reported as obtained; the release trades a small amount of top-1 recall on retrospective ICU labels for rules whose thresholds can be read against their sources, and it is the registry on which the prospective study will be run.
 
-## Supplementary Note 16 — Audit study: sufficiency of the audited core, mutation testing of the static detectors and transfer to a second LLM-written corpus (protocol frozen 2026-10-28 before any run; registry 15.1.0, harness v8.2; frozen v7 results untouched)
+## Supplementary Note 16 — Audit study: sufficiency of the curated/quote-verified core, mutation testing of the static detectors and transfer to a second LLM-written corpus (protocol frozen 2026-10-28 before any run; registry 15.1.0, harness v8.2; frozen v7 results untouched)
 
 Protocol frozen and committed with the detector code before any result was computed (scripts listed in the Reproducibility map). Frozen v7 results are untouched; every run here uses the v8.2 harness and registry 15.1.0 (or the stated
 comparison registry). Reported in the order the parts were executed (2 → 1 → 3), because Part 1 could only be run
@@ -1187,8 +1187,10 @@ with respect to the whitelists, except that a named-rule exemption list covers 1
 
 ### Part 2 — Sufficiency of the audited core (registry arm CORE vs full 15.1.0)
 
-CORE = the 335 executable rules of 15.1.0 that are either curated anchors or belong to the activity-defined active
-core (every other rule set non-executable; sources untouched). Same harness, same cohorts, same seeds.
+CORE = the 335 executable rules of 15.1.0 that are curated (284), carry a verbatim source quote from the 15.0.0
+re-sourcing of the active core (19 further rules) or are reference-interval conventions (32); it is **not** the
+activity-defined active core — only 94 of the 364 active-core rules are in it (Note 18). Every other rule is set
+non-executable; sources untouched. Same harness, same cohorts, same seeds.
 
 | metric | full 15.1.0 | CORE (335 rules) | Δ (pts) | paired full−CORE (gained / lost, exact McNemar p) |
 |---|---|---|---|---|
@@ -1205,7 +1207,7 @@ Denominator 2,432 labelled stay–diagnosis pairs in 2,314 stays. The gains of t
 diabetes (+28 grouped@10, +31 flat@10) and AKI/renal pattern templates; no `co_` template appears in any CORE top-5
 (0 vs 88 in the full arm). Verdict under the protocol's pre-stated thresholds: the un-audited 30,735 executable
 rules are **not load-bearing at @3/@5 (|Δ| ≤ 0.5 pt)** and **partially load-bearing at @10 and in the two-tier
-metric (1.0–2.3 pt, significant)**. The activity-defined core of 1.1 % of rules therefore carries the ranking at the
+metric (1.0–2.3 pt, significant)**. The curated/quote-verified 1.1 % of rules therefore carries the ranking at the
 cut-offs the paper reports as primary.
 
 ### Part 1 — Mutation testing of the frozen detectors (registry 15.1.0, detectors `9c87645`)
@@ -1305,8 +1307,8 @@ the 0.974 specificity measured in Part 1 on unmutated seeds (which are a much ea
 
 ### What the three parts say together
 
-1. The un-audited bulk of the registry is not load-bearing at the primary cut-offs (Part 2), so the audit effort
-   concentrated on the active core was aimed at the rules that matter.
+1. The bulk of the registry outside the curated/quote-verified set is not load-bearing at the primary cut-offs
+   (Part 2); the activity-defined active core overlaps that set only partly (94/364), which the ledger (Note 18) makes explicit.
 2. The static detectors catch the structural defect classes they were designed for with recall 0.74–1.00 and are
    blind to plausible wrong numbers (recall ≤ 0.13) — the honest ceiling of static verification (Part 1).
 3. A second LLM-authored corpus written without templates shows the same two dominant defect classes
@@ -1339,6 +1341,60 @@ where expression is either "feature op value unit" or "all: f1 op v1 u1; f2 op v
 Write the thresholds from your own knowledge; do not look anything up; do not add commentary.
 ```
 
+## Supplementary Note 18 — Per-rule verification ledger (registry 15.2.0; built 2026-10-28 from the frozen artefacts of Notes 8, 13, 15 and 16, the static detectors and the property tests; nothing re-measured)
+
+Scope and construction are defined by `eval/verification_ledger/build_ledger.py`; `tests/test_verification_ledger.py` asserts that every count below reconciles with the Notes it was copied from. The ledger is a join of existing verdicts, not a new audit: a `quote_verified` label is single-rater transcription concordance, `flagged_open` is a calibrated-detector candidate, and `source_reachable_unverified` means exactly that nobody has read the source against the rule.
+
+Rows: 605 rules = union of the 285 curated rules of 14.1.0 (272 anchors + 13 demoted), the 364-rule active core and the 335-rule CORE arm.
+
+### Status precedence (first matching label wins)
+
+1. `retired` — non-executable in 15.2.0 with a `retired_*` status (15.0.0/15.1.0 patches under written protocol).
+2. `discordant_open` — a frozen-sample verdict of DISCORDANT and no change to the rule since (status unchanged, no patch touched it).
+3. `discordant_corrected` — DISCORDANT verdict, and a later release patch (under written protocol) touched the rule; Note 8 verdicts (2026-10-26) precede 15.0.0, Note 15 verdicts (2026-10-28) precede only 15.2.0.
+4. `quote_verified` — the registry carries a verbatim source quote for the rule (15.0.0 R3) or a frozen-sample verdict of CONCORDANT with quote.
+5. `flagged_open` — at least one static-detector flag on 15.2.0 (calibrated detectors; a flag is a candidate defect, not a verdict).
+6. `source_reachable_unverified` — first source resolves to a DOI or a specific document page, but no one has checked the rule against it.
+7. `unresolvable` — first source is a generic standards page, an organisation landing page, unreachable, or absent; or the sampled verdict was UNRESOLVABLE.
+
+`quote_verified` means transcription concordance by a single declared AI rater; it is not clinical validation.
+
+### Counts
+
+| set | n | retired | discordant_open | discordant_corrected | quote_verified | flagged_open | source_reachable_unverified | unresolvable |
+|---|---|---|---|---|---|---|---|---|
+| curated anchors (272, 14.1.0) | 272 | 1 (0%) | 7 (3%) | 1 (0%) | 18 (7%) | 3 (1%) | 101 (37%) | 141 (52%) |
+| active core (364) | 364 | 145 (40%) | 4 (1%) | 1 (0%) | 37 (10%) | 3 (1%) | 17 (5%) | 157 (43%) |
+| hot core (174) | 174 | 71 (41%) | 4 (2%) | 1 (1%) | 30 (17%) | 1 (1%) | 10 (6%) | 57 (33%) |
+| CORE arm of the sufficiency study (335, 15.1.0) | 335 | 0 (0%) | 8 (2%) | 1 (0%) | 37 (11%) | 3 (1%) | 108 (32%) | 178 (53%) |
+| union (all ledger rows) | 605 | 145 (24%) | 8 (1%) | 1 (0%) | 37 (6%) | 5 (1%) | 115 (19%) | 294 (49%) |
+
+### Facts the ledger makes explicit
+
+- The CORE arm (335) is **not** the active core: it is 284 curated rules + 19 quote-verified non-curated rules + 32 reference-interval conventions; only 94 of the 364 active-core rules are in it.
+- Of the 364 active-core rules, 219 are still executable in 15.2.0 (145 retired under the 15.0.0 protocol).
+- Invariant tests reach the analyte of 104 of the 219 executable active-core rules; the rest are untouched by any executable property.
+- Static detectors flag 6 ledger rules on 15.2.0 (was 120 on 14.1.0).
+- Concordance verdicts exist for 116 ledger rules from the 200-rule sample and 100 from the active-core sample.
+
+### Open items (input to the next registry protocol; nothing patched here)
+
+- `acquired_hemophilia_a_reanchor_scre_v13_4` — discordant_open: Note 8: attribution: acquired haemophilia A cites the BSH rare coagulation disorders guideline, which excludes FVIII deficiency (covered by a separate BSH guideline)
+- `acute_kidney_injury_kdigo_2012_creatinine_absolute_cur13` — flagged_open: ; r2a: single ubiquitous analyte creatinine for clinical entity acute_kidney_injury
+- `hepatitis_a_igm_anti_hav_positive_cur13` — discordant_open: Note 8: attribution: hepatitis A IgM criterion cites the EASL hepatitis E guideline
+- `hyperosmolar_hyperglycemic_state_ada_easd_2024_hhs_ketoacidosis_exclusion_cur13` — flagged_open: ; src: source ada_easd_hyperglycemic_crises_2024 scope ['endocrine'] vs entity domain critical_care
+- `hyperprolactinemia_pituitary_2023_prolactin_elevated_cur13` — discordant_open: Note 8: threshold: Pituitary Society 2023 consensus (full text retrieved) defers to assay-specific reference ranges and does not state 25 ng/mL
+- `hypomagnesemia_severe_1_2_cur13` — discordant_open: Note 8: attribution: severe hypomagnesaemia <1.2 mg/dL cites the KDIGO potassium/dyskalaemia conference report
+- `isoniazid_hepatotoxicity_dx_p131` — flagged_open: ; src: source ats_isoniazid_hepatotoxicity_2006 scope ['liver'] vs entity domain toxicology_tdm
+- `lactic_acidosis_lactate_4_acidemia_cur13` — flagged_open: ; src: source sepsis3_2016 scope ['critical_care', 'infectious'] vs entity domain diabetes_metabolic
+- `prediabetes_hba1c_pattern_screening_1_v1` — discordant_open: Note 15: boundary: source range 5.7–6.4 % inclusive with upper bound; rule '> 5.7' excludes 5.7 and has no upper bound
+- `pseudohypoparathyroidism_hypocalcemia_high_pth_normal_renal_cur13` — discordant_open: Note 8: attribution: pseudohypoparathyroidism criteria cite the primary hyperparathyroidism workshop guideline (different disease)
+- `rhabdomyolysis_ck_5x_uln_diagnostic_cur13` — discordant_open: Note 15: boundary: source '> 1000', rule '>= 1000'; source is a systematic review, not a guideline
+- `septic_shock_severe_lactic_acidosis_sepsis3_lactate_4_cur13` — discordant_open: Note 8: threshold: cited Sepsis-3 defines septic shock with lactate >2 mmol/L; the >4 mmol/L cut-off is not in the cited source (it derives from the SSC resuscitation bundle)
+- `urea_cycle_disorder_otc_deficiency_nh3_diagnostic_v1` — flagged_open: ; src: source acmg_act_2024 scope ['genetics'] vs entity domain critical_care
+
+Files: `LEDGER.json.gz` (records), `ledger_counts.json`, `build_ledger.py` (reproducible definition).
+
 ## Reproducibility map
 
 Every number in the main text and in this file is produced by a script in the public repository from a hash-frozen engine and registry (SHA-256 manifests `FREEZE_v15_20261025`; Note 6). Internal report file names are omitted throughout; the table below is the single place that links each item to its generating script and input.
@@ -1356,6 +1412,7 @@ Every number in the main text and in this file is produced by a script in the pu
 | Section 3.2, Fig. S1, Note 8, Table S10 | `eval/source_audit/PROTOCOL.md` with the frozen sample `eval/source_audit/sample_200.csv` (seed 20261026), `eval/registry_source_verify.py` | registry 14.1.0 (seed 20261026) | 14.1.0 |
 | Section 3.3, Note 15 | `eval/provenance/PROTOCOL.md`, `eval/provenance/activity_log.py`, `core_analysis.py`, `resource_core.py`; frozen sample `eval/provenance/phase_c_sample_100.csv` (seed 20261028) | eICU-CRD demo first panels; NHANES 2015–16 and 2017–18 | registry 14.2.0; harness v8.2 (activity only; no v7 metric affected) |
 | Section 3.9, Note 16 | `eval/audit/PROTOCOL_AUDIT.md`, `make_core_registry.py`, `audit.py`, `mutate.py`, `convert_llm_corpus.py`; CORE arm re-runs with `eval/realdata/eval_eicu.py --encounter icu` and `eval/realdata/eval_nhanes.py --n-max 1000 --encounter community`; paired comparison as for the 15.1.0 gate | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults); registries 14.1.0 and 15.1.0; second LLM-written corpus (400 rules, hash-frozen) | registry 15.1.0 vs its 335-rule audited core, engine v8.2 in both arms (development; no v7 metric affected) |
+| Section 3.9, Note 18 | `eval/verification_ledger/build_ledger.py` (join only; inputs are the frozen outputs of Notes 8, 15, 16, `eval/audit/audit.py` and `tests/test_properties.py`); `tests/test_verification_ledger.py` | none (no data touched) | registries 14.1.0, 15.1.0, 15.2.0 (no metric affected) |
 | Note 16, release 15.2.0 | `eval/registry_patches/PROTOCOL_15_2_0.md`, `patch_15_2_0.py`, `gate_compare.py`; gate re-runs as for 15.1.0 | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults) | registry 15.1.0 vs 15.2.0, engine v8.2 (development; no v7 metric affected) |
 | Note 15, post-audit release | `eval/registry_patches/PROTOCOL_15_0_0.md`, `patch_15_0_0.py`; gate re-runs with `eval/realdata/eval_eicu.py --encounter icu`, `eval/realdata/eval_nhanes.py --n-max 1000 --encounter community`, `eval/provenance/activity_log.py --corpus eicu` | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults) | registry 14.2.0 vs 15.0.0, engine v8.2 in both arms (development; no v7 metric affected) |
 | Table S1, Table S2, Note 1 | SAP document (dated amendments); freeze manifests | — | 14.0.0 → 14.1.0; v6 → v7 |

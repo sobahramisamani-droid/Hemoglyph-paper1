@@ -153,6 +153,7 @@ parts = [
     VERIFIER,
     rd(os.path.join(V7, "submission_CMPB", "NOTE15_provenance.md")),
     rd(os.path.join(V7, "submission_CMPB", "NOTE16_audit_study.md")),
+    rd(os.path.join(V7, "submission_CMPB", "NOTE18_verification_ledger.md")),
     FIGS,
 ]
 md = "\n\n".join(parts) + "\n"
@@ -207,6 +208,7 @@ Every number in the main text and in this file is produced by a script in the pu
 | Section 3.2, Fig. S1, Note 8, Table S10 | `eval/source_audit/PROTOCOL.md` with the frozen sample `eval/source_audit/sample_200.csv` (seed 20261026), `eval/registry_source_verify.py` | registry 14.1.0 (seed 20261026) | 14.1.0 |
 | Section 3.3, Note 15 | `eval/provenance/PROTOCOL.md`, `eval/provenance/activity_log.py`, `core_analysis.py`, `resource_core.py`; frozen sample `eval/provenance/phase_c_sample_100.csv` (seed 20261028) | eICU-CRD demo first panels; NHANES 2015–16 and 2017–18 | registry 14.2.0; harness v8.2 (activity only; no v7 metric affected) |
 | Section 3.9, Note 16 | `eval/audit/PROTOCOL_AUDIT.md`, `make_core_registry.py`, `audit.py`, `mutate.py`, `convert_llm_corpus.py`; CORE arm re-runs with `eval/realdata/eval_eicu.py --encounter icu` and `eval/realdata/eval_nhanes.py --n-max 1000 --encounter community`; paired comparison as for the 15.1.0 gate | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults); registries 14.1.0 and 15.1.0; second LLM-written corpus (400 rules, hash-frozen) | registry 15.1.0 vs its 335-rule audited core, engine v8.2 in both arms (development; no v7 metric affected) |
+| Section 3.9, Note 18 | `eval/verification_ledger/build_ledger.py` (join only; inputs are the frozen outputs of Notes 8, 15, 16, `eval/audit/audit.py` and `tests/test_properties.py`); `tests/test_verification_ledger.py` | none (no data touched) | registries 14.1.0, 15.1.0, 15.2.0 (no metric affected) |
 | Note 16, release 15.2.0 | `eval/registry_patches/PROTOCOL_15_2_0.md`, `patch_15_2_0.py`, `gate_compare.py`; gate re-runs as for 15.1.0 | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults) | registry 15.1.0 vs 15.2.0, engine v8.2 (development; no v7 metric affected) |
 | Note 15, post-audit release | `eval/registry_patches/PROTOCOL_15_0_0.md`, `patch_15_0_0.py`; gate re-runs with `eval/realdata/eval_eicu.py --encounter icu`, `eval/realdata/eval_nhanes.py --n-max 1000 --encounter community`, `eval/provenance/activity_log.py --corpus eicu` | eICU-CRD demo (2,314 stays); NHANES 2017–18 (1,000 adults) | registry 14.2.0 vs 15.0.0, engine v8.2 in both arms (development; no v7 metric affected) |
 | Table S1, Table S2, Note 1 | SAP document (dated amendments); freeze manifests | — | 14.0.0 → 14.1.0; v6 → v7 |

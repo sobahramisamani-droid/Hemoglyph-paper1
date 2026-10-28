@@ -21,8 +21,10 @@ with respect to the whitelists, except that `KEEP_SINGLE` exempts 13 named 15.1.
 
 ## Part 2 — Sufficiency of the audited core (registry arm CORE vs full 15.1.0)
 
-CORE = the 335 executable rules of 15.1.0 that are either curated anchors or belong to the activity-defined active
-core (every other rule set non-executable; sources untouched). Same harness, same cohorts, same seeds.
+CORE = the 335 executable rules of 15.1.0 that are curated (284), carry a verbatim source quote from the 15.0.0
+re-sourcing of the active core (19 further rules) or are reference-interval conventions (32); it is **not** the
+activity-defined active core — only 94 of the 364 active-core rules are in it (Note 18). Every other rule is set
+non-executable; sources untouched. Same harness, same cohorts, same seeds.
 
 | metric | full 15.1.0 | CORE (335 rules) | Δ (pts) | paired full−CORE (gained / lost, exact McNemar p) |
 |---|---|---|---|---|
@@ -39,7 +41,7 @@ Denominator 2,432 labelled stay–diagnosis pairs in 2,314 stays. The gains of t
 diabetes (+28 grouped@10, +31 flat@10) and AKI/renal pattern templates; no `co_` template appears in any CORE top-5
 (0 vs 88 in the full arm). Verdict under the protocol's pre-stated thresholds: the un-audited 30,735 executable
 rules are **not load-bearing at @3/@5 (|Δ| ≤ 0.5 pt)** and **partially load-bearing at @10 and in the two-tier
-metric (1.0–2.3 pt, significant)**. The activity-defined core of 1.1 % of rules therefore carries the ranking at the
+metric (1.0–2.3 pt, significant)**. The curated/quote-verified 1.1 % of rules therefore carries the ranking at the
 cut-offs the paper reports as primary. Files: `eval/results/eicu_demo/*_core_icu.*`, `eval/results/nhanes_2017/*_core.*`,
 `eval/audit/part2/paired_core.txt` (there A = CORE, B = full).
 
