@@ -80,7 +80,8 @@ def apply(op, rule, leaf, aud, sources):
     return None
 
 def main():
-    reg = load_br(os.path.join(HG, "HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br")); feats = load_br(os.path.join(HG, "HEMOGLYPH_FEATURE_REGISTRY.json.br"))["features"]
+    reg_path = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].endswith(".br") else os.path.join(HG, "HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br")
+    print("registry:", reg_path); reg = load_br(reg_path); feats = load_br(os.path.join(HG, "HEMOGLYPH_FEATURE_REGISTRY.json.br"))["features"]
     aud = Audit(reg, feats); R = reg["rules"]; sources = list(reg["guideline_sources"]); sources_meta.update(reg["guideline_sources"])
     seeds = [rid for rid, r in R.items() if r.get("executable") and not rid.startswith("co_") and
              (str(r.get("status", "")).startswith("curated") or (r.get("provenance") or {}).get("verified_quote")) and numeric_leaf_paths(r.get("expression"))]
@@ -111,7 +112,8 @@ def main():
         n, de, da, by = tab[op]
         rows.append({"op": op, "mutants": n, "detected_expected": de, "detected_any": da, "recall_any": round(da / n, 3) if n else None, "by_detector": dict(by)})
     res["table"] = rows; res["specificity"] = {"seeds": len(seeds), "flagged_unmutated": len(fp), "specificity": round(1 - len(fp) / len(seeds), 4)}
-    json.dump(res, open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "mutation_results.json"), "w"), indent=0)
+    out = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else os.path.join(os.path.dirname(os.path.abspath(__file__)), "mutation_results.json")
+    json.dump(res, open(out, "w"), indent=0)
     print(json.dumps(rows, indent=1)); print(res["specificity"]); print("unmutated seeds flagged:", {k: list(v) for k, v in fp.items()})
 
 if __name__ == "__main__": main()

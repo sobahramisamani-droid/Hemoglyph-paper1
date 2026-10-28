@@ -147,7 +147,7 @@ def fmt(k, n):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--n-max", type=int, default=3000); ap.add_argument("--seed", type=int, default=20261021); ap.add_argument("--cycle", default="J")
-    ap.add_argument("--encounter", default=None, help="v14: ClinicalContext.encounter ('community' for NHANES)"); ap.add_argument("--registry", default=None, help="disease registry path (control arm)"); ap.add_argument("--data-dir", default=None, help="override data directory (e.g. eval/quarantine/nhanes_2013_H)"); ap.add_argument("--suffix", default="")
+    ap.add_argument("--encounter", default=None, help="v14: ClinicalContext.encounter ('community' for NHANES)"); ap.add_argument("--registry", default=None, help="disease registry path (control arm)"); ap.add_argument("--data-dir", default=None, help="override data directory (e.g. eval/quarantine/nhanes_2013_H)"); ap.add_argument("--suffix", default=""); ap.add_argument("--engine-dir", default=None, help="load analyse_gidlines + registries from this directory (frozen v7 reproduction; see tools/make_frozen_engine_dir.py)")
     a = ap.parse_args()
     global DATA
     if a.data_dir: DATA = a.data_dir
@@ -220,7 +220,12 @@ def main():
                & (df.LBXSTB <= 1.2) & (df.LBXSAPSI <= 130) & (df.LBXSGTSI <= 60) & (df.LBXSAL >= 3.5) & (_dfh.LBDPCT.between(15, 50)))
 
     import logging; logging.disable(logging.CRITICAL)
+    if getattr(a, "engine_dir", None):
+        _ed = os.path.abspath(a.engine_dir); sys.path.insert(0, _ed)
+        for _m in ("analyse_gidlines", "cache_registry", "calcu"): sys.modules.pop(_m, None)
     import analyse_gidlines as ag
+    if getattr(a, "engine_dir", None): assert os.path.dirname(os.path.abspath(ag.__file__)) == _ed, ag.__file__
+    print("engine:", ag.__file__, flush=True)
     E = ag.ClinicalRuleEngine(disease_registry_path=a.registry) if getattr(a, "registry", None) else ag.ClinicalRuleEngine()
     print("registry:", getattr(E.registry, "metadata", {}).get("version"), flush=True)
     E._reasoner.max_differential = 40  # evaluation: do not truncate the ranked list
