@@ -153,6 +153,8 @@ parts = [
     rd(os.path.join(V7, "submission_CMPB", "NOTE16_audit_study.md")),
     rd(os.path.join(V7, "submission_CMPB", "NOTE18_verification_ledger.md")),
     rd(os.path.join(V7, "submission_CMPB", "NOTE19_human_audit_protocol.md")),
+    rd(os.path.join(V7, "submission_CMPB", "NOTE20_heldout_mutation.md")),
+    rd(os.path.join(V7, "submission_CMPB", "NOTE21_reproduction_log.md")),
     FIGS,
 ]
 md = "\n\n".join(parts) + "\n"
@@ -202,6 +204,8 @@ Every number in the main text and in this file is produced by a script in the pu
 | Fig. 8, Table S6–S6c | `eval/calibration_dca.py` outputs (`eval/results/eicu_demo/calibration_dca_v7.md`, `reviewer_b5_calibration_v7.json`) | eICU-CRD demo (2,314 stays; 52,689 label scores) | v7 / 14.1.0 |
 | Fig. 3 | `docs/paper1/v7/make_figures_R8.py` reading the frozen outputs of Notes 8, 15, 16 and 18 (no new measurement) | — | 14.1.0 (a, b); 15.1.0 (c); 15.2.0 (d) |
 | Figs. 1–8 (rendering only) | `docs/paper1/v7/make_figures_R8.py` (reads `eval/results/eicu_demo/{ml_baseline.json, llm_vs_v7_cluster_n400.json, calibration_dca_v7.md}` and `eval/verification_ledger/ledger_counts.json`; NHANES, sepsis and recall values are transcribed from the frozen reports of the rows above and asserted against them in the script's constants) | frozen result files listed in this table | as per source row |
+| Note 20 | `eval/audit/PROTOCOL_HELDOUT.md`, `mutate_heldout.py` (seed 20261028) | registry 15.3.0 (300 AI-drafted rules); second LLM-written corpus (400 rules) | detectors frozen; registry 15.3.0 (no v7 metric affected) |
+| Note 21, Table S18 | `reproduce.sh` (modes `quick`, `v7`, `eicu`, `all`), `tools/make_frozen_engine_dir.py`, `tools/compare_reports.py`; `eval/source_audit/auditability_metrics.py` (reads the committed Note 8 files) | clean `git clone` of the repository; NHANES 2017–18; eICU-CRD demo | git tag `engine-v7-frozen`; registries 14.1.0, 15.1.0, 15.3.0 |
 | Note 19 (protocol only; no result) | `eval/audit/human_audit/sample_rules.py`; frozen sample `human_audit_sample_100.csv` (seed 20261028; SHA-256 in `SHA256SUMS`) | verification ledger at 15.2.0 | 15.2.0 |
 | Table 4, Fig. 5, Fig. 4 (ML baseline: `eval/baselines/ml_baseline_eicu.py`), Table S7, Table S13, Note 10 | `eval/realdata/eval_nhanes.py`, `eval_uci_thyroid.py`, `eval_uci_hcv.py`, `eval_ilpd.py`, `eval_pmc_cases.py`, `eval/mimic/run_retrospective.py` | NHANES H/I/J, UCI thyroid0387, UCI HCV, ILPD, MIMIC-IV demo, PMC case reports | v7 / 14.1.0 |
 | Fig. 6, Table S16 | `eval/realdata/eval_sepsis2019.py`, `eval_sepsis2019_concurrent.py`, `eval/sepsis_ml/sepsis_risk_module.py` | PhysioNet Sepsis-2019 sets A, B, B2 | v7 / 14.1.0 |
@@ -220,7 +224,8 @@ Every number in the main text and in this file is produced by a script in the pu
 | Table S9 | `eval/label_audit_300.py` (seed 11; the first 100 stays by the author adjudication described in Table S9) | 400 eICU stays | v7 |
 | Fig. S5 | `eval/deep_review_ctx_sex.py` | eICU-CRD demo, context arm | v5.2 |
 """
-md = md.replace("## Supplementary Figures", REPRO + "\n## Supplementary Figures", 1)
+S18 = rd(os.path.join(P1, "..", "..", "eval", "source_audit", "auditability_metrics.md"))
+md = md.replace("## Supplementary Figures", REPRO + "\n" + S18 + "\n\n## Supplementary Figures", 1)
 
 os.makedirs(os.path.join(V7, "submission_CMPB"), exist_ok=True)
 open(os.path.join(V7, "submission_CMPB", "Supplementary_Information_R8.md"), "w", encoding="utf-8").write(md)

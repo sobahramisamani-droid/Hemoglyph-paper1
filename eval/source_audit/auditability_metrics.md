@@ -12,6 +12,7 @@
 | doi_or_pmc | 70 | 100.0% (94.8–100.0) | 10.0% (4.9–19.2) | abstract or title only (55) |
 | document_page | 89 | 95.5% (89.0–98.2) | 10.1% (5.4–18.1) | generic methodological source cannot contain statement (45) |
 | organisation_landing | 35 | 94.3% (81.4–98.4) | 0.0% (0.0–9.9) | landing page or full text without the statement (32) |
+| no URL locator (free-text citation only) | 6 | 0.0% (0.0–39.0) | 0.0% (0.0–39.0) | no text retrieved (6) |
 
 Unresolvable reason codes (frozen with the verdicts): landing page or full text without the statement 71; abstract or title only 55; generic methodological source cannot contain statement 46; no text retrieved 12.
 

@@ -70,6 +70,11 @@
 "n": 35,
 "retrievable": 33,
 "located": 0
+},
+"none": {
+"n": 6,
+"retrievable": 0,
+"located": 0
 }
 },
 "reasons_by_locator": {
@@ -86,6 +91,9 @@
 "landing_page_or_full_text_without_the_statement": 32,
 "no_text_retrieved": 2,
 "generic_methodological_source_cannot_contain_statement": 1
+},
+"none": {
+"no_text_retrieved": 6
 }
 },
 "reasons_all": {

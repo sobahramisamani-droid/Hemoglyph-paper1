@@ -45,14 +45,14 @@ for s in ["A", "B1", "B2", "all"]:
     name = {"A": "A curated anchors", "B1": "B1 eICU-relevant AI-drafted", "B2": "B2 uniform AI-drafted", "all": "**All**"}[s]
     lines.append(f"| {name} | {n} | {pct(k2, n)} | {pct(k3, n)} | {C} | {D} | {n - k3} |")
 lines += ["", "| Level 1: best locator class among the rule's sources | n rules | source retrievable | statement located | most frequent unresolvable reason |", "|---|---|---|---|---|"]
-for c in ["doi_or_pmc", "document_page", "organisation_landing"]:
+for c in ["doi_or_pmc", "document_page", "organisation_landing", "none"]:
     P = [p for p in per if p["best_locator"] == c]; n = len(P)
     if not n: continue
     k2 = sum(p["retrievable"] for p in P); k3 = sum(p["located"] for p in P)
     reasons = collections.Counter(p["reason"] for p in P if not p["located"])
     out["by_locator"][c] = {"n": n, "retrievable": k2, "located": k3}; out["reasons_by_locator"][c] = dict(reasons)
     top = reasons.most_common(1)[0] if reasons else ("—", 0)
-    lines.append(f"| {c} | {n} | {pct(k2, n)} | {pct(k3, n)} | {top[0].replace('_', ' ')} ({top[1]}) |")
+    lines.append(f"| {c if c != 'none' else 'no URL locator (free-text citation only)'} | {n} | {pct(k2, n)} | {pct(k3, n)} | {top[0].replace('_', ' ')} ({top[1]}) |")
 reasons_all = collections.Counter(p["reason"] for p in per if not p["located"])
 lines += ["", "Unresolvable reason codes (frozen with the verdicts): " + "; ".join(f"{k.replace('_', ' ')} {v}" for k, v in reasons_all.most_common()) + ".",
           "", "Reading: retrievability (a document opens) and verifiability (the document contains the encoded threshold, operator, unit and population) are different properties; the gap between the two columns is the cost of organisation-level and methodological locators. VEC uses all sampled rules as denominator. These are properties of the registry's locators as rated by the single declared AI rater (Note 8); they are not clinical validity."]
