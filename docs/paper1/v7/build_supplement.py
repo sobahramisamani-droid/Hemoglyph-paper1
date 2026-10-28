@@ -155,6 +155,7 @@ parts = [
     rd(os.path.join(V7, "submission_CMPB", "NOTE19_human_audit_protocol.md")),
     rd(os.path.join(V7, "submission_CMPB", "NOTE20_heldout_mutation.md")),
     rd(os.path.join(V7, "submission_CMPB", "NOTE21_reproduction_log.md")),
+    rd(os.path.join(V7, "submission_CMPB", "NOTE22_condensed_detail.md")),
     FIGS,
 ]
 md = "\n\n".join(parts) + "\n"
