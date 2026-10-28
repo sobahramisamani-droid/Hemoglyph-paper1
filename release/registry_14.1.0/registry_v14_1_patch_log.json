@@ -1,0 +1,20 @@
+{
+ "sources_added": [
+  "aasld_masld_2023",
+  "acg_liver_chemistries_2017"
+ ],
+ "entities_added": [
+  "myocardial_injury_acuity_undetermined",
+  "post_streptococcal_glomerulonephritis"
+ ],
+ "rules_added": [
+  "masld_alt_above_acg_uln_male_with_cardiometabolic_v14",
+  "masld_alt_above_acg_uln_female_with_cardiometabolic_v14",
+  "masld_exclusion_viral_hepatitis_v14",
+  "psgn_low_c3_haematuria_v14",
+  "psgn_low_c3_haematuria_renal_impairment_v14"
+ ],
+ "rules_retargeted": [
+  "acute_myocardial_injury_udmi4_troponin_above_99th_v14"
+ ]
+}

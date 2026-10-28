@@ -1,0 +1,90 @@
+{
+ "sources_added": [
+  "udmi4_2018",
+  "accp_sccm_sirs_1992"
+ ],
+ "entities_added": [
+  "systemic_inflammatory_response_syndrome",
+  "quick_sofa_positive",
+  "septic_shock",
+  "reduced_gfr_chronicity_undetermined"
+ ],
+ "rules_added": [
+  "sirs_accp_sccm_1992_2_of_4_v14",
+  "qsofa_sepsis3_rr_sbp_v14",
+  "septic_shock_sepsis3_map_lactate_pattern_v14",
+  "septic_shock_sbp_lactate_screen_v14",
+  "sepsis_sirs_with_laboratory_support_v14",
+  "sepsis_qsofa_physiological_screen_v14",
+  "acute_myocardial_injury_udmi4_troponin_above_99th_v14",
+  "reduced_gfr_single_panel_v14",
+  "chronic_kidney_disease_chronicity_clues_v14"
+ ],
+ "demoted": [
+  {
+   "rule_id": "acute_myocardial_infarction_esc_2023_hs_tni_rule_in_cur13",
+   "before": {
+    "rule_type": "diagnostic_criterion",
+    "weight": 6.0
+   },
+   "after": {
+    "rule_type": "screening",
+    "weight": 3.0
+   }
+  },
+  {
+   "rule_id": "acute_myocardial_infarction_esc_2023_hs_tnt_rule_in_cur13",
+   "before": {
+    "rule_type": "diagnostic_criterion",
+    "weight": 6.0
+   },
+   "after": {
+    "rule_type": "screening",
+    "weight": 3.0
+   }
+  },
+  {
+   "rule_id": "chronic_kidney_disease_kdigo_2024_g3_plus_cur13",
+   "before": {
+    "rule_type": "diagnostic_criterion",
+    "weight": 6.0
+   },
+   "after": {
+    "rule_type": "screening",
+    "weight": 3.0
+   }
+  },
+  {
+   "rule_id": "acute_kidney_injury_v1",
+   "before": {
+    "rule_type": "diagnostic_criterion",
+    "weight": 6.0
+   },
+   "after": {
+    "rule_type": "screening",
+    "weight": 4.0
+   }
+  }
+ ],
+ "retired": [
+  "acute_myocardial_injury_v1"
+ ],
+ "kind_set": [
+  [
+   "acute_myocardial_injury",
+   "laboratory_finding"
+  ],
+  [
+   "systemic_inflammatory_response_syndrome",
+   "syndrome"
+  ],
+  [
+   "quick_sofa_positive",
+   "syndrome"
+  ],
+  [
+   "reduced_gfr_chronicity_undetermined",
+   "laboratory_finding"
+  ]
+ ]
+}
