@@ -1,3 +1,4 @@
+import os
 """Build the CMPB manuscript .docx from the R8 markdown (Elsevier format: A4, 2.5 cm, Times New Roman 12, double spacing,
 numbered sections, continuous line numbers, page numbers, editable tables, figures with legends at the end)."""
 import re
@@ -8,7 +9,7 @@ from docx_style import setup_document, inline, add_table, heading
 
 import sys
 SRC = sys.argv[1] if len(sys.argv) > 1 else "Paper1_Hemoglyph_CMPB_EN_v7_R9.md"
-OUT = SRC.replace(".md", ".docx")
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "ارسال پیپر ۱", "Manuscript_Paper1_Hemoglyph_CMPB_R9.docx")
 doc = Document(); setup_document(doc)
 TEXT = open(SRC, encoding="utf-8").read()
 # Supplementary Notes kept at the end of the markdown source are built into the separate Supplementary Information file; the manuscript stops before them.

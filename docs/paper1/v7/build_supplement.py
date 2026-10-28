@@ -2,7 +2,7 @@
 
 Order: cover/index · Note 1 SAP · Note 2 LLM protocol · Table S1 cohort flow · SUPPLEMENT_R1 (Notes 3–8, Tables S4–S16) ·
 Note 8 addendum (second-rater attempts) · Notes 9–12 and 17 (from the manuscript tail) · TRIPOD+AI checklist.
-Output: submission_CMPB/Supplementary_Information_R8.{md,docx}
+Output: submission_CMPB/Supplementary_Information_R8.md and ../../../ارسال پیپر ۱/Supplementary_Information.docx
 """
 import re, os
 from docx import Document
@@ -138,7 +138,7 @@ VERIFIER = """## Supplementary Note 14 — The engine's criteria as an executabl
 """
 
 parts = [
-    "# Supplementary Information\n\n*Verifying an AI-drafted laboratory-interpretation rule base before clinical audit: executable invariants, frozen source-concordance protocols and a hash-frozen benchmark applied to the open Hemoglyph engine — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R8 (2026-10-28), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
+    "# Supplementary Information\n\n*Verifying an AI-drafted laboratory-interpretation rule base before clinical audit: executable invariants, frozen source-concordance protocols and a hash-frozen benchmark applied to the open Hemoglyph engine — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R9 (2026-10-28), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
     "## Supplementary Note 1 — Statistical analysis plan and amendments\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "SAP_Hemoglyph_v1.md")), flags=re.M).replace("\n## ", "\n### "),
     S1S2,
     "## Supplementary Note 2 — LLM comparison protocol\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "LLM_COMPARISON_PROTOCOL.md")), flags=re.M).replace("\n## ", "\n### "),
@@ -267,6 +267,6 @@ while i < len(lines):
     else:
         p = doc.add_paragraph(); inline(p, l)
     i += 1
-out = os.path.join(V7, "submission_CMPB", "Supplementary_Information_R8.docx")
+out = os.path.join(V7, "..", "..", "..", "ارسال پیپر ۱", "Supplementary_Information.docx")
 doc.save(out)
 print("supplement ok:", out, "| words", len(md.split()))

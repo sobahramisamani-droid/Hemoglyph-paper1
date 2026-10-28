@@ -27,11 +27,11 @@
 |---|---|---|
 | **Cover Letter** | متن `COVER_LETTER_CMPB.md` (بلوک نویسندهٔ مسئول پر شود) | در کادر متنی paste کنید یا به docx تبدیل کنید |
 | **Title Page (with Author Details)** | `submission_CMPB/TITLE_PAGE.md` → تبدیل به docx | جدا از متن اصلی |
-| **Manuscript** | `Paper1_Hemoglyph_CMPB_EN_v7_R9.docx` | تک‌ستون، دوخط‌فاصله، بخش‌های شماره‌دار، شکل‌ها در انتها برای داوری |
+| **Manuscript** | `ارسال پیپر ۱/Manuscript_Paper1_Hemoglyph_CMPB_R9.docx` | تک‌ستون، دوخط‌فاصله، بخش‌های شماره‌دار، شکل‌ها در انتها برای داوری |
 | **Highlights** | `submission_CMPB/highlights.txt` | ۵ مورد، هر یک ≤۸۵ نویسه (بررسی شد: ۷۹–۸۲) |
 | **Graphical Abstract** | `fig/Graphical_abstract.png` | اختیاری |
 | **Figure** ×۸ | `submission_CMPB/Figure_1.png … Figure_8.png` | هر شکل یک فایل، ۳۰۰ dpi، به ترتیب ارجاع |
-| **Supplementary Material** | `submission_CMPB/Supplementary_Information_R8.docx` | یک فایل؛ نام را هنگام آپلود `Supplementary_Information.docx` بگذارید |
+| **Supplementary Material** | `submission_CMPB/ارسال پیپر ۱/Supplementary_Information.docx` | یک فایل؛ نام را هنگام آپلود `Supplementary_Information.docx` بگذارید |
 | **Supplementary Data** | `docs/paper1/supplement/Supplementary_Data_1_sources_13.4.1.xlsx` | Supplementary Data 1 |
 | **Declaration of Interest Statement** | فرم الزویر (در سامانه تولید می‌شود) | با متن Competing interest مقاله یکسان باشد |
 
