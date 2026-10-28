@@ -13,6 +13,9 @@ release/*
 !release/registry_14.1.0/
 !release/registry_15.3.0/
 !release/registry_15.1.0/
+!release/registry_15.2.0/
+release/registry_15.2.0/*.br
+!release/registry_15.2.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br
 release/registry_15.1.0/*.br
 !release/registry_15.1.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br
 release/registry_14.1.0/*.br
