@@ -12,6 +12,6 @@
 
 **Co-author ORCIDs.** Z.T.: [to be supplied]. E.B.S.: [to be supplied].
 
-**Word counts.** Abstract 345; main text (Introduction–Conclusion, incl. Limitations) ≈3,700; references 32; tables 5; figures 7; supplementary notes 12.
+**Word counts.** Abstract 350; main text (Introduction–Conclusion, incl. Limitations) ≈4,800; references 34; figures 7; tables 7; Supplementary Information (Notes 1–17) in one file.
 
 **Article type.** Original research article (methodology / software).
