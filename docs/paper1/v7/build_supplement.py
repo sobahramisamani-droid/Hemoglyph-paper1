@@ -14,7 +14,7 @@ P1 = os.path.abspath(os.path.join(V7, ".."))
 SUP = os.path.join(P1, "supplement")
 rd = lambda p: open(p, encoding="utf-8").read().strip()
 
-man = rd(os.path.join(V7, "Paper1_Hemoglyph_CMPB_EN_v7_R8.md"))
+man = rd(os.path.join(V7, "Paper1_Hemoglyph_CMPB_EN_v7_R9.md"))
 notes_9_12 = man.split("## Supplementary information", 1)[1]
 index_line = re.search(r"Notes: Note 1 SAP[^\n]*", notes_9_12).group(0)
 notes_9_12 = notes_9_12.split("### Supplementary Note 9", 1)[1]

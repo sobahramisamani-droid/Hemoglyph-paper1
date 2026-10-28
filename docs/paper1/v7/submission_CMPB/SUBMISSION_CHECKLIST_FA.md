@@ -6,7 +6,7 @@
 
 | # | مورد | فایل | وضعیت |
 |---|---|---|---|
-| 1 | مقاله (docx، دو خط فاصله، ۳٬۸۷۶ کلمهٔ متن اصلی، چکیدهٔ ساختاریافته ۳۴۵ کلمه، ۳۴ مرجع) | `docs/paper1/v7/Paper1_Hemoglyph_CMPB_EN_v7_R8.docx` | ✅ |
+| 1 | مقاله (docx، دو خط فاصله، ≈۴٬۹۰۰ کلمهٔ متن اصلی، چکیدهٔ ساختاریافته ۳۴۵ کلمه، ۳۴ مرجع) | `docs/paper1/v7/Paper1_Hemoglyph_CMPB_EN_v7_R9.docx` | ✅ |
 | 2 | هایلایت‌ها (۵ مورد، همه ≤ ۸۵ کاراکتر) | `submission_CMPB/highlights.txt` | ✅ |
 | 3 | شکل‌های ۱ تا ۷ (فایل‌های جدا، ۳۰۰ dpi) | `submission_CMPB/Figure_1.png … Figure_7.png` | ✅ |
 | 4 | مکمل واحد (Notes 1–12، Tables S1–S16، Figs S1–S7، TRIPOD+AI، Reproducibility map) | `submission_CMPB/Supplementary_Information_R8.docx` | ✅ |

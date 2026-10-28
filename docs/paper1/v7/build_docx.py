@@ -6,7 +6,9 @@ from docx.shared import Pt, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx_style import setup_document, inline, add_table, heading
 
-SRC, OUT = "Paper1_Hemoglyph_CMPB_EN_v7_R8.md", "Paper1_Hemoglyph_CMPB_EN_v7_R8.docx"
+import sys
+SRC = sys.argv[1] if len(sys.argv) > 1 else "Paper1_Hemoglyph_CMPB_EN_v7_R9.md"
+OUT = SRC.replace(".md", ".docx")
 doc = Document(); setup_document(doc)
 TEXT = open(SRC, encoding="utf-8").read()
 # Supplementary Notes kept at the end of the markdown source are built into the separate Supplementary Information file; the manuscript stops before them.

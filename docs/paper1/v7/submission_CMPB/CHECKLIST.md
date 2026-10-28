@@ -1,32 +1,31 @@
-# CMPB submission checklist (Editorial Manager: https://submit.elsevier.com/CMPB)
+# CMPB submission checklist (Editorial Manager: https://submit.elsevier.com/CMPB) — updated 2026-10-28 (R9)
 
-| Item | File | Status |
+## Files to upload
+
+| EM item | File | Status |
 |---|---|---|
-| Cover letter (why CMPB / what is known / what this adds / not published elsewhere) | `../COVER_LETTER_CMPB.md` | ready |
-| Title page, separate, single corresponding author, full postal addresses | `TITLE_PAGE.md` | **needs**: telephone, postal address, Z.T. affiliation wording, co-author ORCIDs |
-| Manuscript (.docx, single column, double spaced, numbered sections, no author names in main file for blinding not required — CMPB is single-anonymised) | `../Paper1_Hemoglyph_CMPB_EN_v7_R8.docx` | ready (main text ≈5,000 words excl. abstract, tables, declarations and references; CMPB norm ≈3,500 — excess justified in cover letter) |
-| Structured abstract ≤350 w (Background and Objective / Methods / Results / Conclusions) | in manuscript | 350 w (recounted 2026-10-28 after the audit-study sentence; earlier figure was wrong) |
-| Keywords 3–6 | in manuscript | 6 |
-| Highlights (optional, ≤85 chars each) | `highlights.txt` | ready |
-| Figures as separate files, ≥300 dpi, cited in order 1–7 | `../fig/Fig1.png, Fig3.png, Fig4.png, Fig5.png, Fig6.png, Fig7_llm_v7.png, Fig8_calibration_dca.png` → rename Figure_1…Figure_7 at upload | ready |
-| Graphical abstract (optional at CMPB) | `../fig/Graphical_abstract.png` | ready |
-| Tables editable, no shading, numbered by appearance | in manuscript | ready |
-| Supplementary material (one PDF/docx: Notes 1–12, Tables S1–S15, Figs S1–S…) | build from manuscript "Supplementary information" section | **to build** (`build_supplement.py`) |
-| Ethics statement with exemption reason | in manuscript (Acknowledgements and declarations) | ready |
-| Declaration of competing interest, funding, GenAI, CRediT | in manuscript | ready; **co-author confirmation pending** |
-| Data statement (Option: public repositories + GitHub; Zenodo DOI before publication) | in manuscript | ready; Zenodo DOI to add if available |
+| Cover letter | `../COVER_LETTER_CMPB.md` (paste as text; fill the corresponding-author block) | ready |
+| Title page (separate; single corresponding author; full postal addresses; ORCIDs) | `TITLE_PAGE.md` | **needs**: telephone, postal address, Z.T. affiliation wording, co-author ORCIDs |
+| Manuscript (.docx, single column, double spaced, numbered sections, figures embedded at end for review) | `../Paper1_Hemoglyph_CMPB_EN_v7_R9.docx` | ready — abstract 350 w, main text ≈4,900 w (CMPB norm ≈3,500; excess justified in cover letter), 34 refs, 8 figures, 7 tables |
+| Highlights (3–5 bullets, ≤85 characters each incl. spaces) | `highlights.txt` | ready (79–82 chars) |
+| Figures, separate files, ≥300 dpi, numbered in order of citation | `Figure_1.png … Figure_8.png` (2,600–3,200 px wide, tagged 300 dpi) | ready |
+| Graphical abstract (optional) | `../fig/Graphical_abstract.png` | ready |
+| Supplementary Information (single file) | `Supplementary_Information_R8.docx` — Notes 1–22, Tables S1–S18, Figs S1–S6, TRIPOD+AI (≈42k words) | ready (file name keeps the R8 tag; content is R9) |
+| Supplementary Data 1 | `../../supplement/Supplementary_Data_1_sources_13.4.1.xlsx` | ready |
+| Declaration of competing interest form (Elsevier template) | generate at EM from the manuscript text | **to do at upload** |
 | Co-author approval of the submitted version | — | **pending (Z.T., E.B.S.)** |
 
+## Statements inside the manuscript (all present)
 
-## Package contents (2026-10-27, after step 2)
+Ethics (public de-identified data, no human participants) · Funding (none) · Competing interest (first author's commercial product) · Generative-AI declaration (three declared uses) · CRediT · Data and code availability (GitHub + `reproduce.sh`; Zenodo DOI to be inserted) · Software availability.
 
-| File | Status |
-|---|---|
-| `Paper1_Hemoglyph_CMPB_EN_v7_R8.docx` (manuscript, double spaced, 34 refs, main text ≈5,000 w) | ready |
-| `TITLE_PAGE.md` | needs phone/postal address, Z.T. affiliation, ORCIDs |
-| `highlights.txt` (5 × ≤ 85 chars) | ready |
-| `Figure_1.png … Figure_7.png` (Fig1, Fig3, Fig4, Fig5, Fig6, Fig7_llm_v7, Fig8_calibration_dca; 1,360–2,080 px wide, tagged 300 dpi) | ready; if EM flags resolution, re-export from the matplotlib scripts at dpi=600 |
-| `Supplementary_Information_R8.docx` (Notes 1–16, Tables S1–S16, TRIPOD+AI, ~37k words) | ready |
-| `Supplementary_Data_1_sources_13.4.1.xlsx` (in `docs/paper1/supplement/`) | upload as Supplementary Data 1 |
-| `COVER_LETTER_CMPB.md` | ready (fill the corresponding-author block) |
-| `EXEMPLARS_CMPB.md` | internal, do not upload |
+## Before pressing Submit
+
+1. Push HEAD to GitHub and confirm `bash reproduce.sh quick` passes on the public clone (last authors' run: PASS, `REPRODUCTION_LOG.md`).
+2. Mint the Zenodo DOI for the frozen snapshot and replace "will be archived" with the DOI in Data availability (both manuscript and `TITLE_PAGE.md` are unaffected otherwise).
+3. Confirm with Z.T. and E.B.S.: affiliation wording, ORCIDs, CRediT lines, approval of the submitted version.
+4. Re-read the Declarations block and the cover letter once in full.
+
+## Archival (do not upload)
+
+`../Paper1_Hemoglyph_CMPB_EN_v7_R9_long.md` (un-condensed R9 text; every passage removed from the submission version is also in Supplementary Note 22) · `EXEMPLARS_CMPB.md` · `REVIEWER_RESPONSES_PREPARED.md` · `SUBMISSION_CHECKLIST_FA.md`.
