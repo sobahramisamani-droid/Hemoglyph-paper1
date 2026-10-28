@@ -1,4 +1,4 @@
-## Supplementary Note 19 — Pre-specified protocol for the independent clinical concordance audit (not yet executed)
+## Supplementary Note 19 — Pre-specified protocol and frozen sample for the independent clinical concordance audit (a separate study)
 
 **Status.** Written and frozen on 2026-10-28, before any rater was approached. No result exists. The sample is drawn, committed and hashed (`eval/audit/human_audit/human_audit_sample_100.csv`, SHA-256 in `SHA256SUMS`); the AI rater's verdicts for the same 100 rules are sealed in a separate file that raters do not receive. The protocol will be executed unchanged when two eligible raters are available; any deviation will be dated and reported. Its results, favourable or not, will be reported in the prospective reader study (Paper 2) or as an addendum to this paper.
 
