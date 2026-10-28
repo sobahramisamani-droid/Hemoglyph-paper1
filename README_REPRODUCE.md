@@ -31,3 +31,7 @@ The blind LLM read-outs (`eval/results/eicu_demo/{llm_agent_b3_n100,b4_llm_blind
 
 ### Registry activation note (2026-10-23 evening)
 The engine loads `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br` (`DEFAULT_DISEASE_REGISTRY_PATH`); `HEMOGLYPH_GUIDELINE_REGISTRY.json.br` is the distribution copy and `preflight_check.py` requires the two to be identical. Registry 13.2.0 + 13.3.0 were activated at 21:03 UTC by copying the 13.3.0 candidate to **both** files (backups `*.bak_v13_1_0`). An earlier activation at 19:43 UTC updated only the distribution copy; the v5.3 gate/eICU results produced between 19:43 and 21:00 therefore ran on 13.1.0 and were moved to `eval/results/run_20261023_v53/invalid_ran_on_13_1_0/` (kept only as evidence; not reported). The patch scripts' `--apply` now updates both files.
+
+## LabPanel-Check (black-box conformance package)
+
+`eval/labpanel_check/` — 290 frozen panels, label map, standard-library scorer and two reference cards. Score any reader: `python3 eval/labpanel_check/score.py READS.json --label NAME`. `pytest tests/test_labpanel_check.py` asserts that the shipped reference readings reproduce the manuscript's Table 6 / Note 13 figures (see the package README for the two documented differences).

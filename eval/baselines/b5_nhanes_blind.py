@@ -90,7 +90,7 @@ def prepare(a):
 
 
 SYN = {"diabetes": ("diabetes", "hyperglycemia", "prediabetes"), "ckd": ("chronic kidney", "ckd", "renal", "kidney", "albuminuria"),
-       "anemia": ("anemia", "anaemia"), "iron_deficiency": ("iron"), "hypercholesterolemia": ("cholesterol", "hyperlipid", "dyslipid", "lipid")}
+       "anemia": ("anemia", "anaemia"), "iron_deficiency": ("iron",), "hypercholesterolemia": ("cholesterol", "hyperlipid", "dyslipid", "lipid")}
 ENG = {"diabetes": lambda d: "diabetes" in d or "hyperglycemia" in d or d.startswith("prediabetes"),
        "ckd": lambda d: "kidney" in d or "renal" in d or "albuminuria" in d, "anemia": lambda d: "anemia" in d,
        "iron_deficiency": lambda d: "iron_deficiency" in d, "hypercholesterolemia": lambda d: "cholesterol" in d or "hyperlipid" in d or "dyslipid" in d}

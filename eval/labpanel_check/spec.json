@@ -1,0 +1,64 @@
+{
+  "name": "LabPanel-Check",
+  "version": "1.0.0",
+  "purpose": "Black-box conformance benchmark for any reader of laboratory panels (rule engine, statistical model or language model). Six executable properties that a correct reader must satisfy are scored on identical, frozen, de-identified panels from public datasets. No clinical label is used; the suite measures logical consistency and unsupported assertion, not diagnostic accuracy.",
+  "input_contract": {
+    "panel": "One record per panel id: age (years), sex (male|female), panel = list of {analyte (snake_case canonical name), value (float), unit (string; may be empty)}. The reader must not see any other field.",
+    "reading": "JSON object {panel_id: [entry, ...]} in rank order (first = most probable). entry = {name: str, probability: float in [0,1], id?: str (engine vocabulary), tier?: 'diagnosis'|'finding'|'syndrome'}. Up to 10 entries are scored for rank metrics; all entries are scanned for threshold metrics.",
+    "mapping": "An entry maps to a diagnosis group if its id is in label_map.groups[g].entities, else if label_map.groups[g].regex matches its name (case-insensitive). Rank of a group = rank of its first mapped entry."
+  },
+  "properties": {
+    "P1": {
+      "name": "determinism",
+      "panels": "every panel",
+      "metric": "fraction of panels with byte-identical readings on two independent runs",
+      "how": "run the reader twice; submit both files to score.py --second"
+    },
+    "P2": {
+      "name": "unit invariance",
+      "n": 40,
+      "panels": "P2:* (SI units) against REF:* (conventional units, same values)",
+      "metric": "mean Jaccard of the top-5 group sets and number of panels with identical top-5 sets",
+      "pass": "Jaccard 1.00 in every panel",
+      "note": "SI values are rounded (two decimals if the conversion factor is below 1, otherwise integers), so the back-converted value can drift by up to about 0.1 %; a reader with a strict threshold exactly at the original value can legitimately differ. score.py lists every non-identical pair."
+    },
+    "P3": {
+      "name": "presentation invariance",
+      "n": 40,
+      "panels": "P3:* (analyte order shuffled, five normal-valued distractors appended) against REF:*",
+      "metric": "as P2",
+      "pass": "Jaccard 1.00 in every panel"
+    },
+    "P4": {
+      "name": "directional monotonicity (creatinine)",
+      "n": 20,
+      "panels": "ladders P4:<stay>:1.0 / 1.5 / 2.0 (creatinine multiplied; everything else identical)",
+      "metric": "number of ladders in which the best rank of the renal union (acute_kidney_injury, renal_impairment, chronic_kidney_disease) worsens at any step",
+      "pass": "0 violations"
+    },
+    "P5": {
+      "name": "absent-analyte invariance",
+      "n": 40,
+      "panels": "P5:* (the single defining analyte of a criterion-met target diagnosis removed)",
+      "metric": "number of panels in which target_group is still asserted at rank <= 5 (unsupported assertion); post hoc strict subset excludes panels where a redundant analyte (label_map.p5_redundant) remains",
+      "pass": "0 unsupported assertions in the strict subset"
+    },
+    "P6": {
+      "name": "healthy silence and reference detection",
+      "n": 70,
+      "panels": "P6:* NHANES 2017-18 adults: 40 guideline-healthy, 30 reference-positive, shuffled",
+      "metric": "healthy adults with >= 1 disease asserted at probability >= 0.5 (entries whose name contains a benign word, or whose tier is finding/syndrome, do not count); detection of each reference condition at probability >= 0.5",
+      "pass": "0 false assertions; detection reported descriptively"
+    }
+  },
+  "reference_cards": {
+    "engine": "Hemoglyph engine v8.2 with registry 15.2.0, generated live at package build (2026-10-28). P2 39/40: the one non-identical pair (P2:508973) is a generator rounding artefact at a strict 1.3 mg/dL rule boundary — see README.",
+    "llm": "unnamed frontier LLM accessed through the Arena.ai agent platform, blind readings 2026-10-21 to 2026-10-27; REF:* readings come from an earlier session than P2/P3 readings, so its P2/P3 Jaccard includes test-retest variability (kappa 0.69 on 40 re-read stays)"
+  },
+  "provenance": {
+    "panels": "eICU-CRD demo v2.0.1 (PhysioNet, open) first-panel laboratory values; NHANES 2017-18 public-use files",
+    "generator": "eval/blackbox/make_property_panels.py (seed 20261027), eval/baselines/b5_nhanes_blind.py (seed 20261021)",
+    "frozen_scorer_equivalent": "eval/blackbox/score_property_panels.py and eval/baselines/b5_nhanes_blind.py; score.py reproduces their numbers exactly (tests/test_labpanel_check.py)"
+  },
+  "licence": "panels and reference readings CC BY-SA 4.0; score.py AGPL-3.0"
+}

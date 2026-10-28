@@ -1,0 +1,325 @@
+{
+ "groups": {
+  "acute_kidney_injury": {
+   "entities": [
+    "acute_kidney_injury"
+   ],
+   "regex": "acute kidney|acute renal|\\bAKI\\b"
+  },
+  "acute_myocardial_infarction": {
+   "entities": [
+    "acute_myocardial_infarction",
+    "acute_myocardial_infarction_support_pattern",
+    "acute_myocardial_injury",
+    "myocardial_injury_acuity_undetermined"
+   ],
+   "regex": "myocardial infarction|\\bMI\\b|NSTEMI|STEMI|myocardial injury"
+  },
+  "acute_pancreatitis": {
+   "entities": [
+    "acute_pancreatitis",
+    "acute_pancreatitis_support_pattern",
+    "alcoholic_pancreatitis",
+    "gallstone_pancreatitis_support_pattern",
+    "severe_acute_pancreatitis_support_pattern"
+   ],
+   "regex": "pancreatitis"
+  },
+  "alcohol_withdrawal": {
+   "entities": [
+    "alcohol_associated_liver_disease",
+    "alcohol_use_disorder",
+    "alcohol_use_disorder_biomarker_pattern",
+    "alcoholic_hepatitis_pattern",
+    "alcoholic_ketoacidosis",
+    "alcoholic_liver_disease",
+    "alcoholic_liver_pattern"
+   ],
+   "regex": "alcohol"
+  },
+  "anemia": {
+   "entities": [
+    "acute_blood_loss_anemia",
+    "anemia",
+    "anemia_of_chronic_disease",
+    "iron_deficiency_anemia",
+    "macrocytic_anemia_pattern",
+    "microcytic_anemia_pattern",
+    "normocytic_anemia_pattern",
+    "pancytopenia"
+   ],
+   "regex": "an(a)?emia"
+  },
+  "chronic_kidney_disease": {
+   "entities": [
+    "chronic_kidney_disease"
+   ],
+   "regex": "chronic kidney|\\bCKD\\b|end.stage renal|ESRD"
+  },
+  "cirrhosis_liver_failure": {
+   "entities": [
+    "acute_liver_failure",
+    "alcohol_associated_liver_disease",
+    "alcoholic_liver_disease",
+    "alcoholic_liver_pattern",
+    "cirrhosis_laboratory_pattern",
+    "decompensated_cirrhosis_pattern",
+    "hepatic_encephalopathy",
+    "liver_cirrhosis"
+   ],
+   "regex": "cirrhosis|liver failure|hepatic failure|hepatic encephalopathy|liver disease"
+  },
+  "coagulopathy": {
+   "entities": [
+    "coagulopathy",
+    "consumptive_coagulopathy",
+    "disseminated_intravascular_coagulation",
+    "elevated_inr_pattern",
+    "liver_related_coagulopathy",
+    "vitamin_k_deficiency",
+    "vitamin_k_deficiency_coagulopathy",
+    "warfarin_over_anticoagulation"
+   ],
+   "regex": "coagulopathy|\\bDIC\\b"
+  },
+  "diabetes": {
+   "entities": [
+    "diabetes_mellitus",
+    "hyperglycemia",
+    "type_1_diabetes",
+    "type_2_diabetes"
+   ],
+   "regex": "diabetes(?! insipidus)"
+  },
+  "diabetic_ketoacidosis": {
+   "entities": [
+    "diabetic_ketoacidosis",
+    "euglycemic_diabetic_ketoacidosis"
+   ],
+   "regex": "ketoacidosis|\\bDKA\\b"
+  },
+  "gi_bleeding": {
+   "entities": [
+    "acute_blood_loss_anemia",
+    "anemia",
+    "upper_gastrointestinal_bleeding_pattern"
+   ],
+   "regex": "bleed|hemorrhage|haemorrhage"
+  },
+  "heart_failure": {
+   "entities": [
+    "acute_heart_failure",
+    "acute_heart_failure_support_pattern",
+    "cardiorenal_syndrome",
+    "chronic_heart_failure",
+    "chronic_heart_failure_support_pattern",
+    "heart_failure",
+    "heart_failure_bnp_pattern",
+    "heart_failure_decompensated",
+    "heart_failure_ntprobnp_pattern"
+   ],
+   "regex": "heart failure|\\bCHF\\b"
+  },
+  "hypercalcemia": {
+   "entities": [
+    "hypercalcemia"
+   ],
+   "regex": "hypercalc"
+  },
+  "hyperglycemia": {
+   "entities": [
+    "diabetes_mellitus",
+    "hyperglycemia",
+    "stress_hyperglycemia",
+    "type_2_diabetes"
+   ],
+   "regex": "hyperglyc"
+  },
+  "hyperkalemia": {
+   "entities": [
+    "hyperkalemia"
+   ],
+   "regex": "hyperkal"
+  },
+  "hypernatremia": {
+   "entities": [
+    "hypernatremia"
+   ],
+   "regex": "hypernatr"
+  },
+  "hypocalcemia": {
+   "entities": [
+    "hypocalcemia"
+   ],
+   "regex": "hypocalc"
+  },
+  "hypoglycemia": {
+   "entities": [
+    "fasting_hypoglycemia",
+    "hyperinsulinemic_hypoglycemia",
+    "hypoglycemia",
+    "sulfonylurea_induced_hypoglycemia"
+   ],
+   "regex": "hypoglyc"
+  },
+  "hypokalemia": {
+   "entities": [
+    "hypokalemia"
+   ],
+   "regex": "hypokal"
+  },
+  "hypomagnesemia": {
+   "entities": [
+    "hypomagnesemia"
+   ],
+   "regex": "hypomagnes"
+  },
+  "hyponatremia": {
+   "entities": [
+    "hyponatremia",
+    "severe_hyponatremia",
+    "siadh"
+   ],
+   "regex": "hyponatr|SIADH"
+  },
+  "hypophosphatemia": {
+   "entities": [
+    "hypophosphatemia"
+   ],
+   "regex": "hypophosph"
+  },
+  "hypothyroidism": {
+   "entities": [
+    "hypothyroidism",
+    "primary_hypothyroidism",
+    "subclinical_hypothyroidism"
+   ],
+   "regex": "hypothyroid"
+  },
+  "lactic_acidosis": {
+   "entities": [
+    "lactic_acidosis"
+   ],
+   "regex": "lactic"
+  },
+  "leukocytosis": {
+   "entities": [
+    "leukemoid_reaction",
+    "leukocytosis",
+    "leukocytosis_pattern",
+    "neutrophilia_pattern"
+   ],
+   "regex": "leukocytosis|leucocytosis"
+  },
+  "malnutrition": {
+   "entities": [
+    "hypoalbuminemia",
+    "malnutrition",
+    "protein_energy_malnutrition"
+   ],
+   "regex": "malnutrition|hypoalbumin"
+  },
+  "metabolic_acidosis": {
+   "entities": [
+    "diabetic_ketoacidosis",
+    "high_anion_gap_metabolic_acidosis",
+    "lactic_acidosis",
+    "metabolic_acidosis"
+   ],
+   "regex": "metabolic acidosis|acidosis"
+  },
+  "renal_impairment": {
+   "entities": [
+    "acute_kidney_injury",
+    "cardiorenal_syndrome",
+    "chronic_kidney_disease",
+    "hepatorenal_syndrome",
+    "prerenal_azotemia",
+    "reduced_gfr_chronicity_undetermined",
+    "renal_failure_unspecified"
+   ],
+   "regex": "kidney|renal|azotemia|uremia"
+  },
+  "rhabdomyolysis": {
+   "entities": [
+    "rhabdomyolysis"
+   ],
+   "regex": "rhabdo"
+  },
+  "sepsis": {
+   "entities": [
+    "sepsis",
+    "sepsis_support_pattern",
+    "septic_shock",
+    "septic_shock_severe_lactic_acidosis",
+    "septic_shock_support_pattern"
+   ],
+   "regex": "sepsis|septic"
+  },
+  "thrombocytopenia": {
+   "entities": [
+    "immune_thrombocytopenia",
+    "immune_thrombocytopenia_itp",
+    "pancytopenia",
+    "thrombocytopenia"
+   ],
+   "regex": "thrombocytop"
+  }
+ },
+ "p5_redundant": {
+  "bicarbonate": [
+   "anion_gap",
+   "arterial_ph",
+   "base_excess"
+  ],
+  "hemoglobin": [
+   "hematocrit"
+  ],
+  "troponin_i": [
+   "creatine_kinase_mb",
+   "troponin_t"
+  ]
+ },
+ "p6_benign_words": [
+  "normal",
+  "healthy",
+  "no significant",
+  "unremarkable",
+  "prediabetes",
+  "borderline",
+  "mild",
+  "low risk"
+ ],
+ "p6_detection": {
+  "anemia": [
+   "anemia",
+   "anaemia"
+  ],
+  "ckd": [
+   "chronic kidney",
+   "ckd",
+   "renal",
+   "kidney",
+   "albuminuria"
+  ],
+  "diabetes": [
+   "diabetes",
+   "hyperglycemia",
+   "prediabetes"
+  ],
+  "hypercholesterolemia": [
+   "cholesterol",
+   "hyperlipid",
+   "dyslipid",
+   "lipid"
+  ],
+  "iron_deficiency": [
+   "iron"
+  ]
+ },
+ "renal_union": [
+  "acute_kidney_injury",
+  "renal_impairment",
+  "chronic_kidney_disease"
+ ]
+}
