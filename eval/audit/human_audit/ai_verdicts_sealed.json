@@ -1,0 +1,790 @@
+{
+"acromegaly_endo_2014_igf1_gh_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"acute_heart_failure_support_pattern_esc_2021_acute_ntprobnp_age_tiered_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"acute_lymphoblastic_leukemia_who_2022_blasts_20_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"acute_myocardial_infarction_esc_2023_hs_tn_myocardial_injury_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"acute_myocardial_injury_udmi4_troponin_above_99th_v14": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"alpha_1_antitrypsin_deficiency_serum_aat_below_50_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"antiphospholipid_syndrome_acr_eular_2023_lab_criteria_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"brucellosis_who_wright_160_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"carnitine_deficiency_support_pattern_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"celiac_disease_acg_2023_iga_deficiency_caveat_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"central_adrenal_insufficiency_endo_2016_high_acth_exclusion_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"co_decreased_albumin_with_decreased_alkaline_phosphatase_diagnostic_criterion_1_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "template rule; cites only a generic standards landing page (no document)",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_albumin_with_elevated_total_bilirubin_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_alkaline_phosphatase_with_decreased_total_protein_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_ammonia_with_decreased_anion_gap_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_arterial_blood_ph_with_decreased_arterial_ph_screening_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_arterial_blood_ph_with_elevated_arterial_pco2_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_calcium_ionized_with_decreased_calcium_total_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_fibrinogen_with_elevated_international_normalized_ratio_diagnostic_criterion_1_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "template rule; cites only a generic standards landing page (no document)",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_hdl_cholesterol_with_elevated_ldl_cholesterol_calculated_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_lymphocyte_count_absolute_with_decreased_lymphocytes_percent_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_platelet_count_with_elevated_red_cell_distribution_width_cv_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_decreased_red_blood_cell_count_with_decreased_red_cell_distribution_width_cv_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_albumin_creatinine_ratio_with_elevated_blood_urea_nitrogen_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_alkaline_phosphatase_with_decreased_amylase_screening_2_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "template rule; cites only a generic standards landing page (no document)",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_arterial_pco2_with_elevated_arterial_po2_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_arterial_ph_with_elevated_base_excess_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_b_type_natriuretic_peptide_with_elevated_c_reactive_protein_diagnostic_criterion_1_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "template rule; cites only a generic standards landing page (no document)",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_blood_urea_nitrogen_with_decreased_creatinine_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_lymphocytes_percent_with_decreased_mean_corpuscular_hemoglobin_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_lymphocytes_percent_with_elevated_mean_corpuscular_hemoglobin_diagnostic_criterion_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"co_elevated_platelet_count_with_elevated_red_cell_distribution_width_cv_diagnostic_criterion_1_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "template rule; cites only a generic standards landing page (no document)",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"congenital_adrenal_hyperplasia_screening_pattern_reanchor_diag_v13_4": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"covid_19_reanchor_diag_v13_4_graft": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "no_text_retrieved",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"crohn_disease_ecco_2019_calprotectin_active_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"cryptococcosis_reanchor_diag_v13_4_graft": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"disseminated_intravascular_coagulation_isth_overt_dic_score_surrogate_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"elevated_prolactin_macroprolactin_reanchor_diag_v13_4_graft": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "landing_page_or_full_text_without_the_statement",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"ethylene_glycol_poisoning_pattern_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"factor_xi_deficiency_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"folate_deficiency_bsh_2014_serum_folate_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"gestational_diabetes_mellitus_iadpsg_2010_one_step_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"glucagonoma_support_pattern_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"gout_acr_eular_2015_urate_very_high_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "quote_verified"
+},
+"heart_failure_screening_2_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "registry locator unreachable (HTTP 403/404) and not a DOI; no document to audit",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"hemolysis_related_hyperbilirubinemia_reanchor_diag_v13_4": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "landing_page_or_full_text_without_the_statement",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"hemolytic_anemia_eha_2023_hemolysis_triad_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"hepatitis_c_aasld_idsa_2023_antibody_screen_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "landing_page_or_full_text_without_the_statement",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"hiv_infection_cdc_2014_ag_ab_reactive_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"hypercalcemia_crisis_14_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"hypercalcemia_of_malignancy_support_pattern_reanchor_excl_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"hypertriglyceridemia_eas_2019_severe_pancreatitis_risk_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"hypervitaminosis_d_support_pattern_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"hypokalemia_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "landing_page_or_full_text_without_the_statement",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "B1"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"hyponatremia_ese_2014_siadh_pattern_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"hypoparathyroidism_hypocalcemia_low_pth_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"hypophosphatemia_severe_1_0_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "KDIGO potassium conference cited for phosphate",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"hypophosphatemia_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"iron_deficiency_anemia_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "quote_verified"
+},
+"iron_deficiency_without_anemia_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "quote_verified"
+},
+"isolated_hyperbilirubinemia_pattern_screening_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"leukocytosis_pattern_screening_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"malaria_who_2023_exclusion_negative_tests_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"male_hypogonadism_endo_2018_total_testosterone_300_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"male_secondary_hypogonadism_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"masld_alt_above_acg_uln_male_with_cardiometabolic_v14": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "quote_verified"
+},
+"medullary_thyroid_carcinoma_marker_pattern_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"metabolic_alkalosis_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "reachable page/abstract does not state the rule's threshold for the rule's analyte",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"methanol_poisoning_pattern_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"mixed_metabolic_and_respiratory_alkalosis_reanchor_diag_v13_4": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "landing_page_or_full_text_without_the_statement",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"multiple_myeloma_imwg_2014_plasma_cells_60_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"nephrotic_syndrome_kdigo_2021_nephrotic_range_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"neutrophilia_pattern_screening_1_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"prediabetes_ada_2025_prediabetes_range_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "quote_verified"
+},
+"prediabetes_hba1c_pattern_screening_1_v1": {
+"concordance": [
+{
+"label": "DISCORDANT",
+"locator": "ADA Standards of Care 2026, Section 2 (doi:10.2337/dc26-S002), open-access copy PMC12690183 (registry URL on diabetesjournals.org rate-limits automated access)",
+"note": "boundary: source range 5.7\u20136.4 % inclusive with upper bound; rule '> 5.7' excludes 5.7 and has no upper bound",
+"quote": "Table 2.2. Criteria defining prediabetes in nonpregnant individuals A1C 5.7\u20136.4% (39\u201347 mmol/mol) OR FPG 100 mg/dL (5.6 mmol/L) to 125 mg/dL (6.9 mmol/L) (IFG) OR 2-h PG during 75-g OGTT 140 mg/dL (7.8 mmol/L) to 199 mg/dL (11.0 mmol/L) (IGT)",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "discordant_open"
+},
+"preeclampsia_acog_2020_severe_features_lab_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"primary_adrenal_insufficiency_endo_2016_cosyntropin_peak_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"primary_aldosteronism_endo_2016_arr_aldosterone_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"pulmonary_embolism_esc_2019_d_dimer_positive_screen_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"respiratory_acidosis_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "reachable page/abstract does not state the rule's threshold for the rule's analyte",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"respiratory_alkalosis_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "source_reachable_unverified"
+},
+"rhabdomyolysis_ck_5x_uln_diagnostic_cur13": {
+"concordance": [
+{
+"label": "DISCORDANT",
+"locator": "Stahl et al. J Neurol 2020 (doi:10.1007/s00415-019-09185-4), PubMed abstract",
+"note": "boundary: source '> 1000', rule '>= 1000'; source is a systematic review, not a guideline",
+"quote": "we recommend \u2026 a CK cut-off value of > 1000 IU/L/ or CK > 5 \u00d7 ULN for the standard definition of a mild RML",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "discordant_corrected"
+},
+"riboflavin_deficiency_support_pattern_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"sepsis_sepsis3_lactate_2_with_infection_marker_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "quote_verified"
+},
+"septic_shock_severe_lactic_acidosis_sepsis3_lactate_4_cur13": {
+"concordance": [
+{
+"label": "DISCORDANT",
+"note": "threshold: cited Sepsis-3 defines septic shock with lactate >2 mmol/L; the >4 mmol/L cut-off is not in the cited source (it derives from the SSC resuscitation bundle)",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "discordant_open"
+},
+"severe_hypertriglyceridemia_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "quote_verified"
+},
+"sjogren_syndrome_acr_eular_2016_high_titre_ana_prompt_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"sjogren_syndrome_acr_eular_2016_ssa_positive_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "source_reachable_unverified"
+},
+"subclinical_hyperthyroidism_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "source_reachable_unverified"
+},
+"subclinical_hypothyroidism_ata_2014_subclinical_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"subclinical_hypothyroidism_v1": {
+"concordance": [],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "source_reachable_unverified"
+},
+"theophylline_toxicity_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"thiamine_deficiency_reanchor_diag_v13_4": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "landing_page_or_full_text_without_the_statement",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"thrombotic_thrombocytopenic_purpura_isth_2020_mahat_pattern_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"tumor_lysis_pattern_screening_1_v1": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"locator": "",
+"note": "locator is an organisation landing page; no specific document",
+"quote": "",
+"sample": "Note 15 (100 active-core, seed 20261028)"
+}
+],
+"status_15_2_0": "candidate_requires_specialist_validation",
+"verification_status": "unresolvable"
+},
+"tumor_lysis_syndrome_cairo_bishop_laboratory_tls_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"ulcerative_colitis_ecco_2019_calprotectin_active_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"vitamin_b12_deficiency_bsh_2014_b12_200_mma_cur13": {
+"concordance": [
+{
+"label": "UNRESOLVABLE",
+"note": "abstract_or_title_only",
+"quote": "",
+"sample": "Note 8 (200, seed 20261026)",
+"stratum": "A"
+}
+],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"vitamin_b6_deficiency_reanchor_diag_v13_4": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+},
+"wilson_disease_easl_2012_ceruloplasmin_borderline_cur13": {
+"concordance": [],
+"status_15_2_0": "curated_guideline_anchored",
+"verification_status": "unresolvable"
+}
+}

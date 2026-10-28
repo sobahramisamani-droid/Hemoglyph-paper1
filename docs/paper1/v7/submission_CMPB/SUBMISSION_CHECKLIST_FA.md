@@ -6,10 +6,10 @@
 
 | # | مورد | فایل | وضعیت |
 |---|---|---|---|
-| 1 | مقاله (docx، دو خط فاصله، ۳٬۸۷۶ کلمهٔ متن اصلی، چکیدهٔ ساختاریافته ۳۴۵ کلمه، ۳۴ مرجع) | `docs/paper1/v7/Paper1_Hemoglyph_CMPB_EN_v7_R6.docx` | ✅ |
+| 1 | مقاله (docx، دو خط فاصله، ۳٬۸۷۶ کلمهٔ متن اصلی، چکیدهٔ ساختاریافته ۳۴۵ کلمه، ۳۴ مرجع) | `docs/paper1/v7/Paper1_Hemoglyph_CMPB_EN_v7_R8.docx` | ✅ |
 | 2 | هایلایت‌ها (۵ مورد، همه ≤ ۸۵ کاراکتر) | `submission_CMPB/highlights.txt` | ✅ |
 | 3 | شکل‌های ۱ تا ۷ (فایل‌های جدا، ۳۰۰ dpi) | `submission_CMPB/Figure_1.png … Figure_7.png` | ✅ |
-| 4 | مکمل واحد (Notes 1–12، Tables S1–S16، Figs S1–S7، TRIPOD+AI، Reproducibility map) | `submission_CMPB/Supplementary_Information_R6.docx` | ✅ |
+| 4 | مکمل واحد (Notes 1–12، Tables S1–S16، Figs S1–S7، TRIPOD+AI، Reproducibility map) | `submission_CMPB/Supplementary_Information_R8.docx` | ✅ |
 | 5 | Supplementary Data 1 (منابع رجیستری) | `docs/paper1/supplement/Supplementary_Data_1_sources_13.4.1.xlsx` | ✅ |
 | 6 | کاور لتر | `docs/paper1/v7/COVER_LETTER_CMPB.md` | ✅ (بلوک نویسندهٔ مسئول خالی) |
 | 7 | صفحهٔ عنوان | `submission_CMPB/TITLE_PAGE.md` | ⚠️ نیاز به تکمیل تو |

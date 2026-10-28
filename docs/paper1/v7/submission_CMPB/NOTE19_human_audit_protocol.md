@@ -1,0 +1,27 @@
+## Supplementary Note 19 — Pre-specified protocol for the independent clinical concordance audit (not yet executed)
+
+**Status.** Written and frozen on 2026-10-28, before any rater was approached. No result exists. The sample is drawn, committed and hashed (`eval/audit/human_audit/human_audit_sample_100.csv`, SHA-256 in `SHA256SUMS`); the AI rater's verdicts for the same 100 rules are sealed in a separate file that raters do not receive. The protocol will be executed unchanged when two eligible raters are available; any deviation will be dated and reported. Its results, favourable or not, will be reported in the prospective reader study (Paper 2) or as an addendum to this paper.
+
+**Why a protocol rather than a result.** The two concordance audits in this paper (Notes 8 and 15) have a single rater, a declared AI agent. Their estimates—92% unresolvable, ≥7.5% discordant—are therefore provisional. The present protocol fixes everything that can be fixed in advance so that the human audit, when it happens, cannot be tuned to the outcome.
+
+**Objective.** To estimate, with clinician raters blinded to the AI verdicts, (i) the proportion of rules whose threshold, operator, unit and population gate are concordant with the cited source, and (ii) inter-rater reliability, for the two rule populations that matter most: the active core that produces the engine's output and the curated anchors.
+
+**Sampling (done; deterministic, seed 20261028; `sample_rules.py`).** From the verification ledger at registry 15.2.0: 50 active-core rules still executable (25 hot-core, 25 other; pools 103 and 116) and 50 curated anchors that are not active-core members (pool 226). Rules retired in 15.3.0 after sampling (≤ 2) remain in the sample and are audited as they stood in 15.2.0.
+
+**Raters.** Two independent raters, each either a specialist in laboratory medicine / clinical pathology or a board-certified internist, with no role in the project, no financial relationship with the first author, and no prior sight of the AI verdicts. Recruitment route and any compensation will be stated. If only one eligible rater can be recruited within six months, the audit is reported as single-rater human with that limitation, not postponed indefinitely.
+
+**Materials given to each rater.** For every item: rule identifier, disease, executable logic (analyte, operator, threshold, unit, population gate), the cited source identifier and the registry's locator; the retrieved source document or page when it is openly accessible, otherwise the locator only. Raters do not see the ledger status, the detector flags, the activity class or the AI verdict. Items are presented in a fresh random order per rater.
+
+**Verdicts (identical to Note 8).** *Concordant* (C): the source states the threshold, operator, unit and population as encoded, or an equivalent after unit conversion. *Discordant* (D): the source states a different threshold, operator, unit or population, or does not support the rule. *Unresolvable* (U): the locator does not lead to a checkable statement within 15 minutes of effort. A verbatim quotation (≤ 2 sentences) with page or section is mandatory for every C or D verdict; a C or D without a quotation is recoded U.
+
+**Primary outcome.** Discordance proportion among resolvable rules (D / (C + D)), by stratum and overall, with Wilson 95% confidence intervals, from the consensus verdict. **Secondary outcomes.** Unresolvable proportion (U / n); Cohen's κ between the two raters on the three-level verdict and on the binary resolvable/unresolvable split; agreement of the consensus verdict with the sealed AI verdict (κ and the 3 × 3 table); time per item.
+
+**Consensus and adjudication.** Rater disagreements are resolved by discussion between the two raters; unresolved items go to a third clinician whose verdict is final. Raw individual verdicts are reported alongside the consensus.
+
+**Sample size.** With n = 100 and a true discordance of 10%, the Wilson interval half-width is ≈ 6 percentage points; with n = 50 per stratum ≈ 8–9 points. For κ, 100 items give a standard error ≈ 0.07–0.10 for κ ≈ 0.6. These precisions suffice to distinguish the AI rater's point estimates (7.5% discordant; 92% unresolvable) from substantially higher values, which is the question of interest.
+
+**Pre-specified interpretation.** If the human unresolvable proportion is ≥ 80%, the paper's conclusion that locator granularity, not rater effort, limits auditability is confirmed. If human raters resolve substantially more rules than the AI rater (unresolvable ≤ 60%), the AI audit under-reported resolvability and the Note 8 estimates will be labelled as such. A human discordance estimate whose interval excludes the AI point estimate of 7.5% will be reported as a correction of the main text, not as a sensitivity analysis.
+
+**What will not be done.** No rule will be edited between sampling and audit. Raters' verdicts will not be used to tune any engine component before publication of the audit result. Items will not be dropped after verdicts are seen. κ will not be reported from fewer than 50 double-rated items.
+
+**Files.** `eval/audit/human_audit/sample_rules.py` (sampling, deterministic), `human_audit_sample_100.csv` (rater form, no AI verdicts), `ai_verdicts_sealed.json` (sealed; opened only for the agreement analysis), `SHA256SUMS`.

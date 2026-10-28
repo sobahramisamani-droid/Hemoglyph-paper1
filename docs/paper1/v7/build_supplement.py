@@ -1,8 +1,8 @@
-"""Assemble the single Supplementary Information file for the CMPB submission (R6).
+"""Assemble the single Supplementary Information file for the CMPB submission (R8).
 
 Order: cover/index · Note 1 SAP · Note 2 LLM protocol · Table S1 cohort flow · SUPPLEMENT_R1 (Notes 3–8, Tables S4–S16) ·
 Note 8 addendum (second-rater attempts) · Notes 9–12 and 17 (from the manuscript tail) · TRIPOD+AI checklist.
-Output: submission_CMPB/Supplementary_Information_R6.{md,docx}
+Output: submission_CMPB/Supplementary_Information_R8.{md,docx}
 """
 import re, os
 from docx import Document
@@ -14,7 +14,7 @@ P1 = os.path.abspath(os.path.join(V7, ".."))
 SUP = os.path.join(P1, "supplement")
 rd = lambda p: open(p, encoding="utf-8").read().strip()
 
-man = rd(os.path.join(V7, "Paper1_Hemoglyph_CMPB_EN_v7_R6.md"))
+man = rd(os.path.join(V7, "Paper1_Hemoglyph_CMPB_EN_v7_R8.md"))
 notes_9_12 = man.split("## Supplementary information", 1)[1]
 index_line = re.search(r"Notes: Note 1 SAP[^\n]*", notes_9_12).group(0)
 notes_9_12 = notes_9_12.split("### Supplementary Note 9", 1)[1]
@@ -138,7 +138,7 @@ VERIFIER = """## Supplementary Note 14 — The engine's criteria as an executabl
 """
 
 parts = [
-    "# Supplementary Information\n\n*Hemoglyph: an offline, guideline-traceable laboratory-panel interpretation engine and four methods for verifying it — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R7 (2026-10-28), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
+    "# Supplementary Information\n\n*Verifying an AI-drafted laboratory-interpretation rule base before clinical audit: executable invariants, frozen source-concordance protocols and a hash-frozen benchmark applied to the open Hemoglyph engine — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R8 (2026-10-28), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
     "## Supplementary Note 1 — Statistical analysis plan and amendments\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "SAP_Hemoglyph_v1.md")), flags=re.M).replace("\n## ", "\n### "),
     S1S2,
     "## Supplementary Note 2 — LLM comparison protocol\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "LLM_COMPARISON_PROTOCOL.md")), flags=re.M).replace("\n## ", "\n### "),
@@ -152,6 +152,7 @@ parts = [
     rd(os.path.join(V7, "submission_CMPB", "NOTE15_provenance.md")),
     rd(os.path.join(V7, "submission_CMPB", "NOTE16_audit_study.md")),
     rd(os.path.join(V7, "submission_CMPB", "NOTE18_verification_ledger.md")),
+    rd(os.path.join(V7, "submission_CMPB", "NOTE19_human_audit_protocol.md")),
     FIGS,
 ]
 md = "\n\n".join(parts) + "\n"
@@ -189,7 +190,7 @@ md = _strip_files(md)
 for i, b in enumerate(_blocks):
     md = md.replace(f"@@HOLD{i}@@", b)
 
-REPRO = """## Reproducibility map
+REPRO = """## Supplementary Table S17 — Reproducibility and version map
 
 Every number in the main text and in this file is produced by a script in the public repository from a hash-frozen engine and registry (SHA-256 manifests `FREEZE_v15_20261025`; Note 6). Internal report file names are omitted throughout; the table below is the single place that links each item to its generating script and input.
 
@@ -198,6 +199,10 @@ Every number in the main text and in this file is produced by a script in the pu
 | Table 3, Fig. 2, Fig. S2, Table S4, Table S6–S6c, Table S8, Table S11 | `eval/realdata/eval_eicu.py` (`--encounter icu`), `eval/realdata/panel_supported_metric.py`, `eval/subgroup_fairness.py`, `eval/reviewer_r2_metrics.py`, `eval/calibration_dca.py` | eICU-CRD demo v2.0.1 (2,314 ICU stays) | v7 / 14.1.0 |
 | Table 5, Fig. 7, Note 2, Table S12b | `eval/baselines/llm_zero_shot.py`, `b8_score.py`, `b8_v7_cluster.py`, `b8_rank_metrics.py`, `b8_prompt_sensitivity.py` | 400 blinded eICU panels (Data 1) | v7 / 14.1.0 (historical: v5.1) |
 | Table 1 | `eval/ablation/run_ablation.py` | eICU-CRD demo | v7 / 14.1.0 |
+| Fig. 8, Table S6–S6c | `eval/calibration_dca.py` outputs (`eval/results/eicu_demo/calibration_dca_v7.md`, `reviewer_b5_calibration_v7.json`) | eICU-CRD demo (2,314 stays; 52,689 label scores) | v7 / 14.1.0 |
+| Fig. 3 | `docs/paper1/v7/make_figures_R8.py` reading the frozen outputs of Notes 8, 15, 16 and 18 (no new measurement) | — | 14.1.0 (a, b); 15.1.0 (c); 15.2.0 (d) |
+| Figs. 1–8 (rendering only) | `docs/paper1/v7/make_figures_R8.py` | frozen result files listed in this table | as per source row |
+| Note 19 (protocol only; no result) | `eval/audit/human_audit/sample_rules.py`; frozen sample `human_audit_sample_100.csv` (seed 20261028; SHA-256 in `SHA256SUMS`) | verification ledger at 15.2.0 | 15.2.0 |
 | Table 4, Fig. 5, Fig. 4 (ML baseline: `eval/baselines/ml_baseline_eicu.py`), Table S7, Table S13, Note 10 | `eval/realdata/eval_nhanes.py`, `eval_uci_thyroid.py`, `eval_uci_hcv.py`, `eval_ilpd.py`, `eval_pmc_cases.py`, `eval/mimic/run_retrospective.py` | NHANES H/I/J, UCI thyroid0387, UCI HCV, ILPD, MIMIC-IV demo, PMC case reports | v7 / 14.1.0 |
 | Fig. 6, Table S16 | `eval/realdata/eval_sepsis2019.py`, `eval_sepsis2019_concurrent.py`, `eval/sepsis_ml/sepsis_risk_module.py` | PhysioNet Sepsis-2019 sets A, B, B2 | v7 / 14.1.0 |
 | Section 3.1, Note 4 | `tests/test_properties.py`, `tests/test_bayes_properties.py`, `tests/hard_battery.py`, `hard_battery2.py`, `hard_battery3.py`, `tests/healthy_sweep.py`, `tests/perturbation_fuzz.py` | synthetic panels (seeded) | v7, v8, v8.1 |
@@ -218,7 +223,7 @@ Every number in the main text and in this file is produced by a script in the pu
 md = md.replace("## Supplementary Figures", REPRO + "\n## Supplementary Figures", 1)
 
 os.makedirs(os.path.join(V7, "submission_CMPB"), exist_ok=True)
-open(os.path.join(V7, "submission_CMPB", "Supplementary_Information_R6.md"), "w", encoding="utf-8").write(md)
+open(os.path.join(V7, "submission_CMPB", "Supplementary_Information_R8.md"), "w", encoding="utf-8").write(md)
 
 # ---------------- docx
 doc = Document()
@@ -277,6 +282,6 @@ while i < len(lines):
     else:
         p = doc.add_paragraph(); inline(p, l)
     i += 1
-out = os.path.join(V7, "submission_CMPB", "Supplementary_Information_R6.docx")
+out = os.path.join(V7, "submission_CMPB", "Supplementary_Information_R8.docx")
 doc.save(out)
 print("supplement ok:", out, "| words", len(md.split()))
