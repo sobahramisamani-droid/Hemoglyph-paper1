@@ -1766,7 +1766,7 @@ D1, the six Note 8 attribution discordances: pseudohypoparathyroidism re-sourced
 
 **What will not be done.** No rule will be edited between sampling and audit. Raters' verdicts will not be used to tune any engine component before publication of the audit result. Items will not be dropped after verdicts are seen. κ will not be reported from fewer than 50 double-rated items.
 
-**Files.** `eval/audit/human_audit/sample_rules.py` (sampling, deterministic), `human_audit_sample_100.csv` (rater form, no AI verdicts), `ai_verdicts_sealed.json` (sealed; opened only for the agreement analysis), `SHA256SUMS`.
+**Files.** `eval/audit/human_audit/sample_rules.py` (sampling, deterministic), `human_audit_sample_100.csv` (rater form, no AI verdicts), `ai_verdicts_sealed.json` (sealed; opened only for the agreement analysis), `SHA256SUMS`. Rater materials (form with source titles and locators, instructions, invitation; `rater_package/`) were prepared from the frozen sample without altering it.
 
 ## Supplementary Note 20 — Held-out mutation test of the static detectors (protocol committed before the run; detectors unchanged; no frozen number affected)
 
