@@ -213,7 +213,7 @@
 
 ### ۷٫۱. طرح آماری
 
-طرح آماری (SAP) در فایل `docs/paper1/supplement/SAP_Hemoglyph_v1.md` با پانزده اصلاحیهٔ تاریخ‌دار نگهداری می‌شود. متن ثبت در OSF آماده است (`OSF_REGISTRATION_TEXT.md`) اما ثبت رسمی نیازمند حساب کاربری نویسنده است.
+طرح آماری (SAP) در فایل `docs/paper1/supplement/SAP_Hemoglyph_v1.md` با پانزده اصلاحیهٔ تاریخ‌دار نگهداری می‌شود. ثبت عمومی انجام نشده است؛ متن ثبت پروتکل ممیزی بالینی (یادداشت ۱۹) برای OSF در `eval/audit/human_audit/rater_package/OSF_REGISTRATION_Note19.md` آماده است.
 
 ### ۷٫۲. متریک اولیه (eICU)
 

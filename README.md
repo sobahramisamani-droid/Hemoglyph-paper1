@@ -6,7 +6,7 @@ Code, rule registries, frozen evaluation outputs and manuscript sources for:
 
 Research prototype. Not a medical device; not approved or intended for clinical use. The rule base is largely AI-drafted and carries the status `candidate_requires_specialist_validation`; the paper is about how such a rule base can be verified, not a claim that it is correct.
 
-**Start here:** `README_REPRODUCE.md` (one command, `bash reproduce.sh quick`, re-derives the main tables from a clean clone) and `REPRODUCTION_LOG.md` (the authors' own clean-clone run).
+**Start here:** `README_REPRODUCE.md` (or `INDEPENDENT_REPRODUCTION.md` if you are not an author and want to send us a log) (one command, `bash reproduce.sh quick`, re-derives the main tables from a clean clone) and `REPRODUCTION_LOG.md` (the authors' own clean-clone run).
 
 ## What is here
 
