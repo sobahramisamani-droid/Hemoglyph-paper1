@@ -37,7 +37,7 @@ rd_gz = lambda p: json.load(gzip.open(p, "rt", encoding="utf-8"))
 
 # ---- registries ------------------------------------------------------------------------------------------------------
 R14 = rd_br(J("release/registry_14.1.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))
-R15 = rd_br(J("HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))
+R15 = rd_br(J("release/registry_15.2.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))  # the ledger is a 15.2.0 snapshot
 assert R15["registry_metadata"]["version"].startswith("15.2.0"), R15["registry_metadata"]["version"]
 R151 = rd_br(J("release/registry_15.1.0/HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br"))
 rules14, rules15, rules151 = R14["rules"], R15["rules"], R151["rules"]
@@ -145,17 +145,20 @@ for ver in ("15_0_0", "15_1_0", "15_2_0"):
         touched[rid].append(f"{ver.replace('_', '.')}:retired")
 
 # ---- status precedence ----------------------------------------------------------------------------------------------------
+# verified by reading the 15.2.0 text against the recorded finding: the prediabetes rule got '>=' but never the 6.4 % upper bound
+STILL_OPEN_AFTER_PATCH = {"prediabetes_hba1c_pattern_screening_1_v1"}
 PRECEDENCE = ["retired", "discordant_open", "discordant_corrected", "quote_verified", "flagged_open", "source_reachable_unverified", "unresolvable"]
 def decide(rec):
     if not rec["executable_15_2_0"] and str(rec["status_15_2_0"]).startswith("retired"): return "retired"
     verdicts = [v["label"] for v in rec["concordance"]]
     disc = [v for v in rec["concordance"] if v["label"] == "DISCORDANT"]
     if disc:
-        # a correction counts only if it post-dates the verdict: Note 8 verdicts are dated 2026-10-26 (before 15.0.0),
-        # Note 15 verdicts 2026-10-28 (after 15.1.0), so only a 15.2.0 patch can have corrected a Note 15 discordance
-        later = {("15.0.0", "15.1.0", "15.2.0") if v["sample"].startswith("Note 8") else ("15.2.0",) for v in disc}
-        fixed = all(any(t.startswith(ver) for t in rec["releases_touched"] for ver in vers) for vers in later)
-        return "discordant_corrected" if fixed else "discordant_open"
+        # both frozen samples were rated against the pre-15.0.0 rule text (Note 8 on 14.1.0, Note 15 on 14.2.0), so a
+        # 15.x patch that touched the rule counts as a correction only if the rule text or source actually changed AND
+        # the specific finding is no longer present (checked by hand for the 15.2.0 ledger: see PROTOCOL_15_3_0 D2)
+        changed = rec["status_15_2_0"] != rec["status_14_1_0"] or rec["leaves"] != rec["leaves_14_1_0"] or rec["first_source_id"] != rec["first_source_id_14_1_0"]
+        still_open = rec["rule_id"] in STILL_OPEN_AFTER_PATCH
+        return "discordant_corrected" if (changed and not still_open) else "discordant_open"
     if rec["registry_verified_quote"] or "CONCORDANT" in verdicts: return "quote_verified"
     if rec["detector_flags_15_2_0"]: return "flagged_open"
     if "UNRESOLVABLE" in verdicts: return "unresolvable"
@@ -177,6 +180,8 @@ for rid in scope:
         "rule_id": rid, "disease_id": r_any.get("disease_id"), "rule_type": r_any.get("rule_type"),
         "leaves": [{"feature": f, "operator": o, "value": v, "unit": u} for f, o, v, u in leaves],
         "first_source_id": (r_any.get("source_ids") or [None])[0],
+        "leaves_14_1_0": [{"feature": f, "operator": o, "value": v, "unit": u} for f, o, v, u in expr_leaves(r14.get("expression"))],
+        "first_source_id_14_1_0": (r14.get("source_ids") or [None])[0],
         "status_14_1_0": r14.get("status") if r14 else None, "executable_14_1_0": rid in ex14,
         "status_15_2_0": (rules15.get(rid) or {}).get("status"), "executable_15_2_0": rid in ex15,
         "sets": {"curated_anchor": rid in anchors, "curated_any": rid in curated_any, "active_core": rid in core, "hot_core": rid in hot,
@@ -227,7 +232,7 @@ md = ["# Verification Ledger — summary (registry 15.2.0; built from frozen art
       "## Status precedence (first matching label wins)", "",
       "1. `retired` — non-executable in 15.2.0 with a `retired_*` status (15.0.0/15.1.0 patches under written protocol).",
       "2. `discordant_open` — a frozen-sample verdict of DISCORDANT and no change to the rule since (status unchanged, no patch touched it).",
-      "3. `discordant_corrected` — DISCORDANT verdict, and a later release patch (under written protocol) touched the rule; Note 8 verdicts (2026-10-26) precede 15.0.0, Note 15 verdicts (2026-10-28) precede only 15.2.0.",
+      "3. `discordant_corrected` — DISCORDANT verdict (both samples were rated on the pre-15.0.0 rule text), and the rule's text or source changed in 15.x so that the recorded finding no longer holds.",
       "4. `quote_verified` — the registry carries a verbatim source quote for the rule (15.0.0 R3) or a frozen-sample verdict of CONCORDANT with quote.",
       "5. `flagged_open` — at least one static-detector flag on 15.2.0 (calibrated detectors; a flag is a candidate defect, not a verdict).",
       "6. `source_reachable_unverified` — first source resolves to a DOI or a specific document page, but no one has checked the rule against it.",

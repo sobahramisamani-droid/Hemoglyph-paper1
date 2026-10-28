@@ -1,0 +1,2 @@
+5d15089cc28ba0f4cc419241eb16ce4f30923cc9f7ee40fa129de8a22efffeb8  HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br
+feature registry unchanged from 15.2.0 (release/registry_15.2.0/HEMOGLYPH_FEATURE_REGISTRY.json.br)

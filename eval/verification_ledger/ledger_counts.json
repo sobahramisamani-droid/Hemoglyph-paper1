@@ -13,16 +13,16 @@
  "anchors": 272,
  "by_set": {
   "CORE arm of the sufficiency study (335, 15.1.0)": {
-   "discordant_corrected": 1,
-   "discordant_open": 8,
+   "discordant_corrected": 2,
+   "discordant_open": 7,
    "flagged_open": 3,
    "quote_verified": 37,
    "source_reachable_unverified": 108,
    "unresolvable": 178
   },
   "active core (364)": {
-   "discordant_corrected": 1,
-   "discordant_open": 4,
+   "discordant_corrected": 2,
+   "discordant_open": 3,
    "flagged_open": 3,
    "quote_verified": 37,
    "retired": 145,
@@ -30,8 +30,8 @@
    "unresolvable": 157
   },
   "curated anchors (272, 14.1.0)": {
-   "discordant_corrected": 1,
-   "discordant_open": 7,
+   "discordant_corrected": 2,
+   "discordant_open": 6,
    "flagged_open": 3,
    "quote_verified": 18,
    "retired": 1,
@@ -39,8 +39,8 @@
    "unresolvable": 141
   },
   "hot core (174)": {
-   "discordant_corrected": 1,
-   "discordant_open": 4,
+   "discordant_corrected": 2,
+   "discordant_open": 3,
    "flagged_open": 1,
    "quote_verified": 30,
    "retired": 71,
@@ -48,8 +48,8 @@
    "unresolvable": 57
   },
   "union (all ledger rows)": {
-   "discordant_corrected": 1,
-   "discordant_open": 8,
+   "discordant_corrected": 2,
+   "discordant_open": 7,
    "flagged_open": 5,
    "quote_verified": 37,
    "retired": 145,
