@@ -226,59 +226,38 @@ os.makedirs(os.path.join(V7, "submission_CMPB"), exist_ok=True)
 open(os.path.join(V7, "submission_CMPB", "Supplementary_Information_R8.md"), "w", encoding="utf-8").write(md)
 
 # ---------------- docx
+import sys; sys.path.insert(0, V7)
+from docx_style import setup_document, inline, add_table, heading
+from docx.shared import Pt, Cm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 doc = Document()
-for s in doc.sections:
-    s.left_margin = s.right_margin = Cm(2.0); s.top_margin = s.bottom_margin = Cm(2.0)
-n = doc.styles["Normal"]; n.font.name = "Calibri"; n.font.size = Pt(10); n.paragraph_format.line_spacing = 1.15; n.paragraph_format.space_after = Pt(4)
-
-
-def inline(p, text, size=None):
-    for pt in re.split(r"(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\^[^^]+\^)", text):
-        if not pt:
-            continue
-        if pt.startswith("**"): r = p.add_run(pt[2:-2]); r.bold = True
-        elif pt.startswith("*"): r = p.add_run(pt[1:-1]); r.italic = True
-        elif pt.startswith("`"): r = p.add_run(pt[1:-1]); r.font.name = "Consolas"
-        elif pt.startswith("^"): r = p.add_run(pt[1:-1]); r.font.superscript = True
-        else: r = p.add_run(pt)
-        if size: r.font.size = Pt(size)
-
+setup_document(doc, body_size=11, line_spacing=1.5, margins_cm=2.5, line_numbers=False, page_numbers=True, heading_sizes=(13, 12, 11, 11), space_after=4)
 
 lines = md.split("\n"); i = 0
 while i < len(lines):
     l = lines[i]
     if l.startswith("# "):
-        p = doc.add_paragraph(); inline(p, l[2:], 16); p.runs[0].bold = True
-    elif l.startswith("## "):
-        h = doc.add_heading(l[3:], 1); h.runs[0].font.color.rgb = RGBColor(0, 0, 0)
-    elif l.startswith("### "):
-        h = doc.add_heading(l[4:], 2); h.runs[0].font.color.rgb = RGBColor(0x30, 0x30, 0x30)
-    elif l.startswith("#### ") or l.startswith("##### "):
-        h = doc.add_heading(l.lstrip("#").strip(), 3); h.runs[0].font.color.rgb = RGBColor(0x30, 0x30, 0x30)
+        p = doc.add_paragraph(); inline(p, l[2:], 16); p.runs[0].bold = True; p.paragraph_format.line_spacing = 1.3
+    elif l.startswith("## "): heading(doc, l[3:], 1)
+    elif l.startswith("### "): heading(doc, l[4:], 2)
+    elif l.startswith("#### ") or l.startswith("##### "): heading(doc, l.lstrip("#").strip(), 3)
     elif l.startswith("|"):
         rows = []
         while i < len(lines) and lines[i].startswith("|"):
             rows.append([c.strip() for c in lines[i].strip().strip("|").split("|")]); i += 1
-        body = [r for r in rows[1:] if not all(re.fullmatch(r":?-+:?", c) for c in r if c)]
-        hdr = rows[0]
-        t = doc.add_table(rows=1 + len(body), cols=len(hdr)); t.style = "Table Grid"; t.alignment = WD_TABLE_ALIGNMENT.CENTER
-        for r, row in enumerate([hdr] + body):
-            for c, cell in enumerate((row + [""] * len(hdr))[:len(hdr)]):
-                cl = t.cell(r, c); cl.text = ""; p = cl.paragraphs[0]; p.paragraph_format.space_after = Pt(0); inline(p, cell, 7.5)
-                if r == 0:
-                    for x in p.runs: x.bold = True
-        doc.add_paragraph(); continue
+        add_table(doc, rows, 8); doc.add_paragraph(); continue
     elif l.startswith("!["):
         m = re.match(r"!\[(.*)\]\((.*)\)", l); cap, src = m.group(1), os.path.join(V7, "submission_CMPB", m.group(2))
-        doc.add_picture(src, width=Cm(16)); p = doc.add_paragraph(); inline(p, cap, 9)
+        pic = doc.add_paragraph(); pic.alignment = WD_ALIGN_PARAGRAPH.CENTER; pic.add_run().add_picture(src, width=Cm(16))
+        p = doc.add_paragraph(); inline(p, cap, 10); p.paragraph_format.line_spacing = 1.15
     elif l.startswith("```"):
         i += 1
         while i < len(lines) and not lines[i].startswith("```"):
-            p = doc.add_paragraph(); r = p.add_run(lines[i]); r.font.name = "Consolas"; r.font.size = Pt(8); p.paragraph_format.space_after = Pt(0); i += 1
+            p = doc.add_paragraph(); inline(p, "`" + lines[i] + "`", 9); p.paragraph_format.space_after = Pt(0); p.paragraph_format.line_spacing = 1.0; i += 1
     elif l.strip() == "":
         pass
     elif re.match(r"^\s*[-*] ", l):
-        p = doc.add_paragraph(style="List Bullet"); inline(p, re.sub(r"^\s*[-*] ", "", l))
+        p = doc.add_paragraph(style="List Bullet"); inline(p, re.sub(r"^\s*[-*] ", "", l)); p.paragraph_format.space_after = Pt(2)
     else:
         p = doc.add_paragraph(); inline(p, l)
     i += 1
