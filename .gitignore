@@ -1,5 +1,7 @@
 # data, bulky results and build artefacts are excluded from the repository; frozen outputs are archived on Zenodo
-eval/realdata/
+eval/realdata/*
+!eval/realdata/*.py
+!eval/realdata/README*.md
 eval/quarantine/
 eval/quarantine_v15/
 eval/results/**/*.json.gz
