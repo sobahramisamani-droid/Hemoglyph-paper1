@@ -1,7 +1,7 @@
 Highlights
 
-• Property-based invariants for a clinical rule engine, run on every release
-• The invariants found a ranking defect that 353 hand-written vignettes had missed
+• Hemoglyph: open, offline engine ranking a source-cited differential from lab panels
+• Property-based invariants found a ranking defect that 353 vignettes had missed
 • Frozen provenance audits: 92% of rules unverifiable; 1.1% of rules drive output
 • Engine at recall@5 parity with a frontier LLM; unit-invariant in 40/40 panels vs 8/40
 • As a verifier, the engine's criteria cut LLM unsupported assertions 40% at no cost

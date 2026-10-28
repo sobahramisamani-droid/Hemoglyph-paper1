@@ -1,4 +1,4 @@
-# Verification and provenance auditing of an AI-drafted clinical rule base: executable invariants, a source-concordance protocol and a frozen laboratory-panel benchmark for an offline interpretation engine
+# Hemoglyph: an offline, guideline-traceable laboratory-panel interpretation engine with 33,183 rules, 99.2% AI-drafted, and four methods for verifying it against its sources, executable invariants and a frontier LLM
 
 *Original research article. Revision R7 (2026-10-28), formatted for Computer Methods and Programs in Biomedicine. Research prototype — not approved or intended for clinical use.*
 
@@ -8,17 +8,17 @@ Sobhan Bahrami^a*^, Zhaleh Tahmasebinejad^b,c^, Ehsan Bahrami Samani^b^
 \* Corresponding author: sobahramisamani@gmail.com · ORCID 0009-0004-6639-5081
 
 **Highlights**
-- Property-based invariants for a clinical rule engine, run on every release
-- The invariants found a ranking defect that 353 hand-written vignettes had missed
+- Hemoglyph: open, offline engine ranking a source-cited differential from lab panels
+- Property-based invariants found a ranking defect that 353 vignettes had missed
 - Frozen provenance audits: 92% of rules unverifiable; 1.1% of rules drive output
-- Untrained, traceable engine at recall@5 parity with an unnamed frontier LLM
-- Engine-agnostic tools and protocol released; applicable to any analyte-rule base
+- Recall@5 parity with a frontier LLM; unit-invariant in 40/40 panels vs 8/40
+- As a verifier, the engine's criteria cut LLM unsupported assertions 40% at no cost
 
 ## Abstract
 
-**Background and Objective:** LLM-drafted clinical rule bases are validated on vignettes and rarely checked against their sources. We evaluate three verification methods—executable invariants, a frozen source-concordance protocol and a hash-frozen benchmark—on Hemoglyph, an offline engine ranking a cited differential from a laboratory panel with 33,183 executable rules (99.2% AI-drafted), then verify the verification itself.
+**Background and Objective:** LLM-drafted clinical rule bases are validated on vignettes, rarely against their sources. We present Hemoglyph, an offline engine that ranks a cited differential from a laboratory panel using 33,183 executable rules (99.2% AI-drafted), and four verification methods: executable invariants, a frozen source-concordance protocol, a hash-frozen benchmark and an audit of the audit.
 
-**Methods:** Property-based tests check invariants (determinism, unit invariance, monotonicity, absent analyte) on randomised panels, on real panels given identically to engine and LLM, and as a verifier behind the LLM. A frozen protocol audits 200 sampled rules against their locators, then 100 of the rules that an activity log over 3,814 real panels shows to drive output. Hash-frozen benchmarks covered the eICU-CRD demo (2,314 ICU stays), 9,000 NHANES adults, 14,420 sepsis patients and external cohorts, with ablation and a blinded 400-stay comparison with an unnamed frontier LLM. A pre-specified audit study tested core sufficiency, detector mutation recall and transfer to a second LLM-written corpus.
+**Methods:** Property-based tests check invariants (determinism, unit invariance, monotonicity, absent analyte) on randomised panels, on real panels given identically to engine and LLM, and as a verifier behind the LLM. A frozen protocol audits 200 sampled rules against their locators, then 100 of the rules that an activity log over 3,814 real panels shows to drive output. Hash-frozen benchmarks covered the eICU-CRD demo (2,314 ICU stays), 9,000 NHANES adults, 14,420 sepsis patients and external cohorts, with ablation and a blinded 400-stay comparison with a frontier LLM. A pre-specified audit study tested core sufficiency, detector mutation recall and transfer to a second LLM-written corpus.
 
 **Results:** The invariants exposed a ranking defect missed by 353 vignettes. Of 200 audited rules, 92% (95% CI 87.4–95.1) were unresolvable and ≥7.5% discordant. Only 364 rules (1.1%) ever drove a top-10 differential; of 100 sampled, 6 were concordant, 92 unresolvable. 60.8% (58.7–62.9) of clinician-listed ICU diagnoses ranked in the top five (baseline 51.3%); sepsis prediction failed, as pre-specified. Engine and LLM reached recall@5 parity (60.7% vs 59.6%, p = 0.54). SI units left the engine's top-5 unchanged in 40/40 perturbed panels versus 8/40; as a verifier, its criteria removed 40% of the LLM's unsupported assertions at no recall cost. The 335 audited core rules alone changed recall@3/@5 by ≤0.2 points (@10 −1.2); static detectors caught 74–100% of structural mutants but ≤13% of plausible wrong thresholds; a second LLM-written 400-rule corpus showed the same defect classes (12.8 per 100 rules).
 

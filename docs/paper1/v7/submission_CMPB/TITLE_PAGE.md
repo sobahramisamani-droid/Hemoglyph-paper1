@@ -1,6 +1,6 @@
 # Title page
 
-**Title.** Verification and provenance auditing of an AI-drafted clinical rule base: executable invariants, a source-concordance protocol and a frozen laboratory-panel benchmark for an offline interpretation engine
+**Title.** Hemoglyph: an offline, guideline-traceable laboratory-panel interpretation engine with 33,183 rules, 99.2% AI-drafted, and four methods for verifying it against its sources, executable invariants and a frontier LLM
 
 **Authors.** Sobhan Bahrami^a*^ (سبحان بهرامی), Zhaleh Tahmasebinejad^b,c^, Ehsan Bahrami Samani^b^
 

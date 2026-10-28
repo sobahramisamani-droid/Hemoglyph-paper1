@@ -138,7 +138,7 @@ VERIFIER = """## Supplementary Note 14 — The engine's criteria as an executabl
 """
 
 parts = [
-    "# Supplementary Information\n\n*Verification and provenance auditing of an AI-drafted clinical rule base — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R7 (2026-10-28), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
+    "# Supplementary Information\n\n*Hemoglyph: an offline, guideline-traceable laboratory-panel interpretation engine and four methods for verifying it — Bahrami, Tahmasebinejad, Bahrami Samani. Revision R7 (2026-10-28), Computer Methods and Programs in Biomedicine.*\n\n**Index.** " + index_line,
     "## Supplementary Note 1 — Statistical analysis plan and amendments\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "SAP_Hemoglyph_v1.md")), flags=re.M).replace("\n## ", "\n### "),
     S1S2,
     "## Supplementary Note 2 — LLM comparison protocol\n\n" + re.sub(r"^# ", "### ", rd(os.path.join(SUP, "LLM_COMPARISON_PROTOCOL.md")), flags=re.M).replace("\n## ", "\n### "),

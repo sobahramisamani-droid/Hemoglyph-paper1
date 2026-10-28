@@ -2,7 +2,7 @@
 
 Dear Editors,
 
-Please consider the enclosed original research article, "Verification and provenance auditing of an AI-drafted clinical rule base: executable invariants, a source-concordance protocol and a frozen laboratory-panel benchmark for an offline interpretation engine", for publication in *Computer Methods and Programs in Biomedicine*.
+Please consider the enclosed original research article, "Hemoglyph: an offline, guideline-traceable laboratory-panel interpretation engine with 33,183 rules, 99.2% AI-drafted, and four methods for verifying it against its sources, executable invariants and a frontier LLM", for publication in *Computer Methods and Programs in Biomedicine*.
 
 **Why this submission is appropriate for CMPB.** The paper is about computing methodology and demonstrable software: how a clinical rule base that was drafted at scale with large language models can be treated as software and verified. It describes three reproducible methods—property-based executable invariants, a source-concordance protocol frozen before sampling, and a hash-frozen one-shot benchmark with a supervised baseline, an ablation and a blinded LLM comparison—and applies them to an openly released engine (AGPL-3.0) and rule registry (CC BY-SA 4.0) with released evaluation scripts, prompts, outputs and freeze manifests. This matches the journal's aims of formal computing methods, demonstrable software and the improvement of existing software.
 
