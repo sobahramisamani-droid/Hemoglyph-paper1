@@ -1,12 +1,12 @@
 #!/bin/bash
-# Reproduction entry point for Paper 1 (revision R8).  Linux/macOS, Python >= 3.11, ~2 GB RAM, one CPU core, no GPU.
+# Reproduction entry point for Paper 1 (revision R9).  Linux/macOS, Python >= 3.11, ~2 GB RAM, one CPU core, no GPU.
 #
 #   bash reproduce.sh quick    # ~10 min, NO external data: freeze integrity, unit + property tests (720), LabPanel-Check
 #                              # reference cards vs Table 6, verification ledger rebuild vs Note 18 counts, mutation study
 #                              # (Note 16) recomputed from the seeds.
-#   bash reproduce.sh v7       # ~20 min after `quick`: frozen engine v7 + registry 14.1.0 re-run on NHANES 2017-18 (n = 3,000,
+#   bash reproduce.sh v7       # ~60 min after `quick` (measured, 2 vCPU): frozen engine v7 + registry 14.1.0 re-run on NHANES 2017-18 (n = 3,000,
 #                              # fetched from CDC) and compared line-by-line with the frozen report (Table 4 / Fig. 5).
-#   bash reproduce.sh eicu     # ~10 min: frozen v7 on the eICU-CRD demo (2,314 stays; requires the demo CSVs in
+#   bash reproduce.sh eicu     # ~40 min (measured): frozen v7 on the eICU-CRD demo (2,314 stays; requires the demo CSVs in
 #                              # eval/realdata/eicu_demo/, downloaded from physionet.org/content/eicu-crd-demo/2.0.1/) vs Table 3.
 #   bash reproduce.sh all      # everything above plus the remaining cohorts and figures (hours).
 #

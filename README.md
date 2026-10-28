@@ -14,7 +14,7 @@ Research prototype. Not a medical device; not approved or intended for clinical 
 |---|---|---|
 | Inference engine (single file, no training, no network) | `analyse_gidlines.py` (+ `calcu.py`, `cache_registry.py`) | AGPL-3.0-or-later |
 | Rule registries, release 14.1.0 (33,183 executable rules, 785 sources; 99.2 % AI-drafted, status `candidate_requires_specialist_validation`) | `HEMOGLYPH_DISEASE_GUIDELINE_REGISTRY.json.br`, `HEMOGLYPH_GUIDELINE_REGISTRY.json.br` | CC BY-SA 4.0 |
-| Verification method 1 — property-based invariant suite (21 tests) | `tests/test_properties.py`, `tests/test_bayes_properties.py` | AGPL-3.0 |
+| Verification method 1 — property-based invariant suite (25 tests) | `tests/test_properties.py`, `tests/test_bayes_properties.py` | AGPL-3.0 |
 | Safety and regression batteries | `tests/hard_battery.py`, `hard_battery2.py`, `hard_battery3.py`, `tests/healthy_sweep.py`, `tests/perturbation_fuzz.py` | AGPL-3.0 |
 | Verification method 2 — source-concordance protocol and frozen sample | `eval/source_audit/PROTOCOL.md`, `eval/source_audit/sample_200.csv`, `eval/registry_source_verify.py` | CC BY-SA 4.0 |
 | Verification method 3 — frozen benchmark scripts | `eval/realdata/*.py`, `eval/baselines/*.py`, `eval/ablation/run_ablation.py`, `eval/calibration_dca.py`, `eval/subgroup_fairness.py` | AGPL-3.0 |
@@ -34,7 +34,7 @@ pip install numpy pandas brotli scikit-learn scipy pytest matplotlib openpyxl
 
 ```bash
 sha256sum -c --ignore-missing FREEZE_v15_20261025_sha256.txt   # expected differences (engine now v8.2, registries 15.x, amended SAP) are listed in REPRODUCTION_LOG.md; engine v7 is rebuilt from tag engine-v7-frozen by reproduce.sh
-python -m pytest tests/test_properties.py -q        # the 21 invariants of Section 2.3
+python -m pytest tests/test_properties.py -q        # the 25 invariant tests of Section 2.3
 python tests/hard_battery.py && python tests/healthy_sweep.py
 python examples_quickstart.py                       # one panel in, cited differential out (~1 s)
 ```
