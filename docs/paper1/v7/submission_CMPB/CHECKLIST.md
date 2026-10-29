@@ -22,7 +22,7 @@ Ethics (public de-identified data, no human participants) · Funding (none) · C
 ## Before pressing Submit
 
 1. Push HEAD to GitHub and confirm `bash reproduce.sh quick` passes on the public clone (last authors' run: PASS, `REPRODUCTION_LOG.md`).
-2. Mint the Zenodo DOI for the frozen snapshot and replace "will be archived" with the DOI in Data availability (both manuscript and `TITLE_PAGE.md` are unaffected otherwise).
+2. DONE — Zenodo DOI 10.5281/zenodo.23750557 inserted by tools/finalize_doi.py (both manuscript and `TITLE_PAGE.md` are unaffected otherwise).
 3. Confirm with Z.T. and E.B.S.: affiliation wording, ORCIDs, CRediT lines, approval of the submitted version.
 4. Re-read the Declarations block and the cover letter once in full.
 

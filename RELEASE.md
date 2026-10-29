@@ -25,7 +25,7 @@ Paste the last 20 lines into `REPRODUCTION_LOG.md` under "public clone" and comm
 
 ## 3. Zenodo (10 min)
 1. zenodo.org → log in with the GitHub account → **GitHub** tab → flip the switch next to `Hemoglyph-paper1` to ON.
-2. On GitHub: Releases → *Draft a new release* → tag **`paper1-R9-submitted`** (create on `main`), title
+2. On GitHub: Releases → *Draft a new release* → tag **`paper1-submitted` (the tag actually used on 2026-10-29)** (create on `main`), title
    `Paper 1 — CMPB submission snapshot (R9)`, description: one line pointing to `README.md` and `reproduce.sh` → *Publish release*.
    Zenodo picks up `.zenodo.json` (title, creators, licence, description) automatically; the archive is created within a few minutes.
 3. Zenodo → *Upload* → the new record → copy the **version DOI** (`10.5281/zenodo.NNNNNNN`, not the concept DOI).
