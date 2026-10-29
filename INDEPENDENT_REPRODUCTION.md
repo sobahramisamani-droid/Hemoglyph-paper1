@@ -10,7 +10,7 @@ Linux or macOS (Windows: WSL2), Python ≥ 3.11, about 3 GB of disk, 2 GB of RAM
 ## Steps (copy–paste)
 
 ```bash
-git clone https://github.com/sobahramisamani-droid/Hemoglyph.git        # or unpack the Zenodo archive
+git clone https://github.com/sobahramisamani-droid/Hemoglyph-paper1.git        # or unpack the Zenodo archive
 cd Hemoglyph
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt

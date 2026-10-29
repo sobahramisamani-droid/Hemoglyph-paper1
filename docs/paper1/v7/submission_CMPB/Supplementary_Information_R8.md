@@ -1083,14 +1083,14 @@ Status key: ✅ available now · 🟡 partly / needs the pending work · ❌ not
 | 13 | Comparison to other models / baselines | ✅ | B1 single-analyte rule; B2 supervised ML (eICU); blind unnamed frontier (capability-tier "GPT-4-class") LLM via agent (B3/B4/B8, n = 400, McNemar p = 0.009); supervised logistic baseline on Sepsis-2019; published Isabel/DXplain figures in Discussion (not head-to-head) |
 | 14a | Participant flow diagram | ✅ | Supplementary Fig. S6 (participant flow) + Table S3 (cohort flow) |
 | 14b | Participant characteristics | ✅ | Supplementary Table S1 (cohort flow + age/sex/panel size per cohort) |
-| 15 | Model specification / availability | ✅ | code + registries public (GitHub); add Zenodo DOI |
+| 15 | Model specification / availability | ✅ | code + registries public (github.com/sobahramisamani-droid/Hemoglyph-paper1); archived at doi:10.5281/zenodo.23750557 |
 | 16 | Model performance with CIs | ✅ | reports in eval/results |
 | 17 | Model updating results | ✅ | before/after tables |
 | 18a | Limitations | ✅ | REAL_DATA_VALIDATION §4 |
 | 18b | Interpretation | ✅ | Paper 1 Discussion |
 | 18c | Implications | ✅ | Paper 1 Discussion (decision support, not autonomous; calibration needed before thresholds are used) |
 | 19 | Registration / protocol | 🟡 | SAP v1 + Amendments 1–15 hash-frozen in the repository, not publicly registered ("pre-specified", not "pre-registered"); the clinician-audit protocol (Note 19) is prepared for public registration on OSF before raters are recruited |
-| 20 | Code, data availability | ✅/🟡 | code public (GitHub); all datasets public (URLs in Data availability); Zenodo DOI minted at release by the author |
+| 20 | Code, data availability | ✅/🟡 | code public (GitHub); all datasets public (URLs in Data availability); archived at doi:10.5281/zenodo.23750557 (minted 2026-10-29) by the author |
 | 21 | Funding, conflicts | ✅ | no funding; SB is the sole developer of Hemoglyph (declared) |
 | 22 | Ethics approval | ✅ | public de-identified data; no IRB needed; state DUA terms |
 | 23 | Patient & public involvement | ✅ | none — stated |
@@ -1112,7 +1112,7 @@ Also required by DECIDE-AI if a reader study / early live evaluation is added.
 
 | component | licence / status | evaluated in this paper | where |
 |---|---|---|---|
-| inference engine `analyse_gidlines.py` (v7, single file) | AGPL-3.0-or-later, public | **yes — the only inference component evaluated** | GitHub; Zenodo snapshot before publication |
+| inference engine `analyse_gidlines.py` (v7, single file) | AGPL-3.0-or-later, public | **yes — the only inference component evaluated** | GitHub; Zenodo doi:10.5281/zenodo.23750557 |
 | disease-guideline registry 14.1.0 and feature registry (2,045 analytes) | CC BY-SA 4.0, public | yes | same |
 | evaluation scripts, label maps, SAP, freeze manifests, per-stay outputs | AGPL-3.0-or-later / CC BY-SA 4.0, public | yes (they produce every number) | same |
 | LLM prompts and raw outputs | CC BY-SA 4.0, public | yes | Supplementary Data |

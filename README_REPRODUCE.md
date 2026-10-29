@@ -1,7 +1,7 @@
 # Reproducing Paper 1 (CMPB submission) from a clean clone
 
 ```bash
-git clone https://github.com/sobahramisamani-droid/Hemoglyph && cd Hemoglyph
+git clone https://github.com/sobahramisamani-droid/Hemoglyph-paper1 && cd Hemoglyph-paper1
 bash reproduce.sh quick   # ≈ 8 min: integrity, 720 tests, verification ledger, mutation table
 bash reproduce.sh v7      # quick + frozen v7 on NHANES 2017-18 (downloads ≈ 1 MB from CDC; ≈ 60 min on one core)
 bash reproduce.sh eicu    # quick + frozen v7 on eICU-CRD demo (needs the PhysioNet demo CSVs, see below; ≈ 1 h)
