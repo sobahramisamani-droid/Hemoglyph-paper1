@@ -3,7 +3,7 @@
 **How (15 minutes, free, corresponding author's account):** osf.io → *Create new project* (title below) → *Registrations* →
 *New registration* → template **"Open-Ended Registration"** → paste the *Summary* below → attach `PROTOCOL_Note19.md`,
 `human_audit_sample_100.csv`, `SHA256SUMS` and `RATER_INSTRUCTIONS.md` → *Register* → choose **public immediately**
-(no embargo). Copy the resulting DOI/URL into Supplementary Note 19 ("registered at …") and into the cover letter.
+(no embargo). Send the resulting registration URL to be inserted into Supplementary Note 19 ("registered at …").
 
 **Honesty rule for the registration:** register only what is true. The *sample* was drawn and hashed on 2026-10-28; *no rater
 has been approached and no verdict exists*. The registration is prospective for the audit itself. Do not describe the paper's
@@ -37,6 +37,8 @@ Independent clinician concordance audit of 100 rules from an AI-drafted laborato
 **Pre-specified interpretation.** If the human unresolvable proportion is ≥ 80%, the published conclusion that locator granularity, not rater effort, limits auditability is confirmed. If human raters resolve substantially more rules than the AI rater (unresolvable ≤ 60%), the AI audit under-reported auditability and this will be stated. If discordance among resolvable rules exceeds 25%, the rule base will be described as unsafe for any use without rule-by-rule review.
 
 **What will not be done.** No rule will be edited between sampling and audit; raters' verdicts will not be used to tune any engine component before the audit result is published; items will not be dropped after verdicts are seen; κ will not be reported from fewer than 50 double-rated items.
+
+**Where the frozen materials live.** Repository github.com/sobahramisamani-droid/Hemoglyph-paper1, folder `eval/audit/human_audit/` (sample, sealed verdicts, analysis code, hashes); the submitted snapshot is archived at doi:10.5281/zenodo.23750557.
 
 **Timeline.** Recruitment after registration; results reported whatever they are, as an addendum to the manuscript or as a separate report, with the registration DOI cited.
 
