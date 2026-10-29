@@ -616,7 +616,7 @@ Status key: ✅ available now · 🟡 partly / needs the pending work · ❌ not
 | 18a | Limitations | ✅ | REAL_DATA_VALIDATION §4 |
 | 18b | Interpretation | ✅ | Paper 1 Discussion |
 | 18c | Implications | ✅ | Paper 1 Discussion (decision support, not autonomous; calibration needed before thresholds are used) |
-| 19 | Registration / protocol | 🟡 | SAP v1 + Amendments 1–15 hash-frozen in the repository, not publicly registered ("pre-specified", not "pre-registered"); the clinician-audit protocol (Note 19) is prepared for public registration on OSF before raters are recruited |
+| 19 | Registration / protocol | 🟡 | SAP v1 + Amendments 1–15 hash-frozen in the repository, not publicly registered ("pre-specified", not "pre-registered"); the clinician-audit protocol (Note 19) was registered publicly on OSF on 2026-10-29 (doi:10.17605/OSF.IO/8MDYQ) before any rater was approached |
 | 20 | Code, data availability | ✅/🟡 | code public (GitHub); all datasets public (URLs in Data availability); archived at doi:10.5281/zenodo.23750557 (minted 2026-10-29) by the author |
 | 21 | Funding, conflicts | ✅ | no funding; SB is the sole developer of Hemoglyph (declared) |
 | 22 | Ethics approval | ✅ | public de-identified data; no IRB needed; state DUA terms |

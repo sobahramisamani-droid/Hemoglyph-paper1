@@ -1,5 +1,7 @@
 # OSF registration — ready-to-paste text for the clinician concordance audit (Supplementary Note 19)
 
+**REGISTERED 2026-10-29:** https://osf.io/8mdyq — doi:10.17605/OSF.IO/8MDYQ (Open-Ended Registration, public, CC BY 4.0; archived files: PROTOCOL_Note19.md, human_audit_sample_100.csv, SHA256SUMS, Hemoglyph_human_audit_rater_form.xlsx, analyse_human_audit.py). An earlier registration of the same text, archived without files owing to an upload error, is withdrawn and points to this one.
+
 **How (15 minutes, free, corresponding author's account):** osf.io → *Create new project* (title below) → *Registrations* →
 *New registration* → template **"Open-Ended Registration"** → paste the *Summary* below → attach `PROTOCOL_Note19.md`,
 `human_audit_sample_100.csv`, `SHA256SUMS` and `RATER_INSTRUCTIONS.md` → *Register* → choose **public immediately**
