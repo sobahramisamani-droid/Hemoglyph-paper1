@@ -9,7 +9,7 @@ from docx_style import setup_document, inline, add_table, heading
 
 import sys
 SRC = sys.argv[1] if len(sys.argv) > 1 else "Paper1_Hemoglyph_CMPB_EN_v7_R9.md"
-PKG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "ارسال پیپر ۱")
+PKG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "Paper1_submission_package")
 OUT = sys.argv[2] if len(sys.argv) > 2 else (os.path.join(PKG, "Manuscript_Paper1_Hemoglyph_CMPB_R9.docx") if os.path.isdir(PKG) else SRC.replace(".md", ".docx"))
 doc = Document(); setup_document(doc)
 TEXT = open(SRC, encoding="utf-8").read()

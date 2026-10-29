@@ -47,7 +47,7 @@ Full run on one core: about 10 h. `eval/realdata/eval_eicu.py --encounter icu` a
 
 ## A note on file names
 
-Several module names are romanised Persian (`analyse_gidlines.py`, `calcu.py`, `naam_haye_vizhegi.py`, `sarvis_tahlil.py`, `br.py`) and `analyse_gidlines` keeps its original spelling. They are left as they are because the freeze manifests, the git tags (`engine-v7-frozen`) and the manuscript all refer to these exact names; renaming would break every recorded hash. The OCR and service modules (`ocr*.py`, `sarvis_tahlil.py`) carry Persian user-facing strings because the engine was built for Persian-language laboratory reports; they are not used by any evaluation in the paper.
+Several module names are romanised Persian (`analyse_gidlines.py`, `calcu.py`, `naam_haye_vizhegi.py`, `sarvis_tahlil.py`, `br.py`) and `analyse_gidlines` keeps its original spelling. They are left as they are because the freeze manifests, the git tags (`engine-v7-frozen`) and the manuscript all refer to these exact names; renaming would break every recorded hash. All user-facing strings are English. The only remaining Persian characters are input-normalisation tables (Persian/Arabic digits, decimal separator, yes/no, sex and a few history keywords in `analyse_gidlines.py`, `calcu.py`, `ocr*.py`), because the engine also accepts Persian-language laboratory reports; they affect parsing, not output.
 
 ## What is not here
 

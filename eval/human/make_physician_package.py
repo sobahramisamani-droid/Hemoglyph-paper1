@@ -91,7 +91,7 @@ def main():
 
     ws = wb.active; ws.title = "Instructions"
     lines = [
-        "Hemoglyph — physician review package v1 (2026-10-27). Please read PHYSICIAN_REVIEW_INSTRUCTIONS.md (Persian + English) first.",
+        "Hemoglyph — physician review package v1 (2026-10-27). Please read PHYSICIAN_REVIEW_INSTRUCTIONS.md first.",
         "",
         "P1_output_review: 100 ICU admission panels (public eICU-CRD demo, de-identified), each with the 5 suggestions of the frozen engine v7.",
         "  For EVERY suggestion fill VERDICT: 1 = reasonable given this panel · 2 = not supported by this panel · 3 = potentially harmful if acted on · 4 = outside my expertise.",

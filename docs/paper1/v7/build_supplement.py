@@ -268,7 +268,7 @@ while i < len(lines):
     else:
         p = doc.add_paragraph(); inline(p, l)
     i += 1
-PKG = os.path.join(V7, "..", "..", "..", "..", "ارسال پیپر ۱")
+PKG = os.path.join(V7, "..", "..", "..", "..", "Paper1_submission_package")
 out = os.path.join(PKG, "Supplementary_Information.docx") if os.path.isdir(PKG) else os.path.join(V7, "submission_CMPB", "Supplementary_Information.docx")
 doc.save(out)
 print("supplement ok:", out, "| words", len(md.split()))

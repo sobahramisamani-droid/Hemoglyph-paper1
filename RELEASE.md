@@ -37,7 +37,7 @@ python3 tools/finalize_doi.py 10.5281/zenodo.NNNNNNN --apply
 python3 docs/paper1/v7/build_docx.py && python3 docs/paper1/v7/build_supplement.py
 git commit -am "Zenodo DOI inserted" && git push origin main
 ```
-The package folder (`ارسال پیپر ۱/`) now holds the final .docx files.
+The package folder (`Paper1_submission_package/`) now holds the final .docx files.
 
 ## 5. OSF registration of the human-audit protocol (10 min)
 osf.io → *Create new project* `Hemoglyph human concordance audit (Note 19)` → *Registrations* → *New registration* →

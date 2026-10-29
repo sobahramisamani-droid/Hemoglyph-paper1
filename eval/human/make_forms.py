@@ -19,18 +19,13 @@ H = os.path.dirname(os.path.abspath(__file__))
 R = os.path.join(ROOT, "eval", "results", "eicu_demo")
 
 
-def rtl(p):
-    pPr = p._p.get_or_add_pPr(); b = OxmlElement("w:bidi"); b.set(qn("w:val"), "1"); pPr.append(b)
-    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-
-
-def doc_base(title_fa, title_en):
+def doc_base(title_short, title_en):
     d = Document()
-    st = d.styles["Normal"]; st.font.name = "B Nazanin"; st.font.size = Pt(11)
-    st.element.rPr.rFonts.set(qn("w:cs"), "B Nazanin"); st.element.rPr.rFonts.set(qn("w:eastAsia"), "B Nazanin")
+    st = d.styles["Normal"]; st.font.name = "Calibri"; st.font.size = Pt(11)
+    st.element.rPr.rFonts.set(qn("w:cs"), "Calibri"); st.element.rPr.rFonts.set(qn("w:eastAsia"), "Calibri")
     for s in d.sections:
         s.left_margin = s.right_margin = Cm(1.5); s.top_margin = s.bottom_margin = Cm(1.5)
-    h = d.add_heading(title_fa, 0); rtl(h)
+    h = d.add_heading(title_short, 0)
     p = d.add_paragraph(title_en); p.runs[0].font.size = Pt(9)
     return d
 
@@ -71,29 +66,29 @@ def build_a1():
         else:
             expr = json.dumps(ex, ensure_ascii=False)[:300]
         srcs = "; ".join(f'{src.get(s, {}).get("organization", "")} — {src.get(s, {}).get("title", s)} ({src.get(s, {}).get("year", "")})' for s in r.get("source_ids", []))[:400]
-        rows.append(dict(n=i, stratum=r["_stratum"], rule_id=r["rule_id"], disease=d.get("identity", {}).get("name_en", r["disease_id"]), disease_fa=d.get("identity", {}).get("name_fa", ""),
+        rows.append(dict(n=i, stratum=r["_stratum"], rule_id=r["rule_id"], disease=d.get("identity", {}).get("name_en", r["disease_id"]),
                          rule_type=r["rule_type"], expression=expr, population="/".join(r.get("population", {}).get("age_groups", [])) + "; sex " + str(r.get("population", {}).get("sex", "")),
                          urgent=bool(r.get("urgent")), sources=srcs, explanation=(r.get("scientific_explanation") or "")[:600], limitations=" | ".join(r.get("limitations", []))[:300]))
     json.dump(rows, open(os.path.join(H, "A1_rule_audit_sample.json"), "w"), ensure_ascii=False, indent=1)
     with open(os.path.join(H, "A1_rule_audit_form.csv"), "w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f); w.writerow(["n", "stratum", "rule_id", "disease", "rule_type", "expression", "population", "sources", "VERDICT (1=correct,2=incorrect,3=ambiguous)", "SEVERITY if incorrect (A=unsafe,B=wrong threshold/unit,C=wrong source/attribution,D=cosmetic)", "comment"])
         for r in rows: w.writerow([r["n"], r["stratum"], r["rule_id"], r["disease"], r["rule_type"], r["expression"], r["population"], r["sources"], "", "", ""])
-    d = doc_base("فرم A1 — ممیزی تصادفی ۱۰۰ قاعده از پایگاه دانش هموگلیف", "Form A1 — Random audit of 100 executable rules, Hemoglyph guideline registry v13.1.0: 60 from the operational set (diseases surfaced on eICU) + 40 from the whole registry; stratified by rule type; seed 20261023")
-    for t in ["هدف: برآورد نرخ خطای قواعد پایگاه دانش که با کمک هوش مصنوعی ساخته و توسط نویسندهٔ اول بازبینی شده است. پاسخ شما به‌صورت نرخ خطا با فاصلهٔ اطمینان ۹۵٪ در مقاله گزارش می‌شود.",
-              "دستور: برای هر قاعده فقط به سؤال زیر پاسخ دهید — «آیا این آستانه/جهت/جمعیت برای این بیماری و این نوع قاعده (غربالگری / معیار تشخیصی / معیار رد / شدت) از نظر بالینی و بر اساس منبع ذکرشده قابل‌دفاع است؟»",
-              "گزینه‌ها: ۱ = صحیح   ۲ = نادرست   ۳ = مبهم/وابسته به زمینه. اگر نادرست: شدت را مشخص کنید: A = ناایمن (می‌تواند منجر به تصمیم خطرناک شود)، B = آستانه/واحد اشتباه، C = منبع یا انتساب اشتباه ولی قاعده درست، D = ظاهری.",
-              "نکتهٔ مهم: قواعد «غربالگری» عمداً حساسیت‌محور و غیر‌اختصاصی‌اند (diagnosis_allowed=false)؛ آن‌ها را به‌عنوان «به‌تنهایی تشخیص نمی‌دهد» قضاوت نکنید، بلکه بپرسید آیا به‌عنوان نشانهٔ هشدار برای این بیماری منطقی است.",
-              "دو لایه: ۶۰ قاعده از «مجموعهٔ عملیاتی» (بیماری‌هایی که در ارزیابی eICU در ۵ تشخیص اول ظاهر شده‌اند) و ۴۰ قاعده از کل پایگاه (که عمدتاً موجودیت‌های الگوی بیومارکری تولیدشدهٔ خودکار است). لایه در فرم مشخص است و جداگانه گزارش می‌شود؛ هر دو را با همان سخت‌گیری قضاوت کنید.", "زمان تقریبی: ۹۰–۱۵۰ دقیقه. لطفاً نام، تخصص، سال‌های تجربه و تاریخ را در انتها بنویسید. پاسخ‌ها را می‌توانید در همین فایل یا در فایل CSV همراه وارد کنید."]:
-        p = d.add_paragraph(t); rtl(p)
+    d = doc_base("Form A1 — Random audit of 100 rules from the Hemoglyph knowledge base", "Form A1 — Random audit of 100 executable rules, Hemoglyph guideline registry v13.1.0: 60 from the operational set (diseases surfaced on eICU) + 40 from the whole registry; stratified by rule type; seed 20261023")
+    for t in ["Purpose: to estimate the error rate of knowledge-base rules that were drafted with AI assistance and reviewed by the first author. Your answers are reported in the paper as an error rate with a 95% confidence interval.",
+                        "Instruction: for each rule answer only the following question — is this threshold/direction/population clinically defensible for this disease and this rule type (screening / diagnostic criterion / exclusion criterion / severity), on the basis of the cited source?",
+                        "Options: 1 = correct   2 = incorrect   3 = ambiguous/context-dependent. If incorrect, grade severity: A = unsafe (could lead to a dangerous decision), B = wrong threshold/unit, C = wrong source or attribution but rule correct, D = cosmetic.",
+                        "Important: screening rules are deliberately sensitivity-oriented and non-specific (diagnosis_allowed=false); do not judge them as 'does not diagnose on its own' but ask whether they are reasonable as a warning sign for this disease.",
+                        "Two strata: 60 rules from the operational set (diseases that appeared in any eICU top-5) and 40 from the whole registry (mostly auto-generated biomarker-pattern entities). The stratum is shown on the form and reported separately; judge both with the same rigour.", "Approximate time: 90–150 minutes. Please add your name, specialty, years of experience and the date at the end. Answers may be entered in this file or in the accompanying CSV."]:
+        p = d.add_paragraph(t)
     for r in rows:
         d.add_paragraph()
-        h = d.add_paragraph(); h.add_run(f'#{r["n"]}  [{r["stratum"]}]  {r["disease"]}  ({r["disease_fa"]})  —  {r["rule_type"]}' + ("  ⚠ urgent" if r["urgent"] else "")).bold = True
+        h = d.add_paragraph(); h.add_run(f'#{r["n"]}  [{r["stratum"]}]  {r["disease"]}  —  {r["rule_type"]}' + ("  ⚠ urgent" if r["urgent"] else "")).bold = True
         tb = d.add_table(rows=0, cols=2); tb.style = "Table Grid"; tb.alignment = WD_TABLE_ALIGNMENT.CENTER
         for k, v in (("rule_id", r["rule_id"]), ("expression", r["expression"]), ("population", r["population"]), ("sources", r["sources"]), ("explanation", r["explanation"]), ("limitations", r["limitations"])):
             c = tb.add_row().cells; c[0].text = k; c[1].text = v; shade(c[0], "EEEEEE"); c[0].width = Cm(2.5); c[1].width = Cm(15)
-        c = tb.add_row().cells; c[0].text = "VERDICT"; c[1].text = "☐ 1 صحیح    ☐ 2 نادرست    ☐ 3 مبهم        شدت (اگر نادرست): ☐A ☐B ☐C ☐D"; shade(c[0], "FFF2CC"); shade(c[1], "FFF2CC")
+        c = tb.add_row().cells; c[0].text = "VERDICT"; c[1].text = "[ ] 1 correct    [ ] 2 incorrect    [ ] 3 ambiguous        severity (if incorrect): [ ]A [ ]B [ ]C [ ]D"; shade(c[0], "FFF2CC"); shade(c[1], "FFF2CC")
         c = tb.add_row().cells; c[0].text = "comment"; c[1].text = "\n"; shade(c[0], "FFF2CC")
-    d.add_paragraph(); p = d.add_paragraph("نام و نام خانوادگی: ______________  تخصص: ______________  سال‌های تجربه: ____  تاریخ: __________  امضا: ________"); rtl(p)
+    d.add_paragraph(); p = d.add_paragraph("Name: ______________  Specialty: ______________  Years of experience: ____  Date: __________  Signature: ________")
     d.save(os.path.join(H, "A1_rule_audit_form.docx"))
     return quota
 
@@ -104,12 +99,12 @@ AB = {"troponin_i": "Troponin I (ng/mL)", "troponin_t": "Troponin T (ng/mL)", "m
 def build_b1():
     cases = json.load(open(os.path.join(R, "b8_rerun40_cases.json")))
     panels = {p["case"]: p for p in json.load(open(os.path.join(R, "b8_blind_panels_n240.json")))}
-    d = doc_base("فرم B1 — خوانش کور ۴۰ پنل آزمایشگاهی ICU", "Form B1 — Blind physician reading of 40 ICU admission laboratory panels (eICU-CRD demo, open access; same 40 panels as the LLM test–retest set)")
-    for t in ["هدف: بازوی سوم مقایسه (پزشک / مدل زبانی / هموگلیف) روی پنل‌های یکسان. شما فقط سن، جنس و مقادیر آزمایشگاهی ۲۴ ساعت اول بستری ICU را می‌بینید — دقیقاً همان اطلاعاتی که به موتور و مدل زبانی داده شد.",
-              "دستور: برای هر پنل تا ۱۰ تشخیص/سندرم را که بیشترین احتمال را دارند به ترتیب احتمال بنویسید (۱ = محتمل‌ترین). نام بیماری به انگلیسی یا فارسی؛ اصطلاحات عمومی (مثلاً acute kidney injury، sepsis، diabetic ketoacidosis، GI bleeding، heart failure، anemia، hypokalemia) کافی است. از منابع، اینترنت یا هوش مصنوعی استفاده نکنید؛ زمان هر پنل را یادداشت کنید.",
-              "امتیازدهی بعداً به‌صورت خودکار و با همان نگاشت کلمات کلیدی که برای مدل زبانی به‌کار رفت انجام می‌شود (Recall@5 نسبت به تشخیص‌های ثبت‌شدهٔ ICU). زمان تقریبی: ۳–۵ دقیقه برای هر پنل، مجموع ۲–۳ ساعت.",
-              "محرمانگی: داده‌ها بخشی از پایگاه عمومی eICU-CRD demo (PhysioNet، open access) هستند و شناسه‌زدایی شده‌اند."]:
-        p = d.add_paragraph(t); rtl(p)
+    d = doc_base("Form B1 — Blind reading of 40 ICU laboratory panels", "Form B1 — Blind physician reading of 40 ICU admission laboratory panels (eICU-CRD demo, open access; same 40 panels as the LLM test–retest set)")
+    for t in ["Purpose: a third comparison arm (physician / language model / Hemoglyph) on identical panels. You see only age, sex and the laboratory values of the first 24 h of ICU admission — exactly the information given to the engine and the language model.",
+                        "Instruction: for each panel list up to 10 diagnoses/syndromes in order of likelihood (1 = most likely). Generic terms (e.g. acute kidney injury, sepsis, diabetic ketoacidosis, GI bleeding, heart failure, anemia, hypokalemia) are sufficient. Do not use references, the internet or AI; note the time spent per panel.",
+                        "Scoring is automatic, with the same keyword map used for the language model (Recall@5 against the documented ICU diagnoses). Approximate time: 3–5 minutes per panel, 2–3 hours in total.",
+                        "Confidentiality: the data are part of the public eICU-CRD demo (PhysioNet, open access) and are de-identified."]:
+        p = d.add_paragraph(t)
     with open(os.path.join(H, "B1_blind_panel_form.csv"), "w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f); w.writerow(["case", "rank", "diagnosis", "probability_0_to_1 (optional)", "minutes_spent"])
         for c in cases:
@@ -128,8 +123,8 @@ def build_b1():
         t2.cell(0, 0).text = "#"; t2.cell(0, 1).text = "Diagnosis / syndrome (most likely first)"; t2.cell(0, 2).text = "probability (optional)"
         for i in range(1, 11): t2.cell(i, 0).text = str(i)
         for j in range(3): shade(t2.cell(0, j), "FFF2CC")
-        d.add_paragraph("زمان صرف‌شده (دقیقه): ____")
-    d.add_paragraph(); p = d.add_paragraph("نام و نام خانوادگی: ______________  تخصص: ______________  سال‌های تجربه: ____  تاریخ: __________  امضا: ________"); rtl(p)
+        d.add_paragraph("Time spent (minutes): ____")
+    d.add_paragraph(); p = d.add_paragraph("Name: ______________  Specialty: ______________  Years of experience: ____  Date: __________  Signature: ________")
     d.save(os.path.join(H, "B1_blind_panel_form.docx"))
     return len(cases)
 

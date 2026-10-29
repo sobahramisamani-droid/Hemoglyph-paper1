@@ -1037,41 +1037,41 @@ class AnalysisService:
             result["multi_system_patterns"].append({
                 "pattern": "cardiorenal",
                 "title": "Cardiorenal Syndrome (Types 1-5)",
-                "title_fa": "سندروم کاردیورنال (انواع ۱ تا ۵)",
+                "title_fa": "Cardiorenal Syndrome (Types 1-5)",
                 "interpretation": "Cardiorenal syndrome (Type 1-5): dual cardiac and renal impairment. Monitor hemodynamics, volume status, and avoid nephrotoxic agents.",
-                "interpretation_fa": "سندروم کاردیورنال: نارسایی هم‌زمان قلبی و کلیوی. پایش دقیق همودینامیک، بالانس مایعات و پرهیز از داروهای نفروتوکسیک الزامی است."
+                "interpretation_fa": "Cardiorenal syndrome (Type 1-5): dual cardiac and renal impairment. Monitor hemodynamics, volume status, and avoid nephrotoxic agents."
             })
         if "hepatic" in result["systems_involved"] and "renal" in result["systems_involved"]:
             result["multi_system_patterns"].append({
                 "pattern": "hepatorenal",
                 "title": "Hepatorenal Axis Dysfunction (HRS-AKI)",
-                "title_fa": "اختلال محور هپاتورنال (سندروم هپاتورنال)",
+                "title_fa": "Hepatorenal Axis Dysfunction (HRS-AKI)",
                 "interpretation": "Hepatorenal axis dysfunction: severe hepatic impairment with renal azotemia. Assess for Hepatorenal Syndrome (HRS-AKI), urinary sodium, and volume challenge.",
-                "interpretation_fa": "اختلال محور هپاتورنال: آسیب توأم کبدی و کلیوی (بررسی HRS-AKI، سدیم ادرار و پایش پاسخ به آلبومین)."
+                "interpretation_fa": "Hepatorenal axis dysfunction: severe hepatic impairment with renal azotemia. Assess for Hepatorenal Syndrome (HRS-AKI), urinary sodium, and volume challenge."
             })
         if "renal" in result["systems_involved"] and "hematologic" in result["systems_involved"]:
             result["multi_system_patterns"].append({
                 "pattern": "renal+hematologic",
                 "title": "Renal-Hematologic Axis Involvement",
-                "title_fa": "درگیری توأم کلیوی و خونی",
+                "title_fa": "Renal-Hematologic Axis Involvement",
                 "interpretation": "CKD with anemia or marrow infiltration — check EPO, iron, B12, PTH, proteinuria.",
-                "interpretation_fa": "درگیری توأم کلیوی و خونی (آنمی ناشی از نارسایی کلیه یا دیسکرازی مغز استخوان)."
+                "interpretation_fa": "CKD with anemia or marrow infiltration — check EPO, iron, B12, PTH, proteinuria."
             })
         if "hepatic" in result["systems_involved"] and "hematologic" in result["systems_involved"]:
             result["multi_system_patterns"].append({
                 "pattern": "hepatic+hematologic",
                 "title": "Hepatosplenic-Hematologic Axis Dysfunction",
-                "title_fa": "اختلال محور کبدی-خونی و هیپراسپلنیسم",
+                "title_fa": "Hepatosplenic-Hematologic Axis Dysfunction",
                 "interpretation": "Liver disease with cytopenias — hypersplenism, alcohol, viral hepatitis, or marrow failure.",
-                "interpretation_fa": "بیماری کبدی همراه با سیتوپنی (هیپراسپلنیسم، اثر الکل، هپاتیت یا نارسایی مغز استخوان)."
+                "interpretation_fa": "Liver disease with cytopenias — hypersplenism, alcohol, viral hepatitis, or marrow failure."
             })
         if "endocrine" in result["systems_involved"] and "electrolyte" in result["systems_involved"]:
             result["multi_system_patterns"].append({
                 "pattern": "endocrine+electrolyte",
                 "title": "Endocrine-Electrolyte Decompensation",
-                "title_fa": "بحران غدد و عدم تعادل الکترولیتی",
+                "title_fa": "Endocrine-Electrolyte Decompensation",
                 "interpretation": "Endocrine disorder affecting electrolytes — check adrenal, thyroid, PTH axis.",
-                "interpretation_fa": "اختلال غدد همراه با عدم تعادل الکترولیتی شدید (نیازمند بررسی محور آدرنال، پاراتیروئید یا کتواسیدوز)."
+                "interpretation_fa": "Endocrine disorder affecting electrolytes — check adrenal, thyroid, PTH axis."
             })
         # Check metabolic acid-base crisis
         gluc_v = None
@@ -1086,17 +1086,17 @@ class AnalysisService:
             result["multi_system_patterns"].append({
                 "pattern": "metabolic_acid_base_crisis",
                 "title": "Metabolic & Acid-Base Crisis (DKA/HHS)",
-                "title_fa": "بحران متابولیک و اسید-باز (کتواسیدوز / کما)",
+                "title_fa": "Metabolic & Acid-Base Crisis (DKA/HHS)",
                 "interpretation": "Severe metabolic decompensation with high anion gap metabolic acidosis. Urgent protocolized fluid and electrolyte resuscitation required.",
-                "interpretation_fa": "بحران حاد متابولیک همراه با اسیدوز متابولیک شدید (DKA/HHS). احیای فوری با مایعات وریدی، انسولین و پایش مکرر پتاسیم الزامی است."
+                "interpretation_fa": "Severe metabolic decompensation with high anion gap metabolic acidosis. Urgent protocolized fluid and electrolyte resuscitation required."
             })
         if "inflammatory" in result["systems_involved"] and len(result["systems_involved"]) >= 3:
             result["multi_system_patterns"].append({
                 "pattern": "systemic_sepsis_or_inflammation",
                 "title": "Systemic Multi-Organ Inflammatory Response (SIRS / Sepsis)",
-                "title_fa": "پاسخ التهابی سیستمیک و نارسایی چندارگانی (سپسیس/SIRS)",
+                "title_fa": "Systemic Multi-Organ Inflammatory Response (SIRS / Sepsis)",
                 "interpretation": "Marked systemic inflammation with multi-organ dysfunction — evaluate for sepsis/septic shock, macrophage activation, or autoimmune flare.",
-                "interpretation_fa": "پاسخ التهابی سیستمیک شدید همراه با نارسایی چندارگانی (ارزیابی فوری سپسیس/شوک سپتیک یا بحران خودایمنی)."
+                "interpretation_fa": "Marked systemic inflammation with multi-organ dysfunction — evaluate for sepsis/septic shock, macrophage activation, or autoimmune flare."
             })
         if len(result["systems_involved"]) >= 3:
             result["recommendations"].append("Multi-system involvement detected — consider systemic disease (SLE, sepsis, malignancy, metabolic syndrome). Recommend comprehensive review.")
@@ -1310,9 +1310,9 @@ class AnalysisService:
                 "timeframe": "< 2 hours",
                 "category": "PREANALYTICAL_CRITICAL",
                 "title": f"Pre-Analytical Alert: K2/K3-EDTA Tube Carryover ({edta_val})",
-                "title_fa": f"هشدار حیاتی پیش‌آزمایشگاهی: آلودگی لوله با ضد انعقاد EDTA (سطح {edta_val})",
+                "title_fa": f"Pre-Analytical Alert: K2/K3-EDTA Tube Carryover ({edta_val})",
                 "action_en": f"Extreme hyperkalemia (K={k_val or 0:.1f} mmol/L) with severe hypocalcemia (Ca={ca_val or 0:.1f} mg/dL) is an artifact of phlebotomy tube carryover. DO NOT administer calcium gluconate, insulin/glucose, or emergency dialysis. Immediately redraw blood using a plain serum clot tube and verify with a 12-lead ECG.",
-                "action_fa": "پتاسیم بالا همراه با افت شدید کلسیم ناشی از خطای ترتیب پر کردن لوله‌ها حین خونگیری است. اکیداً از تجویز درمان هایپرکالمی یا دیالیز خودداری کنید؛ تکرار فوری خونگیری با لوله لخته و نوار قلب الزامی است.",
+                "action_fa": f"Extreme hyperkalemia (K={k_val or 0:.1f} mmol/L) with severe hypocalcemia (Ca={ca_val or 0:.1f} mg/dL) is an artifact of phlebotomy tube carryover. DO NOT administer calcium gluconate, insulin/glucose, or emergency dialysis. Immediately redraw blood using a plain serum clot tube and verify with a 12-lead ECG.",
             })
 
         # 1.2 Pre-analytical In-Vitro Hemolysis
@@ -1325,9 +1325,9 @@ class AnalysisService:
                 "timeframe": "< 2 hours",
                 "category": "PREANALYTICAL_ADVISORY",
                 "title": "Pre-Analytical Alert: Mechanical In-Vitro Hemolysis Suspected",
-                "title_fa": "هشدار پیش‌آزمایشگاهی: احتمال بالای همولیز مکانیکی حین خونگیری",
+                "title_fa": "Pre-Analytical Alert: Mechanical In-Vitro Hemolysis Suspected",
                 "action_en": "Elevated potassium and LDH with normal haptoglobin indicates red cell trauma during venipuncture rather than in-vivo intravascular hemolysis. Inspect serum coloration.",
-                "action_fa": "افزایش هم‌زمان پتاسیم و LDH در حضور هاپتوگلوبین نرمال ناشی از ترومای خونگیری است و همولیز پاتولوژیک داخل عروق را رد می‌کند.",
+                "action_fa": "Elevated potassium and LDH with normal haptoglobin indicates red cell trauma during venipuncture rather than in-vivo intravascular hemolysis. Inspect serum coloration.",
             })
 
         # 1.3 Lethal Contraindication: TTP / TMA Platelet Transfusion
@@ -1343,9 +1343,9 @@ class AnalysisService:
                 "timeframe": "< 1 hour",
                 "category": "HEMATOLOGY_EMERGENCY",
                 "title": "TTP/HUS Emergency: Platelet Transfusion Strictly Contraindicated",
-                "title_fa": "اورژانس سندروم TTP/HUS: تزریق پلاکت اکیداً ممنوع (کنترااندیکه)",
+                "title_fa": "TTP/HUS Emergency: Platelet Transfusion Strictly Contraindicated",
                 "action_en": "Platelet transfusion precipitates acute widespread microvascular thrombosis and organ infarction. Initiate emergent plasma exchange (PEX) and high-dose glucocorticoids immediately.",
-                "action_fa": "تزریق پلاکت به دلیل تشدید ترومبوزهای میکروواسکولار و مرگ بافتی اکیداً ممنوع است؛ شروع فوری پلاسمافرز اورژانسی (PEX) و گلوکوکورتیکوئید الزامی است.",
+                "action_fa": "Platelet transfusion precipitates acute widespread microvascular thrombosis and organ infarction. Initiate emergent plasma exchange (PEX) and high-dose glucocorticoids immediately.",
             })
 
         # 1.4 Lethal Contraindication: Pheochromocytoma Beta-Blockade
@@ -1361,9 +1361,9 @@ class AnalysisService:
                 "timeframe": "< 2 hours",
                 "category": "ENDOCRINE_EMERGENCY",
                 "title": "Pheochromocytoma Crisis: Unopposed Beta-Blockade Contraindicated",
-                "title_fa": "بحران فئوکروموسیتوم: منع مصرف بتابلوکر تنهایی بدون آلفابلوک کامل",
+                "title_fa": "Pheochromocytoma Crisis: Unopposed Beta-Blockade Contraindicated",
                 "action_en": "Beta-blockade alone triggers paradoxical massive vasoconstriction and lethal hypertensive crisis. Complete alpha-blockade (phenoxybenzamine/doxazosin) is mandatory first.",
-                "action_fa": "بتابلوکر بدون مهار آلفا منجر به اسپاسم عروقی شدید و بحران فشارخون کشنده می‌شود؛ ابتدا بلوک کامل گیرنده‌های آلفا الزامی است.",
+                "action_fa": "Beta-blockade alone triggers paradoxical massive vasoconstriction and lethal hypertensive crisis. Complete alpha-blockade (phenoxybenzamine/doxazosin) is mandatory first.",
             })
 
         # 1.5 Severe Acute Hepatocellular Necrosis (Transaminases > 500)
@@ -1375,9 +1375,9 @@ class AnalysisService:
                 "timeframe": "< 2 hours",
                 "category": "HEPATIC_EMERGENCY",
                 "title": f"Severe Acute Hepatocellular Injury (ALT: {alt_val or 0:.0f}, AST: {ast_val or 0:.0f} U/L)",
-                "title_fa": "آسیب حاد هپاتوسلولار شدید (ترانس‌آمینازها > 500 U/L)",
+                "title_fa": f"Severe Acute Hepatocellular Injury (ALT: {alt_val or 0:.0f}, AST: {ast_val or 0:.0f} U/L)",
                 "action_en": "Discontinue all potentially hepatotoxic medications immediately (acetaminophen, statins, specific antibiotics). Urgently evaluate coagulation profile (INR/PT) and clinical encephalopathy.",
-                "action_fa": "قطع فوری کلیه داروهای هپاتوتوکسیک بالقوه (استامینوفن، استاتین‌ها) و بررسی فوری وضعیت انعقادی و هوشیاری بیمار.",
+                "action_fa": "Discontinue all potentially hepatotoxic medications immediately (acetaminophen, statins, specific antibiotics). Urgently evaluate coagulation profile (INR/PT) and clinical encephalopathy.",
             })
 
         # 1.6 HLH / MAS Cytokine Storm
@@ -1393,9 +1393,9 @@ class AnalysisService:
                 "timeframe": "< 2 hours",
                 "category": "IMMUNOLOGIC_CRISIS",
                 "title": "HLH/MAS Cytokine Storm: Emergent Oncology/Rheumatology Protocol",
-                "title_fa": "طوفان سایتوکاینی و سندروم HLH/MAS: فوریت انکولوژی و روماتولوژی",
+                "title_fa": "HLH/MAS Cytokine Storm: Emergent Oncology/Rheumatology Protocol",
                 "action_en": "Initiate high-dose dexamethasone / etoposide protocol. Urgently monitor fibrinogen, ferritin, and soluble CD25.",
-                "action_fa": "آغاز سریع پروتکل کورتیکواستروئید دوز بالا (دگزامتازون) / اتوپوزید و پایش دقیق فیبرینوژن و فریتین.",
+                "action_fa": "Initiate high-dose dexamethasone / etoposide protocol. Urgently monitor fibrinogen, ferritin, and soluble CD25.",
             })
 
         # 1.7 True Hyperkalemia (when not suppressed by EDTA artifact)
@@ -1407,9 +1407,9 @@ class AnalysisService:
                 "timeframe": "< 1 hour",
                 "category": "ELECTROLYTE_EMERGENCY",
                 "title": f"True Severe Hyperkalemia (K = {k_val:.1f} mmol/L)",
-                "title_fa": f"هایپرکالمی شدید و خطرناک (پتاسیم = {k_val:.1f} mmol/L)",
+                "title_fa": f"True Severe Hyperkalemia (K = {k_val:.1f} mmol/L)",
                 "action_en": "Immediate 12-lead ECG. Administer IV calcium gluconate for myocardial membrane stabilization, insulin-glucose, and discontinue RAAS inhibitors and potassium-sparing diuretics.",
-                "action_fa": "نوار قلب فوری، تزریق گلوکونات کلسیم وریدی جهت پایدارسازی میوکارد، انسولین و گلوکز، و قطع فوری مهارکننده‌های RAAS.",
+                "action_fa": "Immediate 12-lead ECG. Administer IV calcium gluconate for myocardial membrane stabilization, insulin-glucose, and discontinue RAAS inhibitors and potassium-sparing diuretics.",
             })
         elif k_val and k_val < 2.8:
             tier_1.append({
@@ -1419,9 +1419,9 @@ class AnalysisService:
                 "timeframe": "< 1 hour",
                 "category": "ELECTROLYTE_EMERGENCY",
                 "title": f"Severe Hypokalemia (K = {k_val:.1f} mmol/L)",
-                "title_fa": f"هیپوکالمی شدید و بحرانی (پتاسیم = {k_val:.1f} mmol/L)",
+                "title_fa": f"Severe Hypokalemia (K = {k_val:.1f} mmol/L)",
                 "action_en": "Continuous cardiac telemetry. Slow IV potassium chloride repletion and correct concomitant hypomagnesemia.",
-                "action_fa": "مانیتورینگ قلبی، جایگزینی آرام کلرید پتاسیم وریدی و بررسی و تصحیح هم‌زمان هیپومنیزیمی.",
+                "action_fa": "Continuous cardiac telemetry. Slow IV potassium chloride repletion and correct concomitant hypomagnesemia.",
             })
 
         # 1.8 Critical Thrombocytopenia
@@ -1433,9 +1433,9 @@ class AnalysisService:
                 "timeframe": "< 2 hours",
                 "category": "HEMATOLOGY_EMERGENCY",
                 "title": f"Critical Thrombocytopenia (Platelets = {plt_val:,.0f} /uL)",
-                "title_fa": f"ترومبوسیتوپنی شدید و بحرانی (پلاکت = {plt_val:,.0f} /uL)",
+                "title_fa": f"Critical Thrombocytopenia (Platelets = {plt_val:,.0f} /uL)",
                 "action_en": "High risk of spontaneous life-threatening hemorrhage. Withhold all anticoagulants and antiplatelet agents. Avoid invasive procedures and intramuscular injections.",
-                "action_fa": "خطر بالای خونریزی خودبه‌خودی کشنده؛ قطع فوری کلیه داروهای ضدانعقاد و ضدپلاکت و پرهیز از تزریقات عضلانی و اقدامات تهاجمی.",
+                "action_fa": "High risk of spontaneous life-threatening hemorrhage. Withhold all anticoagulants and antiplatelet agents. Avoid invasive procedures and intramuscular injections.",
             })
 
         # 1.9 Advanced Renal Failure (eGFR < 30)
@@ -1451,9 +1451,9 @@ class AnalysisService:
                 "timeframe": "< 2 hours",
                 "category": "RENAL_EMERGENCY",
                 "title": f"Advanced Renal Failure (eGFR = {egfr_val:.1f} mL/min/1.73m2)",
-                "title_fa": f"نارسایی پیشرفته کلیوی (eGFR = {egfr_val:.1f} mL/min/1.73m²)",
+                "title_fa": f"Advanced Renal Failure (eGFR = {egfr_val:.1f} mL/min/1.73m2)",
                 "action_en": "Immediate discontinuation or strict renal dose reduction of metformin, NSAIDs, and avoidance of iodinated radiocontrast. Urgent nephrology consultation.",
-                "action_fa": "قطع فوری یا بازبینی اکید دوز متفورمین، داروهای ضدالتهاب غیراستروئیدی (NSAIDs) و پرهیز از کنتراست یددار؛ مشاوره فوری نفرولوژی.",
+                "action_fa": "Immediate discontinuation or strict renal dose reduction of metformin, NSAIDs, and avoidance of iodinated radiocontrast. Urgent nephrology consultation.",
             })
 
         # 1.10 Additional Critical Alerts from guideline engine
@@ -1491,7 +1491,7 @@ class AnalysisService:
                     "title": str(msg)[:80],
                     "title_fa": str(msg)[:80],
                     "action_en": "Immediate clinical evaluation and physician review.",
-                    "action_fa": "بررسی فوری بالینی توسط پزشک معالج.",
+                    "action_fa": "Immediate clinical evaluation and physician review.",
                 })
 
         # -------------------------------------------------------------------
@@ -1516,9 +1516,9 @@ class AnalysisService:
                     "timeframe": "< 1 hour",
                     "category": "CARDIOLOGY_EMERGENCY",
                     "title": f"High Acute Coronary Syndrome Risk: HEART Score = {score if score is not None else 'High'}",
-                    "title_fa": f"خطر بالای سندروم حاد کرونری: امتیاز HEART = {score if score is not None else 'بالا'}",
+                    "title_fa": f"High Acute Coronary Syndrome Risk: HEART Score = {score if score is not None else 'High'}",
                     "action_en": "Immediate 12-lead ECG, continuous telemetry, serial troponins at 0/1/3 hours, and emergent cardiology evaluation for invasive angiography.",
-                    "action_fa": "نوار قلب فوری، مانیتورینگ قلبی، پایش سریال تروپونین و ارزیابی فوری مداخله‌ای قلب و عروق.",
+                    "action_fa": "Immediate 12-lead ECG, continuous telemetry, serial troponins at 0/1/3 hours, and emergent cardiology evaluation for invasive angiography.",
                 })
 
             # High TIMI Risk Score >= 5
@@ -1530,9 +1530,9 @@ class AnalysisService:
                     "timeframe": "< 2 hours",
                     "category": "CARDIOLOGY_EMERGENCY",
                     "title": f"High-Risk UA/NSTEMI: TIMI Score = {score}",
-                    "title_fa": f"ریسک بالای آنژین ناپایدار و NSTEMI: امتیاز TIMI = {score}",
+                    "title_fa": f"High-Risk UA/NSTEMI: TIMI Score = {score}",
                     "action_en": "Urgent invasive coronary strategy indicated (cardiac catheterization < 24h). Dual antiplatelet therapy and parenteral anticoagulation.",
-                    "action_fa": "اندیکاسیون آنژیوگرافی و استراتژی تهاجمی فوری عروق کرونر، درمان دوگانه ضدپلاکت و ضدانعقاد وریدی.",
+                    "action_fa": "Urgent invasive coronary strategy indicated (cardiac catheterization < 24h). Dual antiplatelet therapy and parenteral anticoagulation.",
                 })
 
             # High-Risk Pulmonary Embolism (sPESI >= 1 or Bova High)
@@ -1544,9 +1544,9 @@ class AnalysisService:
                     "timeframe": "< 1 hour",
                     "category": "PULMONARY_EMERGENCY",
                     "title": f"High-Risk Pulmonary Embolism Alert ({name})",
-                    "title_fa": f"هشدار ریسک بالای آمبولی حاد ریه ({name})",
+                    "title_fa": f"High-Risk Pulmonary Embolism Alert ({name})",
                     "action_en": "Elevated 30-day mortality risk. Immediate echocardiography to assess right ventricular strain, CT pulmonary angiogram (CTPA), and therapeutic anticoagulation.",
-                    "action_fa": "احتمال بالای ناپایداری همودینامیک و مورتالیتی؛ اکوکاردیوگرافی فوری جهت بررسی عملکرد بطن راست، سی‌تی آنژیوگرافی ریه و شروع ضدانعقاد درمانی.",
+                    "action_fa": "Elevated 30-day mortality risk. Immediate echocardiography to assess right ventricular strain, CT pulmonary angiogram (CTPA), and therapeutic anticoagulation.",
                 })
 
             # Critical Liver Failure / High MELD >= 25 or King's College Criteria
@@ -1558,9 +1558,9 @@ class AnalysisService:
                     "timeframe": "< 2 hours",
                     "category": "HEPATIC_EMERGENCY",
                     "title": f"Critical End-Stage Liver Disease / Acute Liver Failure (MELD = {score if score is not None else 'High'})",
-                    "title_fa": f"نارسایی حاد یا مرحله نهایی کبد با مرگ‌ومیر بالا (MELD = {score if score is not None else 'بحرانی'})",
+                    "title_fa": f"Critical End-Stage Liver Disease / Acute Liver Failure (MELD = {score if score is not None else 'High'})",
                     "action_en": "Estimated 90-day mortality exceeds 50%. Urgent hepatology/liver transplant center contact, coagulopathy surveillance, and renal protection.",
-                    "action_fa": "مرگ‌ومیر ۹۰ روزه بالای ۵۰ درصد؛ ارجاع اورژانسی به مرکز پیوند کبد، پایش انسفالوپاتی و کوآگولوپاتی و محافظت عملکرد کلیه.",
+                    "action_fa": "Estimated 90-day mortality exceeds 50%. Urgent hepatology/liver transplant center contact, coagulopathy surveillance, and renal protection.",
                 })
 
             # Overt DIC (ISTH Score >= 5)
@@ -1572,9 +1572,9 @@ class AnalysisService:
                     "timeframe": "< 1 hour",
                     "category": "HEMATOLOGY_EMERGENCY",
                     "title": f"Overt Disseminated Intravascular Coagulation (ISTH DIC Score = {score})",
-                    "title_fa": f"انعقاد داخل عروقی منتشر حاد (ISTH DIC = {score})",
+                    "title_fa": f"Overt Disseminated Intravascular Coagulation (ISTH DIC Score = {score})",
                     "action_en": "High risk of concurrent microvascular thrombosis and life-threatening bleeding. Urgent identification and treatment of underlying cause (sepsis, trauma, obstetric). Fibrinogen/cryoprecipitate repletion as clinically indicated.",
-                    "action_fa": "خطر بالای ترومبوز و خونریزی همزمان؛ جستجو و درمان علت زمینه‌ای (سپسیس، تروما)، پایش فیبرینوژن و تزریق کرایوپریسیپیتات در صورت اندیکاسیون.",
+                    "action_fa": "High risk of concurrent microvascular thrombosis and life-threatening bleeding. Urgent identification and treatment of underlying cause (sepsis, trauma, obstetric). Fibrinogen/cryoprecipitate repletion as clinically indicated.",
                 })
 
             # Critical Acuity / Imminent Collapse (NEWS2 >= 7, APACHE II >= 25, SAPS II >= 50)
@@ -1586,9 +1586,9 @@ class AnalysisService:
                     "timeframe": "< 30 minutes",
                     "category": "CRITICAL_CARE_ACUITY",
                     "title": f"Critical Physiological Deterioration ({name} = {score})",
-                    "title_fa": f"افت بحرانی وضعیت فیزیولوژیک بیمار ({name} = {score})",
+                    "title_fa": f"Critical Physiological Deterioration ({name} = {score})",
                     "action_en": "Imminent clinical collapse. Immediate Medical Emergency Team (MET) / Intensive Care Unit (ICU) consultation and advanced airway/hemodynamic resuscitation.",
-                    "action_fa": "خطر قریب‌الوقوع ایست قلبی-تنفسی؛ فراخوانی فوری تیم واکنش سریع اورژانس (MET) یا انتقال به بخش مراقبت‌های ویژه (ICU).",
+                    "action_fa": "Imminent clinical collapse. Immediate Medical Emergency Team (MET) / Intensive Care Unit (ICU) consultation and advanced airway/hemodynamic resuscitation.",
                 })
 
         # -------------------------------------------------------------------
@@ -1605,9 +1605,9 @@ class AnalysisService:
                 "timeframe": "24-48 hours",
                 "category": "PREANALYTICAL_ADVISORY",
                 "title": "Pseudohyponatremia Advisory: Non-Aqueous Phase Displacement",
-                "title_fa": "هشدار هیپوناترمی کاذب ناشی از جابه‌جایی فاز غیرآبی",
+                "title_fa": "Pseudohyponatremia Advisory: Non-Aqueous Phase Displacement",
                 "action_en": f"Measured sodium is artifactually decreased by hypertriglyceridemia/hyperproteinemia. True plasma water sodium is estimated at ~{corr_val} mmol/L. Direct-ISE blood gas measurement recommended; fluid restriction or hypertonic saline is contraindicated.",
-                "action_fa": f"سدیم اندازه‌گیری‌شده به دلیل تری‌گلیسیرید یا پروتئین بالا کاذب است؛ سدیم حقیقی فاز آب ~{corr_val} mmol/L تخمین زده می‌شود. تجویز سرم هایپرتونیک کنترااندیکه است و اندازه‌گیری با گازهای خونی (direct-ISE) توصیه می‌شود.",
+                "action_fa": f"Measured sodium is artifactually decreased by hypertriglyceridemia/hyperproteinemia. True plasma water sodium is estimated at ~{corr_val} mmol/L. Direct-ISE blood gas measurement recommended; fluid restriction or hypertonic saline is contraindicated.",
             })
 
         # 2.2 Pediatric eGFR Height Withheld
@@ -1620,172 +1620,172 @@ class AnalysisService:
                 "timeframe": "24 hours",
                 "category": "PEDIATRIC_MONITORING",
                 "title": "Pediatric eGFR Withheld: Measured Height Required (KDIGO 2024)",
-                "title_fa": "توقف محاسبه eGFR اطفال: لزوم ثبت قد بیمار (گایدلاین KDIGO 2024)",
+                "title_fa": "Pediatric eGFR Withheld: Measured Height Required (KDIGO 2024)",
                 "action_en": "Measure patient height (cm) to calculate Bedside Schwartz eGFR. Estimation without height is withheld to avoid false-normal misclassification in pediatric CKD.",
-                "action_fa": "جهت محاسبه دقیق eGFR اطفال ثبت قد بیمار به سانتی‌متر الزامی است تا از تشخیص کاذب سلامت کلیه جلوگیری شود.",
+                "action_fa": "Measure patient height (cm) to calculate Bedside Schwartz eGFR. Estimation without height is withheld to avoid false-normal misclassification in pediatric CKD.",
             })
 
         # 2.3 Top Differential Diagnoses with Gold Standard Next Tests
         GOLD_STANDARD_NEXT_TESTS = {
             # 1. Endocrine & Metabolic (20)
-            "diabetes": ("Repeat fasting plasma glucose, 2h 75g OGTT, and confirmatory HbA1c panel per ADA guidelines.", "سنجش مجدد قند خون ناشتا، تست تحمل گلوکز خوراکی (OGTT دو ساعته با ۷۵ گرم گلوکز) و پنل تاییدی HbA1c طبق گایدلاین ADA."),
-            "diabetic": ("Repeat fasting plasma glucose, 2h 75g OGTT, and confirmatory HbA1c panel per ADA guidelines.", "سنجش مجدد قند خون ناشتا، آزمون OGTT دو ساعته و پنل تاییدی HbA1c طبق گایدلاین ADA."),
-            "prediabetes": ("Standard 75g Oral Glucose Tolerance Test (OGTT), fasting lipid profile, and structured lifestyle intervention.", "آزمون تحمل گلوکز خوراکی (OGTT)، پروفایل لیپید ناشتا و برنامه مداخله سبک زندگی."),
-            "hypoglycemia": ("Whipple's triad workup: plasma glucose, serum insulin, C-peptide, beta-hydroxybutyrate, and oral hypoglycemic agent screen during spontaneous hypoglycemia.", "بررسی تریاد ویپل: قند پلاسما، انسولین سرم، C-پپتید، بتا-هیدروکسی‌بوتیرات و غربالگری داروهای خوراکی کاهنده قند در زمان افت قند."),
-            "ketoacidosis": ("Arterial/venous blood gas (ABG/VBG), serum beta-hydroxybutyrate, serum osmolality, anion gap calculation, and urine ketones.", "گازهای خونی شریانی/وریدی، بتا-هیدروکسی‌بوتیرات سرم، اسمولالیته، شکاف آنیونی و کتون ادرار."),
-            "hypothyroidism": ("Free T4, Free T3, and Thyroid Peroxidase Antibodies (Anti-TPO) to confirm primary autoimmune etiology.", "سنجش Free T4، Free T3 و آنتی‌بادی Anti-TPO جهت بررسی و تایید اتیولوژی خودایمنی."),
-            "hyperthyroidism": ("Free T4, Free T3, TSH-receptor antibodies (TRAb/TSI), and radioactive iodine uptake (RAIU) scan.", "سنجش Free T4، Free T3، آنتی‌بادی گیرنده TSH (TRAb/TSI) و اسکن جذب ید رادیواکتیو تیروئید."),
-            "graves": ("TSH-receptor antibodies (TRAb/TSI), thyroid duplex ultrasound, and ophthalmologic assessment.", "سنجش آنتی‌بادی تحریک‌کننده تیروئید (TSI/TRAb)، سونوگرافی داپلر تیروئید و ارزیابی افتالمولوژی."),
-            "hashimoto": ("Thyroid Peroxidase Antibodies (Anti-TPO), Anti-Thyroglobulin (Anti-Tg), and high-resolution thyroid ultrasound.", "سنجش آنتی‌بادی‌های Anti-TPO و Anti-Tg و سونوگرافی دقیق تیروئید."),
-            "thyroid": ("Free T4, Free T3, and Thyroid Peroxidase Antibodies (Anti-TPO).", "سنجش Free T4، Free T3 و آنتی‌بادی Anti-TPO."),
-            "hyperparathyroidism": ("Intact PTH (iPTH), 25-OH Vitamin D, 24-hour urine calcium-to-creatinine clearance ratio (to rule out FHH), and sestamibi parathyroid scan.", "سنجش iPTH، ویتامین D، نسبت کلیرانس کلسیم به کراتینین ادرار ۲۴ ساعته (جهت رد FHH) و اسکن پاراتیروئید سستامیبی."),
-            "hypercalcemia": ("Intact PTH (iPTH), PTHrP (PTH-related peptide for malignancy), 25-OH and 1,25-(OH)2 Vitamin D, and serum protein electrophoresis.", "سنجش iPTH، پروتئین مرتبط با PTH (PTHrP برای بدخیمی)، فرم‌های فعال ویتامین D و الکتروفورز پروتئین‌های سرم."),
-            "hypoparathyroidism": ("Intact PTH (iPTH), serum magnesium, phosphorus, and 25-OH Vitamin D.", "سنجش هورمون iPTH، منیزیم، فسفر سرم و ۲۵-هیدروکسی ویتامین D."),
-            "hypocalcemia": ("Intact PTH (iPTH), serum magnesium, ionized calcium, and 25-OH Vitamin D.", "سنجش کلسیم یونیزه، هورمون iPTH، منیزیم سرم و ویتامین D."),
-            "cushing": ("Late-night salivary cortisol (x2), 24-hour urinary free cortisol (UFC), or 1mg overnight dexamethasone suppression test (ODST).", "سنجش کورتیزول بزاقی آخر شب (۲ نوبت)، کورتیزول آزاد ادرار ۲۴ ساعته (UFC) یا تست مهار دگزامتازون شبانه (ODST ۱ میلی‌گرم)."),
-            "addison": ("Morning 8 AM cortisol and ACTH, followed by high-dose (250 mcg) Cosyntropin (ACTH) stimulation test.", "سنجش کورتیزول و ACTH ساعت ۸ صبح همراه با آزمون تحریک سریع با کوسینتروپین (ACTH Stimulation Test)."),
-            "adrenal": ("Morning 8 AM cortisol, plasma ACTH, and 250 mcg Cosyntropin stimulation test with renin/aldosterone profiling.", "کورتیزول و ACTH ناشتا ساعت ۸ صبح، تست تحریک کوسینتروپین و ارزیابی رنین و آلدوسترون."),
-            "pheochromocytoma": ("Fractionated plasma free metanephrines or 24-hour urinary fractionated metanephrines and catecholamines.", "سنجش متانفرین‌های آزاد پلاسما یا متانفرین‌ها و کاتکول‌آمین‌های تجزیه‌شده در ادرار ۲۴ ساعته."),
-            "hyperaldosteronism": ("Morning plasma aldosterone concentration (PAC) to plasma renin activity (PRA) ratio (ARR > 20-30) under standardized conditions.", "نسبت غلظت آلدوسترون به فعالیت رنین پلاسما (PAC/PRA ratio) در شرایط استاندارد با قطع داروهای مخدوش‌کننده."),
-            "conn": ("Plasma aldosterone to renin ratio (ARR), oral sodium loading confirmatory test, and adrenal CT imaging.", "نسبت آلدوسترون به رنین پلاسما، آزمون تاییدی بارگذاری خوراکی سدیم و سی‌تی اسکن غدد فوق کلیوی."),
-            "prolactin": ("Serum prolactin (with serial dilutions to rule out hook effect), macroprolactin screening, and pituitary MRI with gadolinium.", "سنجش پرولاکتین سرم (با رقت‌های سریالی جهت رد Hook effect)، غربالگری ماکروپرولاکتین و MRI هیپوفیز با تزریق گادولینیوم."),
-            "pcos": ("Total and free testosterone, DHEA-S, LH/FSH ratio, 17-OH progesterone (to rule out late-onset CAH), and pelvic ultrasound.", "تستوسترون تام و آزاد، DHEA-S، نسبت LH/FSH، ۱۷-هیدروکسی پروژسترون (جهت رد CAH دیررس) و سونوگرافی لگن."),
-            "hypogonadism": ("Morning 8 AM fasting total and free testosterone (repeated on two separate days), LH, FSH, and serum prolactin.", "سنجش تستوسترون تام و آزاد ناشتا ساعت ۸ صبح (تکرار در ۲ روز مجزا)، LH، FSH و پرولاکتین سرم."),
+            "diabetes": ("Repeat fasting plasma glucose, 2h 75g OGTT, and confirmatory HbA1c panel per ADA guidelines.", "Repeat fasting plasma glucose, 2h 75g OGTT, and confirmatory HbA1c panel per ADA guidelines."),
+            "diabetic": ("Repeat fasting plasma glucose, 2h 75g OGTT, and confirmatory HbA1c panel per ADA guidelines.", "Repeat fasting plasma glucose, 2h 75g OGTT, and confirmatory HbA1c panel per ADA guidelines."),
+            "prediabetes": ("Standard 75g Oral Glucose Tolerance Test (OGTT), fasting lipid profile, and structured lifestyle intervention.", "Standard 75g Oral Glucose Tolerance Test (OGTT), fasting lipid profile, and structured lifestyle intervention."),
+            "hypoglycemia": ("Whipple's triad workup: plasma glucose, serum insulin, C-peptide, beta-hydroxybutyrate, and oral hypoglycemic agent screen during spontaneous hypoglycemia.", "Whipple's triad workup: plasma glucose, serum insulin, C-peptide, beta-hydroxybutyrate, and oral hypoglycemic agent screen during spontaneous hypoglycemia."),
+            "ketoacidosis": ("Arterial/venous blood gas (ABG/VBG), serum beta-hydroxybutyrate, serum osmolality, anion gap calculation, and urine ketones.", "Arterial/venous blood gas (ABG/VBG), serum beta-hydroxybutyrate, serum osmolality, anion gap calculation, and urine ketones."),
+            "hypothyroidism": ("Free T4, Free T3, and Thyroid Peroxidase Antibodies (Anti-TPO) to confirm primary autoimmune etiology.", "Free T4, Free T3, and Thyroid Peroxidase Antibodies (Anti-TPO) to confirm primary autoimmune etiology."),
+            "hyperthyroidism": ("Free T4, Free T3, TSH-receptor antibodies (TRAb/TSI), and radioactive iodine uptake (RAIU) scan.", "Free T4, Free T3, TSH-receptor antibodies (TRAb/TSI), and radioactive iodine uptake (RAIU) scan."),
+            "graves": ("TSH-receptor antibodies (TRAb/TSI), thyroid duplex ultrasound, and ophthalmologic assessment.", "TSH-receptor antibodies (TRAb/TSI), thyroid duplex ultrasound, and ophthalmologic assessment."),
+            "hashimoto": ("Thyroid Peroxidase Antibodies (Anti-TPO), Anti-Thyroglobulin (Anti-Tg), and high-resolution thyroid ultrasound.", "Thyroid Peroxidase Antibodies (Anti-TPO), Anti-Thyroglobulin (Anti-Tg), and high-resolution thyroid ultrasound."),
+            "thyroid": ("Free T4, Free T3, and Thyroid Peroxidase Antibodies (Anti-TPO).", "Free T4, Free T3, and Thyroid Peroxidase Antibodies (Anti-TPO)."),
+            "hyperparathyroidism": ("Intact PTH (iPTH), 25-OH Vitamin D, 24-hour urine calcium-to-creatinine clearance ratio (to rule out FHH), and sestamibi parathyroid scan.", "Intact PTH (iPTH), 25-OH Vitamin D, 24-hour urine calcium-to-creatinine clearance ratio (to rule out FHH), and sestamibi parathyroid scan."),
+            "hypercalcemia": ("Intact PTH (iPTH), PTHrP (PTH-related peptide for malignancy), 25-OH and 1,25-(OH)2 Vitamin D, and serum protein electrophoresis.", "Intact PTH (iPTH), PTHrP (PTH-related peptide for malignancy), 25-OH and 1,25-(OH)2 Vitamin D, and serum protein electrophoresis."),
+            "hypoparathyroidism": ("Intact PTH (iPTH), serum magnesium, phosphorus, and 25-OH Vitamin D.", "Intact PTH (iPTH), serum magnesium, phosphorus, and 25-OH Vitamin D."),
+            "hypocalcemia": ("Intact PTH (iPTH), serum magnesium, ionized calcium, and 25-OH Vitamin D.", "Intact PTH (iPTH), serum magnesium, ionized calcium, and 25-OH Vitamin D."),
+            "cushing": ("Late-night salivary cortisol (x2), 24-hour urinary free cortisol (UFC), or 1mg overnight dexamethasone suppression test (ODST).", "Late-night salivary cortisol (x2), 24-hour urinary free cortisol (UFC), or 1mg overnight dexamethasone suppression test (ODST)."),
+            "addison": ("Morning 8 AM cortisol and ACTH, followed by high-dose (250 mcg) Cosyntropin (ACTH) stimulation test.", "Morning 8 AM cortisol and ACTH, followed by high-dose (250 mcg) Cosyntropin (ACTH) stimulation test."),
+            "adrenal": ("Morning 8 AM cortisol, plasma ACTH, and 250 mcg Cosyntropin stimulation test with renin/aldosterone profiling.", "Morning 8 AM cortisol, plasma ACTH, and 250 mcg Cosyntropin stimulation test with renin/aldosterone profiling."),
+            "pheochromocytoma": ("Fractionated plasma free metanephrines or 24-hour urinary fractionated metanephrines and catecholamines.", "Fractionated plasma free metanephrines or 24-hour urinary fractionated metanephrines and catecholamines."),
+            "hyperaldosteronism": ("Morning plasma aldosterone concentration (PAC) to plasma renin activity (PRA) ratio (ARR > 20-30) under standardized conditions.", "Morning plasma aldosterone concentration (PAC) to plasma renin activity (PRA) ratio (ARR > 20-30) under standardized conditions."),
+            "conn": ("Plasma aldosterone to renin ratio (ARR), oral sodium loading confirmatory test, and adrenal CT imaging.", "Plasma aldosterone to renin ratio (ARR), oral sodium loading confirmatory test, and adrenal CT imaging."),
+            "prolactin": ("Serum prolactin (with serial dilutions to rule out hook effect), macroprolactin screening, and pituitary MRI with gadolinium.", "Serum prolactin (with serial dilutions to rule out hook effect), macroprolactin screening, and pituitary MRI with gadolinium."),
+            "pcos": ("Total and free testosterone, DHEA-S, LH/FSH ratio, 17-OH progesterone (to rule out late-onset CAH), and pelvic ultrasound.", "Total and free testosterone, DHEA-S, LH/FSH ratio, 17-OH progesterone (to rule out late-onset CAH), and pelvic ultrasound."),
+            "hypogonadism": ("Morning 8 AM fasting total and free testosterone (repeated on two separate days), LH, FSH, and serum prolactin.", "Morning 8 AM fasting total and free testosterone (repeated on two separate days), LH, FSH, and serum prolactin."),
 
             # 2. Hematology & Coagulation (25)
-            "anemia": ("Complete blood count (CBC), reticulocyte count, peripheral blood smear, and iron/B12/folate panel.", "شمارش کامل سلول‌های خون (CBC)، شمارش رتیکولوسیت، لام خون محیطی و پنل بررسی آهن، B12 و فولات."), "iron_deficiency": ("Serum Ferritin, Transferrin Saturation (TSAT), Total Iron-Binding Capacity (TIBC), and search for occult GI blood loss.", "سنجش فریتین سرم، درصد اشباع ترانسفرین (TSAT)، ظرفیت تام اتصال به آهن (TIBC) و بررسی منشأ خونریزی مخفی گوارشی."),
-            "anemia_of_chronic": ("Serum Ferritin, Soluble Transferrin Receptor (sTfR), sTfR-Ferritin index, and high-sensitivity CRP.", "سنجش فریتین سرم، گیرنده محلول ترانسفرین (sTfR)، شاخص sTfR-فریتین و پروتئین واکنشی C فوق حساس (hs-CRP)."),
-            "thalassemia": ("Hemoglobin Electrophoresis (HPLC / Capillary) for HbA2 and HbF quantitation, CBC indices (Mentzer index < 13), and globin gene testing.", "الکتروفورز هموگلوبین به روش HPLC/کاپیلاری جهت سنجش HbA2 و HbF، شاخص منتزر (کمتر از ۱۳) و بررسی ژنتیکی ژن‌های گلوبین."),
-            "b12": ("Serum Vitamin B12, serum Methylmalonic Acid (MMA), total Homocysteine, and Anti-Intrinsic Factor antibodies.", "سنجش ویتامین B12، متیل‌مالونیک اسید (MMA)، هوموسیستئین تام و آنتی‌بادی ضد فاکتور داخلی معده (Anti-IF)."),
-            "megaloblastic": ("Serum Vitamin B12, red blood cell (RBC) folate, Methylmalonic Acid (MMA), peripheral blood smear, and reticulocyte count.", "سنجش ویتامین B12، فولات داخل گلبول قرمز (RBC Folate)، متیل‌مالونیک اسید، لام خون محیطی و شمارش رتیکولوسیت."),
-            "folate": ("Red Blood Cell (RBC) folate, serum folate, homocysteine, and peripheral blood smear for hypersegmented neutrophils.", "سنجش فولات داخل اریتروسیت (RBC Folate)، فولات سرم، هوموسیستئین و بررسی نوتروفیل‌های هایپرسگمانته در لام محیطی."),
-            "hemolytic": ("Reticulocyte count, Haptoglobin, indirect Bilirubin, Lactate Dehydrogenase (LDH), and Direct Antiglobulin (Coombs) Test (DAT).", "شمارش رتیکولوسیت، هاپتوگلوبین، بیلی‌روبین غیرمستقیم، آنزیم LDH و تست کومبس مستقیم (DAT)."),
-            "autoimmune_hemolytic": ("Direct Antiglobulin Test (DAT/Coombs) with polyspecific and monospecific (anti-IgG, anti-C3d) reagents, and cold agglutinin titer.", "تست کومبس مستقیم (DAT) با معرف‌های منواسپسیفیک (Anti-IgG و Anti-C3d) و تیتر آگلوتینین سرد."),
-            "g6pd": ("Quantitative G6PD enzyme activity assay (performed after acute hemolytic crisis resolution) and reticulocyte analysis.", "سنجش کمی فعالیت آنزیم G6PD (انجام پس از فروکش بحران حاد همولیتیک) و بررسی لام خون محیطی برای Heinz bodies."),
-            "spherocytosis": ("Osmotic fragility test, Eosin-5-maleimide (EMA) binding test by flow cytometry, and acidified glycerol lysis test.", "تست اتصال ائوزین-۵-مالئیمید (EMA) با فلوسیتومتری، شکنندگی اسمزی (Osmotic Fragility) و لام خون محیطی."),
-            "sickle": ("Hemoglobin electrophoresis / HPLC (quantifying HbS, HbA, HbF), sickling test, and genetic counseling.", "الکتروفورز هموگلوبین به روش HPLC (سنجش HbS و HbF)، تست داسی‌شدن و مشاوره ژنتیک."),
-            "aplastic": ("Bone marrow aspiration and core biopsy with cytogenetics, paroxysmal nocturnal hemoglobinuria (PNH) clone screen, and viral serologies.", "آسپیراسیون و بیوپسی مغز استخوان با سایتوژنتیک، غربالگری کلون PNH (فلوسیتومتری FLAER) و سرولوژی‌های ویروسی."),
-            "myelodysplastic": ("Bone marrow biopsy with iron staining (ring sideroblasts), cytogenetics (karyotyping/FISH for del 5q, -7), and next-generation sequencing.", "بیوپسی مغز استخوان با رنگ‌آمیزی اختصاصی آهن (سیدروبلاست‌های حلقوی)، کاریوتایپ/FISH و توالی‌یابی ژنی NGS."),
-            "myeloma": ("Serum and urine protein electrophoresis with immunofixation (SPEP/UPEP), serum free light chain (sFLC) ratio, and bone marrow biopsy.", "الکتروفورز و ایمونوفیکساسیون پروتئین سرم و ادرار (SPEP/UPEP)، نسبت زنجیره‌های سبک آزاد (sFLC) و بیوپسی مغز استخوان."),
-            "mgus": ("Serum protein electrophoresis (SPEP), serum free light chain ratio, CBC, creatinine, calcium, and periodic surveillance.", "الکتروفورز پروتئین سرم (SPEP)، نسبت زنجیره‌های سبک آزاد سرم، سنجش کلسیم و کراتینین و پایش دوره‌ای سالیانه."),
-            "polycythemia": ("JAK2 V617F mutation testing (exon 14 and exon 12), serum erythropoietin (EPO) level, and bone marrow morphology.", "تست جهش ژن JAK2 V617F (اگزون ۱۴ و ۱۲)، سنجش سطح اریتروپویتین سرم (EPO) و بررسی هیستولوژی مغز استخوان."),
-            "thrombocythemia": ("Driver mutation panel (JAK2 V617F, CALR, MPL), bone marrow core biopsy, and exclusion of reactive thrombocytosis.", "پنل جهش‌های محرک میلوپرولیفراتیو (JAK2, CALR, MPL)، بیوپسی مغز استخوان و رد قطعی ترومبوسیتوز واکنشی."),
-            "myelofibrosis": ("Bone marrow biopsy showing reticulin/collagen fibrosis, JAK2/CALR/MPL mutation screen, and abdominal ultrasound for splenomegaly.", "بیوپسی مغز استخوان جهت ارزیابی فیبروز رتیکولینی/کلاژنی، جهش‌های JAK2/CALR و سونوگرافی شکم برای اسپلنومگالی."),
-            "leukemia": ("Peripheral blood flow cytometry, bone marrow aspiration/biopsy, and molecular cytogenetics (FISH for BCR-ABL1, PML-RARA).", "فلوسیتومتری خون محیطی، بیوپسی مغز استخوان و آنالیز سیتوژنتیک مولکولی (FISH برای ژن‌های انکوژنیک مانند BCR-ABL1)."),
-            "itp": ("Diagnosis of exclusion: complete peripheral blood smear, Helicobacter pylori testing, HIV/HCV serologies, and bone marrow biopsy if atypical.", "تشخیص رد تداخلات: لام خون محیطی، سرولوژی HIV و هپاتیت C، تست هلیکوباکتر پیلوری و بیوپسی مغز استخوان در صورت لزوم."),
-            "ttp": ("Immediate plasma ADAMTS13 activity assay, peripheral blood smear for schistocytes (helmet cells > 1%), and direct Coombs test.", "سنجش فوری فعالیت آنزیم ADAMTS13، بررسی لام محیطی جهت شیستوسیت‌ها (بالای ۱٪) و انجام تست کومبس مستقیم."),
-            "dic": ("ISTH DIC panel: serial PT/INR, aPTT, Fibrinogen, D-Dimer, and Platelet count every 6-8 hours with aggressive treatment of trigger.", "پنل پایش سریال انعقاد ISTH: زمان‌های PT و PTT، سطح فیبرینوژن، دی-دایمر و پلاکت هر ۶ تا ۸ ساعت همراه با درمان عامل زمینه‌ای."),
-            "hemophilia": ("Specific factor VIII and factor IX coagulant activity assays, mixing studies (1:1 with normal plasma), and inhibitor screen.", "سنجش اختصاصی فاکتور ۸ و فاکتور ۹ انعقادی، آزمون اختلاط (Mixing study) و غربالگری مهارکننده‌های فاکتور."),
-            "willebrand": ("von Willebrand factor (vWF) antigen, vWF ristocetin cofactor activity (vWF:RCo), and factor VIII coagulant activity.", "سنجش آنتی‌ژن فاکتور فون‌ویلبراند (vWF:Ag)، فعالیت ریستوستین کوفاکتور (vWF:RCo) و سطح فاکتور ۸ انعقادی."),
-            "antiphospholipid": ("Lupus anticoagulant (dRVVT and aPTT mix), Anti-Cardiolipin IgG/IgM, and Anti-Beta2-Glycoprotein-I IgG/IgM repeated after 12 weeks.", "تست آنتی‌کواگولان لوپوسی (dRVVT)، آنتی‌بادی‌های ضد کاردیولیپین و Anti-Beta2-Glycoprotein-I با تکرار پس از ۱۲ هفته."),
+            "anemia": ("Complete blood count (CBC), reticulocyte count, peripheral blood smear, and iron/B12/folate panel.", "Complete blood count (CBC), reticulocyte count, peripheral blood smear, and iron/B12/folate panel."), "iron_deficiency": ("Serum Ferritin, Transferrin Saturation (TSAT), Total Iron-Binding Capacity (TIBC), and search for occult GI blood loss.", "Serum Ferritin, Transferrin Saturation (TSAT), Total Iron-Binding Capacity (TIBC), and search for occult GI blood loss."),
+            "anemia_of_chronic": ("Serum Ferritin, Soluble Transferrin Receptor (sTfR), sTfR-Ferritin index, and high-sensitivity CRP.", "Serum Ferritin, Soluble Transferrin Receptor (sTfR), sTfR-Ferritin index, and high-sensitivity CRP."),
+            "thalassemia": ("Hemoglobin Electrophoresis (HPLC / Capillary) for HbA2 and HbF quantitation, CBC indices (Mentzer index < 13), and globin gene testing.", "Hemoglobin Electrophoresis (HPLC / Capillary) for HbA2 and HbF quantitation, CBC indices (Mentzer index < 13), and globin gene testing."),
+            "b12": ("Serum Vitamin B12, serum Methylmalonic Acid (MMA), total Homocysteine, and Anti-Intrinsic Factor antibodies.", "Serum Vitamin B12, serum Methylmalonic Acid (MMA), total Homocysteine, and Anti-Intrinsic Factor antibodies."),
+            "megaloblastic": ("Serum Vitamin B12, red blood cell (RBC) folate, Methylmalonic Acid (MMA), peripheral blood smear, and reticulocyte count.", "Serum Vitamin B12, red blood cell (RBC) folate, Methylmalonic Acid (MMA), peripheral blood smear, and reticulocyte count."),
+            "folate": ("Red Blood Cell (RBC) folate, serum folate, homocysteine, and peripheral blood smear for hypersegmented neutrophils.", "Red Blood Cell (RBC) folate, serum folate, homocysteine, and peripheral blood smear for hypersegmented neutrophils."),
+            "hemolytic": ("Reticulocyte count, Haptoglobin, indirect Bilirubin, Lactate Dehydrogenase (LDH), and Direct Antiglobulin (Coombs) Test (DAT).", "Reticulocyte count, Haptoglobin, indirect Bilirubin, Lactate Dehydrogenase (LDH), and Direct Antiglobulin (Coombs) Test (DAT)."),
+            "autoimmune_hemolytic": ("Direct Antiglobulin Test (DAT/Coombs) with polyspecific and monospecific (anti-IgG, anti-C3d) reagents, and cold agglutinin titer.", "Direct Antiglobulin Test (DAT/Coombs) with polyspecific and monospecific (anti-IgG, anti-C3d) reagents, and cold agglutinin titer."),
+            "g6pd": ("Quantitative G6PD enzyme activity assay (performed after acute hemolytic crisis resolution) and reticulocyte analysis.", "Quantitative G6PD enzyme activity assay (performed after acute hemolytic crisis resolution) and reticulocyte analysis."),
+            "spherocytosis": ("Osmotic fragility test, Eosin-5-maleimide (EMA) binding test by flow cytometry, and acidified glycerol lysis test.", "Osmotic fragility test, Eosin-5-maleimide (EMA) binding test by flow cytometry, and acidified glycerol lysis test."),
+            "sickle": ("Hemoglobin electrophoresis / HPLC (quantifying HbS, HbA, HbF), sickling test, and genetic counseling.", "Hemoglobin electrophoresis / HPLC (quantifying HbS, HbA, HbF), sickling test, and genetic counseling."),
+            "aplastic": ("Bone marrow aspiration and core biopsy with cytogenetics, paroxysmal nocturnal hemoglobinuria (PNH) clone screen, and viral serologies.", "Bone marrow aspiration and core biopsy with cytogenetics, paroxysmal nocturnal hemoglobinuria (PNH) clone screen, and viral serologies."),
+            "myelodysplastic": ("Bone marrow biopsy with iron staining (ring sideroblasts), cytogenetics (karyotyping/FISH for del 5q, -7), and next-generation sequencing.", "Bone marrow biopsy with iron staining (ring sideroblasts), cytogenetics (karyotyping/FISH for del 5q, -7), and next-generation sequencing."),
+            "myeloma": ("Serum and urine protein electrophoresis with immunofixation (SPEP/UPEP), serum free light chain (sFLC) ratio, and bone marrow biopsy.", "Serum and urine protein electrophoresis with immunofixation (SPEP/UPEP), serum free light chain (sFLC) ratio, and bone marrow biopsy."),
+            "mgus": ("Serum protein electrophoresis (SPEP), serum free light chain ratio, CBC, creatinine, calcium, and periodic surveillance.", "Serum protein electrophoresis (SPEP), serum free light chain ratio, CBC, creatinine, calcium, and periodic surveillance."),
+            "polycythemia": ("JAK2 V617F mutation testing (exon 14 and exon 12), serum erythropoietin (EPO) level, and bone marrow morphology.", "JAK2 V617F mutation testing (exon 14 and exon 12), serum erythropoietin (EPO) level, and bone marrow morphology."),
+            "thrombocythemia": ("Driver mutation panel (JAK2 V617F, CALR, MPL), bone marrow core biopsy, and exclusion of reactive thrombocytosis.", "Driver mutation panel (JAK2 V617F, CALR, MPL), bone marrow core biopsy, and exclusion of reactive thrombocytosis."),
+            "myelofibrosis": ("Bone marrow biopsy showing reticulin/collagen fibrosis, JAK2/CALR/MPL mutation screen, and abdominal ultrasound for splenomegaly.", "Bone marrow biopsy showing reticulin/collagen fibrosis, JAK2/CALR/MPL mutation screen, and abdominal ultrasound for splenomegaly."),
+            "leukemia": ("Peripheral blood flow cytometry, bone marrow aspiration/biopsy, and molecular cytogenetics (FISH for BCR-ABL1, PML-RARA).", "Peripheral blood flow cytometry, bone marrow aspiration/biopsy, and molecular cytogenetics (FISH for BCR-ABL1, PML-RARA)."),
+            "itp": ("Diagnosis of exclusion: complete peripheral blood smear, Helicobacter pylori testing, HIV/HCV serologies, and bone marrow biopsy if atypical.", "Diagnosis of exclusion: complete peripheral blood smear, Helicobacter pylori testing, HIV/HCV serologies, and bone marrow biopsy if atypical."),
+            "ttp": ("Immediate plasma ADAMTS13 activity assay, peripheral blood smear for schistocytes (helmet cells > 1%), and direct Coombs test.", "Immediate plasma ADAMTS13 activity assay, peripheral blood smear for schistocytes (helmet cells > 1%), and direct Coombs test."),
+            "dic": ("ISTH DIC panel: serial PT/INR, aPTT, Fibrinogen, D-Dimer, and Platelet count every 6-8 hours with aggressive treatment of trigger.", "ISTH DIC panel: serial PT/INR, aPTT, Fibrinogen, D-Dimer, and Platelet count every 6-8 hours with aggressive treatment of trigger."),
+            "hemophilia": ("Specific factor VIII and factor IX coagulant activity assays, mixing studies (1:1 with normal plasma), and inhibitor screen.", "Specific factor VIII and factor IX coagulant activity assays, mixing studies (1:1 with normal plasma), and inhibitor screen."),
+            "willebrand": ("von Willebrand factor (vWF) antigen, vWF ristocetin cofactor activity (vWF:RCo), and factor VIII coagulant activity.", "von Willebrand factor (vWF) antigen, vWF ristocetin cofactor activity (vWF:RCo), and factor VIII coagulant activity."),
+            "antiphospholipid": ("Lupus anticoagulant (dRVVT and aPTT mix), Anti-Cardiolipin IgG/IgM, and Anti-Beta2-Glycoprotein-I IgG/IgM repeated after 12 weeks.", "Lupus anticoagulant (dRVVT and aPTT mix), Anti-Cardiolipin IgG/IgM, and Anti-Beta2-Glycoprotein-I IgG/IgM repeated after 12 weeks."),
 
             # 3. Nephrology & Fluids (16)
-            "chronic_kidney": ("Spot Urine Albumin-to-Creatinine Ratio (UACR), serum cystatin C, and renal duplex ultrasound.", "نسبت آلبومین به کراتینین ادرار (UACR)، سیستاتین C سرم و سونوگرافی داپلر کلیه‌ها."),
-            "ckd": ("Spot Urine Albumin-to-Creatinine Ratio (UACR), serum cystatin C, and serial eGFR monitoring.", "سنجش نسبت آلبومین به کراتینین ادرار (UACR)، سیستاتین C سرم و پایش سریال فیلتراسیون گلومرولی."),
-            "nephropathy": ("Spot Urine Albumin-to-Creatinine Ratio (UACR) and renal ultrasound to evaluate cortical echogenicity.", "نسبت آلبومین به کراتینین ادرار (UACR) و سونوگرافی کلیه‌ها جهت بررسی اکوژنیسیته کورتکس."),
-            "acute_kidney": ("Urinary indices (Fractional Excretion of Sodium - FeNa, FeUrea), urine microscopy for casts, and urgent renal ultrasound.", "شاخص‌های ادراری (دفع کسر کسری سدیم FeNa و اوره FeUrea)، سدیمان و میکروسکوپی ادرار و سونوگرافی اورژانسی کلیه‌ها."),
-            "aki": ("Urinary indices (FeNa / FeUrea), urine sediment examination for muddy brown granular casts, and renal ultrasound.", "بررسی شاخص‌های FeNa و FeUrea، بررسی سدیمان ادرار جهت سیلندرهای گرانولار کدر (Muddy Brown) و سونوگرافی کلیه."),
-            "nephrotic": ("24-hour urine protein or spot urine protein-to-creatinine ratio (UPCR > 3.5 g/g), serum albumin, lipid panel, and renal biopsy.", "پروتئین ادرار ۲۴ ساعته (بالای ۳.۵ گرم) یا نسبت UPCR، آلبومین سرم، پروفایل لیپید و بیوپسی سوزنی کلیه."),
-            "glomerulonephritis": ("Urinalysis for dysmorphic RBCs and RBC casts, serum complements (C3, C4), ANA, ANCA, Anti-GBM, and renal biopsy.", "آنالیز ادرار جهت اریتروسیت‌های دیسمورفیک و سیلندر خونی، کمپلمان‌های C3 و C4، اتوآنتی‌بادی‌ها و بیوپسی کلیه."),
-            "iga_nephropathy": ("Renal biopsy with immunofluorescence showing mesangial IgA deposition, spot UACR, and hearing/systemic evaluation.", "بیوپسی کلیه با ایمونوفلورسانس نشان‌دهنده رسوب مزانژیال IgA، نسبت UACR ادرار و ارزیابی سیستمیک."),
-            "goodpasture": ("Circulating anti-glomerular basement membrane (Anti-GBM) antibodies by ELISA, chest CT (pulmonary hemorrhage), and urgent renal biopsy.", "سنجش آنتی‌بادی ضد غشای پایه گلومرولی (Anti-GBM) به روش الایزا، سی‌تی اسکن قفسه سینه و بیوپسی فوری کلیه."),
-            "anti_gbm": ("Circulating anti-glomerular basement membrane (Anti-GBM) antibodies, chest imaging, and urgent renal biopsy.", "آنتی‌بادی Anti-GBM سرم، بررسی خونریزی ریوی و بیوپسی کلیه."),
-            "anca": ("Anti-neutrophil cytoplasmic antibodies (PR3-ANCA / c-ANCA and MPO-ANCA / p-ANCA), urinalysis, and tissue biopsy.", "آنتی‌بادی‌های ضد سیتوپلاسم نوتروفیل (PR3/c-ANCA و MPO/p-ANCA)، آنالیز ادرار و بیوپسی بافت درگیر."),
-            "lupus_nephritis": ("Quantitation of proteinuria (UACR/UPCR), active urine sediment microscopy, Anti-dsDNA titers, C3/C4 levels, and renal biopsy.", "سنجش کمی پروتئینوری (UACR/UPCR)، سدیمان ادرار، تیتر Anti-dsDNA، سطوح C3/C4 و انجام بیوپسی کلیه جهت گریدینگ پاتولوژی."),
-            "nephrolithiasis": ("Non-contrast helical abdominal/pelvic CT scan (low-dose), urinalysis with crystal examination, and 24-hour stone risk urine profile.", "سی‌تی اسکن هلیکال بدون کنتراست شکم و لگن، بررسی کریستال‌های سدیمان ادرار و پنل متابولیک ادرار ۲۴ ساعته."),
-            "kidney_stone": ("Non-contrast abdominal CT scan, stone chemical analysis, serum calcium, uric acid, PTH, and 24-hour urine metabolic screen.", "سی‌تی اسکن بدون کنتراست، آنالیز شیمیایی سنگ، کلسیم، اسید اوریک، PTH و آنالیز متابولیک ادرار ۲۴ ساعته."),
-            "tubular_acidosis": ("Simultaneous blood gas, serum electrolytes (anion gap), urine anion gap (UAG = Na + K - Cl), urine pH, and urine fractional excretion of HCO3.", "گازهای خونی، الکترولیت‌های سرم، محاسبه شکاف آنیونی ادرار (UAG)، pH ادرار و کسر دفعی بی‌کربنات."),
-            "rta": ("Simultaneous blood gas, serum electrolytes (anion gap), urine anion gap (UAG), and urine pH.", "گازهای خونی، الکترولیت‌ها، شکاف آنیونی ادرار و بررسی اسیدیته ادرار جهت تشخیص نوع RTA."),
-            "polycystic": ("Renal ultrasound applying Ravine-Pei diagnostic criteria, genetic testing for PKD1/PKD2 mutations, and blood pressure monitoring.", "سونوگرافی کلیه‌ها بر اساس معیارهای تشخیصی Ravine-Pei، تست ژنتیک جهش ژن‌های PKD1/PKD2 و پایش دقیق فشار خون."),
-            "siadh": ("Simultaneous plasma osmolality (< 275 mOsm/kg), urine osmolality (> 100 mOsm/kg), urine sodium (> 30-40 mEq/L), and exclusion of thyroid/adrenal disease.", "سنجش همزمان اسمولالیته پلاسما و ادرار، سدیم ادرار بالای ۴۰ همراه با تایید بالینی یُوولمی و رد نارسایی تیروئید و آدرنال."),
-            "insipidus": ("Simultaneous plasma and urine osmolality, water deprivation test followed by desmopressin (DDAVP) response challenge, and pituitary MRI.", "تست محرومیت از آب با ارزیابی پاسخ به دسموپرسین (DDAVP) جهت افتراق نوع مرکزی از نفروژنیک و MRI هیپوفیز."),
+            "chronic_kidney": ("Spot Urine Albumin-to-Creatinine Ratio (UACR), serum cystatin C, and renal duplex ultrasound.", "Spot Urine Albumin-to-Creatinine Ratio (UACR), serum cystatin C, and renal duplex ultrasound."),
+            "ckd": ("Spot Urine Albumin-to-Creatinine Ratio (UACR), serum cystatin C, and serial eGFR monitoring.", "Spot Urine Albumin-to-Creatinine Ratio (UACR), serum cystatin C, and serial eGFR monitoring."),
+            "nephropathy": ("Spot Urine Albumin-to-Creatinine Ratio (UACR) and renal ultrasound to evaluate cortical echogenicity.", "Spot Urine Albumin-to-Creatinine Ratio (UACR) and renal ultrasound to evaluate cortical echogenicity."),
+            "acute_kidney": ("Urinary indices (Fractional Excretion of Sodium - FeNa, FeUrea), urine microscopy for casts, and urgent renal ultrasound.", "Urinary indices (Fractional Excretion of Sodium - FeNa, FeUrea), urine microscopy for casts, and urgent renal ultrasound."),
+            "aki": ("Urinary indices (FeNa / FeUrea), urine sediment examination for muddy brown granular casts, and renal ultrasound.", "Urinary indices (FeNa / FeUrea), urine sediment examination for muddy brown granular casts, and renal ultrasound."),
+            "nephrotic": ("24-hour urine protein or spot urine protein-to-creatinine ratio (UPCR > 3.5 g/g), serum albumin, lipid panel, and renal biopsy.", "24-hour urine protein or spot urine protein-to-creatinine ratio (UPCR > 3.5 g/g), serum albumin, lipid panel, and renal biopsy."),
+            "glomerulonephritis": ("Urinalysis for dysmorphic RBCs and RBC casts, serum complements (C3, C4), ANA, ANCA, Anti-GBM, and renal biopsy.", "Urinalysis for dysmorphic RBCs and RBC casts, serum complements (C3, C4), ANA, ANCA, Anti-GBM, and renal biopsy."),
+            "iga_nephropathy": ("Renal biopsy with immunofluorescence showing mesangial IgA deposition, spot UACR, and hearing/systemic evaluation.", "Renal biopsy with immunofluorescence showing mesangial IgA deposition, spot UACR, and hearing/systemic evaluation."),
+            "goodpasture": ("Circulating anti-glomerular basement membrane (Anti-GBM) antibodies by ELISA, chest CT (pulmonary hemorrhage), and urgent renal biopsy.", "Circulating anti-glomerular basement membrane (Anti-GBM) antibodies by ELISA, chest CT (pulmonary hemorrhage), and urgent renal biopsy."),
+            "anti_gbm": ("Circulating anti-glomerular basement membrane (Anti-GBM) antibodies, chest imaging, and urgent renal biopsy.", "Circulating anti-glomerular basement membrane (Anti-GBM) antibodies, chest imaging, and urgent renal biopsy."),
+            "anca": ("Anti-neutrophil cytoplasmic antibodies (PR3-ANCA / c-ANCA and MPO-ANCA / p-ANCA), urinalysis, and tissue biopsy.", "Anti-neutrophil cytoplasmic antibodies (PR3-ANCA / c-ANCA and MPO-ANCA / p-ANCA), urinalysis, and tissue biopsy."),
+            "lupus_nephritis": ("Quantitation of proteinuria (UACR/UPCR), active urine sediment microscopy, Anti-dsDNA titers, C3/C4 levels, and renal biopsy.", "Quantitation of proteinuria (UACR/UPCR), active urine sediment microscopy, Anti-dsDNA titers, C3/C4 levels, and renal biopsy."),
+            "nephrolithiasis": ("Non-contrast helical abdominal/pelvic CT scan (low-dose), urinalysis with crystal examination, and 24-hour stone risk urine profile.", "Non-contrast helical abdominal/pelvic CT scan (low-dose), urinalysis with crystal examination, and 24-hour stone risk urine profile."),
+            "kidney_stone": ("Non-contrast abdominal CT scan, stone chemical analysis, serum calcium, uric acid, PTH, and 24-hour urine metabolic screen.", "Non-contrast abdominal CT scan, stone chemical analysis, serum calcium, uric acid, PTH, and 24-hour urine metabolic screen."),
+            "tubular_acidosis": ("Simultaneous blood gas, serum electrolytes (anion gap), urine anion gap (UAG = Na + K - Cl), urine pH, and urine fractional excretion of HCO3.", "Simultaneous blood gas, serum electrolytes (anion gap), urine anion gap (UAG = Na + K - Cl), urine pH, and urine fractional excretion of HCO3."),
+            "rta": ("Simultaneous blood gas, serum electrolytes (anion gap), urine anion gap (UAG), and urine pH.", "Simultaneous blood gas, serum electrolytes (anion gap), urine anion gap (UAG), and urine pH."),
+            "polycystic": ("Renal ultrasound applying Ravine-Pei diagnostic criteria, genetic testing for PKD1/PKD2 mutations, and blood pressure monitoring.", "Renal ultrasound applying Ravine-Pei diagnostic criteria, genetic testing for PKD1/PKD2 mutations, and blood pressure monitoring."),
+            "siadh": ("Simultaneous plasma osmolality (< 275 mOsm/kg), urine osmolality (> 100 mOsm/kg), urine sodium (> 30-40 mEq/L), and exclusion of thyroid/adrenal disease.", "Simultaneous plasma osmolality (< 275 mOsm/kg), urine osmolality (> 100 mOsm/kg), urine sodium (> 30-40 mEq/L), and exclusion of thyroid/adrenal disease."),
+            "insipidus": ("Simultaneous plasma and urine osmolality, water deprivation test followed by desmopressin (DDAVP) response challenge, and pituitary MRI.", "Simultaneous plasma and urine osmolality, water deprivation test followed by desmopressin (DDAVP) response challenge, and pituitary MRI."),
 
             # 4. Hepatology & Gastroenterology (18)
-            "fatty_liver": ("Abdominal ultrasound, serial FIB-4 / NAFLD fibrosis score calculation, and cardiometabolic risk stratification.", "سونوگرافی کبد و مجاری صفراوی، محاسبه شاخص فیبروز FIB-4 و طبقه‌بندی خطر بیماری‌های متابولیک."),
-            "nafld": ("Abdominal ultrasound, serial FIB-4 calculation, and cardiometabolic risk stratification.", "سونوگرافی کبد، ارزیابی شاخص فیبروز FIB-4 و مداخله در فاکتورهای خطرساز متابولیک."),
-            "masld": ("Liver ultrasound, FIB-4 calculation, and metabolic profiling.", "سونوگرافی کبد، ارزیابی شاخص فیبروز FIB-4 و مداخله در فاکتورهای خطرساز متابولیک."),
-            "steatohepatitis": ("Vibration-controlled transient elastography (FibroScan), viral hepatitis serologies (HBsAg, Anti-HCV), and serial FIB-4 monitoring.", "الاستوگرافی کبد (فیبرواسکن)، سرولوژی هپاتیت B و C، و پایش دوره‌ای شاخص FIB-4."),
-            "nash": ("Vibration-controlled transient elastography (FibroScan) and serial FIB-4 monitoring.", "الاستوگرافی کبد (فیبرواسکن) و پایش سریال شاخص‌های فیبروز."),
-            "cirrhosis": ("Abdominal ultrasound with Doppler portal flow, surveillance alpha-fetoprotein (AFP), screening upper endoscopy (EGD) for varices, and MELD score.", "سونوگرافی شکم با داپلر ورید پورت، آلفافتوپروتئین (AFP) جهت غربالگری HCC، آندوسکوپی فوقانی برای واریس مری و امتیاز MELD."),
-            "alcoholic": ("Maddrey's Discriminant Function (DF) score, AST/ALT ratio (> 2.0), screening for thiamine deficiency, and abdominal Doppler ultrasound.", "محاسبه امتیاز مدری (Maddrey DF)، بررسی نسبت AST/ALT بالای ۲، بررسی کمبود تیامین و سونوگرافی داپلر کبد."),
-            "hepatitis_b": ("Complete HBV panel: HBsAg, Anti-HBs, HBeAg, Anti-HBe, Anti-HBc (total and IgM), and quantitative HBV-DNA PCR viral load.", "پنل کامل سرولوژی هپاتیت B: سنجش HBsAg، Anti-HBs، HBeAg، Anti-HBc و سنجش کمی بار ویروسی HBV-DNA PCR."),
-            "hepatitis_c": ("HCV Antibody confirmation by quantitative HCV-RNA PCR viral load, HCV genotype determination, and hepatic fibrosis staging.", "تایید آنتی‌بادی با تست کمی HCV-RNA PCR، تعیین ژنوتیپ ویروس و استیجینگ فیبروز کبد."),
-            "autoimmune_hepatitis": ("Serum IgG levels, Anti-Nuclear Antibodies (ANA), Anti-Smooth Muscle Antibodies (ASMA / Anti-Actin), Anti-LKM1, and liver biopsy.", "سنجش IgG تام سرم، آنتی‌بادی‌های ANA و ASMA (ضد عضله صاف)، Anti-LKM1 و انجام بیوپسی سوزنی کبد."),
-            "biliary_cholangitis": ("Anti-Mitochondrial Antibodies (AMA / AMA-M2), elevated Alkaline Phosphatase, serum IgM, and high-resolution MRCP.", "سنجش آنتی‌بادی ضد میتوکندری (AMA-M2)، آلکالین فسفاتاز، سطح سرمی IgM و کولانژیوگرافی رزونانس مغناطیسی (MRCP)."),
-            "pbc": ("Anti-Mitochondrial Antibodies (AMA / AMA-M2), serum IgM, and liver ultrasound.", "سنجش آنتی‌بادی ضد میتوکندری (AMA-M2) و سطح سرمی IgM."),
-            "sclerosing_cholangitis": ("Magnetic Resonance Cholangiopancreatography (MRCP) demonstrating multifocal strictures and beading, colonoscopy (to screen for IBD), and IgG4 level.", "کولانژیوگرافی رزونانس مغناطیسی (MRCP) جهت مشاهده نمای دانه تسبیحی مجاری صفراوی، کولونوسکوپی (رد IBD) و سنجش IgG4."),
-            "psc": ("High-resolution MRCP, screening colonoscopy for concurrent inflammatory bowel disease, and IgG4.", "تصویربرداری MRCP، کولونوسکوپی غربالگری بیماری التهابی روده و سنجش سطح IgG4."),
-            "wilson": ("Serum ceruloplasmin, 24-hour urinary copper excretion, slit-lamp eye examination for Kayser-Fleischer (KF) rings, and liver biopsy for copper dry weight.", "سرولوپلاسمین سرم، مس ۲۴ ساعته ادرار، معاینه اسلیت لمپ چشم جهت حلقه کایزر-فلایشر (KF ring) و بیوپسی کبد."),
-            "hemochromatosis": ("Fasting Transferrin Saturation (TSAT > 45%), serum Ferritin, HFE gene mutation analysis (C282Y and H63D), and liver MRI T2* for iron overload.", "درصد اشباع ترانسفرین ناشتا (TSAT)، فریتین سرم، تست ژنتیک جهش‌های ژن HFE (C282Y/H63D) و MRI اختصاصی کبد T2* جهت بار آهن."),
-            "alpha_1": ("Serum Alpha-1 Antitrypsin (AAT) concentration, AAT protein phenotyping (isoelectric focusing), and SERPINA1 genotype testing.", "سنجش غلظت آلفا-۱ آنتی‌تریپسین سرم (AAT)، فنوتیپینگ پروتئین به روش فوکوسینگ ایزوالکتریک و ژنوتایپینگ SERPINA1."),
-            "pancreatitis": ("Serum Lipase (diagnostic at > 3x upper reference limit), serum Amylase, abdominal ultrasound (gallstone etiology), and contrast-enhanced abdominal CT at 48-72h if severe.", "سنجش لیپاز سرم (افزایش بالای ۳ برابر رفرنس)، آمیلاز، سونوگرافی صفراوی و در صورت لزوم CT اسکن شکم با کنتراست پس از ۴۸ تا ۷۲ ساعت."),
-            "chronic_pancreatitis": ("Fecal Elastase-1 test (FE-1 < 200 mcg/g indicates pancreatic exocrine insufficiency), non-contrast CT for calcifications, and secretin MRCP.", "سنجش الاستاز-۱ مدفوع (Fecal Elastase-1) جهت بررسی نارسایی برون‌ریز پانکراس، سی‌تی بدون کنتراست برای کلسیفیکاسیون و MRCP."),
-            "celiac": ("IgA Anti-Tissue Transglutaminase (Anti-tTG IgA) with total serum IgA (to rule out IgA deficiency), followed by confirmatory duodenal mucosal biopsy.", "سنجش آنتی‌بادی Anti-tTG IgA به همراه سطح کل IgA سرم و در صورت مثبت بودن انجام بیوپسی آندوسکوپیک دوازدهه (مارش کریتریا)."),
-            "crohn": ("Fecal Calprotectin, ileocolonoscopy with segmented mucosal biopsies, and magnetic resonance enterography (MRE) of the small bowel.", "کالپروتکتین مدفوع، ایلئوکولونوسکوپی با بیوپسی‌های قطعه‌ای و انتروگرافی رزونانس مغناطیسی (MRE) روده باریک."),
-            "ulcerative_colitis": ("Fecal Calprotectin, flexible sigmoidoscopy or colonoscopy with mucosal biopsy, and infectious stool culture/Clostridioides difficile PCR.", "سنجش کالپروتکتین مدفوع، سیگموئیدوسکوپی یا کولونوسکوپی با بیوپسی و رد عفونت‌های روده و کلستریدیوم دیفیسیل."),
-            "ibd": ("Fecal Calprotectin, colonoscopy with segmented mucosal biopsies, and inflammatory markers.", "سنجش کالپروتکتین مدفوع، کولونوسکوپی با بیوپسی و ارزیابی مارکرهای التهابی."),
-            "cholecystitis": ("Right upper quadrant (RUQ) abdominal ultrasound evaluating gallbladder wall thickening, sonographic Murphy's sign, pericholecystic fluid, or HIDA cholescintigraphy.", "سونوگرافی ربع فوقانی راست شکم (بررسی ضخامت جدار، علامت مورفی سونوگرافیک و مایع دور کیسه صفرا) یا اسکن HIDA."),
-            "cholangitis": ("Urgent biliary ultrasound / MRCP, blood cultures, liver enzymes, and emergent ERCP for biliary decompression.", "سونوگرافی و MRCP مجاری صفراوی، کشت خون، آنزیم‌های کبدی و ERCP اورژانسی جهت رفع انسداد صفرا."),
+            "fatty_liver": ("Abdominal ultrasound, serial FIB-4 / NAFLD fibrosis score calculation, and cardiometabolic risk stratification.", "Abdominal ultrasound, serial FIB-4 / NAFLD fibrosis score calculation, and cardiometabolic risk stratification."),
+            "nafld": ("Abdominal ultrasound, serial FIB-4 calculation, and cardiometabolic risk stratification.", "Abdominal ultrasound, serial FIB-4 calculation, and cardiometabolic risk stratification."),
+            "masld": ("Liver ultrasound, FIB-4 calculation, and metabolic profiling.", "Liver ultrasound, FIB-4 calculation, and metabolic profiling."),
+            "steatohepatitis": ("Vibration-controlled transient elastography (FibroScan), viral hepatitis serologies (HBsAg, Anti-HCV), and serial FIB-4 monitoring.", "Vibration-controlled transient elastography (FibroScan), viral hepatitis serologies (HBsAg, Anti-HCV), and serial FIB-4 monitoring."),
+            "nash": ("Vibration-controlled transient elastography (FibroScan) and serial FIB-4 monitoring.", "Vibration-controlled transient elastography (FibroScan) and serial FIB-4 monitoring."),
+            "cirrhosis": ("Abdominal ultrasound with Doppler portal flow, surveillance alpha-fetoprotein (AFP), screening upper endoscopy (EGD) for varices, and MELD score.", "Abdominal ultrasound with Doppler portal flow, surveillance alpha-fetoprotein (AFP), screening upper endoscopy (EGD) for varices, and MELD score."),
+            "alcoholic": ("Maddrey's Discriminant Function (DF) score, AST/ALT ratio (> 2.0), screening for thiamine deficiency, and abdominal Doppler ultrasound.", "Maddrey's Discriminant Function (DF) score, AST/ALT ratio (> 2.0), screening for thiamine deficiency, and abdominal Doppler ultrasound."),
+            "hepatitis_b": ("Complete HBV panel: HBsAg, Anti-HBs, HBeAg, Anti-HBe, Anti-HBc (total and IgM), and quantitative HBV-DNA PCR viral load.", "Complete HBV panel: HBsAg, Anti-HBs, HBeAg, Anti-HBe, Anti-HBc (total and IgM), and quantitative HBV-DNA PCR viral load."),
+            "hepatitis_c": ("HCV Antibody confirmation by quantitative HCV-RNA PCR viral load, HCV genotype determination, and hepatic fibrosis staging.", "HCV Antibody confirmation by quantitative HCV-RNA PCR viral load, HCV genotype determination, and hepatic fibrosis staging."),
+            "autoimmune_hepatitis": ("Serum IgG levels, Anti-Nuclear Antibodies (ANA), Anti-Smooth Muscle Antibodies (ASMA / Anti-Actin), Anti-LKM1, and liver biopsy.", "Serum IgG levels, Anti-Nuclear Antibodies (ANA), Anti-Smooth Muscle Antibodies (ASMA / Anti-Actin), Anti-LKM1, and liver biopsy."),
+            "biliary_cholangitis": ("Anti-Mitochondrial Antibodies (AMA / AMA-M2), elevated Alkaline Phosphatase, serum IgM, and high-resolution MRCP.", "Anti-Mitochondrial Antibodies (AMA / AMA-M2), elevated Alkaline Phosphatase, serum IgM, and high-resolution MRCP."),
+            "pbc": ("Anti-Mitochondrial Antibodies (AMA / AMA-M2), serum IgM, and liver ultrasound.", "Anti-Mitochondrial Antibodies (AMA / AMA-M2), serum IgM, and liver ultrasound."),
+            "sclerosing_cholangitis": ("Magnetic Resonance Cholangiopancreatography (MRCP) demonstrating multifocal strictures and beading, colonoscopy (to screen for IBD), and IgG4 level.", "Magnetic Resonance Cholangiopancreatography (MRCP) demonstrating multifocal strictures and beading, colonoscopy (to screen for IBD), and IgG4 level."),
+            "psc": ("High-resolution MRCP, screening colonoscopy for concurrent inflammatory bowel disease, and IgG4.", "High-resolution MRCP, screening colonoscopy for concurrent inflammatory bowel disease, and IgG4."),
+            "wilson": ("Serum ceruloplasmin, 24-hour urinary copper excretion, slit-lamp eye examination for Kayser-Fleischer (KF) rings, and liver biopsy for copper dry weight.", "Serum ceruloplasmin, 24-hour urinary copper excretion, slit-lamp eye examination for Kayser-Fleischer (KF) rings, and liver biopsy for copper dry weight."),
+            "hemochromatosis": ("Fasting Transferrin Saturation (TSAT > 45%), serum Ferritin, HFE gene mutation analysis (C282Y and H63D), and liver MRI T2* for iron overload.", "Fasting Transferrin Saturation (TSAT > 45%), serum Ferritin, HFE gene mutation analysis (C282Y and H63D), and liver MRI T2* for iron overload."),
+            "alpha_1": ("Serum Alpha-1 Antitrypsin (AAT) concentration, AAT protein phenotyping (isoelectric focusing), and SERPINA1 genotype testing.", "Serum Alpha-1 Antitrypsin (AAT) concentration, AAT protein phenotyping (isoelectric focusing), and SERPINA1 genotype testing."),
+            "pancreatitis": ("Serum Lipase (diagnostic at > 3x upper reference limit), serum Amylase, abdominal ultrasound (gallstone etiology), and contrast-enhanced abdominal CT at 48-72h if severe.", "Serum Lipase (diagnostic at > 3x upper reference limit), serum Amylase, abdominal ultrasound (gallstone etiology), and contrast-enhanced abdominal CT at 48-72h if severe."),
+            "chronic_pancreatitis": ("Fecal Elastase-1 test (FE-1 < 200 mcg/g indicates pancreatic exocrine insufficiency), non-contrast CT for calcifications, and secretin MRCP.", "Fecal Elastase-1 test (FE-1 < 200 mcg/g indicates pancreatic exocrine insufficiency), non-contrast CT for calcifications, and secretin MRCP."),
+            "celiac": ("IgA Anti-Tissue Transglutaminase (Anti-tTG IgA) with total serum IgA (to rule out IgA deficiency), followed by confirmatory duodenal mucosal biopsy.", "IgA Anti-Tissue Transglutaminase (Anti-tTG IgA) with total serum IgA (to rule out IgA deficiency), followed by confirmatory duodenal mucosal biopsy."),
+            "crohn": ("Fecal Calprotectin, ileocolonoscopy with segmented mucosal biopsies, and magnetic resonance enterography (MRE) of the small bowel.", "Fecal Calprotectin, ileocolonoscopy with segmented mucosal biopsies, and magnetic resonance enterography (MRE) of the small bowel."),
+            "ulcerative_colitis": ("Fecal Calprotectin, flexible sigmoidoscopy or colonoscopy with mucosal biopsy, and infectious stool culture/Clostridioides difficile PCR.", "Fecal Calprotectin, flexible sigmoidoscopy or colonoscopy with mucosal biopsy, and infectious stool culture/Clostridioides difficile PCR."),
+            "ibd": ("Fecal Calprotectin, colonoscopy with segmented mucosal biopsies, and inflammatory markers.", "Fecal Calprotectin, colonoscopy with segmented mucosal biopsies, and inflammatory markers."),
+            "cholecystitis": ("Right upper quadrant (RUQ) abdominal ultrasound evaluating gallbladder wall thickening, sonographic Murphy's sign, pericholecystic fluid, or HIDA cholescintigraphy.", "Right upper quadrant (RUQ) abdominal ultrasound evaluating gallbladder wall thickening, sonographic Murphy's sign, pericholecystic fluid, or HIDA cholescintigraphy."),
+            "cholangitis": ("Urgent biliary ultrasound / MRCP, blood cultures, liver enzymes, and emergent ERCP for biliary decompression.", "Urgent biliary ultrasound / MRCP, blood cultures, liver enzymes, and emergent ERCP for biliary decompression."),
 
             # 5. Rheumatology & Musculoskeletal (14)
-            "gout": ("Arthrocentesis with polarized light synovial fluid microscopy for negatively birefringent needle-shaped monosodium urate (MSU) crystals, and 24-hour urine uric acid.", "آرتروسنتز و بررسی مایع مفصلی زیر میکروسکوپ نور پلاریزه جهت کریستال‌های سوزنی اورات مونوسدیم (MSU) و اسید اوریک ۲۴ ساعته ادرار."),
-            "hyperuricemia": ("Serum Uric Acid, 24-hour urinary uric acid excretion, serum creatinine, and dietary purine / medication review.", "سنجش اسید اوریک سرم، دفع ادراری ۲۴ ساعته اسید اوریک، کراتینین و بازبینی مصرف داروهای دیورتیک و رژیم پرپورین."),
-            "pseudogout": ("Synovial fluid analysis for positively birefringent rhomboid calcium pyrophosphate (CPPD) crystals, plain joint radiographs (chondrocalcinosis), and screening for hemochromatosis / hyperparathyroidism.", "بررسی مایع مفصلی برای کریستال‌های لوزی پیروفسفات کلسیم (CPPD)، رادیوگرافی ساده جهت کندروکلسینوز و بررسی هموکروماتوز."),
-            "cppd": ("Synovial fluid polarized microscopy for rhomboid calcium pyrophosphate crystals and radiographs for chondrocalcinosis.", "بررسی مایع مفصلی برای کریستال‌های لوزی پیروفسفات کلسیم (CPPD) و رادیوگرافی ساده."),
-            "rheumatoid": ("Rheumatoid Factor (RF), Anti-Cyclic Citrullinated Peptide (Anti-CCP / ACPA), ESR, CRP, and bilateral hands/feet radiographs.", "سنجش فاکتور روماتوئید (RF)، آنتی‌بادی Anti-CCP، مارکرهای التهابی ESR و CRP و رادیوگرافی مفاصل دست و پا."),
-            "lupus": ("Antinuclear Antibody (ANA) by indirect immunofluorescence, Anti-dsDNA, Anti-Smith (Anti-Sm), serum complements (C3/C4), and urinalysis.", "تیتر ANA به روش ایمونوفلورسانس غیرمستقیم، Anti-dsDNA، Anti-Smith، سطوح C3/C4 و آنالیز کامل ادرار جهت پروتئینوری."),
-            "sle": ("ANA titer, Anti-dsDNA, Anti-Smith, C3, C4, urinalysis for proteinuria/cellular casts, and antiphospholipid antibody screening.", "تیتر ANA، آنتی‌بادی‌های اختصاصی Anti-dsDNA و Anti-Sm، کمپلمان‌ها و غربالگری سندرم آنتی‌فسفولیپید."),
-            "sjogren": ("Anti-SSA (Ro) and Anti-SSB (La) antibodies, Schirmer's tear test, ocular surface staining, and minor salivary gland labial lip biopsy.", "سنجش آنتی‌بادی‌های Anti-SSA (Ro) و Anti-SSB (La)، آزمون اشک شیرمر، ارزیابی خشکی چشم و بیوپسی غدد بزاقی لب."),
-            "scleroderma": ("Anti-Scl-70 (anti-topoisomerase I), Anti-Centromere Antibodies (ACA), Anti-RNA Polymerase III, nailfold capillaroscopy, and high-resolution chest CT.", "سنجش Anti-Scl-70، آنتی‌بادی ضد سانترومر (ACA)، کاپیلاروسکوپی بستر ناخن و سی‌تی اسکن ریه جهت ارزیابی فیبروز بینابینی."),
-            "systemic_sclerosis": ("Anti-Scl-70, Anti-Centromere, high-resolution chest CT, and echocardiography.", "سنجش اتوآنتی‌بادی‌های Anti-Scl-70 و Anti-Centromere، سی‌تی اسکن قفسه سینه و اکوکاردیوگرافی."),
-            "myositis": ("Serum Creatine Kinase (CK), Aldolase, myositis-specific autoantibodies (Anti-Jo-1), electromyography (EMG), and muscle MRI / biopsy.", "سنجش کراتین کیناز (CK)، آلدولاز، آنتی‌بادی‌های اختصاصی میوزیت (Anti-Jo-1)، نوار عصب و عضله (EMG) و بیوپسی عضله."),
-            "dermatomyositis": ("Creatine kinase, Aldolase, Anti-Mi-2, Anti-MDA5, muscle MRI, and skin biopsy.", "سنجش کراتین کیناز، آلدولاز، پنل اتوآنتی‌بادی‌های میوزیت و بیوپسی پوست و عضله."),
-            "ankylosing": ("HLA-B27 typing, high-sensitivity CRP, ESR, and MRI of the sacroiliac joints (STIR sequences detecting active sacroiliitis).", "تایپینگ آنتی‌ژن HLA-B27، مارکرهای التهابی CRP و ESR و تصویربرداری MRI مفاصل ساکروایلیاک جهت بررسی ساکروایلیت حاد."),
-            "spondyloarthritis": ("HLA-B27 typing, pelvic/sacroiliac MRI, and inflammatory markers.", "تایپینگ HLA-B27، ام‌آر‌آی مفاصل ساکروایلیاک و ارزیابی مارکرهای التهابی."),
-            "arteritis": ("Urgent ESR, high-sensitivity CRP, temporal artery color Doppler ultrasound, and unilateral/bilateral temporal artery biopsy.", "سنجش فوری ESR و CRP، سونوگرافی داپلر شریان گیجگاهی (علامت هاله Halo sign) و بیوپسی شریان تمپورال."),
-            "polymyalgia": ("ESR, high-sensitivity CRP, complete CBC, screening for temporal arteritis, and trial of low-dose prednisone.", "سنجش ESR و CRP، شمارش گلبول‌های خون، بررسی آرتریت تمپورال و ارزیابی پاسخ به دوز پایین پردنیزولون."),
-            "behcet": ("Pathergy test, ophthalmologic slit-lamp / fluorescein angiography examination, HLA-B51 typing, and inflammatory markers.", "تست پاتِرژی، معاینه دقیق چشم پزشکی با آنژیوگرافی فلورسئین، تایپینگ ژنتیکی HLA-B51 و مارکرهای التهابی."),
-            "vasculitis": ("ANCA panel (PR3/MPO), ANA, Cryoglobulins, Hepatitis B/C serologies, complements C3/C4, and involved tissue biopsy.", "پنل کامل ANCA، کرایوگلوبولین، سرولوژی هپاتیت، کمپلمان‌ها و بیوپسی بافت درگیر."),
-            "osteoporosis": ("Dual-energy X-ray Absorptiometry (DXA) bone mineral density of lumbar spine and femoral neck, 25-OH Vitamin D, calcium, and FRAX score.", "سنجش تراکم استخوان به روش DXA در مهره‌های کمری و گردن فمور، ویتامین D، کلسیم سرم و محاسبه ریسک شکستگی با FRAX."),
-            "paget": ("Bone-specific Alkaline Phosphatase (bALP), plain radiographs of affected skeletal sites, and whole-body Tc-99m bone scintigraphy.", "سنجش ایزوآنزیم استخوانی آلکالین فسفاتاز (bALP)، رادیوگرافی ساده استخوان‌های درگیر و اسکن هسته‌ای کل اسکلت با تکنسیم ۹۹."),
+            "gout": ("Arthrocentesis with polarized light synovial fluid microscopy for negatively birefringent needle-shaped monosodium urate (MSU) crystals, and 24-hour urine uric acid.", "Arthrocentesis with polarized light synovial fluid microscopy for negatively birefringent needle-shaped monosodium urate (MSU) crystals, and 24-hour urine uric acid."),
+            "hyperuricemia": ("Serum Uric Acid, 24-hour urinary uric acid excretion, serum creatinine, and dietary purine / medication review.", "Serum Uric Acid, 24-hour urinary uric acid excretion, serum creatinine, and dietary purine / medication review."),
+            "pseudogout": ("Synovial fluid analysis for positively birefringent rhomboid calcium pyrophosphate (CPPD) crystals, plain joint radiographs (chondrocalcinosis), and screening for hemochromatosis / hyperparathyroidism.", "Synovial fluid analysis for positively birefringent rhomboid calcium pyrophosphate (CPPD) crystals, plain joint radiographs (chondrocalcinosis), and screening for hemochromatosis / hyperparathyroidism."),
+            "cppd": ("Synovial fluid polarized microscopy for rhomboid calcium pyrophosphate crystals and radiographs for chondrocalcinosis.", "Synovial fluid polarized microscopy for rhomboid calcium pyrophosphate crystals and radiographs for chondrocalcinosis."),
+            "rheumatoid": ("Rheumatoid Factor (RF), Anti-Cyclic Citrullinated Peptide (Anti-CCP / ACPA), ESR, CRP, and bilateral hands/feet radiographs.", "Rheumatoid Factor (RF), Anti-Cyclic Citrullinated Peptide (Anti-CCP / ACPA), ESR, CRP, and bilateral hands/feet radiographs."),
+            "lupus": ("Antinuclear Antibody (ANA) by indirect immunofluorescence, Anti-dsDNA, Anti-Smith (Anti-Sm), serum complements (C3/C4), and urinalysis.", "Antinuclear Antibody (ANA) by indirect immunofluorescence, Anti-dsDNA, Anti-Smith (Anti-Sm), serum complements (C3/C4), and urinalysis."),
+            "sle": ("ANA titer, Anti-dsDNA, Anti-Smith, C3, C4, urinalysis for proteinuria/cellular casts, and antiphospholipid antibody screening.", "ANA titer, Anti-dsDNA, Anti-Smith, C3, C4, urinalysis for proteinuria/cellular casts, and antiphospholipid antibody screening."),
+            "sjogren": ("Anti-SSA (Ro) and Anti-SSB (La) antibodies, Schirmer's tear test, ocular surface staining, and minor salivary gland labial lip biopsy.", "Anti-SSA (Ro) and Anti-SSB (La) antibodies, Schirmer's tear test, ocular surface staining, and minor salivary gland labial lip biopsy."),
+            "scleroderma": ("Anti-Scl-70 (anti-topoisomerase I), Anti-Centromere Antibodies (ACA), Anti-RNA Polymerase III, nailfold capillaroscopy, and high-resolution chest CT.", "Anti-Scl-70 (anti-topoisomerase I), Anti-Centromere Antibodies (ACA), Anti-RNA Polymerase III, nailfold capillaroscopy, and high-resolution chest CT."),
+            "systemic_sclerosis": ("Anti-Scl-70, Anti-Centromere, high-resolution chest CT, and echocardiography.", "Anti-Scl-70, Anti-Centromere, high-resolution chest CT, and echocardiography."),
+            "myositis": ("Serum Creatine Kinase (CK), Aldolase, myositis-specific autoantibodies (Anti-Jo-1), electromyography (EMG), and muscle MRI / biopsy.", "Serum Creatine Kinase (CK), Aldolase, myositis-specific autoantibodies (Anti-Jo-1), electromyography (EMG), and muscle MRI / biopsy."),
+            "dermatomyositis": ("Creatine kinase, Aldolase, Anti-Mi-2, Anti-MDA5, muscle MRI, and skin biopsy.", "Creatine kinase, Aldolase, Anti-Mi-2, Anti-MDA5, muscle MRI, and skin biopsy."),
+            "ankylosing": ("HLA-B27 typing, high-sensitivity CRP, ESR, and MRI of the sacroiliac joints (STIR sequences detecting active sacroiliitis).", "HLA-B27 typing, high-sensitivity CRP, ESR, and MRI of the sacroiliac joints (STIR sequences detecting active sacroiliitis)."),
+            "spondyloarthritis": ("HLA-B27 typing, pelvic/sacroiliac MRI, and inflammatory markers.", "HLA-B27 typing, pelvic/sacroiliac MRI, and inflammatory markers."),
+            "arteritis": ("Urgent ESR, high-sensitivity CRP, temporal artery color Doppler ultrasound, and unilateral/bilateral temporal artery biopsy.", "Urgent ESR, high-sensitivity CRP, temporal artery color Doppler ultrasound, and unilateral/bilateral temporal artery biopsy."),
+            "polymyalgia": ("ESR, high-sensitivity CRP, complete CBC, screening for temporal arteritis, and trial of low-dose prednisone.", "ESR, high-sensitivity CRP, complete CBC, screening for temporal arteritis, and trial of low-dose prednisone."),
+            "behcet": ("Pathergy test, ophthalmologic slit-lamp / fluorescein angiography examination, HLA-B51 typing, and inflammatory markers.", "Pathergy test, ophthalmologic slit-lamp / fluorescein angiography examination, HLA-B51 typing, and inflammatory markers."),
+            "vasculitis": ("ANCA panel (PR3/MPO), ANA, Cryoglobulins, Hepatitis B/C serologies, complements C3/C4, and involved tissue biopsy.", "ANCA panel (PR3/MPO), ANA, Cryoglobulins, Hepatitis B/C serologies, complements C3/C4, and involved tissue biopsy."),
+            "osteoporosis": ("Dual-energy X-ray Absorptiometry (DXA) bone mineral density of lumbar spine and femoral neck, 25-OH Vitamin D, calcium, and FRAX score.", "Dual-energy X-ray Absorptiometry (DXA) bone mineral density of lumbar spine and femoral neck, 25-OH Vitamin D, calcium, and FRAX score."),
+            "paget": ("Bone-specific Alkaline Phosphatase (bALP), plain radiographs of affected skeletal sites, and whole-body Tc-99m bone scintigraphy.", "Bone-specific Alkaline Phosphatase (bALP), plain radiographs of affected skeletal sites, and whole-body Tc-99m bone scintigraphy."),
 
             # 6. Cardiovascular (10)
-            "coronary": ("12-lead ECG, high-sensitivity Cardiac Troponin (hs-cTn), exercise stress testing or coronary CT angiography (CCTA).", "نوار قلب ۱۲ لید، تروپونین قلبی با حساسیت بالا (hs-cTn)، تست ورزش یا سی‌تی آنژیوگرافی عروق کرونر (CCTA)."),
-            "angina": ("12-lead ECG, stress echocardiography or myocardial perfusion imaging (SPECT/PET), and fasting lipid / glycemic profile.", "الکتروکاردیوگرام، اکوکاردیوگرافی استرس یا اسکن پرفیوژن میوکارد (اسپکت) و بررسی پروفایل قند و چربی."),
-            "heart_failure": ("Serum B-type Natriuretic Peptide (BNP) or NT-proBNP, comprehensive transthoracic echocardiography (TTE), and chest radiograph.", "سنجش پپتید ناتریورتیک (BNP یا NT-proBNP)، اکوکاردیوگرافی داپلر ترانس‌توراسیک (TTE) و رادیوگرافی قفسه سینه."),
-            "hyperlipidemia": ("Fasting full lipid profile (TC, HDL-C, LDL-C, Triglycerides), calculated Non-HDL cholesterol, and Apolipoprotein B (ApoB).", "پروفایل کامل چربی ناشتا، محاسبه کلسترول Non-HDL، آپولیپوپروتئین B (ApoB) و ارزیابی ریسک قلبی ۱۰ ساله."),
-            "hypertriglyceridemia": ("Fasting serum triglycerides, ruling out secondary causes (hypothyroidism, nephrotic syndrome, alcohol), and serum lipase/amylase.", "سنجش تری‌گلیسیرید ناشتا، رد علل ثانویه (تیروئید، کلیه، مصرف الکل) و پایش آنزیم‌های پانکراس جهت پیشگیری از پانکراتیت."),
-            "dvt": ("Clinical Wells DVT Score, high-sensitivity D-Dimer (rule-out in low/intermediate risk), and whole-leg venous duplex ultrasound.", "محاسبه نمره کلینیکی Wells، سنجش دی-دایمر با حساسیت بالا و سونوگرافی داپلر عروقی وریدی کامل اندام تحتانی."),
-            "pulmonary_embolism": ("Wells / Geneva PE score, D-Dimer, CT Pulmonary Angiography (CTPA), and bedside echocardiography for RV strain.", "نمره احتمال بالینی ولز، دی-دایمر، سی‌تی آنژیوگرافی عروق ریوی (CTPA) و اکوکاردیوگرافی جهت بررسی فشار بطن راست."),
-            "pericarditis": ("12-lead ECG (diffuse PR depression and ST elevation), high-sensitivity troponin, inflammatory markers (CRP/ESR), and echocardiography.", "نوار قلب ۱۲ لید (افت سگمان PR و صعود منتشر ST)، تروپونین قلبی، مارکرهای CRP و ESR و اکوکاردیوگرافی جهت افیوژن پریکارد."),
-            "myocarditis": ("Cardiac MRI with late gadolinium enhancement (Lake Louise criteria), high-sensitivity troponin, and viral serologies.", "ام‌آر‌آی اختصاصی قلب (Cardiac MRI) با تزریق گادولینیوم، تروپونین با حساسیت بالا و اکوکاردیوگرافی."),
-            "endocarditis": ("Three sets of blood cultures drawn from separate venipuncture sites prior to antimicrobials, and transesophageal echocardiography (TEE).", "حداقل ۳ نوبت کشت خون از وریدهای مجزا قبل از شروع آنتی‌بیوتیک و انجام اکوکاردیوگرافی از راه مری (TEE) برای مشاهده وژتاسیون."),
-            "hypertension": ("24-hour Ambulatory Blood Pressure Monitoring (ABPM), spot urine ACR, serum creatinine, electrolytes, and screening for secondary causes.", "هولتر فشار خون ۲۴ ساعته (ABPM)، نسبت آلبومین به کراتینین ادرار، کراتینین، الکترولیت‌ها و رد علل ثانویه فشار خون."),
+            "coronary": ("12-lead ECG, high-sensitivity Cardiac Troponin (hs-cTn), exercise stress testing or coronary CT angiography (CCTA).", "12-lead ECG, high-sensitivity Cardiac Troponin (hs-cTn), exercise stress testing or coronary CT angiography (CCTA)."),
+            "angina": ("12-lead ECG, stress echocardiography or myocardial perfusion imaging (SPECT/PET), and fasting lipid / glycemic profile.", "12-lead ECG, stress echocardiography or myocardial perfusion imaging (SPECT/PET), and fasting lipid / glycemic profile."),
+            "heart_failure": ("Serum B-type Natriuretic Peptide (BNP) or NT-proBNP, comprehensive transthoracic echocardiography (TTE), and chest radiograph.", "Serum B-type Natriuretic Peptide (BNP) or NT-proBNP, comprehensive transthoracic echocardiography (TTE), and chest radiograph."),
+            "hyperlipidemia": ("Fasting full lipid profile (TC, HDL-C, LDL-C, Triglycerides), calculated Non-HDL cholesterol, and Apolipoprotein B (ApoB).", "Fasting full lipid profile (TC, HDL-C, LDL-C, Triglycerides), calculated Non-HDL cholesterol, and Apolipoprotein B (ApoB)."),
+            "hypertriglyceridemia": ("Fasting serum triglycerides, ruling out secondary causes (hypothyroidism, nephrotic syndrome, alcohol), and serum lipase/amylase.", "Fasting serum triglycerides, ruling out secondary causes (hypothyroidism, nephrotic syndrome, alcohol), and serum lipase/amylase."),
+            "dvt": ("Clinical Wells DVT Score, high-sensitivity D-Dimer (rule-out in low/intermediate risk), and whole-leg venous duplex ultrasound.", "Clinical Wells DVT Score, high-sensitivity D-Dimer (rule-out in low/intermediate risk), and whole-leg venous duplex ultrasound."),
+            "pulmonary_embolism": ("Wells / Geneva PE score, D-Dimer, CT Pulmonary Angiography (CTPA), and bedside echocardiography for RV strain.", "Wells / Geneva PE score, D-Dimer, CT Pulmonary Angiography (CTPA), and bedside echocardiography for RV strain."),
+            "pericarditis": ("12-lead ECG (diffuse PR depression and ST elevation), high-sensitivity troponin, inflammatory markers (CRP/ESR), and echocardiography.", "12-lead ECG (diffuse PR depression and ST elevation), high-sensitivity troponin, inflammatory markers (CRP/ESR), and echocardiography."),
+            "myocarditis": ("Cardiac MRI with late gadolinium enhancement (Lake Louise criteria), high-sensitivity troponin, and viral serologies.", "Cardiac MRI with late gadolinium enhancement (Lake Louise criteria), high-sensitivity troponin, and viral serologies."),
+            "endocarditis": ("Three sets of blood cultures drawn from separate venipuncture sites prior to antimicrobials, and transesophageal echocardiography (TEE).", "Three sets of blood cultures drawn from separate venipuncture sites prior to antimicrobials, and transesophageal echocardiography (TEE)."),
+            "hypertension": ("24-hour Ambulatory Blood Pressure Monitoring (ABPM), spot urine ACR, serum creatinine, electrolytes, and screening for secondary causes.", "24-hour Ambulatory Blood Pressure Monitoring (ABPM), spot urine ACR, serum creatinine, electrolytes, and screening for secondary causes."),
 
             # 7. Infectious Diseases & Sepsis (11)
-            "sepsis": ("Two sets of blood cultures prior to antibiotic initiation, serum Lactate, Procalcitonin (PCT), CBC, and arterial blood gas.", "کشت خون ۲ گانه قبل از شروع آنتی‌بیوتیک، سنجش لاکتات سرم، پروکلسیتونین (PCT)، شمارش گلبول‌های خون و گازهای خونی."),
-            "pneumonia": ("Chest radiograph / thoracic CT, sputum Gram stain and culture, urinary Streptococcus pneumoniae and Legionella pneumophila antigen tests.", "رادیوگرافی قفسه سینه، رنگ‌آمیزی گرم و کشت خلط، و سنجش آنتی‌ژن ادراری استرپتوکوک پنومونیه و لژیونلا."),
-            "urinary_tract": ("Clean-catch midstream urine analysis, microscopic urine sediment examination, and quantitative urine culture with antimicrobial susceptibility.", "آنالیز ادرار میانی تمیز، بررسی سدیمان ادرار و کشت کمی ادرار همراه با آنتی‌بیوگرام (تعیین حساسیت ضدمیکروبی)."),
-            "pyelonephritis": ("Urinalysis, urine culture, blood cultures, renal duplex ultrasound (to exclude obstruction/abscess), and serum creatinine.", "کشت ادرار، کشت خون، سونوگرافی کلیه جهت رد انسداد یا آبسه و ارزیابی کراتینین و الکترولیت‌ها."),
-            "meningitis": ("Urgent lumbar puncture for CSF analysis (opening pressure, cell count/differential, protein, glucose ratio, Gram stain, bacterial/viral PCR).", "پونکسیون کمری اورژانسی جهت آنالیز مایع مغزی-نخاعی (CSF: فشار، شمارش سلولی، پروتئین، قند، رنگ‌آمیزی گرم و پنل مولکولی PCR)."),
-            "tuberculosis": ("Interferon-Gamma Release Assay (IGRA / QuantiFERON-TB) or Tuberculin Skin Test (TST), sputum acid-fast bacilli (AFB) smear/culture, and GeneXpert PCR.", "سنجش رهایش اینترفرون گاما (IGRA/کوآنتی‌فرون) یا تست پوستی مانتو، اسمیر و کشت خلط برای باسیل اسید-فست (AFB) و GeneXpert PCR."),
-            "mononucleosis": ("Heterophile antibody test (Monospot), Epstein-Barr Virus (EBV) specific serologies (VCA IgM, VCA IgG, EBNA IgG), and peripheral blood smear for atypical lymphocytes.", "تست آنتی‌بادی هتروفیل (منواسپات)، سرولوژی اختصاصی ویروس EBV (آنتی‌بادی‌های VCA IgM و EBNA) و بررسی لنفوسیت‌های آتیپیک در لام خون."),
-            "ebv": ("EBV VCA-IgM, VCA-IgG, and EBNA serologies.", "سرولوژی اختصاصی ویروس اپشتین-بار (EBV VCA IgM/IgG)."),
-            "cytomegalovirus": ("Quantitative CMV DNA PCR in plasma, CMV IgM and IgG serologies with avidity testing, and liver enzymes.", "سنجش کمی CMV-DNA PCR در پلاسما، آنتی‌بادی‌های CMV IgM و IgG با تست آویدیتی و پایش آنزیم‌های کبدی."),
-            "cmv": ("Quantitative CMV DNA PCR in plasma and CMV IgM/IgG serology.", "سنجش کمی CMV-DNA PCR و آنتی‌بادی‌های اختصاصی."),
-            "clostridium": ("Stool Clostridioides difficile toxin A/B enzyme immunoassay (EIA) combined with GDH antigen or C. difficile nucleic acid amplification test (NAAT/PCR).", "سنجش سموم A و B کلستریدیوم دیفیسیل در مدفوع به همراه آنتی‌ژن GDH یا تست تقویت اسید نوکلئیک (PCR)."),
-            "brucellosis": ("Standard tube agglutination test (Wright test), 2-Mercaptoethanol (2-ME) test, Coombs-Wright test, and prolonged blood cultures (Bactec).", "تست‌های آگلوتیناسیون لوله‌ای استاندارد (تست رایت)، تست ۲-مرکاپتواتانول (2-ME)، کومبس رایت و کشت خون اختصاصی طولانی‌مدت."),
-            "hiv": ("4th-generation HIV-1/2 antigen/antibody immunoassay (detecting p24 Ag and antibodies), followed by HIV-1/HIV-2 differentiation assay and viral load RNA PCR.", "تست نسل چهارم الایزا برای آنتی‌ژن p24 و آنتی‌بادی‌های HIV-1/2 و در صورت مثبت بودن تایید با تست تفکیکی و بار ویروسی HIV-RNA PCR."),
+            "sepsis": ("Two sets of blood cultures prior to antibiotic initiation, serum Lactate, Procalcitonin (PCT), CBC, and arterial blood gas.", "Two sets of blood cultures prior to antibiotic initiation, serum Lactate, Procalcitonin (PCT), CBC, and arterial blood gas."),
+            "pneumonia": ("Chest radiograph / thoracic CT, sputum Gram stain and culture, urinary Streptococcus pneumoniae and Legionella pneumophila antigen tests.", "Chest radiograph / thoracic CT, sputum Gram stain and culture, urinary Streptococcus pneumoniae and Legionella pneumophila antigen tests."),
+            "urinary_tract": ("Clean-catch midstream urine analysis, microscopic urine sediment examination, and quantitative urine culture with antimicrobial susceptibility.", "Clean-catch midstream urine analysis, microscopic urine sediment examination, and quantitative urine culture with antimicrobial susceptibility."),
+            "pyelonephritis": ("Urinalysis, urine culture, blood cultures, renal duplex ultrasound (to exclude obstruction/abscess), and serum creatinine.", "Urinalysis, urine culture, blood cultures, renal duplex ultrasound (to exclude obstruction/abscess), and serum creatinine."),
+            "meningitis": ("Urgent lumbar puncture for CSF analysis (opening pressure, cell count/differential, protein, glucose ratio, Gram stain, bacterial/viral PCR).", "Urgent lumbar puncture for CSF analysis (opening pressure, cell count/differential, protein, glucose ratio, Gram stain, bacterial/viral PCR)."),
+            "tuberculosis": ("Interferon-Gamma Release Assay (IGRA / QuantiFERON-TB) or Tuberculin Skin Test (TST), sputum acid-fast bacilli (AFB) smear/culture, and GeneXpert PCR.", "Interferon-Gamma Release Assay (IGRA / QuantiFERON-TB) or Tuberculin Skin Test (TST), sputum acid-fast bacilli (AFB) smear/culture, and GeneXpert PCR."),
+            "mononucleosis": ("Heterophile antibody test (Monospot), Epstein-Barr Virus (EBV) specific serologies (VCA IgM, VCA IgG, EBNA IgG), and peripheral blood smear for atypical lymphocytes.", "Heterophile antibody test (Monospot), Epstein-Barr Virus (EBV) specific serologies (VCA IgM, VCA IgG, EBNA IgG), and peripheral blood smear for atypical lymphocytes."),
+            "ebv": ("EBV VCA-IgM, VCA-IgG, and EBNA serologies.", "EBV VCA-IgM, VCA-IgG, and EBNA serologies."),
+            "cytomegalovirus": ("Quantitative CMV DNA PCR in plasma, CMV IgM and IgG serologies with avidity testing, and liver enzymes.", "Quantitative CMV DNA PCR in plasma, CMV IgM and IgG serologies with avidity testing, and liver enzymes."),
+            "cmv": ("Quantitative CMV DNA PCR in plasma and CMV IgM/IgG serology.", "Quantitative CMV DNA PCR in plasma and CMV IgM/IgG serology."),
+            "clostridium": ("Stool Clostridioides difficile toxin A/B enzyme immunoassay (EIA) combined with GDH antigen or C. difficile nucleic acid amplification test (NAAT/PCR).", "Stool Clostridioides difficile toxin A/B enzyme immunoassay (EIA) combined with GDH antigen or C. difficile nucleic acid amplification test (NAAT/PCR)."),
+            "brucellosis": ("Standard tube agglutination test (Wright test), 2-Mercaptoethanol (2-ME) test, Coombs-Wright test, and prolonged blood cultures (Bactec).", "Standard tube agglutination test (Wright test), 2-Mercaptoethanol (2-ME) test, Coombs-Wright test, and prolonged blood cultures (Bactec)."),
+            "hiv": ("4th-generation HIV-1/2 antigen/antibody immunoassay (detecting p24 Ag and antibodies), followed by HIV-1/HIV-2 differentiation assay and viral load RNA PCR.", "4th-generation HIV-1/2 antigen/antibody immunoassay (detecting p24 Ag and antibodies), followed by HIV-1/HIV-2 differentiation assay and viral load RNA PCR."),
 
             # 8. Pulmonology, Toxicology & Critical Care (8)
-            "copd": ("Post-bronchodilator spirometry (confirming FEV1/FVC < 0.70), arterial blood gas (ABG) for hypercapnia/hypoxemia, and alpha-1 antitrypsin screening.", "اسپیرومتری پس از برونکودیلاتور (تایید FEV1/FVC زیر ۰.۷۰)، گازهای خونی شریانی (ABG) جهت پایش هایپرکاپنی و هیپوکسمی و رد کمبود AAT."),
-            "asthma": ("Pre- and post-bronchodilator spirometry demonstrating reversible airflow obstruction (> 12% and > 200 mL increase in FEV1), or methacholine bronchial challenge test.", "اسپیرومتری قبل و بعد از برونکودیلاتور (اثبات بازگشت‌پذیری با بهبود بیش از ۱۲٪ و ۲۰۰ میلی‌لیتر در FEV1) یا تست چالش متاکولین."),
-            "sarcoidosis": ("Serum Angiotensin-Converting Enzyme (ACE), 24-hour urine calcium, high-resolution chest CT (bilateral hilar lymphadenopathy), and tissue biopsy showing non-caseating granulomas.", "سنجش آنزیم مبدل آنژیوتانسین (ACE)، کلسیم ادرار ۲۴ ساعته، سی‌تی با رزولوشن بالای قفسه سینه و بیوپسی بافت حاوی گرانولوم غیرپنیری."),
-            "rhabdomyolysis": ("Serum Creatine Kinase (CK > 5x normal), serum/urine Myoglobin, electrolytes (urgent potassium, calcium, phosphate), and renal function monitoring.", "سنجش کراتین کیناز تام سرم (CK بالای ۵ برابر رفرنس)، میوگلوبین سرم و ادرار، پایش فوری پتاسیم و پیشگیری از نارسایی کلیه."),
-            "acetaminophen": ("Serum Acetaminophen (Paracetamol) concentration plotted on Rumack-Matthew nomogram (at 4-24h post-ingestion), AST/ALT, and INR.", "سنجش سطح سرمی استامینوفن در نوموگرام روماک-متیو (۴ تا ۲۴ ساعت پس از مصرف)، آنزیم‌های کبد AST/ALT و زمان پروترومبین/INR."),
-            "salicylate": ("Serum Salicylate concentration, arterial blood gas (mixed respiratory alkalosis and metabolic acidosis), and urinary alkalinization monitoring.", "سنجش سطح سالیسیلات پلاسما، گازهای شریانی (آلکالوز تنفسی توأم با اسیدوز متابولیک) و پایش قلیایی‌سازی ادرار."),
-            "carbon_monoxide": ("Co-oximetry blood gas measuring Carboxyhemoglobin (COHb) percentage, continuous ECG monitoring, and troponin.", "کو-اکسیمتری گازهای خونی و سنجش درصد کربوکسی‌هموگلوبین (COHb)، مانیتورینگ قلبی و سنجش تروپونین."),
-            "methemoglobinemia": ("Co-oximetry arterial blood gas measuring Methemoglobin (MetHb) percentage, glucose-6-phosphate dehydrogenase (G6PD) screen prior to methylene blue therapy.", "کو-اکسیمتری گازهای خونی جهت سنجش درصد متهموگلوبین (MetHb) و بررسی فاویسم/G6PD قبل از تجویز متیلن بلو.")
+            "copd": ("Post-bronchodilator spirometry (confirming FEV1/FVC < 0.70), arterial blood gas (ABG) for hypercapnia/hypoxemia, and alpha-1 antitrypsin screening.", "Post-bronchodilator spirometry (confirming FEV1/FVC < 0.70), arterial blood gas (ABG) for hypercapnia/hypoxemia, and alpha-1 antitrypsin screening."),
+            "asthma": ("Pre- and post-bronchodilator spirometry demonstrating reversible airflow obstruction (> 12% and > 200 mL increase in FEV1), or methacholine bronchial challenge test.", "Pre- and post-bronchodilator spirometry demonstrating reversible airflow obstruction (> 12% and > 200 mL increase in FEV1), or methacholine bronchial challenge test."),
+            "sarcoidosis": ("Serum Angiotensin-Converting Enzyme (ACE), 24-hour urine calcium, high-resolution chest CT (bilateral hilar lymphadenopathy), and tissue biopsy showing non-caseating granulomas.", "Serum Angiotensin-Converting Enzyme (ACE), 24-hour urine calcium, high-resolution chest CT (bilateral hilar lymphadenopathy), and tissue biopsy showing non-caseating granulomas."),
+            "rhabdomyolysis": ("Serum Creatine Kinase (CK > 5x normal), serum/urine Myoglobin, electrolytes (urgent potassium, calcium, phosphate), and renal function monitoring.", "Serum Creatine Kinase (CK > 5x normal), serum/urine Myoglobin, electrolytes (urgent potassium, calcium, phosphate), and renal function monitoring."),
+            "acetaminophen": ("Serum Acetaminophen (Paracetamol) concentration plotted on Rumack-Matthew nomogram (at 4-24h post-ingestion), AST/ALT, and INR.", "Serum Acetaminophen (Paracetamol) concentration plotted on Rumack-Matthew nomogram (at 4-24h post-ingestion), AST/ALT, and INR."),
+            "salicylate": ("Serum Salicylate concentration, arterial blood gas (mixed respiratory alkalosis and metabolic acidosis), and urinary alkalinization monitoring.", "Serum Salicylate concentration, arterial blood gas (mixed respiratory alkalosis and metabolic acidosis), and urinary alkalinization monitoring."),
+            "carbon_monoxide": ("Co-oximetry blood gas measuring Carboxyhemoglobin (COHb) percentage, continuous ECG monitoring, and troponin.", "Co-oximetry blood gas measuring Carboxyhemoglobin (COHb) percentage, continuous ECG monitoring, and troponin."),
+            "methemoglobinemia": ("Co-oximetry arterial blood gas measuring Methemoglobin (MetHb) percentage, glucose-6-phosphate dehydrogenase (G6PD) screen prior to methylene blue therapy.", "Co-oximetry arterial blood gas measuring Methemoglobin (MetHb) percentage, glucose-6-phosphate dehydrogenase (G6PD) screen prior to methylene blue therapy.")
         }
 
         for d in differential_diagnosis[:6]:
@@ -1794,7 +1794,7 @@ class AnalysisService:
             name = d.get("name") or d.get("name_en") or did
             name_fa = d.get("name_fa") or name
             if prob >= 0.20 or d.get("rank", 99) <= 2:
-                next_en, next_fa = ("Follow-up confirmatory testing and clinical correlation.", "انجام تست‌های تکمیلی تشخیصی و پیگیری بالینی")
+                next_en, next_fa = ("Follow-up confirmatory testing and clinical correlation.", "Follow-up confirmatory testing and clinical correlation.")
                 for key, (test_en, test_fa) in sorted(GOLD_STANDARD_NEXT_TESTS.items(), key=lambda x: len(x[0]), reverse=True):
                     if key in did or key in name.lower() or key in str(d.get("name_fa", "")).lower():
                         next_en, next_fa = test_en, test_fa
@@ -1806,9 +1806,9 @@ class AnalysisService:
                     "timeframe": "24-72 hours",
                     "category": "DIFFERENTIAL_DIAGNOSIS",
                     "title": f"Diagnostic Hypothesis: {name} (Probability: {prob*100:.1f}%)",
-                    "title_fa": f"فرضیه تشخیصی: {name_fa} (احتمال: {prob*100:.1f}%)",
+                    "title_fa": f"Diagnostic Hypothesis: {name} (Probability: {prob*100:.1f}%)",
                     "action_en": f"Recommended Gold Standard Next Test: {next_en}",
-                    "action_fa": f"تست تکمیلی استاندارد طلایی بعدی: {next_fa}",
+                    "action_fa": f"Recommended Gold Standard Next Test: {next_en}",
                 })
 
         # 2.4 Moderate Renal Impairment Drug Review (eGFR 30-59)
@@ -1820,9 +1820,9 @@ class AnalysisService:
                 "timeframe": "48-72 hours",
                 "category": "PHARMACOTHERAPY_REVIEW",
                 "title": f"Moderate Renal Impairment (eGFR = {egfr_val:.1f} mL/min/1.73m2)",
-                "title_fa": f"نقص متوسط عملکرد کلیه (eGFR = {egfr_val:.1f} mL/min/1.73m²)",
+                "title_fa": f"Moderate Renal Impairment (eGFR = {egfr_val:.1f} mL/min/1.73m2)",
                 "action_en": "Dose adjustment of renally eliminated drugs (ACEi/ARBs, gabapentin, metformin). Maintain adequate hydration and avoid NSAIDs.",
-                "action_fa": "تنظیم دوز داروهای دفع‌شونده کلیوی (مهارکننده‌های RAAS، گاباپنتین، متفورمین)، هیدراتاسیون کافی و پرهیز از NSAIDs.",
+                "action_fa": "Dose adjustment of renally eliminated drugs (ACEi/ARBs, gabapentin, metformin). Maintain adequate hydration and avoid NSAIDs.",
             })
 
         # -------------------------------------------------------------------
@@ -1849,9 +1849,9 @@ class AnalysisService:
                     "timeframe": "24-48 hours",
                     "category": "CARDIOVASCULAR_RISK",
                     "title": f"High 10-Year Cardiovascular Risk ({name}: {prob_pct})",
-                    "title_fa": f"خطر بالای بیماری‌های قلبی-عروقی در ۱۰ سال آینده ({name}: {prob_pct})",
+                    "title_fa": f"High 10-Year Cardiovascular Risk ({name}: {prob_pct})",
                     "action_en": "High-intensity statin therapy (Atorvastatin 40-80mg or Rosuvastatin 20-40mg), strict blood pressure target (< 130/80 mmHg), dietary modification, and outpatient cardiology evaluation.",
-                    "action_fa": "اندیکاسیون شروع استاتین با دوز بالا، کنترل دقیق فشار خون زیر ۱۳۰/۸۰، اصلاح سبک زندگی و ویزیت سرپایی متخصص قلب و عروق.",
+                    "action_fa": "High-intensity statin therapy (Atorvastatin 40-80mg or Rosuvastatin 20-40mg), strict blood pressure target (< 130/80 mmHg), dietary modification, and outpatient cardiology evaluation.",
                 })
             elif key == "SCORE2_10Y" and lvl in ("high", "very high"):
                 prob_pct = f"{prob*100:.1f}%" if prob is not None else "High"
@@ -1862,9 +1862,9 @@ class AnalysisService:
                     "timeframe": "24-48 hours",
                     "category": "CARDIOVASCULAR_RISK",
                     "title": f"Elevated 10-Year CVD Mortality Risk (SCORE2: {prob_pct} [{band}])",
-                    "title_fa": f"ریسک بالای مرگ‌ومیر قلبی-عروقی ۱۰ ساله (SCORE2: {prob_pct})",
+                    "title_fa": f"Elevated 10-Year CVD Mortality Risk (SCORE2: {prob_pct} [{band}])",
                     "action_en": "Guideline-directed preventive intervention: target LDL-C < 55-70 mg/dL based on ESC 2021 guidelines.",
-                    "action_fa": "مداخله پیشگیرانه بر اساس گایدلاین ESC 2021: هدف‌گذاری سطح LDL زیر ۵۵ تا ۷۰ میلی‌گرم در دسی‌لیتر.",
+                    "action_fa": "Guideline-directed preventive intervention: target LDL-C < 55-70 mg/dL based on ESC 2021 guidelines.",
                 })
 
             # Advanced Liver Fibrosis (FIB-4 >= 2.67, APRI >= 1.5, NFS > 0.675)
@@ -1876,9 +1876,9 @@ class AnalysisService:
                     "timeframe": "48-72 hours",
                     "category": "HEPATOLOGY_WORKUP",
                     "title": f"High Probability of Advanced Liver Fibrosis (FIB-4 = {score:.2f})",
-                    "title_fa": f"احتمال بالای فیبروز پیشرفته کبدی (شاخص FIB-4 = {score:.2f})",
+                    "title_fa": f"High Probability of Advanced Liver Fibrosis (FIB-4 = {score:.2f})",
                     "action_en": "Positive predictive value ~80% for advanced fibrosis (F3-F4). Hepatology referral, vibration-controlled transient elastography (FibroScan), and screening for portal hypertension.",
-                    "action_fa": "ارزش اخباری مثبت ۸۰٪ برای فیبروز پیشرفته؛ ارجاع به متخصص گوارش و کبد جهت الاستوگرافی (فیبرو اسکن) و پایش هیپرتانسیون پورت.",
+                    "action_fa": "Positive predictive value ~80% for advanced fibrosis (F3-F4). Hepatology referral, vibration-controlled transient elastography (FibroScan), and screening for portal hypertension.",
                 })
             elif key == "Liver_Fibrosis_APRI" and ((score is not None and score >= 1.5) or lvl in ("high", "very high")):
                 tier_2.append({
@@ -1888,9 +1888,9 @@ class AnalysisService:
                     "timeframe": "48-72 hours",
                     "category": "HEPATOLOGY_WORKUP",
                     "title": f"Significant Liver Fibrosis / Cirrhosis Likely (APRI = {score:.2f})",
-                    "title_fa": f"احتمال بالای فیبروز قابل توجه یا سیروز (شاخص APRI = {score:.2f})",
+                    "title_fa": f"Significant Liver Fibrosis / Cirrhosis Likely (APRI = {score:.2f})",
                     "action_en": "APRI > 1.5 indicates significant fibrosis/cirrhosis. Comprehensive hepatobiliary ultrasound and confirmatory elastography.",
-                    "action_fa": "نشان‌دهنده احتمال بالای فیبروز شدید یا سیروز؛ انجام سونوگرافی دقیق کبد و مجاری صفراوی و الاستوگرافی تاییدی.",
+                    "action_fa": "APRI > 1.5 indicates significant fibrosis/cirrhosis. Comprehensive hepatobiliary ultrasound and confirmatory elastography.",
                 })
 
             # Progressive Renal Failure (KFRE >= 15%)
@@ -1903,9 +1903,9 @@ class AnalysisService:
                     "timeframe": "48-72 hours",
                     "category": "NEPHROLOGY_WORKUP",
                     "title": f"High Risk of End-Stage Kidney Failure (Tangri KFRE: {prob_pct})",
-                    "title_fa": f"خطر بالای پیشرفت به مرحله نهایی نارسایی کلیه (KFRE: {prob_pct})",
+                    "title_fa": f"High Risk of End-Stage Kidney Failure (Tangri KFRE: {prob_pct})",
                     "action_en": "Elevated 2-to-5-year risk of ESRD requiring renal replacement therapy. Outpatient nephrology referral, strict proteinuria control with SGLT2 inhibitors and RAAS blockade.",
-                    "action_fa": "ریسک بالای نارسایی کلیه نیازمند دیالیز در ۲ تا ۵ سال آینده؛ ارجاع به متخصص نفرولوژی، کنترل پروتئینوری با مهارکننده‌های SGLT2 و داروی RAAS.",
+                    "action_fa": "Elevated 2-to-5-year risk of ESRD requiring renal replacement therapy. Outpatient nephrology referral, strict proteinuria control with SGLT2 inhibitors and RAAS blockade.",
                 })
 
             # Metabolic Syndrome & Severe Insulin Resistance
@@ -1917,9 +1917,9 @@ class AnalysisService:
                     "timeframe": "48-72 hours",
                     "category": "METABOLIC_INTERVENTION",
                     "title": "Confirmed Metabolic Syndrome (Harmonized IDF/AHA Criteria)",
-                    "title_fa": "سندرم متابولیک قطعی (بر اساس معیارهای مشترک IDF/AHA)",
+                    "title_fa": "Confirmed Metabolic Syndrome (Harmonized IDF/AHA Criteria)",
                     "action_en": "Synergistic 2-fold increase in CVD events and 5-fold increase in T2DM. Structured lifestyle intervention (Mediterranean diet, 150 min/wk aerobic exercise) and metabolic pharmacotherapy.",
-                    "action_fa": "افزایش ۲ برابری خطر حوادث قلبی و ۵ برابری دیابت؛ رژیم غذایی مدیترانه‌ای، ورزش منظم و بررسی درمان دارویی کاهنده مقاومت انسولین.",
+                    "action_fa": "Synergistic 2-fold increase in CVD events and 5-fold increase in T2DM. Structured lifestyle intervention (Mediterranean diet, 150 min/wk aerobic exercise) and metabolic pharmacotherapy.",
                 })
 
             # High Bleeding Risk in Atrial Fibrillation (HAS-BLED >= 3)
@@ -1931,9 +1931,9 @@ class AnalysisService:
                     "timeframe": "24-48 hours",
                     "category": "ANTICOAGULATION_SAFETY",
                     "title": f"High Bleeding Risk on Anticoagulation (HAS-BLED = {score})",
-                    "title_fa": f"خطر بالای خونریزی با مصرف داروی ضدانعقاد (HAS-BLED = {score})",
+                    "title_fa": f"High Bleeding Risk on Anticoagulation (HAS-BLED = {score})",
                     "action_en": "HAS-BLED >= 3 is NOT a reason to withhold anticoagulation; it mandates identifying and correcting reversible risk factors (uncontrolled hypertension, concomitant NSAID/aspirin use, labile INR).",
-                    "action_fa": "نمره بالای ۳ دلیلی بر قطع ضدانعقاد نیست، بلکه نشان‌دهنده لزوم اصلاح فاکتورهای خطرساز قابل‌برگشت (کنترل فشارخون، قطع مصرف همزمان بروفن و NSAIDs) است.",
+                    "action_fa": "HAS-BLED >= 3 is NOT a reason to withhold anticoagulation; it mandates identifying and correcting reversible risk factors (uncontrolled hypertension, concomitant NSAID/aspirin use, labile INR).",
                 })
 
         # -------------------------------------------------------------------
@@ -1949,9 +1949,9 @@ class AnalysisService:
                     "urgency": "REASSURANCE",
                     "category": "PHYSIOLOGICAL_BENIGN",
                     "title": f"Physiological Bone Growth ALP Elevation ({alp_val:.0f} U/L)",
-                    "title_fa": f"افزایش فیزیولوژیک آلکالین فسفاتاز استخوانی دوران رشد ({alp_val:.0f} U/L)",
+                    "title_fa": f"Physiological Bone Growth ALP Elevation ({alp_val:.0f} U/L)",
                     "details_en": "Elevated alkaline phosphatase reflects osteoblastic bone formation during pediatric/adolescent growth spurts; normal liver transaminases rule out hepatobiliary disease.",
-                    "details_fa": "افزایش آلکالین فسفاتاز در دوران رشد اسکلتی اطفال و بلوغ کاملاً طبیعی است و نرمال بودن آنزیم‌های کبدی هرگونه پاتولوژی کبد را رد می‌کند.",
+                    "details_fa": "Elevated alkaline phosphatase reflects osteoblastic bone formation during pediatric/adolescent growth spurts; normal liver transaminases rule out hepatobiliary disease.",
                 })
 
         # 3.2 Pregnancy Hemodilution
@@ -1964,9 +1964,9 @@ class AnalysisService:
                     "urgency": "REASSURANCE",
                     "category": "PHYSIOLOGICAL_BENIGN",
                     "title": f"Physiological Pregnancy Hemodilution (Hb = {hb_v:.1f} g/dL)",
-                    "title_fa": f"رقت فیزیولوژیک خون در دوران بارداری (هموگلوبین = {hb_v:.1f} g/dL)",
+                    "title_fa": f"Physiological Pregnancy Hemodilution (Hb = {hb_v:.1f} g/dL)",
                     "details_en": "Mild hemoglobin reduction (>= 10.5 g/dL) is physiological in pregnancy due to disproportionate 50% plasma volume expansion over red cell mass.",
-                    "details_fa": "کاهش خفیف هموگلوبین در بارداری ناشی از اتساع ۵۰ درصدی حجم پلاسما است و پاتولوژیک تلقی نمی‌شود.",
+                    "details_fa": "Mild hemoglobin reduction (>= 10.5 g/dL) is physiological in pregnancy due to disproportionate 50% plasma volume expansion over red cell mass.",
                 })
 
         # 3.3 Normal De Ritis Ratio Reassurance
@@ -1980,9 +1980,9 @@ class AnalysisService:
                     "urgency": "REASSURANCE",
                     "category": "PHYSIOLOGICAL_BENIGN",
                     "title": f"Normal Liver Enzymes & Physiological De Ritis Ratio ({deritis_val})",
-                    "title_fa": f"آنزیم‌های کبدی سالم و نسبت فیزیولوژیک دِ ریتیس ({deritis_val})",
+                    "title_fa": f"Normal Liver Enzymes & Physiological De Ritis Ratio ({deritis_val})",
                     "details_en": "Transaminases are within normal limits; De Ritis ratio is of no pathological significance when liver enzymes are normal.",
-                    "details_fa": "ترانس‌آمینازهای کبدی در محدوده طبیعی هستند و نسبت دِ ریتیس دلالت پاتولوژیک ندارد.",
+                    "details_fa": "Transaminases are within normal limits; De Ritis ratio is of no pathological significance when liver enzymes are normal.",
                 })
 
         # 3.4 Neonatal Physiological Leukocytosis & Polycythemia Reassurance
@@ -1996,9 +1996,9 @@ class AnalysisService:
                     "urgency": "REASSURANCE",
                     "category": "PHYSIOLOGICAL_BENIGN",
                     "title": f"Physiological Neonatal Hematology (WBC: {wbc_val or 'Normal'}, Hct: {hct_val or 'Normal'}%)",
-                    "title_fa": "هماتولوژی فیزیولوژیک دوره نوزادی (لکوسیتوز و هماتوکریت بالای طبیعی بدو تولد)",
+                    "title_fa": f"Physiological Neonatal Hematology (WBC: {wbc_val or 'Normal'}, Hct: {hct_val or 'Normal'}%)",
                     "details_en": "Elevated leukocyte count (up to 30.0 x10^3/uL) and hematocrit (up to 65%) represent benign fetal-neonatal hematopoietic transition and do not indicate sepsis or polycythemia vera.",
-                    "details_fa": "لکوسیتوز نوزادی (تا ۳۰ هزار) و هماتوکریت بالا (تا ۶۵٪) تغییرات گذار فیزیولوژیک روزهای اول تولد هستند و دلالت بر سپسیس یا بیماری خونی ندارند.",
+                    "details_fa": "Elevated leukocyte count (up to 30.0 x10^3/uL) and hematocrit (up to 65%) represent benign fetal-neonatal hematopoietic transition and do not indicate sepsis or polycythemia vera.",
                 })
 
         # 3.5 Geriatric Age-Adapted GFR Senescence Reassurance
@@ -2010,9 +2010,9 @@ class AnalysisService:
                     "urgency": "REASSURANCE",
                     "category": "PHYSIOLOGICAL_BENIGN",
                     "title": f"Physiological Age-Related Renal Senescence (eGFR = {egfr_val:.1f} mL/min/1.73m2)",
-                    "title_fa": f"افت فیزیولوژیک فیلتراسیون گلومرولی مرتبط با سن در سالمندان (eGFR = {egfr_val:.1f})",
+                    "title_fa": f"Physiological Age-Related Renal Senescence (eGFR = {egfr_val:.1f} mL/min/1.73m2)",
                     "details_en": "Mild GFR reduction in elderly asymptomatic patients (eGFR 50-74 mL/min without proteinuria or electrolyte derangement) reflects normal nephron senescence rather than intrinsic acute renal disease.",
-                    "details_fa": "کاهش ملایم GFR در افراد سالمند بدون دفع پروتئین یا اختلال الکترولیتی، ناشی از پیری طبیعی نفرون‌ها بوده و بیماری حاد کلیوی نیست.",
+                    "details_fa": "Mild GFR reduction in elderly asymptomatic patients (eGFR 50-74 mL/min without proteinuria or electrolyte derangement) reflects normal nephron senescence rather than intrinsic acute renal disease.",
                 })
 
         # 3.6 Low-Risk Predictive Model Reassurance
@@ -2033,9 +2033,9 @@ class AnalysisService:
                     "urgency": "REASSURANCE",
                     "category": "PHYSIOLOGICAL_BENIGN",
                     "title": f"Low 10-Year Cardiovascular Risk ({r.get('modelName') or key}: {prob_pct})",
-                    "title_fa": f"خطر پایین حوادث قلبی-عروقی ۱۰ ساله ({prob_pct})",
+                    "title_fa": f"Low 10-Year Cardiovascular Risk ({r.get('modelName') or key}: {prob_pct})",
                     "details_en": "Estimated 10-year risk of ASCVD is under 5%; routine primary prevention lifestyle measures are sufficient.",
-                    "details_fa": "خطر ۱۰ ساله ابتلا به سکته قلبی و مغزی زیر ۵ درصد است؛ تداوم سبک زندگی سالم و پایش دوره‌ای سالیانه کافی است.",
+                    "details_fa": "Estimated 10-year risk of ASCVD is under 5%; routine primary prevention lifestyle measures are sufficient.",
                 })
             elif key == "NASH" and ((score is not None and score < 1.30) or lvl == "low"):
                 tier_3.append({
@@ -2044,9 +2044,9 @@ class AnalysisService:
                     "urgency": "REASSURANCE",
                     "category": "PHYSIOLOGICAL_BENIGN",
                     "title": f"Advanced Liver Fibrosis Ruled Out (FIB-4 = {score:.2f})",
-                    "title_fa": f"رد فیبروز پیشرفته کبدی (شاخص FIB-4 = {score:.2f})",
+                    "title_fa": f"Advanced Liver Fibrosis Ruled Out (FIB-4 = {score:.2f})",
                     "details_en": "FIB-4 < 1.30 has a negative predictive value > 90% for ruling out advanced fibrosis (F3-F4); reassuring hepatobiliary status.",
-                    "details_fa": "شاخص FIB-4 زیر ۱.۳۰ با ارزش اخباری منفی بالای ۹۰ درصد، فیبروز پیشرفته کبدی را رد می‌کند و حاکی از سلامت کبد است.",
+                    "details_fa": "FIB-4 < 1.30 has a negative predictive value > 90% for ruling out advanced fibrosis (F3-F4); reassuring hepatobiliary status.",
                 })
 
         # 3.7 Normal Panel Reassurance (if Tier 1 and Tier 2 are empty)
@@ -2057,9 +2057,9 @@ class AnalysisService:
                 "urgency": "REASSURANCE",
                 "category": "PHYSIOLOGICAL_BENIGN",
                 "title": "Comprehensive Organ Panels Within Physiological Limits",
-                "title_fa": "کلیه شاخص‌های آزمایشگاهی در محدوده فیزیولوژیک نرمال قرار دارند",
+                "title_fa": "Comprehensive Organ Panels Within Physiological Limits",
                 "details_en": "Evaluated metabolic, hematologic, renal, and hepatic analytes match target physiological reference intervals for age and demographic cohort.",
-                "details_fa": "کلیه شاخص‌های بیوشیمیایی و سلولی بررسی‌شده با استانداردهای مرجع سن و جنس بیمار منطبق هستند.",
+                "details_fa": "Evaluated metabolic, hematologic, renal, and hepatic analytes match target physiological reference intervals for age and demographic cohort.",
             })
 
         return {
@@ -2274,23 +2274,23 @@ class AnalysisService:
         # 0. Target Population & Physiological Context
         target_pop_info = []
         if calc_context.pregnant:
-            target_pop_info.append("مادر باردار (Pregnancy Cohort) — تطبیق محدوده‌های مرجع برای رقت فیزیولوژیک و آلکالین فسفاتاز جفتی طبق دستورالعمل ACOG")
+            target_pop_info.append("Pregnancy cohort - reference ranges adjusted for physiological haemodilution and placental alkaline phosphatase per ACOG guidance")
         elif calc_context.age_years is not None:
             if calc_context.age_years < 0.08:
-                target_pop_info.append(f"نوزاد {calc_context.age_years*365.25:.0f} روزه (Neonate) — ارزیابی طبق محدوده‌های خونی و متابولیک فیزیولوژیک نوزادی")
+                target_pop_info.append(f"Neonate, {calc_context.age_years*365.25:.0f} days old - assessed against neonatal haematological and metabolic reference ranges")
             elif calc_context.age_years < 1.0:
-                target_pop_info.append(f"شیرخوار {calc_context.age_years*12:.0f} ماهه (Infant) — استانداردهای مرجع تکاملی شیرخواران")
+                target_pop_info.append(f"Infant, {calc_context.age_years*12:.0f} months old - developmental infant reference standards")
             elif calc_context.age_years < 12.0:
-                target_pop_info.append(f"کودک {calc_context.age_years:.0f} ساله (Pediatric) — استانداردهای رشد و فیزیولوژی اطفال (Nelson / Tietz)")
+                target_pop_info.append(f"Child, {calc_context.age_years:.0f} years old (paediatric) - paediatric growth and physiology standards (Nelson / Tietz)")
             elif calc_context.age_years < 18.0:
-                target_pop_info.append(f"نوجوان {calc_context.age_years:.0f} ساله (Adolescent) — تفکیک جهش رشد بلوغ و آلکالین فسفاتاز استخوانی")
+                target_pop_info.append(f"Adolescent, {calc_context.age_years:.0f} years old - pubertal growth spurt and bone alkaline phosphatase taken into account")
             elif calc_context.age_years >= 65.0:
-                target_pop_info.append(f"سالمند {calc_context.age_years:.0f} ساله (Geriatric) — تطبیق فیزیولوژیک افت GFR سنی و آستانه‌های تشخیصی")
+                target_pop_info.append(f"Older adult, {calc_context.age_years:.0f} years old (geriatric) - physiological age-related GFR decline and diagnostic thresholds adjusted")
             else:
-                target_pop_info.append(f"بزرگسال {calc_context.age_years:.0f} ساله (Adult)")
+                target_pop_info.append(f"Adult, {calc_context.age_years:.0f} years old")
 
         if target_pop_info:
-            target_header = "👥 بافتار فیزیولوژیک و جامعه هدف:\n• " + "\n• ".join(target_pop_info)
+            target_header = "Physiological context and target population:\n- " + "\n- ".join(target_pop_info)
             exec_sections.append(target_header)
 
         # 1. Tier 1: Critical Emergencies & Pre-analytical Artifacts
@@ -2300,8 +2300,8 @@ class AnalysisService:
             for item in tier_1:
                 title = item.get("title_fa") or item.get("title")
                 action = item.get("action_fa") or item.get("action_en")
-                t1_lines.append(f"• 🚨 {title}\n  ↳ اقدام فوری (< ۲ ساعت): {action}")
-            exec_sections.append("🔴 سطح ۱: اورژانس‌های حیاتی و هشدارهای فوری (< ۲ ساعت):\n" + "\n".join(t1_lines))
+                t1_lines.append(f"- {title}\n  Immediate action (< 2 hours): {action}")
+            exec_sections.append("Tier 1: life-threatening emergencies and immediate alerts (< 2 hours):\n" + "\n".join(t1_lines))
 
         # 2. Tier 2: Subacute Diagnostics & Workup
         tier_2 = triaged_findings.get("tier_2_actionable", [])
@@ -2310,8 +2310,8 @@ class AnalysisService:
             for item in tier_2:
                 title = item.get("title_fa") or item.get("title")
                 action = item.get("action_fa") or item.get("action_en")
-                t2_lines.append(f"• 🟡 {title}\n  ↳ بررسی تکمیلی (۲۴ تا ۷۲ ساعت): {action}")
-            exec_sections.append("🟡 سطح ۲: اقدامات تشخیصی تحت‌حاد و طبقه‌بندی خطر (۲۴ تا ۷۲ ساعت):\n" + "\n".join(t2_lines))
+                t2_lines.append(f"- {title}\n  Further work-up (24-72 hours): {action}")
+            exec_sections.append("Tier 2: subacute diagnostic actions and risk stratification (24-72 hours):\n" + "\n".join(t2_lines))
 
         # 3. Tier 3: Physiological Reassurance & Baseline
         tier_3 = triaged_findings.get("tier_3_physiological", [])
@@ -2323,8 +2323,8 @@ class AnalysisService:
                     details = item.get("details_fa") or item.get("details_en")
                     t3_lines.append(f"• 🟢 {title}: {details}")
             else:
-                t3_lines.append("• 🟢 کلیه شاخص‌های بیوشیمیایی و سلولی بیمار در محدوده فیزیولوژیک طبیعی جامعه هدف مربوطه (Nelson / Tietz / CLSI) قرار دارند.")
-            exec_sections.append("🟢 سطح ۳: اطمینان‌بخشی فیزیولوژیک و پایش پایه:\n" + "\n".join(t3_lines))
+                t3_lines.append("- All biochemical and cellular indices are within the physiological reference range of the relevant target population (Nelson / Tietz / CLSI).")
+            exec_sections.append("Tier 3: physiological reassurance and baseline monitoring:\n" + "\n".join(t3_lines))
 
         # 4. Multi-System Axis Analysis
         ms_patterns = multi_system_analysis.get("multi_system_patterns", [])
@@ -2334,7 +2334,7 @@ class AnalysisService:
                 title = p.get("title_fa") or p.get("pattern", "").replace("_", " ").title()
                 interp = p.get("interpretation_fa") or p.get("interpretation", "")
                 ms_lines.append(f"• {title}: {interp}")
-            exec_sections.append("🌐 تحلیل چندارگانی و تعامل محورها (Multi-System Axis Analysis):\n" + "\n".join(ms_lines))
+            exec_sections.append("Multi-system axis analysis:\n" + "\n".join(ms_lines))
 
         # 5. Predictive Risk Stratification (Chronic Disease & Long-Term Outcomes)
         evaluated_models = [
@@ -2354,7 +2354,7 @@ class AnalysisService:
             seen_models = set()
 
             if high_eval:
-                r_lines.append("🔻 مدل‌های با ریسک بالا و بسیار بالا (High & Very High Risk Stratification):")
+                r_lines.append("High and very high risk stratification:")
                 for r in high_eval[:8]:
                     name = r.get("modelName") or r.get("nameEn") or r.get("diseaseKey")
                     if not name or name in seen_models:
@@ -2363,12 +2363,12 @@ class AnalysisService:
                     level = r.get("riskLevel") or r.get("riskBand") or "High"
                     prob = r.get("probability")
                     score = r.get("score") if r.get("score") is not None else r.get("points")
-                    val_str = f" ({prob*100:.1f}%)" if isinstance(prob, (int, float)) else (f" (امتیاز: {score})" if score is not None else "")
+                    val_str = f" ({prob*100:.1f}%)" if isinstance(prob, (int, float)) else (f" (score: {score})" if score is not None else "")
                     band = f" [{r.get('riskBand')}]" if r.get("riskBand") else ""
-                    r_lines.append(f"  • {name}: سطح ریسک {level}{val_str}{band}")
+                    r_lines.append(f"  - {name}: risk level {level}{val_str}{band}")
 
             if mod_low_eval:
-                r_lines.append("🔹 مدل‌های با ریسک متوسط و پایین (Moderate & Low Risk Profiles):")
+                r_lines.append("Moderate and low risk profiles:")
                 for r in mod_low_eval[:6]:
                     name = r.get("modelName") or r.get("nameEn") or r.get("diseaseKey")
                     if not name or name in seen_models:
@@ -2377,11 +2377,11 @@ class AnalysisService:
                     level = r.get("riskLevel") or r.get("riskBand") or "Low"
                     prob = r.get("probability")
                     score = r.get("score") if r.get("score") is not None else r.get("points")
-                    val_str = f" ({prob*100:.1f}%)" if isinstance(prob, (int, float)) else (f" (امتیاز: {score})" if score is not None else "")
-                    r_lines.append(f"  • {name}: سطح ریسک {level}{val_str}")
+                    val_str = f" ({prob*100:.1f}%)" if isinstance(prob, (int, float)) else (f" (score: {score})" if score is not None else "")
+                    r_lines.append(f"  - {name}: risk level {level}{val_str}")
 
             if r_lines:
-                exec_sections.append("📈 ارزیابی و طبقه‌بندی خطر بیماری‌های مزمن (Predictive Risk Stratification):\n" + "\n".join(r_lines))
+                exec_sections.append("Predictive risk stratification for chronic disease:\n" + "\n".join(r_lines))
 
         # Build English Executive Summary (Strictly English CDS output)
         exec_sections_en: list[str] = []

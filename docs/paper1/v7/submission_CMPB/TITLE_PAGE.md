@@ -2,7 +2,7 @@
 
 **Title.** Verifying an AI-drafted laboratory-interpretation rule base before clinical audit: executable invariants, frozen source-concordance protocols and a hash-frozen benchmark applied to the open Hemoglyph engine
 
-**Authors.** Sobhan Bahrami^a*^ (سبحان بهرامی), Zhaleh Tahmasebinejad^b,c^, Ehsan Bahrami Samani^b^
+**Authors.** Sobhan Bahrami^a*^, Zhaleh Tahmasebinejad^b,c^, Ehsan Bahrami Samani^b^
 
 ^a^ Allameh Helli 10 High School (NODET), Tehran, Iran.
 ^b^ Statistics and Data Science Clinic, Faculty of Mathematical Sciences, Shahid Beheshti University, Evin, Tehran 1983969411, Iran.
