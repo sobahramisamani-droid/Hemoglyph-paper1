@@ -2881,21 +2881,21 @@ class ClinicalBayesianNetwork:
              if v.get("present") and k in node.likelihood_ratios),
             key=lambda kv: -kv[1])[:3]
         if drivers:
-            driver_text = "، ".join(
+            driver_text = ", ".join(
                 f"{k} (LR+ {lr:g})" for k, lr in drivers)
         else:
-            driver_text = "بدون شاهد مثبت اختصاصی"
+            driver_text = "no specific positive evidence"
         if posterior > 0.7:
-            level = "بسیار محتمل"
+            level = "very likely"
         elif posterior > 0.4:
-            level = "محتمل"
+            level = "likely"
         elif posterior > 0.15:
-            level = "ممکن"
+            level = "possible"
         else:
-            level = "کم‌احتمال"
+            level = "unlikely"
         n_ev = sum(1 for f in findings.values() if f.get("present"))
-        return (f"احتمال {level} ({posterior:.1%}) بر اساس {n_ev} "
-                f"یافته. مؤثرترین شواهد: {driver_text}.")
+        return (f"Probability {level} ({posterior:.1%}) based on {n_ev} "
+                f"finding(s). Most influential evidence: {driver_text}.")
 
 
 @dataclass
@@ -3396,9 +3396,9 @@ class AdaptiveFuzzyEngine:
                         membership_score=_clamp01(score),
                         activated_rules=activated,
                         explanation=(
-                            f"درجه عضویت فازی {score:.2f} از "
+                            f"Fuzzy membership {score:.2f} from "
                             f"{len(memberships)}/{len(rule.conditions)} "
-                            f"شاهدِ الگوی «{rule.name}»"),
+                            f"criteria of pattern '{rule.name}'"),
                         used_features=used_features,
                         min_reliability=min_rel,
                     )
@@ -4415,17 +4415,17 @@ def _calibrate(score: float, confidence: float) -> float:
 def _tafsir(score: float, confidence: float,
             state: Optional[str] = None) -> str:
     if state == "conflicting":
-        return 'تضاد بین لایه‌ها — نیازمند تست تأییدی اختصاصی'
+        return 'Conflict between layers - specific confirmatory test required'
     if state == "insufficient" and score <= 0.5:
-        return 'شواهد ناکافی (بازه باور گسترده) — تست تکمیلی لازم است'
+        return 'Insufficient evidence (wide belief interval) - further testing required'
     if score > 0.7 and confidence > 0.7:
-        return 'بسیار محتمل — توصیه بررسی فوری'
+        return 'Very likely - prompt evaluation recommended'
     elif score > 0.5:
-        return 'محتمل — نیاز به تأیید'
+        return 'Likely - confirmation required'
     elif score > 0.2:
-        return "ممکن — نیاز به پیگیری"
+        return "Possible - follow-up required"
     else:
-        return 'کم‌احتمال'
+        return 'Unlikely'
 
 
 @dataclass
@@ -6253,9 +6253,9 @@ def tahlil_olgoo_haye_moshtagh(
         elif ratio >= 2.0:
             if is_child and alt < 20 and ast < 40:
                 add(pattern_id='de_ritis_high_pediatric', name_en='AST/ALT Ratio Pediatric Normal Variant',
-                    name_fa="نسبت AST/ALT در کودک - واریانت طبیعی", value=round(ratio, 2),
+                    name_fa="AST/ALT ratio in a child - normal variant", value=round(ratio, 2),
                     interpretation=(
-                        f"AST/ALT = {ratio:.2f} (≥2.0) در کودک {age_for_ritis:.0f} ساله با ALT پایین {alt:.0f} — در کودکان ALT پایین طبیعی است، نسبت بالا الکل نیست. رشد، تغذیه بررسی شود."),
+                        f"AST/ALT = {ratio:.2f} (>=2.0) in a {age_for_ritis:.0f}-year-old child with low ALT {alt:.0f} - a low ALT is normal in children, so the high ratio does not indicate alcohol. Assess growth and nutrition."),
                     significance="low",
                     supports=[],
                     argues_against=['alcoholic_liver_disease', "liver_cirrhosis"],
@@ -6263,10 +6263,10 @@ def tahlil_olgoo_haye_moshtagh(
                     inputs={"AST": ast, "ALT": alt, "Age": age_for_ritis or 0})
             else:
                 add(pattern_id='de_ritis_high', name_en='AST/ALT Ratio',
-                    name_fa="نسبت AST/ALT", value=round(ratio, 2),
+                    name_fa="AST/ALT ratio", value=round(ratio, 2),
                     interpretation=(
-                        f"AST/ALT = {ratio:.2f} (≥2.0) — الگوی کلاسیک "
-                        'بیماری کبدی الکلی یا سیروز پیشرفته.'),
+                        f"AST/ALT = {ratio:.2f} (>=2.0) - classic pattern of "
+                        'alcoholic liver disease or advanced cirrhosis.'),
                     significance="high",
                     supports=['alcoholic_liver_disease', "liver_cirrhosis"],
                     argues_against=["nafl_d", "chronic_hepatitis_c"],
@@ -6274,10 +6274,10 @@ def tahlil_olgoo_haye_moshtagh(
                     inputs={"AST": ast, "ALT": alt})
         elif ratio < 1.0:
             add(pattern_id='de_ritis_low', name_en="AST/ALT Ratio",
-                name_fa="نسبت AST/ALT", value=round(ratio, 2),
+                name_fa="AST/ALT ratio", value=round(ratio, 2),
                 interpretation=(
-                    f"AST/ALT = {ratio:.2f} (<1.0) — بیشتر به نفع "
-                    'کبد چرب غیرالکلی یا هپاتیت ویروسی.'),
+                    f"AST/ALT = {ratio:.2f} (<1.0) - favours "
+                    'non-alcoholic fatty liver disease or viral hepatitis.'),
                 significance="moderate",
                 supports=["nafl_d", "chronic_hepatitis_c"],
                 argues_against=['alcoholic_liver_disease'],
@@ -6293,12 +6293,12 @@ def tahlil_olgoo_haye_moshtagh(
     if tsat is not None and ferr is not None:
         if tsat > 45 and ferr > 300:
             add(pattern_id="iron_overload",
-                name_en="Iron Overload", name_fa="اضافه‌بار آهن",
+                name_en="Iron Overload", name_fa="Iron overload",
                 value=round(tsat, 1),
                 interpretation=(
-                    f"اشباع ترانسفرین {tsat:.0f}٪ همراه فریتین "
-                    f"{ferr:.0f} — الگوی اضافه‌بار آهن. بررسی "
-                    "هموکروماتوز ارثی (HFE) توصیه می‌شود."),
+                    f"Transferrin saturation {tsat:.0f}% with ferritin "
+                    f"{ferr:.0f} - iron-overload pattern. Evaluation for "
+                    "hereditary haemochromatosis (HFE) is recommended."),
                 significance="high",
                 supports=["hemochromatosis"],
                 argues_against=["iron_deficiency_anemia"],
@@ -6307,10 +6307,10 @@ def tahlil_olgoo_haye_moshtagh(
         elif tsat < 16 and ferr < 30:
             add(pattern_id="iron_deficit",
                 name_en="Absolute Iron Deficiency",
-                name_fa="کمبود مطلق آهن", value=round(tsat, 1),
+                name_fa="Absolute iron deficiency", value=round(tsat, 1),
                 interpretation=(
-                    f"اشباع ترانسفرین {tsat:.0f}٪ و فریتین "
-                    f"{ferr:.0f} — کمبود مطلق آهن تأیید می‌شود."),
+                    f"Transferrin saturation {tsat:.0f}% and ferritin "
+                    f"{ferr:.0f} - absolute iron deficiency confirmed."),
                 significance="high",
                 supports=["iron_deficiency_anemia"],
                 argues_against=["anemia_of_chronic_disease",
@@ -6339,9 +6339,9 @@ def tahlil_olgoo_haye_moshtagh(
             if is_child_bun and low_muscle_cr and bun < 35:
                 add(pattern_id="bun_cr_pediatric_low_muscle",
                     name_en="BUN/Cr Pediatric Low Muscle Mass",
-                    name_fa="نسبت BUN/Cr در کودک - توده عضلانی کم", value=round(ratio_bc, 1),
+                    name_fa="BUN/Cr ratio in a child - low muscle mass", value=round(ratio_bc, 1),
                     interpretation=(
-                        f"BUN/Cr = {ratio_bc:.0f} (>20) در کودک {age_for_bun:.0f} ساله با کراتینین پایین {cr:.2f} — در کودکان کراتینین پایین به دلیل توده عضلانی کم طبیعی است، نه الزاماً پره‌رنال. BUN {bun:.0f} طبیعی، هیدراتاسیون بررسی شود."),
+                        f"BUN/Cr = {ratio_bc:.0f} (>20) in a {age_for_bun:.0f}-year-old child with low creatinine {cr:.2f} - low creatinine is normal in children because of low muscle mass and does not necessarily indicate a pre-renal state. BUN {bun:.0f} is normal; assess hydration."),
                     significance="low",
                     supports=[],
                     argues_against=["acute_kidney_injury"],
@@ -6350,11 +6350,11 @@ def tahlil_olgoo_haye_moshtagh(
             else:
                 add(pattern_id="bun_cr_prerenal",
                     name_en="BUN/Creatinine Ratio",
-                    name_fa="نسبت اوره به کراتینین", value=round(ratio_bc, 1),
+                    name_fa="Urea-to-creatinine ratio", value=round(ratio_bc, 1),
                     interpretation=(
-                        f"BUN/Cr = {ratio_bc:.0f} (>20) — به نفع علت "
-                        "پیش‌کلیوی (کم‌آبی، خونریزی گوارشی) به‌جای "
-                        "آسیب ذاتی کلیه."),
+                        f"BUN/Cr = {ratio_bc:.0f} (>20) - favours a pre-renal "
+                        "cause (dehydration, gastrointestinal bleeding) rather than "
+                        "intrinsic renal injury."),
                     significance="high",
                     supports=["acute_kidney_injury"],
                     argues_against=[],
@@ -6362,10 +6362,10 @@ def tahlil_olgoo_haye_moshtagh(
                     inputs={"BUN": bun, "Creatinine": cr})
         elif ratio_bc < 10:
             add(pattern_id="bun_cr_intrinsic", name_en="BUN/Cr Ratio",
-                name_fa="نسبت اوره به کراتینین", value=round(ratio_bc, 1),
+                name_fa="Urea-to-creatinine ratio", value=round(ratio_bc, 1),
                 interpretation=(
-                    f"BUN/Cr = {ratio_bc:.0f} (<10) — به نفع آسیب "
-                    "ذاتی کلیه (نکروز حاد توبولی) یا سوءتغذیه."),
+                    f"BUN/Cr = {ratio_bc:.0f} (<10) - favours intrinsic "
+                    "renal injury (acute tubular necrosis) or malnutrition."),
                 significance="moderate",
                 supports=['acute_kidney_injury', "chronic_kidney_disease"],
                 citation="KDIGO AKI 2012",
@@ -6376,12 +6376,12 @@ def tahlil_olgoo_haye_moshtagh(
         idx = mcv / rbc
         if idx < 13:
             add(pattern_id="mentzer_thalassemia",
-                name_en="Mentzer Index", name_fa="شاخص منتزر",
+                name_en="Mentzer Index", name_fa="Mentzer index",
                 value=round(idx, 1),
                 interpretation=(
-                    f"شاخص منتزر = {idx:.1f} (<13) در کم‌خونی "
-                    "میکروسیتیک — به‌شدت به نفع تالاسمی مینور، "
-                    "نه فقر آهن. الکتروفورز هموگلوبین توصیه می‌شود."),
+                    f"Mentzer index = {idx:.1f} (<13) in microcytic "
+                    "anaemia - strongly favours thalassaemia minor "
+                    "rather than iron deficiency. Haemoglobin electrophoresis is recommended."),
                 significance="high",
                 supports=["thalassemia_trait"],
                 argues_against=["iron_deficiency_anemia"],
@@ -6389,11 +6389,11 @@ def tahlil_olgoo_haye_moshtagh(
                 inputs={"MCV": mcv, "RBC": rbc})
         else:
             add(pattern_id="mentzer_ida",
-                name_en="Mentzer Index", name_fa="شاخص منتزر",
+                name_en="Mentzer Index", name_fa="Mentzer index",
                 value=round(idx, 1),
                 interpretation=(
-                    f"شاخص منتزر = {idx:.1f} (>13) — به نفع فقر "
-                    "آهن به‌جای تالاسمی."),
+                    f"Mentzer index = {idx:.1f} (>13) - favours iron "
+                    "deficiency rather than thalassaemia."),
                 significance="moderate",
                 supports=["iron_deficiency_anemia"],
                 argues_against=['thalassemia_trait'],
@@ -6403,34 +6403,34 @@ def tahlil_olgoo_haye_moshtagh(
     tsh, ft4 = g("thyroid_stimulating_hormone"), g("free_thyroxine")
     if tsh is not None and ft4 is not None:
         if tsh > 4.5 and ft4 < 0.8:
-            txt, sig, sup = ("TSH بالا + FT4 پایین — کم‌کاری "
-                             "آشکار تیروئید (اولیه).", 'high',
+            txt, sig, sup = ("High TSH + low FT4 - overt "
+                             "primary hypothyroidism.", 'high',
                              ['hypothyroidism'])
         elif tsh > 4.5 and 0.8 <= ft4 <= 1.8:
-            txt, sig, sup = ("TSH بالا + FT4 طبیعی — کم‌کاری "
-                             "تحت‌بالینی تیروئید. تکرار در ۶–۱۲ هفته "
-                             "همراه آنتی‌TPO.", "high", ['hypothyroidism'])
+            txt, sig, sup = ("High TSH + normal FT4 - subclinical "
+                             "hypothyroidism. Repeat in 6-12 weeks "
+                             "with anti-TPO.", "high", ['hypothyroidism'])
         elif tsh < 0.4 and ft4 > 1.8:
-            txt, sig, sup = ("TSH پایین + FT4 بالا — پرکاری آشکار "
-                             "تیروئید.", "high", ["hyperthyroidism"])
+            txt, sig, sup = ("Low TSH + high FT4 - overt "
+                             "hyperthyroidism.", "high", ["hyperthyroidism"])
         elif tsh < 0.4 and 0.8 <= ft4 <= 1.8:
-            txt, sig, sup = ("TSH پایین + FT4 طبیعی — پرکاری "
-                             "تحت‌بالینی؛ FT3 را بررسی کنید.",
+            txt, sig, sup = ("Low TSH + normal FT4 - subclinical "
+                             "hyperthyroidism; check FT3.",
                              'moderate', ["hyperthyroidism"])
         elif tsh > 4.5 and ft4 > 1.8:
-            txt, sig, sup = ("TSH بالا + FT4 بالا — الگوی ناسازگار: "
-                             "مقاومت به هورمون تیروئید، آدنوم مترشحه "
-                             "TSH یا تداخل سنجش. تکرار با روش دیگر.",
+            txt, sig, sup = ("High TSH + high FT4 - discordant pattern: "
+                             "thyroid hormone resistance, TSH-secreting "
+                             "adenoma or assay interference. Repeat with another method.",
                              "high", [])
         elif tsh < 0.4 and ft4 < 0.8:
-            txt, sig, sup = ("TSH پایین + FT4 پایین — کم‌کاری "
-                             "مرکزی (هیپوفیزی) یا سندرم بیماری "
-                             "غیرتیروئیدی.", 'high', [])
+            txt, sig, sup = ("Low TSH + low FT4 - central "
+                             "(pituitary) hypothyroidism or non-thyroidal "
+                             "illness syndrome.", 'high', [])
         else:
             txt, sig, sup = None, None, None
         if txt:
             add(pattern_id="thyroid_axis", name_en="Thyroid Axis",
-                name_fa="محور تیروئید", value=None,
+                name_fa="Thyroid axis", value=None,
                 interpretation=txt, significance=sig, supports=sup,
                 citation="ATA/AACE Thyroid Guidelines 2012",
                 inputs={"TSH": tsh, "FT4": ft4})
@@ -6450,12 +6450,12 @@ def tahlil_olgoo_haye_moshtagh(
                 _sup_ag = []
         if ag > 12 and (hco3 < _hco3_floor or ag > 20):
             add(pattern_id="high_anion_gap",
-                name_en="High Anion Gap", name_fa="آنیون گپ بالا",
+                name_en="High Anion Gap", name_fa="High anion gap",
                 value=round(ag, 1),
                 interpretation=(
-                    f"آنیون گپ (تصحیح‌شده با آلبومین) = {ag:.0f} "
-                    '(>12) — اسیدوز متابولیک با گپ بالا: '
-                    'کتواسیدوز، لاکتات، اورمی یا مسمومیت.'),
+                    f"Anion gap (albumin-corrected) = {ag:.0f} "
+                    '(>12) - high-anion-gap metabolic acidosis: '
+                    'ketoacidosis, lactate, uraemia or toxic ingestion.'),
                 significance="high" if _sup_ag else "moderate",
                 supports=_sup_ag,
                 citation="Kraut JA, NEJM 2014",
@@ -6465,11 +6465,11 @@ def tahlil_olgoo_haye_moshtagh(
     if fer is not None and crp is not None:
         if fer < 30 and crp <= 10:
             add(pattern_id="iron_pattern_ida",
-                name_en="Iron Study Pattern", name_fa="الگوی آهن",
+                name_en="Iron Study Pattern", name_fa="Iron study pattern",
                 value=fer,
                 interpretation=(
-                    f"فریتین {fer:g} پایین با CRP طبیعی — فقر آهن "
-                    'واقعی (بدون مخدوش‌شدن التهابی).'),
+                    f"Low ferritin {fer:g} with normal CRP - true iron "
+                    'deficiency (not confounded by inflammation).'),
                 significance='high',
                 supports=["iron_deficiency_anemia"],
                 argues_against=["anemia_of_chronic_disease"],
@@ -6477,13 +6477,13 @@ def tahlil_olgoo_haye_moshtagh(
                 inputs={"Ferritin": fer, 'CRP': crp})
         elif 30 <= fer <= 100 and crp > 10:
             add(pattern_id="iron_pattern_masked",
-                name_en="Iron Study Pattern", name_fa="الگوی آهن",
+                name_en="Iron Study Pattern", name_fa="Iron study pattern",
                 value=fer,
                 interpretation=(
-                    f"فریتین {fer:g} «به‌ظاهر طبیعی» ولی CRP بالا "
-                    f"({crp:g}) — فریتین یک واکنش‌گر فاز حاد است و "
-                    'ممکن است فقر آهن را پنهان کند. آستانه در '
-                    "التهاب ۱۰۰ است، نه ۳۰."),
+                    f"Ferritin {fer:g} apparently normal but CRP high "
+                    f"({crp:g}) - ferritin is an acute-phase reactant and "
+                    'may mask iron deficiency. The threshold under '
+                    "inflammation is 100, not 30."),
                 significance='high',
                 supports=["iron_deficiency_anemia",
                           "anemia_of_chronic_disease"],
@@ -6491,11 +6491,11 @@ def tahlil_olgoo_haye_moshtagh(
                 inputs={"Ferritin": fer, "CRP": crp})
         elif fer > 100 and crp > 10:
             add(pattern_id="iron_pattern_acd",
-                name_en="Iron Study Pattern", name_fa="الگوی آهن",
+                name_en="Iron Study Pattern", name_fa="Iron study pattern",
                 value=fer,
                 interpretation=(
-                    "فریتین بالا با التهاب فعال — به نفع کم‌خونی "
-                    "بیماری مزمن."),
+                    "High ferritin with active inflammation - favours anaemia "
+                    "of chronic disease."),
                 significance="moderate",
                 supports=["anemia_of_chronic_disease"],
                 argues_against=["iron_deficiency_anemia"],
@@ -6508,24 +6508,24 @@ def tahlil_olgoo_haye_moshtagh(
         if fpg >= 126 and a1c < 5.7:
             add(pattern_id="glycemic_discordance",
                 name_en='Glycemic Discordance',
-                name_fa='ناسازگاری قندی', value=round(eag, 0),
+                name_fa='Glycaemic discordance', value=round(eag, 0),
                 interpretation=(
-                    f"قند ناشتا {fpg:g} بالا ولی HbA1c {a1c:g}٪ "
-                    "طبیعی — احتمال کوتاه‌شدن عمر گلبول قرمز "
-                    "(همولیز، خونریزی اخیر، هموگلوبینوپاتی) که "
-                    "HbA1c را کاذب پایین می‌آورد."),
+                    f"Fasting glucose {fpg:g} high but HbA1c {a1c:g}% "
+                    "normal - possible shortened red-cell survival "
+                    "(haemolysis, recent bleeding, haemoglobinopathy) "
+                    "falsely lowering HbA1c."),
                 significance="high", supports=["hemolytic_anemia"],
                 citation='ADA Standards of Care 2024, S2',
                 inputs={"FPG": fpg, "HbA1c": a1c})
         elif a1c >= 6.5 and fpg < 100:
             add(pattern_id="glycemic_discordance_high",
                 name_en='Glycemic Discordance',
-                name_fa='ناسازگاری قندی', value=round(eag, 0),
+                name_fa='Glycaemic discordance', value=round(eag, 0),
                 interpretation=(
-                    f"HbA1c {a1c:g}٪ دیابتی ولی قند ناشتا {fpg:g} "
-                    "طبیعی — احتمال هایپرگلیسمی پس از غذا، یا "
-                    "کاذب بالا بودن A1c (فقر آهن، اورمی). "
-                    "OGTT توصیه می‌شود."),
+                    f"HbA1c {a1c:g}% in the diabetic range but fasting glucose {fpg:g} "
+                    "normal - possible post-prandial hyperglycaemia, or "
+                    "falsely high A1c (iron deficiency, uraemia). "
+                    "OGTT is recommended."),
                 significance="high", supports=["type_2_diabetes"],
                 citation="ADA Standards of Care 2024, S2",
                 inputs={"FPG": fpg, "HbA1c": a1c})
@@ -6537,22 +6537,22 @@ def tahlil_olgoo_haye_moshtagh(
     if ca is not None and pth is not None:
         if ca > 10.5 and pth > 65:
             add(pattern_id="pth_calcium_axis",
-                name_en='PTH-Calcium Axis', name_fa="محور PTH-کلسیم",
+                name_en='PTH-Calcium Axis', name_fa="PTH-calcium axis",
                 value=round(ca, 2),
                 interpretation=(
-                    "کلسیم بالا + PTH بالا (یا نامناسب طبیعی) — "
-                    "به‌شدت به نفع هایپرپاراتیروئیدی اولیه."),
+                    "High calcium + high (or inappropriately normal) PTH - "
+                    "strongly favours primary hyperparathyroidism."),
                 significance="high", supports=["primary_hyperparathyroidism"],
                 citation="Bilezikian JP, JCEM 2014",
                 inputs={"Corrected Ca": round(ca, 2), "PTH": pth})
         elif ca > 10.5 and pth < 20:
             add(pattern_id="pth_suppressed_hypercalcemia",
-                name_en='PTH-Calcium Axis', name_fa="محور PTH-کلسیم",
+                name_en='PTH-Calcium Axis', name_fa="PTH-calcium axis",
                 value=round(ca, 2),
                 interpretation=(
-                    'کلسیم بالا با PTH سرکوب‌شده — علت غیرپاراتیروئیدی: '
-                    "بدخیمی، سارکوئیدوز یا مسمومیت با ویتامین D. "
-                    "بررسی PTHrP توصیه می‌شود."),
+                    'High calcium with suppressed PTH - non-parathyroid cause: '
+                    "malignancy, sarcoidosis or vitamin D intoxication. "
+                    "PTHrP measurement is recommended."),
                 significance="high", supports=[],
                 citation="Bilezikian JP, JCEM 2014",
                 inputs={"Corrected Ca": round(ca, 2), "PTH": pth})
@@ -6564,12 +6564,12 @@ def tahlil_olgoo_haye_moshtagh(
         inputs_normal = ast <= 40 and alt <= 40 and plt_ >= 150
         if fib4 > 2.67 and not inputs_normal:
             add(pattern_id="fib4_high", name_en="FIB-4 Index",
-                name_fa="شاخص FIB-4", value=round(fib4, 2),
+                name_fa="FIB-4 index", value=round(fib4, 2),
                 interpretation=(
-                    f"FIB-4 = {fib4:.2f} (>2.67) — احتمال بالای "
-                    "فیبروز پیشرفته کبدی. ارجاع برای الاستوگرافی."
-                    + (" (سن >۶۵: ویژگی FIB-4 کاهش می‌یابد؛ تفسیر "
-                       "با احتیاط.)" if age > 65 else "")),
+                    f"FIB-4 = {fib4:.2f} (>2.67) - high probability of "
+                    "advanced liver fibrosis. Refer for elastography."
+                    + (" (Age >65: FIB-4 specificity falls; interpret "
+                       "with caution.)" if age > 65 else "")),
                 significance='high' if age <= 65 else 'moderate',
                 supports=["liver_cirrhosis", "nash"],
                 citation='Sterling RK, Hepatology 2006; McPherson S, Am J Gastroenterol 2017',
@@ -6577,21 +6577,21 @@ def tahlil_olgoo_haye_moshtagh(
                         "Age": age})
         elif fib4 > 2.67 and inputs_normal:
             add(pattern_id="fib4_high_age_artifact", name_en="FIB-4 Index",
-                name_fa="شاخص FIB-4", value=round(fib4, 2),
+                name_fa="FIB-4 index", value=round(fib4, 2),
                 interpretation=(
-                    f"FIB-4 = {fib4:.2f} با AST/ALT/پلاکت کاملاً طبیعی — "
-                    "عدد بالا ناشی از سن است، نه بیماری کبدی؛ "
-                    "فاقد ارزش تشخیصی."),
+                    f"FIB-4 = {fib4:.2f} with entirely normal AST/ALT/platelets - "
+                    "the high value reflects age, not liver disease; "
+                    "no diagnostic value."),
                 significance="low", supports=[],
                 citation="McPherson S, Am J Gastroenterol 2017",
                 inputs={"AST": ast, 'ALT': alt, "PLT": plt_,
                         "Age": age})
         elif fib4 < 1.3:
             add(pattern_id="fib4_low", name_en='FIB-4 Index',
-                name_fa="شاخص FIB-4", value=round(fib4, 2),
+                name_fa="FIB-4 index", value=round(fib4, 2),
                 interpretation=(
-                    f"FIB-4 = {fib4:.2f} (<1.3) — فیبروز پیشرفته "
-                    "با احتمال بالا رد می‌شود (NPV ~۹۰٪)."),
+                    f"FIB-4 = {fib4:.2f} (<1.3) - advanced fibrosis "
+                    "excluded with high probability (NPV ~90%)."),
                 significance="moderate", supports=[],
                 argues_against=['liver_cirrhosis'],
                 citation="Sterling RK, Hepatology 2006",
@@ -6610,14 +6610,14 @@ def tahlil_olgoo_haye_moshtagh(
             if meld > 11:
                 meld = round(min(max(meld + 1.32 * (137 - na_c) - (0.033 * meld * (137 - na_c)), 6.0), 40.0))
             label = "MELD-Na"
-        mort = ("≈۲٪" if meld < 10 else "≈۶٪" if meld < 20 else "≈۲۰٪" if meld < 30 else "≈۵۰–۷۰٪")
-        add(pattern_id="meld_na", name_en=f"{label} score", name_fa=f"امتیاز {label}",
+        mort = ("~2%" if meld < 10 else "~6%" if meld < 20 else "~20%" if meld < 30 else "~50-70%")
+        add(pattern_id="meld_na", name_en=f"{label} score", name_fa=f"{label} score",
             value=int(meld),
             interpretation=(
-                f"{label} = {int(meld)} — مرگ‌ومیر سه‌ماهه تقریبی {mort} در بیماری کبدی "
-                "مزمن (شاخص پیش‌آگهی؛ تشخیص را تعیین نمی‌کند؛ در AKI حاد، کلستاز "
-                "بدون سیروز یا مصرف وارفارین اعتبار محدود دارد)."
-                + (" امتیاز ≥۱۵: ارجاع برای ارزیابی پیوند کبد." if meld >= 15 else "")),
+                f"{label} = {int(meld)} - approximate three-month mortality {mort} in chronic liver "
+                "disease (prognostic index; does not establish a diagnosis; limited validity in acute AKI, "
+                "cholestasis without cirrhosis or warfarin use)."
+                + (" Score >=15: refer for liver-transplant evaluation." if meld >= 15 else "")),
             significance="high" if meld >= 20 else "moderate",
             supports=[], citation="Kamath PS, Hepatology 2001; Kim WR, NEJM 2008; OPTN 2016",
             inputs={"Bilirubin": bili_m, "INR": inr_m, "Creatinine": cr_m,
@@ -6630,10 +6630,10 @@ def tahlil_olgoo_haye_moshtagh(
             plr = plt_ / alc
             if plr > 200:
                 add(pattern_id="plr_high", name_en="Platelet-to-lymphocyte ratio",
-                    name_fa="نسبت پلاکت به لنفوسیت", value=round(plr, 0),
+                    name_fa="Platelet-to-lymphocyte ratio", value=round(plr, 0),
                     interpretation=(
-                        f"PLR = {plr:.0f} (>200) — نشانگر غیراختصاصی التهاب سیستمیک/"
-                        "لنفوپنی نسبی؛ شواهد ناهمگن و فاقد آستانهٔ اجماعی — فقط اطلاع‌رسانی."),
+                        f"PLR = {plr:.0f} (>200) - non-specific marker of systemic inflammation/"
+                        "relative lymphopenia; evidence heterogeneous with no consensus threshold - informational only."),
                     significance="low", supports=[],
                     citation="Templeton AJ, Cancer Epidemiol Biomarkers Prev 2014",
                     inputs={"PLT": plt_, "ALC": round(alc, 2)})
@@ -6643,11 +6643,11 @@ def tahlil_olgoo_haye_moshtagh(
         ratio = tg / hdl
         if ratio >= 3.5:
             add(pattern_id="tg_hdl_ratio",
-                name_en="TG/HDL Ratio", name_fa='نسبت TG به HDL',
+                name_en="TG/HDL Ratio", name_fa='TG/HDL ratio',
                 value=round(ratio, 2),
                 interpretation=(
-                    f"TG/HDL = {ratio:.1f} (≥3.5) — نشانگر جایگزین "
-                    'مقاومت به انسولین و LDL کوچک-متراکم.'),
+                    f"TG/HDL = {ratio:.1f} (>=3.5) - surrogate marker of "
+                    'insulin resistance and small dense LDL.'),
                 significance="moderate",
                 supports=["metabolic_syndrome", "type_2_diabetes",
                           "nafl_d"],
@@ -6688,24 +6688,24 @@ def tahlil_olgoo_haye_moshtagh(
             if is_pediatric_alp and not has_cholestasis_markers:
                 # Pediatric physiological ALP - do NOT flag as cholestatic disease
                 add(pattern_id="pediatric_alp_elevation", name_en="Pediatric ALP Elevation - Bone Growth",
-                    name_fa="افزایش ALP کودکان - رشد استخوانی", value=round(alp,0),
-                    interpretation=f"ALP {alp:.0f} بالا در کودک {age_for_alp:.0f} ساله — در کودکان ALP تا {alp_uln*2:.0f} به دلیل رشد استخوانی طبیعی است. بیلی‌روبین و GGT طبیعی، الگوی کلستاتیک کاذب. بررسی رشد، ویتامین D.",
+                    name_fa="Raised ALP in a child - bone growth", value=round(alp,0),
+                    interpretation=f"ALP {alp:.0f} high in a {age_for_alp:.0f}-year-old child - in children ALP up to {alp_uln*2:.0f} is normal because of bone growth. Bilirubin and GGT normal: pseudo-cholestatic pattern. Assess growth and vitamin D.",
                     significance="low", supports=[],
                     argues_against=["cholestasis","primary_biliary_cholangitis","liver_cirrhosis"],
                     citation="Pediatric Reference Ranges, CALIPER 2020; ALP bone isoenzyme in children",
                     inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2), "Age": age_for_alp or 0})
             elif is_pregnancy_alp:
                 add(pattern_id="pregnancy_alp_elevation", name_en="Pregnancy Physiological ALP Elevation",
-                    name_fa="افزایش فیزیولوژیک ALP در بارداری", value=round(alp,0),
-                    interpretation=f"افزایش ALP ({alp:.0f} U/L) در دوران بارداری فیزیولوژیک و ناشی از ایزوآنزیم جفتی است. با توجه به طبیعی بودن آنزیم‌های کبدی و بیلی‌روبین، بیماری کبدی یا کلستاز مطرح نیست.",
+                    name_fa="Physiological ALP rise in pregnancy", value=round(alp,0),
+                    interpretation=f"Raised ALP ({alp:.0f} U/L) in pregnancy is physiological and derives from the placental isoenzyme. With normal liver enzymes and bilirubin, liver disease or cholestasis is not suggested.",
                     significance="low", supports=[],
                     argues_against=["cholestasis","primary_biliary_cholangitis","liver_cirrhosis"],
                     citation="ACOG Clinical Guidance 2023; Placental alkaline phosphatase isoenzyme",
                     inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2)})
             elif alp <= alp_uln:
                 add(pattern_id="liver_isolated_alt", name_en="Isolated ALT elevation (ALP normal)",
-                    name_fa="افزایش ایزولهٔ ALT با ALP طبیعی", value=round(alt / alt_uln, 2),
-                    interpretation=f"ALT {alt:.0f} U/L بالاتر از ULN با ALP طبیعی — الگوی هپاتوسلولار خفیف (NAFLD، دارو، هپاتیت ویروسی مزمن، الکل)؛ کلستاز مطرح نیست.",
+                    name_fa="Isolated ALT rise with normal ALP", value=round(alt / alt_uln, 2),
+                    interpretation=f"ALT {alt:.0f} U/L above the ULN with normal ALP - mild hepatocellular pattern (NAFLD, drugs, chronic viral hepatitis, alcohol); cholestasis not suggested.",
                     significance="moderate" if alt >= 2 * alt_uln else "low",
                     supports=["nafl_d", "chronic_hepatitis_b", "chronic_hepatitis_c", "drug_induced_liver_injury"] if alt >= 2 * alt_uln else ["nafl_d"],
                     argues_against=["cholestasis", "primary_biliary_cholangitis", "primary_sclerosing_cholangitis"],
@@ -6713,8 +6713,8 @@ def tahlil_olgoo_haye_moshtagh(
                     inputs={"ALT": alt, "ALP": alp, "ALT_ULN": alt_uln})
             elif r_ratio >= 5:
                 add(pattern_id="liver_hepatocellular", name_en="R Ratio Hepatocellular",
-                    name_fa="آسیب هپاتوسلولار", value=round(r_ratio,2),
-                    interpretation=f"R = {r_ratio:.1f} (≥5) — آسیب هپاتوسلولار غالب (هپاتیت ویروسی، دارویی، ایسکمیک). ALT بسیار بالاتر از ALP.",
+                    name_fa="Hepatocellular injury", value=round(r_ratio,2),
+                    interpretation=f"R = {r_ratio:.1f} (>=5) - predominantly hepatocellular injury (viral, drug-induced, ischaemic hepatitis). ALT far above ALP.",
                     significance="high", supports=["chronic_hepatitis_b","chronic_hepatitis_c","nafl_d","autoimmune_hepatitis"],
                     argues_against=["cholestasis"],
                     citation="Aithal GP, Clin Pharmacol Ther 2011; DILI R ratio",
@@ -6724,8 +6724,8 @@ def tahlil_olgoo_haye_moshtagh(
                     pass
                 else:
                     add(pattern_id="liver_cholestatic", name_en="R Ratio Cholestatic",
-                        name_fa="آسیب کلستاتیک", value=round(r_ratio,2),
-                        interpretation=f"R = {r_ratio:.1f} (≤2) — الگوی کلستاتیک: انسداد صفراوی، PBC، PSC یا داروی کلستاتیک. {'در کودک با ALP بالا، رشد استخوانی را رد کنید.' if age_for_alp and age_for_alp<18 else ''}",
+                        name_fa="Cholestatic injury", value=round(r_ratio,2),
+                        interpretation=f"R = {r_ratio:.1f} (<=2) - cholestatic pattern: biliary obstruction, PBC, PSC or a cholestatic drug. {'In a child with high ALP, exclude bone growth first.' if age_for_alp and age_for_alp<18 else ''}",
                         significance="high" if not (age_for_alp and age_for_alp<18) else "low",
                         supports=(["cholestasis","primary_biliary_cholangitis"] if alp >= 1.5 * alp_uln else ["cholestasis"]) if not is_pediatric_alp else [],
                         argues_against=["nafl_d"] if not is_pediatric_alp else ["cholestasis"],
@@ -6733,8 +6733,8 @@ def tahlil_olgoo_haye_moshtagh(
                         inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2)})
             else:
                 add(pattern_id="liver_mixed", name_en="R Ratio Mixed",
-                    name_fa="آسیب مختلط کبدی", value=round(r_ratio,2),
-                    interpretation=f"R = {r_ratio:.1f} (2-5) — آسیب مختلط هپاتوسلولار-کلستاتیک.",
+                    name_fa="Mixed liver injury", value=round(r_ratio,2),
+                    interpretation=f"R = {r_ratio:.1f} (2-5) - mixed hepatocellular-cholestatic injury.",
                     significance="moderate", supports=["drug_induced_liver_injury"],
                     citation="Aithal GP 2011",
                     inputs={"ALT": alt, "ALP": alp, "R": round(r_ratio,2)})
@@ -6745,15 +6745,15 @@ def tahlil_olgoo_haye_moshtagh(
     if bili_total and bili_direct:
         if bili_direct / bili_total > 0.5 and bili_total > 1.2:
             add(pattern_id="cholestasis_direct", name_en="Direct Hyperbilirubinemia",
-                name_fa="هیپربیلی‌روبینمی مستقیم", value=round(bili_direct,2),
-                interpretation=f"بیلی‌روبین مستقیم {bili_direct:.1f} از کل {bili_total:.1f} (>50%) — کلستاز یا آسیب هپاتوسلولار با اختلال ترشح.",
+                name_fa="Direct hyperbilirubinaemia", value=round(bili_direct,2),
+                interpretation=f"Direct bilirubin {bili_direct:.1f} of total {bili_total:.1f} (>50%) - cholestasis or hepatocellular injury with impaired excretion.",
                 significance="high", supports=["cholestasis","liver_cirrhosis"],
                 citation="Fargo MV, Am Fam Physician 2017",
                 inputs={"Total": bili_total, "Direct": bili_direct})
     if bili_indirect and bili_total and bili_total>1.2 and (bili_indirect/bili_total)>0.7:
         add(pattern_id="indirect_hyperbili", name_en="Indirect Hyperbilirubinemia",
-            name_fa="هیپربیلی مستقیم غالب", value=round(bili_indirect,2),
-            interpretation=f"بیلی‌روبین غیرمستقیم غالب ({bili_indirect:.1f}/{bili_total:.1f}) — همولیز، ژیلبرت یا ناکارایی کونژوگاسیون.",
+            name_fa="Indirect-predominant hyperbilirubinaemia", value=round(bili_indirect,2),
+            interpretation=f"Indirect bilirubin predominates ({bili_indirect:.1f}/{bili_total:.1f}) - haemolysis, Gilbert syndrome or impaired conjugation.",
             significance="moderate", supports=["hemolytic_anemia","gilbert_syndrome"],
             citation="Fargo MV 2017",
             inputs={"Total": bili_total, "Indirect": bili_indirect})
@@ -6769,16 +6769,16 @@ def tahlil_olgoo_haye_moshtagh(
         has_ket = ket is not None and ket>0.6 if isinstance(ket,(int,float)) else ket is not None
         if has_ket or ag_val is None or ag_val>12:
             add(pattern_id="dka_risk", name_en="DKA Pattern",
-                name_fa="الگوی کتواسیدوز دیابتی", value=round(glu,0),
-                interpretation=f"قند {glu:.0f} + بی‌کربنات {bicarb:.0f} پایین + آنیون گپ بالا — خطر DKA. بررسی کتون خون، pH وریدی، الکترولیت.",
+                name_fa="Diabetic ketoacidosis pattern", value=round(glu,0),
+                interpretation=f"Glucose {glu:.0f} + low bicarbonate {bicarb:.0f} + high anion gap - risk of DKA. Check blood ketones, venous pH, electrolytes.",
                 significance="high", supports=["type_1_diabetes","type_2_diabetes"],
                 citation="ADA DKA Guidelines 2024",
                 inputs={"Glucose": glu, "HCO3": bicarb, "AG": ag_val or 0})
 
     if glu and glu>=600 and bicarb is not None and bicarb>15:
         add(pattern_id="hhs_risk", name_en="HHS Pattern",
-            name_fa="الگوی HHS", value=round(glu,0),
-            interpretation=f"قند بسیار بالا {glu:.0f} (≥600) با بی‌کربنات نسبتاً حفظ‌شده {bicarb:.0f} — الگوی HHS (هیپراسمولار). بررسی اسمولالیته سرم.",
+            name_fa="HHS pattern", value=round(glu,0),
+            interpretation=f"Very high glucose {glu:.0f} (>=600) with relatively preserved bicarbonate {bicarb:.0f} - HHS (hyperosmolar) pattern. Check serum osmolality.",
             significance="high", supports=["type_2_diabetes"],
             citation="ADA Hyperglycemic Crises 2024",
             inputs={"Glucose": glu, "HCO3": bicarb})
@@ -6800,8 +6800,8 @@ def tahlil_olgoo_haye_moshtagh(
         ms_criteria+=1; ms_details.append(f"BP {bp_sys}/{bp_dia}")
     if ms_criteria>=3:
         add(pattern_id="metabolic_syndrome_criteria", name_en="Metabolic Syndrome 3/5",
-            name_fa="سندرم متابولیک", value=ms_criteria,
-            interpretation=f"{ms_criteria}/5 معیار سندرم متابولیک مثبت ({', '.join(ms_details)}) — تشخیص سندرم متابولیک محتمل.",
+            name_fa="Metabolic syndrome", value=ms_criteria,
+            interpretation=f"{ms_criteria}/5 metabolic-syndrome criteria positive ({', '.join(ms_details)}) - metabolic syndrome likely.",
             significance="high", supports=["metabolic_syndrome","type_2_diabetes","nafl_d"],
             citation="IDF/NCEP ATP III 2009",
             inputs={"criteria": ms_criteria})
@@ -6814,15 +6814,15 @@ def tahlil_olgoo_haye_moshtagh(
                 ferr_val = g("ferritin")
                 if rdw and rdw>15 and ferr_val and ferr_val<30:
                     add(pattern_id="anemia_micro_ida", name_en="Microcytic Anemia IDA",
-                        name_fa="کم‌خونی میکروسیتر فقر آهن", value=round(mcv,1),
-                        interpretation=f"Hb {hb:.1f} پایین، MCV {mcv:.0f} میکروسیتر، RDW {rdw:.0f} بالا، فریتین پایین — کم‌خونی فقر آهن کلاسیک.",
+                        name_fa="Microcytic iron-deficiency anaemia", value=round(mcv,1),
+                        interpretation=f"Hb {hb:.1f} low, MCV {mcv:.0f} microcytic, RDW {rdw:.0f} high, ferritin low - classic iron-deficiency anaemia.",
                         significance="high", supports=["iron_deficiency_anemia"],
                         citation="BSH Anemia Guidelines 2023",
                         inputs={"Hb": hb, "MCV": mcv, "RDW": rdw or 0})
                 elif rdw and rdw<14.5 and rbc and rbc>5:
                     add(pattern_id="anemia_micro_thal", name_en="Microcytic Thalassemia",
-                        name_fa="میکروسیتوز تالاسمی", value=round(mcv,1),
-                        interpretation=f"Hb {hb:.1f} پایین، MCV {mcv:.0f} پایین، RBC {rbc:.1f} بالا، RDW طبیعی — تالاسمی مینور محتمل.",
+                        name_fa="Thalassaemic microcytosis", value=round(mcv,1),
+                        interpretation=f"Hb {hb:.1f} low, MCV {mcv:.0f} low, RBC {rbc:.1f} high, RDW normal - thalassaemia minor likely.",
                         significance="high", supports=["thalassemia_trait"],
                         citation="Mentzer 1973",
                         inputs={"Hb": hb, "MCV": mcv, "RBC": rbc})
@@ -6831,15 +6831,15 @@ def tahlil_olgoo_haye_moshtagh(
                 fol = g("folate")
                 if b12 and b12<200:
                     add(pattern_id="anemia_macro_b12", name_en="Macrocytic B12 Deficiency",
-                        name_fa="ماکروسیتوز کمبود B12", value=round(mcv,1),
-                        interpretation=f"Hb {hb:.1f} پایین، MCV {mcv:.0f} بالا، B12 {b12:.0f} پایین — کم‌خونی مگالوبلاستیک B12.",
+                        name_fa="Macrocytosis of B12 deficiency", value=round(mcv,1),
+                        interpretation=f"Hb {hb:.1f} low, MCV {mcv:.0f} high, B12 {b12:.0f} low - megaloblastic anaemia of B12 deficiency.",
                         significance="high", supports=["vitamin_b12_deficiency"],
                         citation="BSH 2023",
                         inputs={"Hb": hb, "MCV": mcv, "B12": b12})
                 elif fol and fol<4:
                     add(pattern_id="anemia_macro_folate", name_en="Macrocytic Folate Deficiency",
-                        name_fa="ماکروسیتوز کمبود فولات", value=round(mcv,1),
-                        interpretation=f"Hb {hb:.1f} پایین، MCV {mcv:.0f} بالا، فولات {fol:.0f} پایین — کمبود فولات.",
+                        name_fa="Macrocytosis of folate deficiency", value=round(mcv,1),
+                        interpretation=f"Hb {hb:.1f} low, MCV {mcv:.0f} high, folate {fol:.0f} low - folate deficiency.",
                         significance="high", supports=["folate_deficiency"],
                         citation="BSH 2023",
                         inputs={"Hb": hb, "MCV": mcv, "Folate": fol})
@@ -6848,15 +6848,15 @@ def tahlil_olgoo_haye_moshtagh(
                 crp_val = g("c_reactive_protein")
                 if egfr and egfr<60:
                     add(pattern_id="anemia_normo_ckd", name_en="Normocytic CKD Anemia",
-                        name_fa="کم‌خونی نورموسیتر CKD", value=round(hb,1),
-                        interpretation=f"Hb {hb:.1f} پایین، MCV نرمال {mcv:.0f}، eGFR {egfr:.0f} پایین — کم‌خونی بیماری مزمن کلیوی (کمبود EPO).",
+                        name_fa="Normocytic anaemia of CKD", value=round(hb,1),
+                        interpretation=f"Hb {hb:.1f} low, MCV normal {mcv:.0f}, eGFR {egfr:.0f} low - anaemia of chronic kidney disease (EPO deficiency).",
                         significance="moderate", supports=["chronic_kidney_disease","anemia_of_chronic_disease"],
                         citation="KDIGO Anemia 2024",
                         inputs={"Hb": hb, "MCV": mcv, "eGFR": egfr})
                 elif crp_val and crp_val>10:
                     add(pattern_id="anemia_normo_acd", name_en="Anemia of Chronic Disease",
-                        name_fa="کم‌خونی بیماری مزمن", value=round(hb,1),
-                        interpretation=f"Hb {hb:.1f} پایین، MCV نرمال، CRP {crp_val:.0f} بالا — کم‌خونی التهاب مزمن (هپسیدین بالا).",
+                        name_fa="Anaemia of chronic disease", value=round(hb,1),
+                        interpretation=f"Hb {hb:.1f} low, MCV normal, CRP {crp_val:.0f} high - anaemia of chronic inflammation (high hepcidin).",
                         significance="moderate", supports=["anemia_of_chronic_disease"],
                         citation="Weiss G, NEJM 2005",
                         inputs={"Hb": hb, "MCV": mcv, "CRP": crp_val})
@@ -6867,8 +6867,8 @@ def tahlil_olgoo_haye_moshtagh(
     if hb and hb<12 and ldh and ldh>250:
         if (bili_indirect and bili_indirect>1.0) or (hapto and hapto<30) or (retic and retic>2.5):
             add(pattern_id="hemolysis_pattern", name_en="Hemolysis Pattern",
-                name_fa="الگوی همولیز", value=round(ldh,0),
-                interpretation=f"Hb پایین {hb:.1f} + LDH بالا {ldh:.0f} + بیلی غیرمستقیم/هاپتوگلوبین پایین/رتیک بالا — همولیز فعال.",
+                name_fa="Haemolysis pattern", value=round(ldh,0),
+                interpretation=f"Low Hb {hb:.1f} + high LDH {ldh:.0f} + indirect bilirubin high/haptoglobin low/reticulocytes high - active haemolysis.",
                 significance="high", supports=["hemolytic_anemia"],
                 citation="BSH Hemolysis 2023",
                 inputs={"Hb": hb, "LDH": ldh, "Haptoglobin": hapto or 0, "Retic": retic or 0})
@@ -6877,8 +6877,8 @@ def tahlil_olgoo_haye_moshtagh(
     plt = g("platelet_count")
     if hb and hb<10 and wbc and wbc<4 and plt and plt<150:
         add(pattern_id="pancytopenia", name_en="Pancytopenia",
-            name_fa="پان‌سیتوپنی", value=round(hb,1),
-            interpretation=f"Hb {hb:.1f} + WBC {wbc:.1f} + PLT {plt:.0f} همگی پایین — پان‌سیتوپنی: نارسایی مغز استخوان، دارو، هیپرسپلنیسم یا کمبود B12/فولات.",
+            name_fa="Pancytopenia", value=round(hb,1),
+            interpretation=f"Hb {hb:.1f} + WBC {wbc:.1f} + PLT {plt:.0f} all low - pancytopenia: marrow failure, drugs, hypersplenism or B12/folate deficiency.",
             significance="high", supports=["aplastic_anemia","vitamin_b12_deficiency","acute_leukemia"],
             citation="BSH Pancytopenia 2023",
             inputs={"Hb": hb, "WBC": wbc, "PLT": plt})
@@ -6890,15 +6890,15 @@ def tahlil_olgoo_haye_moshtagh(
         if nlr and nlr>3.5:
             if crp and crp>50:
                 add(pattern_id="bacterial_inflammation", name_en="Bacterial Inflammation NLR",
-                    name_fa="التهاب باکتریال", value=round(nlr,2),
-                    interpretation=f"NLR {nlr:.1f} بالا + CRP {crp:.0f} بالا + نوتروفیلی {neut:.0f}% — التهاب باکتریال محتمل.",
+                    name_fa="Bacterial inflammation", value=round(nlr,2),
+                    interpretation=f"NLR {nlr:.1f} high + CRP {crp:.0f} high + neutrophilia {neut:.0f}% - bacterial inflammation likely.",
                     significance="moderate", supports=["urinary_tract_infection","sepsis"],
                     citation="Zahorec R, Bratisl Lek Listy 2001",
                     inputs={"NLR": round(nlr,2), "CRP": crp, "Neut": neut})
     if wbc and lymph and lymph>50 and neut and neut<40:
         add(pattern_id="viral_pattern", name_en="Viral Lymphocytosis",
-            name_fa="لنفوسیتوز ویروسی", value=round(lymph,1),
-            interpretation=f"WBC {wbc:.1f} با لنفوسیت {lymph:.0f}% بالا و نوتروفیل {neut:.0f}% پایین — الگوی ویروسی.",
+            name_fa="Viral lymphocytosis", value=round(lymph,1),
+            interpretation=f"WBC {wbc:.1f} with high lymphocytes {lymph:.0f}% and low neutrophils {neut:.0f}% - viral pattern.",
             significance="moderate", supports=["viral_infection"],
             citation="Harrison Hematology",
             inputs={"WBC": wbc, "Lymph": lymph, "Neut": neut})
@@ -6907,8 +6907,8 @@ def tahlil_olgoo_haye_moshtagh(
     lac = g("lactate")
     if pct and pct>0.5 and ((lac and lac>2) or (crp and crp>100) or (wbc and (wbc>12 or wbc<4))):
         add(pattern_id="sepsis_pattern", name_en="Sepsis Pattern",
-            name_fa="الگوی سپسیس", value=round(pct,2),
-            interpretation=f"PCT {pct:.2f} بالا + لاکتات {lac or 0:.1f}/CRP {crp or 0:.0f}/WBC غیرطبیعی — سپسیس محتمل، کشت خون و آنتی‌بیوتیک فوری.",
+            name_fa="Sepsis pattern", value=round(pct,2),
+            interpretation=f"PCT {pct:.2f} high + lactate {lac or 0:.1f}/CRP {crp or 0:.0f}/abnormal WBC - sepsis likely; blood cultures and prompt antibiotics.",
             significance="high", supports=["sepsis"],
             citation="Surviving Sepsis Campaign 2021",
             inputs={"PCT": pct, "Lactate": lac or 0, "CRP": crp or 0})
@@ -6918,8 +6918,8 @@ def tahlil_olgoo_haye_moshtagh(
     fib = g("fibrinogen")
     if plt and plt<150 and d_dimer and d_dimer>0.5 and (fib and fib<150 or pt and pt>14):
         add(pattern_id="dic_pattern", name_en="DIC Pattern",
-            name_fa="الگوی DIC", value=round(plt,0),
-            interpretation=f"PLT پایین {plt:.0f} + D-dimer بالا {d_dimer:.2f} + فیبرینوژن پایین/PT طولانی — DIC محتمل.",
+            name_fa="DIC pattern", value=round(plt,0),
+            interpretation=f"Low PLT {plt:.0f} + high D-dimer {d_dimer:.2f} + low fibrinogen/prolonged PT - DIC likely.",
             significance="high", supports=["disseminated_intravascular_coagulation","sepsis"],
             citation="ISTH DIC Score 2001",
             inputs={"PLT": plt, "D-dimer": d_dimer, "Fibrinogen": fib or 0})
@@ -6929,8 +6929,8 @@ def tahlil_olgoo_haye_moshtagh(
     k = g("potassium")
     if cortisol and cortisol<5 and na and na<135 and k and k>5:
         add(pattern_id="adrenal_insufficiency", name_en="Adrenal Insufficiency Pattern",
-            name_fa="الگوی نارسایی آدرنال", value=round(cortisol,1),
-            interpretation=f"کورتیزول صبح {cortisol:.1f} پایین + Na {na:.0f} پایین + K {k:.1f} بالا — نارسایی آدرنال (آدیسون). ACTH را بررسی کنید.",
+            name_fa="Adrenal insufficiency pattern", value=round(cortisol,1),
+            interpretation=f"Morning cortisol {cortisol:.1f} low + Na {na:.0f} low + K {k:.1f} high - adrenal insufficiency (Addison). Check ACTH.",
             significance="high", supports=["addison_disease"],
             citation="Endocrine Society Adrenal Insufficiency 2016",
             inputs={"Cortisol": cortisol, "Na": na, "K": k, "ACTH": acth or 0})
@@ -6939,8 +6939,8 @@ def tahlil_olgoo_haye_moshtagh(
         arr = g("aldosterone_to_renin_ratio_arr") or g("aldosterone_renin_ratio")
         if arr and arr>30 or (bp_sys and bp_sys>=140):
             add(pattern_id="primary_aldosteronism_pattern", name_en="Primary Aldosteronism Pattern",
-                name_fa="الگوی آلدوسترونیسم اولیه", value=round(k,2),
-                interpretation=f"K {k:.1f} پایین + HCO3 {bicarb:.0f} بالا + فشار بالا/ARR بالا — آلدوسترونیسم اولیه محتمل.",
+                name_fa="Primary aldosteronism pattern", value=round(k,2),
+                interpretation=f"K {k:.1f} low + HCO3 {bicarb:.0f} high + hypertension/high ARR - primary aldosteronism likely.",
                 significance="high", supports=["primary_aldosteronism"],
                 citation="Endocrine Society PA Guideline 2016",
                 inputs={"K": k, "HCO3": bicarb, "ARR": arr or 0})
@@ -6952,15 +6952,15 @@ def tahlil_olgoo_haye_moshtagh(
             if abs(pco2-expected)>2:
                 if pco2>expected+2:
                     add(pattern_id="mixed_acidosis", name_en="Mixed Acidosis",
-                        name_fa="اسیدوز مختلط", value=round(pco2,1),
-                        interpretation=f"pH {ph:.2f} پایین + HCO3 {bicarb:.0f} پایین + pCO2 {pco2:.0f} بالاتر از انتظار Winter ({expected:.0f}) — اسیدوز متابولیک + تنفسی همزمان.",
+                        name_fa="Mixed acidosis", value=round(pco2,1),
+                        interpretation=f"pH {ph:.2f} low + HCO3 {bicarb:.0f} low + pCO2 {pco2:.0f} above the Winter expectation ({expected:.0f}) - concurrent metabolic and respiratory acidosis.",
                         significance="high", supports=["acute_kidney_injury","sepsis"],
                         citation="Winter's Formula, NEJM 2014",
                         inputs={"pH": ph, "HCO3": bicarb, "pCO2": pco2})
                 else:
                     add(pattern_id="resp_alkalosis_plus_met_acidosis", name_en="Met Acidosis + Resp Alkalosis",
-                        name_fa="اسیدوز متابولیک + آلکالوز تنفسی", value=round(pco2,1),
-                        interpretation=f"pH {ph:.2f} + HCO3 {bicarb:.0f} پایین + pCO2 {pco2:.0f} پایین‌تر از انتظار — اسیدوز متابولیک با آلکالوز تنفسی جبرانی بیش‌ازحد.",
+                        name_fa="Metabolic acidosis + respiratory alkalosis", value=round(pco2,1),
+                        interpretation=f"pH {ph:.2f} + HCO3 {bicarb:.0f} low + pCO2 {pco2:.0f} below expectation - metabolic acidosis with excessive compensatory respiratory alkalosis.",
                         significance="moderate", supports=["sepsis"],
                         citation="Winter's Formula",
                         inputs={"pH": ph, "HCO3": bicarb, "pCO2": pco2})
@@ -6977,15 +6977,15 @@ def tahlil_olgoo_haye_moshtagh(
                 delta_ratio = delta_ag/delta_hco3
                 if delta_ratio<0.4:
                     add(pattern_id="nagd_plus_hagma", name_en="High AG + Normal AG Acidosis",
-                        name_fa="اسیدوز با گپ بالا + بدون گپ", value=round(delta_ratio,2),
-                        interpretation=f"AG {ag:.0f} بالا، Delta ratio {delta_ratio:.2f} (<0.4) — اسیدوز با گپ بالا همراه اسیدوز بدون گپ (NAGMA) همزمان.",
+                        name_fa="High-gap + non-gap acidosis", value=round(delta_ratio,2),
+                        interpretation=f"AG {ag:.0f} high, delta ratio {delta_ratio:.2f} (<0.4) - high-anion-gap acidosis with concurrent non-gap acidosis (NAGMA).",
                         significance="high", supports=["acute_kidney_injury"],
                         citation="Kraut JA, NEJM 2014",
                         inputs={"AG": ag, "DeltaRatio": round(delta_ratio,2), "HCO3": bicarb})
                 elif delta_ratio>2:
                     add(pattern_id="hagma_plus_met_alkalosis", name_en="High AG + Met Alkalosis",
-                        name_fa="اسیدوز با گپ بالا + آلکالوز متابولیک", value=round(delta_ratio,2),
-                        interpretation=f"AG {ag:.0f} بالا، Delta ratio {delta_ratio:.2f} (>2) — اسیدوز با گپ بالا همراه آلکالوز متابولیک.",
+                        name_fa="High-gap acidosis + metabolic alkalosis", value=round(delta_ratio,2),
+                        interpretation=f"AG {ag:.0f} high, delta ratio {delta_ratio:.2f} (>2) - high-anion-gap acidosis with concurrent metabolic alkalosis.",
                         significance="high", supports=["vomiting","diuretic_use"],
                         citation="Kraut JA 2014",
                         inputs={"AG": ag, "DeltaRatio": round(delta_ratio,2)})
@@ -6998,8 +6998,8 @@ def tahlil_olgoo_haye_moshtagh(
         og = osm_meas - osm_calc
         if og>10:
             add(pattern_id="high_osm_gap", name_en="High Osmolar Gap",
-                name_fa="گپ اسمولار بالا", value=round(og,1),
-                interpretation=f"گپ اسمولار {og:.0f} (>10): اسمولالیته اندازه‌گیری {osm_meas:.0f} - محاسبه {osm_calc:.0f} — مسمومیت با الکل سمی (متانول، اتیلن گلیکول) یا کتواسیدوز.",
+                name_fa="High osmolar gap", value=round(og,1),
+                interpretation=f"Osmolar gap {og:.0f} (>10): measured osmolality {osm_meas:.0f} - calculated {osm_calc:.0f} - toxic alcohol ingestion (methanol, ethylene glycol) or ketoacidosis.",
                 significance="high", supports=["toxic_alcohol_poisoning"],
                 citation="Kraut JA 2014",
                 inputs={"Measured": osm_meas, "Calculated": osm_calc, "Gap": round(og,1)})
@@ -7008,8 +7008,8 @@ def tahlil_olgoo_haye_moshtagh(
         corr_na = na + 1.6*(glu-100)/100.0
         if corr_na>=135:
             add(pattern_id="pseudohyponatremia_hyperglycemia", name_en="Pseudohyponatremia Hyperglycemia",
-                name_fa="هیپوناترمی کاذب هایپرگلیسمی", value=round(corr_na,1),
-                interpretation=f"Na {na:.0f} پایین با قند {glu:.0f} بالا — Na تصحیح‌شده {corr_na:.1f} طبیعی است (هیپوناترمی کاذب).",
+                name_fa="Pseudohyponatraemia of hyperglycaemia", value=round(corr_na,1),
+                interpretation=f"Na {na:.0f} low with high glucose {glu:.0f} - corrected Na {corr_na:.1f} is normal (pseudohyponatraemia).",
                 significance="moderate", supports=["type_2_diabetes"],
                 citation="Katz MA 1973",
                 inputs={"Na": na, "Glucose": glu, "CorrNa": round(corr_na,1)})
@@ -7018,16 +7018,16 @@ def tahlil_olgoo_haye_moshtagh(
     if ca and ca<8.5 and phos and phos>4.5:
         if g("egfr_ckd_epi_creatinine") and g("egfr_ckd_epi_creatinine")<60 or (cr and cr>1.3):
             add(pattern_id="ckd_mbd", name_en="CKD-MBD Pattern",
-                name_fa="الگوی CKD-MBD", value=round(ca,2),
-                interpretation=f"Ca {ca:.1f} پایین + Phos {phos:.1f} بالا + CKD — اختلال استخوان-معدنی CKD. PTH، ویتامین D را بررسی کنید.",
+                name_fa="CKD-MBD pattern", value=round(ca,2),
+                interpretation=f"Ca {ca:.1f} low + Phos {phos:.1f} high + CKD - CKD mineral and bone disorder. Check PTH and vitamin D.",
                 significance="high", supports=["chronic_kidney_disease"],
                 citation="KDIGO CKD-MBD 2017",
                 inputs={"Ca": ca, "Phos": phos, "Creatinine": cr or 0})
 
     if ca and ca>10.5 and phos and phos<2.5:
         add(pattern_id="hypercalcemia_low_phos", name_en="Hypercalcemia Low Phosphate",
-            name_fa="هیپرکلسمی با فسفات پایین", value=round(ca,2),
-            interpretation=f"Ca {ca:.1f} بالا + Phos {phos:.1f} پایین — به نفع هایپرپاراتیروئیدی اولیه یا بدخیمی.",
+            name_fa="Hypercalcaemia with low phosphate", value=round(ca,2),
+            interpretation=f"Ca {ca:.1f} high + Phos {phos:.1f} low - favours primary hyperparathyroidism or malignancy.",
             significance="high", supports=["primary_hyperparathyroidism"],
             citation="Bilezikian JP 2014",
             inputs={"Ca": ca, "Phos": phos})
@@ -7035,16 +7035,16 @@ def tahlil_olgoo_haye_moshtagh(
     if k and k>5.5:
         if (cr and cr>1.5) or (bicarb and bicarb<20):
             add(pattern_id="hyperkalemia_ckd_acidosis", name_en="Hyperkalemia with CKD/Acidosis",
-                name_fa="هیپرکالمی با CKD/اسیدوز", value=round(k,2),
-                interpretation=f"K {k:.1f} بالا (≥5.5) همراه CKD (Cr {cr or 0:.1f}) یا اسیدوز (HCO3 {bicarb or 0:.0f}) — ریسک آریتمی بالا، درمان اورژانسی.",
+                name_fa="Hyperkalaemia with CKD/acidosis", value=round(k,2),
+                interpretation=f"K {k:.1f} high (>=5.5) with CKD (Cr {cr or 0:.1f}) or acidosis (HCO3 {bicarb or 0:.0f}) - high arrhythmia risk, emergency treatment.",
                 significance="high", supports=["chronic_kidney_disease","acute_kidney_injury"],
                 citation="KDIGO AKI 2012",
                 inputs={"K": k, "Cr": cr or 0, "HCO3": bicarb or 0})
 
     if na and na<135 and osm_meas and osm_meas<280:
         add(pattern_id="hypotonic_hyponatremia", name_en="Hypotonic Hyponatremia",
-            name_fa="هیپوناترمی هیپوتونیک", value=round(na,1),
-            interpretation=f"Na {na:.0f} پایین + اسمولالیته {osm_meas:.0f} پایین (<280) — هیپوناترمی هیپوتونیک: SIADH، کمبود حجم یا نارسایی آدرنال.",
+            name_fa="Hypotonic hyponatraemia", value=round(na,1),
+            interpretation=f"Na {na:.0f} low + osmolality {osm_meas:.0f} low (<280) - hypotonic hyponatraemia: SIADH, volume depletion or adrenal insufficiency.",
             significance="high", supports=["siadh","addison_disease"],
             citation="Verbalis JG, Am J Med 2013",
             inputs={"Na": na, "Osm": osm_meas})
@@ -7053,8 +7053,8 @@ def tahlil_olgoo_haye_moshtagh(
         ldl = g("ldl_cholesterol") or g("ldl_cholesterol_direct")
         if ldl and ldl>=130:
             add(pattern_id="atherogenic_dyslipidemia", name_en="Atherogenic Dyslipidemia",
-                name_fa="دیس‌لیپیدمی آتروژنیک", value=round(tg/hdl,2),
-                interpretation=f"TG {tg:.0f} بالا + HDL {hdl:.0f} پایین + LDL {ldl:.0f} بالا — دیس‌لیپیدمی آتروژنیک: LDL کوچک-متراکم، ریسک CV بالا.",
+                name_fa="Atherogenic dyslipidaemia", value=round(tg/hdl,2),
+                interpretation=f"TG {tg:.0f} high + HDL {hdl:.0f} low + LDL {ldl:.0f} high - atherogenic dyslipidaemia: small dense LDL, high CV risk.",
                 significance="high", supports=["metabolic_syndrome","type_2_diabetes","coronary_artery_disease"],
                 citation="NCEP ATP III",
                 inputs={"TG": tg, "HDL": hdl, "LDL": ldl})
@@ -7065,8 +7065,8 @@ def tahlil_olgoo_haye_moshtagh(
         remnant = tc - hdl - ldl_v
         if remnant>30:
             add(pattern_id="high_remnant_chol", name_en="High Remnant Cholesterol",
-                name_fa="کلسترول باقیمانده بالا", value=round(remnant,1),
-                interpretation=f"کلسترول باقیمانده {remnant:.0f} (>30) بالا — ریسک باقی‌مانده CV علی‌رغم LDL کنترل‌شده.",
+                name_fa="High remnant cholesterol", value=round(remnant,1),
+                interpretation=f"Remnant cholesterol {remnant:.0f} (>30) high - residual CV risk despite controlled LDL.",
                 significance="moderate", supports=["coronary_artery_disease"],
                 citation="Varbo A, JACC 2013",
                 inputs={"Remnant": round(remnant,1), "TC": tc, "HDL": hdl, "LDL": ldl_v})
@@ -7075,8 +7075,8 @@ def tahlil_olgoo_haye_moshtagh(
     if ua and ua>7:
         if (tg and tg>=150) or (fpg and fpg>=100) or (bp_sys and bp_sys>=130):
             add(pattern_id="hyperuricemia_metabolic", name_en="Hyperuricemia Metabolic",
-                name_fa="هیپریوریسمی متابولیک", value=round(ua,1),
-                interpretation=f"اسید اوریک {ua:.1f} بالا همراه TG/FPG/BP بالا — هیپریوریسمی در زمینه سندرم متابولیک، ریسک نقرس و CKD.",
+                name_fa="Metabolic hyperuricaemia", value=round(ua,1),
+                interpretation=f"Uric acid {ua:.1f} high with high TG/FPG/BP - hyperuricaemia in the setting of metabolic syndrome; risk of gout and CKD.",
                 significance="moderate", supports=["gout","metabolic_syndrome"],
                 citation="ACR Gout 2020",
                 inputs={"UA": ua})
@@ -7084,15 +7084,15 @@ def tahlil_olgoo_haye_moshtagh(
     if plt and plt>450:
         if crp and crp>10:
             add(pattern_id="reactive_thrombocytosis", name_en="Reactive Thrombocytosis",
-                name_fa="ترومبوسیتوز واکنشی", value=round(plt,0),
-                interpretation=f"PLT {plt:.0f} بالا + CRP {crp:.0f} بالا — ترومبوسیتوز واکنشی به التهاب/عفونت/فقر آهن.",
+                name_fa="Reactive thrombocytosis", value=round(plt,0),
+                interpretation=f"PLT {plt:.0f} high + CRP {crp:.0f} high - thrombocytosis reactive to inflammation/infection/iron deficiency.",
                 significance="moderate", supports=["iron_deficiency_anemia","infection"],
                 citation="Harrison Hematology",
                 inputs={"PLT": plt, "CRP": crp})
         else:
             add(pattern_id="primary_thrombocytosis", name_en="Primary Thrombocytosis?",
-                name_fa="ترومبوسیتوز اولیه؟", value=round(plt,0),
-                interpretation=f"PLT {plt:.0f} بالا بدون CRP بالا — ترومبوسیتوز اولیه (ET) را در نظر بگیرید، JAK2/CALR.",
+                name_fa="Primary thrombocytosis?", value=round(plt,0),
+                interpretation=f"PLT {plt:.0f} high without raised CRP - consider essential thrombocythaemia (ET); JAK2/CALR.",
                 significance="moderate", supports=["essential_thrombocythemia"],
                 citation="WHO MPN 2022",
                 inputs={"PLT": plt})
@@ -7103,15 +7103,15 @@ def tahlil_olgoo_haye_moshtagh(
     if na and na<135:
         if osmo and osmo<275:
             add(pattern_id="hypotonic_hyponatremia_severe", name_en="Hypotonic Hyponatremia Detailed",
-                name_fa="هیپوناترمی هیپوتونیک دقیق", value=round(na,0),
-                interpretation=f"Na {na:.0f} + اسمولالیته {osmo:.0f} پایین — هیپوناترمی هیپوتونیک واقعی. بررسی حجم خارج سلولی، TSH، کورتیزول، داروها (تیازید).",
+                name_fa="Confirmed hypotonic hyponatraemia", value=round(na,0),
+                interpretation=f"Na {na:.0f} + osmolality {osmo:.0f} low - true hypotonic hyponatraemia. Assess extracellular volume, TSH, cortisol, drugs (thiazides).",
                 significance="high", supports=["siadh","adrenal_insufficiency","hypothyroidism"],
                 citation="Verbalis JG, Am J Med 2013",
                 inputs={"Na": na, "Osm": osmo})
         if na<120:
             add(pattern_id="severe_hyponatremia_critical", name_en="Critical Hyponatremia",
-                name_fa="هیپوناترمی بحرانی", value=round(na,0),
-                interpretation=f"Na {na:.0f} <120 — بحرانی، ریسک تشنج/ادم مغزی. اصلاح آهسته ≤8 mmol/24h، بررسی علت مرکزی.",
+                name_fa="Critical hyponatraemia", value=round(na,0),
+                interpretation=f"Na {na:.0f} <120 - critical; risk of seizures/cerebral oedema. Correct slowly (<=8 mmol/24 h); evaluate for a central cause.",
                 significance="high", supports=["siadh","adrenal_insufficiency"],
                 citation="Verbalis 2013",
                 inputs={"Na": na})
@@ -7119,8 +7119,8 @@ def tahlil_olgoo_haye_moshtagh(
     if na and na>145:
         if osmo and osmo>295:
             add(pattern_id="hypernatremia_hyperosmolar", name_en="Hypernatremia Hyperosmolar",
-                name_fa="هیپرناترمی هیپراسمولار", value=round(na,0),
-                interpretation=f"Na {na:.0f} + اسمولالیته {osmo:.0f} بالا — دهیدراتاسیون یا دیابت بی‌مزه. بررسی دسترسی به آب، ADH، ادرار اسمولالیته.",
+                name_fa="Hyperosmolar hypernatraemia", value=round(na,0),
+                interpretation=f"Na {na:.0f} + osmolality {osmo:.0f} high - dehydration or diabetes insipidus. Assess water access, ADH, urine osmolality.",
                 significance="high", supports=["diabetes_insipidus","dehydration"],
                 citation="Adrogué HJ, NEJM 2000",
                 inputs={"Na": na, "Osm": osmo})
@@ -7129,8 +7129,8 @@ def tahlil_olgoo_haye_moshtagh(
     if k and k<3.5:
         if bicarb and bicarb>29:
             add(pattern_id="hypokalemia_alkalosis", name_en="Hypokalemia with Met Alkalosis",
-                name_fa="هیپوکالمی با آلکالوز متابولیک", value=round(k,2),
-                interpretation=f"K {k:.1f} پایین + HCO3 {bicarb:.0f} بالا — استفراغ، دیورتیک لوپ/تیازید، آلدوسترونیسم. بررسی Mg، Cl ادرار.",
+                name_fa="Hypokalaemia with metabolic alkalosis", value=round(k,2),
+                interpretation=f"K {k:.1f} low + HCO3 {bicarb:.0f} high - vomiting, loop/thiazide diuretics, aldosteronism. Check Mg and urine Cl.",
                 significance="moderate", supports=["primary_aldosteronism","vomiting","diuretic_abuse"],
                 citation="Weiner ID, JASN 2019",
                 inputs={"K": k, "HCO3": bicarb})
@@ -7142,15 +7142,15 @@ def tahlil_olgoo_haye_moshtagh(
     if ca and ca<8.5:
         if pth and pth<15:
             add(pattern_id="hypocalcemia_low_pth", name_en="Hypocalcemia Low PTH",
-                name_fa="هیپوکلسمی با PTH پایین", value=round(ca,2),
-                interpretation=f"Ca {ca:.1f} پایین + PTH {pth:.0f} پایین — هیپوپاراتیروئیدیسم، هیپومنیزیمی یا پس از تیروئیدکتومی.",
+                name_fa="Hypocalcaemia with low PTH", value=round(ca,2),
+                interpretation=f"Ca {ca:.1f} low + PTH {pth:.0f} low - hypoparathyroidism, hypomagnesaemia or post-thyroidectomy.",
                 significance="high", supports=["hypoparathyroidism"],
                 citation="Bilezikian JP 2020",
                 inputs={"Ca": ca, "PTH": pth})
         elif vitd and vitd<20:
             add(pattern_id="hypocalcemia_vitd_def", name_en="Hypocalcemia VitD Deficiency",
-                name_fa="هیپوکلسمی کمبود ویتامین D", value=round(ca,2),
-                interpretation=f"Ca {ca:.1f} پایین + VitD {vitd:.0f} پایین — کمبود ویتامین D با هیپوکلسمی ثانویه. بررسی PTH ثانویه.",
+                name_fa="Hypocalcaemia of vitamin D deficiency", value=round(ca,2),
+                interpretation=f"Ca {ca:.1f} low + vitamin D {vitd:.0f} low - vitamin D deficiency with secondary hypocalcaemia. Check for secondary hyperparathyroidism.",
                 significance="moderate", supports=["vitamin_d_deficiency","secondary_hyperparathyroidism"],
                 citation="Holick MF 2011",
                 inputs={"Ca": ca, "VitD": vitd})
@@ -7170,8 +7170,8 @@ def tahlil_olgoo_haye_moshtagh(
 
         if is_pediatric_phos_normal:
             add(pattern_id="phos_pediatric_normal", name_en="Phosphorus Pediatric Normal",
-                name_fa="فسفر طبیعی کودک", value=round(phos,2),
-                interpretation=f"فسفر {phos:.1f} در کودک {age_for_phos:.0f} ساله — در کودکان فسفر تا {6.5 if age_for_phos<12 else 5.5:.1f} طبیعی است (رشد استخوانی).",
+                name_fa="Normal phosphate for a child", value=round(phos,2),
+                interpretation=f"Phosphate {phos:.1f} in a {age_for_phos:.0f}-year-old child - in children phosphate up to {6.5 if age_for_phos<12 else 5.5:.1f} is normal (bone growth).",
                 significance="low", supports=[],
                 argues_against=["chronic_kidney_disease"],
                 citation="CALIPER Pediatric Reference 2020",
@@ -7180,23 +7180,23 @@ def tahlil_olgoo_haye_moshtagh(
             cr = g("creatinine")
             if cr and cr>1.5:
                 add(pattern_id="hyperphos_ckd", name_en="Hyperphosphatemia CKD",
-                    name_fa="هیپرفسفاتمی در CKD", value=round(phos,2),
-                    interpretation=f"فسفر {phos:.1f} بالا + کراتینین {cr:.1f} بالا — احتباس فسفر در CKD، ریسک CKD-MBD. بررسی Ca، PTH، VitD.",
+                    name_fa="Hyperphosphataemia in CKD", value=round(phos,2),
+                    interpretation=f"Phosphate {phos:.1f} high + creatinine {cr:.1f} high - phosphate retention in CKD, risk of CKD-MBD. Check Ca, PTH, vitamin D.",
                     significance="moderate", supports=["chronic_kidney_disease","secondary_hyperparathyroidism"],
                     citation="KDIGO CKD-MBD 2017",
                     inputs={"Phos": phos, "Cr": cr})
             elif phos>5.5:
                 add(pattern_id="hyperphosphatemia", name_en="Hyperphosphatemia",
-                    name_fa="هیپرفسفاتمی", value=round(phos,2),
-                    interpretation=f"فسفر {phos:.1f} بالا — CKD، هیپوپارا، تومور لیز، یا مصرف زیاد.",
+                    name_fa="Hyperphosphataemia", value=round(phos,2),
+                    interpretation=f"Phosphate {phos:.1f} high - CKD, hypoparathyroidism, tumour lysis or excess intake.",
                     significance="moderate", supports=["chronic_kidney_disease","hypoparathyroidism"],
                     citation="KDIGO CKD-MBD 2017",
                     inputs={"Phos": phos})
 
     if phos and phos<2.5:
         add(pattern_id="hypophosphatemia", name_en="Hypophosphatemia",
-            name_fa="هیپوفسفاتمی", value=round(phos,2),
-            interpretation=f"فسفر {phos:.1f} پایین — سوءتغذیه، الکلیسم، دیورتیک، Fanconi. ریسک ضعف عضلانی/نارسایی تنفسی اگر <1.0.",
+            name_fa="Hypophosphataemia", value=round(phos,2),
+            interpretation=f"Phosphate {phos:.1f} low - malnutrition, alcohol use, diuretics, Fanconi syndrome. Risk of muscle weakness/respiratory failure if <1.0.",
             significance="moderate", supports=["malnutrition","alcoholism","fanconi_syndrome"],
             citation="Gaasbeek A, Am J Med 2005",
             inputs={"Phos": phos})
@@ -7205,16 +7205,16 @@ def tahlil_olgoo_haye_moshtagh(
     if mg and mg<1.7:
         if (k and k<3.5) or (ca and ca<8.5):
             add(pattern_id="hypomag_with_hypok_hypoca", name_en="Hypomagnesemia with HypoK/HypoCa",
-                name_fa="هیپومنیزیمی با هیپوکالمی/هیپوکلسمی", value=round(mg,2),
-                interpretation=f"Mg {mg:.1f} پایین + K {k or 0:.1f}/Ca {ca or 0:.1f} پایین — هیپومنیزیمی علت مقاوم به درمان هیپوکالمی/هیپوکلسمی. اصلاح Mg اول.",
+                name_fa="Hypomagnesaemia with hypokalaemia/hypocalcaemia", value=round(mg,2),
+                interpretation=f"Mg {mg:.1f} low + K {k or 0:.1f}/Ca {ca or 0:.1f} low - hypomagnesaemia is a cause of refractory hypokalaemia/hypocalcaemia. Correct Mg first.",
                 significance="high", supports=["hypomagnesemia"],
                 citation="de Baaij JHF, Physiol Rev 2015",
                 inputs={"Mg": mg, "K": k or 0, "Ca": ca or 0})
 
     if bicarb and bicarb>29 and ph and ph>7.45:
         add(pattern_id="metabolic_alkalosis", name_en="Metabolic Alkalosis",
-            name_fa="آلکالوز متابولیک", value=round(bicarb,0),
-            interpretation=f"pH {ph:.2f} بالا + HCO3 {bicarb:.0f} بالا — آلکالوز متابولیک (استفراغ، دیورتیک، آلدوسترونیسم). بررسی Cl ادرار.",
+            name_fa="Metabolic alkalosis", value=round(bicarb,0),
+            interpretation=f"pH {ph:.2f} high + HCO3 {bicarb:.0f} high - metabolic alkalosis (vomiting, diuretics, aldosteronism). Check urine Cl.",
             significance="moderate", supports=["vomiting","primary_aldosteronism"],
             citation="Emmett M, NEJM 2020",
             inputs={"pH": ph, "HCO3": bicarb})
@@ -7222,24 +7222,24 @@ def tahlil_olgoo_haye_moshtagh(
     pco2 = g("pco2") or g("arterial_pco2") or g("carbon_dioxide_partial_pressure")
     if ph and ph<7.35 and pco2 and pco2>45:
         add(pattern_id="respiratory_acidosis", name_en="Respiratory Acidosis",
-            name_fa="اسیدوز تنفسی", value=round(pco2,0),
-            interpretation=f"pH {ph:.2f} پایین + pCO2 {pco2:.0f} بالا — اسیدوز تنفسی (COPD، افیون، ضعف عضلانی). HCO3 جبرانی {bicarb or 0:.0f}.",
+            name_fa="Respiratory acidosis", value=round(pco2,0),
+            interpretation=f"pH {ph:.2f} low + pCO2 {pco2:.0f} high - respiratory acidosis (COPD, opioids, muscle weakness). Compensatory HCO3 {bicarb or 0:.0f}.",
             significance="high", supports=["copd","respiratory_failure"],
             citation="Adrogué HJ, NEJM 2022",
             inputs={"pH": ph, "pCO2": pco2, "HCO3": bicarb or 0})
 
     if ph and ph>7.45 and pco2 and pco2<35:
         add(pattern_id="respiratory_alkalosis", name_en="Respiratory Alkalosis",
-            name_fa="آلکالوز تنفسی", value=round(pco2,0),
-            interpretation=f"pH {ph:.2f} بالا + pCO2 {pco2:.0f} پایین — آلکالوز تنفسی (اضطراب، درد، سپسیس، سیروز، سالیسیلات).",
+            name_fa="Respiratory alkalosis", value=round(pco2,0),
+            interpretation=f"pH {ph:.2f} high + pCO2 {pco2:.0f} low - respiratory alkalosis (anxiety, pain, sepsis, cirrhosis, salicylates).",
             significance="moderate", supports=["anxiety","sepsis","liver_cirrhosis"],
             citation="Adrogué HJ 2022",
             inputs={"pH": ph, "pCO2": pco2})
 
     if vitd and vitd<20 and pth and pth>65 and ca and ca<10.2:
         add(pattern_id="vitd_def_secondary_hpt", name_en="VitD Def Secondary Hyperpara",
-            name_fa="کمبود VitD با هایپرپارای ثانویه", value=round(vitd,1),
-            interpretation=f"VitD {vitd:.0f} پایین + PTH {pth:.0f} بالا + Ca طبیعی/پایین — هایپرپاراتیروئیدیسم ثانویه به کمبود VitD.",
+            name_fa="Vitamin D deficiency with secondary hyperparathyroidism", value=round(vitd,1),
+            interpretation=f"Vitamin D {vitd:.0f} low + PTH {pth:.0f} high + Ca normal/low - secondary hyperparathyroidism due to vitamin D deficiency.",
             significance="high", supports=["vitamin_d_deficiency","secondary_hyperparathyroidism"],
             citation="Holick MF 2011",
             inputs={"VitD": vitd, "PTH": pth, "Ca": ca})
@@ -7249,8 +7249,8 @@ def tahlil_olgoo_haye_moshtagh(
         if (egfr and egfr<60) or (g("creatinine") and g("creatinine")>1.5):
             if ca and ca<=10.2 and phos and phos>=4.5:
                 add(pattern_id="secondary_hpt_ckd", name_en="Secondary HPT CKD",
-                    name_fa="هایپرپارای ثانویه در CKD", value=round(pth,0),
-                    interpretation=f"PTH {pth:.0f} بالا + eGFR پایین + Ca طبیعی/پایین + Phos بالا — هایپرپارای ثانویه CKD. بررسی VitD، CKD-MBD.",
+                    name_fa="Secondary hyperparathyroidism in CKD", value=round(pth,0),
+                    interpretation=f"PTH {pth:.0f} high + low eGFR + Ca normal/low + high phosphate - secondary hyperparathyroidism of CKD. Check vitamin D; CKD-MBD.",
                     significance="high", supports=["secondary_hyperparathyroidism","chronic_kidney_disease"],
                     citation="KDIGO CKD-MBD 2017",
                     inputs={"PTH": pth, "Ca": ca, "Phos": phos})
@@ -7259,8 +7259,8 @@ def tahlil_olgoo_haye_moshtagh(
     if cortisol and cortisol>25:
         if (k and k<3.5) or (glu and glu>126) or (bp_sys and bp_sys>=140):
             add(pattern_id="cushing_pattern", name_en="Cushing Pattern",
-                name_fa="الگوی کوشینگ", value=round(cortisol,1),
-                interpretation=f"کورتیزول {cortisol:.0f} بالا + K پایین/قند بالا/BP بالا — الگوی کوشینگ. بررسی ACTH، تست دگزامتازون.",
+                name_fa="Cushing pattern", value=round(cortisol,1),
+                interpretation=f"Cortisol {cortisol:.0f} high + low K/high glucose/high BP - Cushing pattern. Check ACTH; dexamethasone suppression test.",
                 significance="high", supports=["cushing_syndrome"],
                 citation="Nieman LK, JCEM 2015",
                 inputs={"Cortisol": cortisol, "K": k or 0, "Glucose": glu or 0})
@@ -7270,8 +7270,8 @@ def tahlil_olgoo_haye_moshtagh(
     bmi_val = g("body_mass_index") or g("bmi") or _ctx_get("body_mass_index") or _ctx_get("bmi")
     if alb and alb<3.0 and prealb and prealb<15 and bmi_val and bmi_val<18.5:
         add(pattern_id="severe_malnutrition", name_en="Severe Malnutrition",
-            name_fa="سوءتغذیه شدید", value=round(alb,1),
-            interpretation=f"آلبومین {alb:.1f} + پره‌آلبومین {prealb:.0f} + BMI {bmi_val:.1f} پایین — سوءتغذیه شدید پروتئین-کالری. ریسک عفونت/مرگ بالا.",
+            name_fa="Severe malnutrition", value=round(alb,1),
+            interpretation=f"Albumin {alb:.1f} + prealbumin {prealb:.0f} + BMI {bmi_val:.1f} low - severe protein-energy malnutrition. High risk of infection/death.",
             significance="high", supports=["malnutrition"],
             citation="ASPEN Malnutrition 2020",
             inputs={"Albumin": alb, "Prealbumin": prealb, "BMI": bmi_val})
@@ -7281,8 +7281,8 @@ def tahlil_olgoo_haye_moshtagh(
     ldl = g("ldl_cholesterol")
     if tg and tg>=150 and hdl and hdl<40 and ldl and ldl>130:
         add(pattern_id="atherogenic_triad", name_en="Atherogenic Triad",
-            name_fa="تریاد آتروژنیک", value=round(tg/hdl if hdl else 0,1),
-            interpretation=f"TG {tg:.0f} بالا + HDL {hdl:.0f} پایین + LDL {ldl:.0f} بالا — دیس‌لیپیدمی آتروژنیک، ریسک ASCVD بسیار بالا.",
+            name_fa="Atherogenic triad", value=round(tg/hdl if hdl else 0,1),
+            interpretation=f"TG {tg:.0f} high + HDL {hdl:.0f} low + LDL {ldl:.0f} high - atherogenic dyslipidaemia, very high ASCVD risk.",
             significance="high", supports=["metabolic_syndrome","coronary_artery_disease"],
             citation="AHA Dyslipidemia 2018",
             inputs={"TG": tg, "HDL": hdl, "LDL": ldl})
@@ -7291,8 +7291,8 @@ def tahlil_olgoo_haye_moshtagh(
     mcv = g("mean_corpuscular_volume")
     if hb and hb<12 and rdw and rdw>15 and mcv and 80<=mcv<=100:
         add(pattern_id="high_rdw_normocytic", name_en="High RDW Normocytic Anemia",
-            name_fa="RDW بالا با MCV نرمال", value=round(rdw,1),
-            interpretation=f"Hb {hb:.1f} پایین + RDW {rdw:.1f} بالا + MCV {mcv:.0f} نرمال — کمبود زودرس آهن/B12/فولات یا پاسخ به درمان.",
+            name_fa="High RDW with normal MCV", value=round(rdw,1),
+            interpretation=f"Hb {hb:.1f} low + RDW {rdw:.1f} high + MCV {mcv:.0f} normal - early iron/B12/folate deficiency or response to treatment.",
             significance="moderate", supports=["iron_deficiency_anemia","vitamin_b12_deficiency"],
             citation="BSH Anemia 2023",
             inputs={"Hb": hb, "RDW": rdw, "MCV": mcv})
@@ -7301,16 +7301,16 @@ def tahlil_olgoo_haye_moshtagh(
     neut = g("neutrophils")
     if wbc and wbc>11 and neut and neut>75:
         add(pattern_id="leukocytosis_left_shift", name_en="Leukocytosis Left Shift",
-            name_fa="لکوسیتوز با شیفت چپ", value=round(wbc,1),
-            interpretation=f"WBC {wbc:.1f} بالا + نوتروفیل {neut:.0f}% بالا — عفونت باکتریال حاد یا التهاب شدید.",
+            name_fa="Leukocytosis with left shift", value=round(wbc,1),
+            interpretation=f"WBC {wbc:.1f} high + neutrophils {neut:.0f}% high - acute bacterial infection or severe inflammation.",
             significance="moderate", supports=["bacterial_infection","sepsis"],
             citation="Harrison Infectious Disease",
             inputs={"WBC": wbc, "Neut": neut})
 
     if plt and plt<50:
         add(pattern_id="severe_thrombocytopenia", name_en="Severe Thrombocytopenia",
-            name_fa="ترومبوسیتوپنی شدید", value=round(plt,0),
-            interpretation=f"PLT {plt:.0f} <50k شدید — ریسک خونریزی خودبه‌خودی. بررسی ITP، DIC، دارو، هیپارین، بدخیمی.",
+            name_fa="Severe thrombocytopenia", value=round(plt,0),
+            interpretation=f"PLT {plt:.0f} <50k, severe - risk of spontaneous bleeding. Evaluate ITP, DIC, drugs, heparin, malignancy.",
             significance="high", supports=["immune_thrombocytopenia","disseminated_intravascular_coagulation"],
             citation="BSH Thrombocytopenia 2023",
             inputs={"PLT": plt})
@@ -7319,8 +7319,8 @@ def tahlil_olgoo_haye_moshtagh(
     crp = g("c_reactive_protein")
     if esr and esr>50 and crp and crp<10:
         add(pattern_id="esr_crp_dissociation", name_en="ESR/CRP Dissociation",
-            name_fa="عدم تطابق ESR/CRP", value=round(esr,0),
-            interpretation=f"ESR {esr:.0f} بالا + CRP {crp:.0f} پایین — الگوی بیماری مزمن/خودایمنی (SLE، میلوما) نه عفونت حاد.",
+            name_fa="ESR/CRP discordance", value=round(esr,0),
+            interpretation=f"ESR {esr:.0f} high + CRP {crp:.0f} low - pattern of chronic/autoimmune disease (SLE, myeloma) rather than acute infection.",
             significance="moderate", supports=["systemic_lupus_erythematosus","multiple_myeloma"],
             citation="Lapić I, Biochem Med 2020",
             inputs={"ESR": esr, "CRP": crp})
@@ -7332,8 +7332,8 @@ def tahlil_olgoo_haye_moshtagh(
     if tsh and tsh>10 and ft4 and ft4<0.8:
         if (chol and chol>240) or (ck and ck>200):
             add(pattern_id="hypothyroid_metabolic", name_en="Hypothyroid Metabolic Effects",
-                name_fa="اثرات متابولیک کم‌کاری تیروئید", value=round(tsh,1),
-                interpretation=f"TSH {tsh:.1f} بالا + FT4 {ft4:.1f} پایین + کلسترول {chol or 0:.0f}/CK {ck or 0:.0f} بالا — اثرات متابولیک کم‌کاری تیروئید.",
+                name_fa="Metabolic effects of hypothyroidism", value=round(tsh,1),
+                interpretation=f"TSH {tsh:.1f} high + FT4 {ft4:.1f} low + cholesterol {chol or 0:.0f}/CK {ck or 0:.0f} high - metabolic effects of hypothyroidism.",
                 significance="moderate", supports=["hypothyroidism"],
                 citation="ATA Hypothyroidism 2014",
                 inputs={"TSH": tsh, "FT4": ft4, "Chol": chol or 0, "CK": ck or 0})
@@ -7383,8 +7383,8 @@ def tahlil_olgoo_haye_moshtagh(
 
         if total_checked >= 5 and normal_count / total_checked >= 0.7:
             add(pattern_id="pediatric_normal_labs", name_en="Pediatric Normal Labs - Healthy Child",
-                name_fa="آزمایش‌های طبیعی کودک سالم", value=round(normal_count/total_checked*100,0),
-                interpretation=f"در کودک {age_check:.0f} ساله، {normal_count}/{total_checked} شاخص اصلی در محدوده طبیعی کودکان است. ALP بالا ({g('alkaline_phosphatase') or 0:.0f}) و فسفر {g('phosphate') or 0:.1f} به دلیل رشد استخوانی طبیعی است، نه بیماری کبدی. BUN/Cr بالا به دلیل توده عضلانی کم کودک است. تفسیر کلی: طبیعی، رشد و تکامل طبیعی.",
+                name_fa="Normal results in a healthy child", value=round(normal_count/total_checked*100,0),
+                interpretation=f"In a {age_check:.0f}-year-old child, {normal_count}/{total_checked} key indices are within the paediatric reference range. High ALP ({g('alkaline_phosphatase') or 0:.0f}) and phosphate {g('phosphate') or 0:.1f} are normal for bone growth, not liver disease. A high BUN/Cr reflects the child's low muscle mass. Overall: normal; normal growth and development.",
                 significance="low", supports=[],
                 argues_against=["cholestasis","alcoholic_liver_disease","acute_kidney_injury","acute_pancreatitis","celiac_disease","tumor_lysis_syndrome"],
                 citation="CALIPER Pediatric Reference Intervals 2020; Harriet Lane Handbook",
@@ -7402,13 +7402,13 @@ def tahlil_olgoo_haye_moshtagh(
                 add(
                     pattern_id="tma_ttp_pattern",
                     name_en="Thrombotic Microangiopathy (TTP / HUS Pattern)",
-                    name_fa="الگوی میکروآنژیوپاتی ترومبوتیک (TTP / HUS)",
+                    name_fa="Thrombotic microangiopathy pattern (TTP / HUS)",
                     value=round(plt, 0),
                     interpretation=(
-                        f"آنمی همولیتیک میکروآنژیوپاتیک (MAHA: LDH {ldh:.0f} بالا، Hb {hb:.1f} پایین) "
-                        f"همراه با ترومبوسیتوپنی شدید ({plt:.0f}k) و تست‌های انعقادی طبیعی (INR {inr_v or 1.0:.2f}، فیبرینوژن {fib_v or 300:.0f}). "
-                        f"این الگو نشان‌دهنده ترومبوز میکروواسکولار پلاکت-vWF (TTP/HUS) است. "
-                        f"فوریت حیاتی: پلاسمافرز فوری (PEX) و پرهیز اکید از تزریق پلاکت (کنترااندیکه)."
+                        f"Microangiopathic haemolytic anaemia (MAHA: LDH {ldh:.0f} high, Hb {hb:.1f} low) "
+                        f"with severe thrombocytopenia ({plt:.0f}k) and normal coagulation tests (INR {inr_v or 1.0:.2f}, fibrinogen {fib_v or 300:.0f}). "
+                        f"This pattern indicates platelet-vWF microvascular thrombosis (TTP/HUS). "
+                        f"Life-threatening emergency: urgent plasma exchange (PEX); platelet transfusion is contraindicated."
                     ),
                     significance="high",
                     supports=["thrombotic_thrombocytopenic_purpura", "thrombotic_microangiopathy"],
@@ -7429,13 +7429,13 @@ def tahlil_olgoo_haye_moshtagh(
             add(
                 pattern_id="hlh_mas_pattern",
                 name_en="Hemophagocytic Lymphohistiocytosis (HLH / MAS Pattern)",
-                name_fa="سندروم لنفوهیستوسیتوزیس هموفاگوسیتیک (HLH / MAS)",
+                name_fa="Haemophagocytic lymphohistiocytosis (HLH / MAS)",
                 value=round(ferr_v, 0),
                 interpretation=(
-                    f"هیپرفریتینمی شدید ({ferr_v:.0f} ng/mL) همراه با سیتوپنی چندرده‌ای، هیپوفیبرینوژنمی یا آسیب کبدی — "
-                    f"معیارهای تشخیصی HLH-2004 و شاخص HScore برآورده شده است. "
-                    f"احتمال بالای طوفان سیتوکینی و فعال‌سازی شدید ماکروفاژها. "
-                    f"بررسی فوری soluble CD25 (sIL-2R)، آسپیراسیون مغز استخوان و مشاوره انکولوژی/روماتولوژی جهت درمان سرکوب ایمنی اورژانس."
+                    f"Severe hyperferritinaemia ({ferr_v:.0f} ng/mL) with multilineage cytopenia, hypofibrinogenaemia or liver injury - "
+                    f"HLH-2004 diagnostic criteria and the HScore are met. "
+                    f"High probability of cytokine storm and marked macrophage activation. "
+                    f"Urgent soluble CD25 (sIL-2R), bone-marrow aspiration and oncology/rheumatology consultation for emergency immunosuppression."
                 ),
                 significance="high",
                 supports=["hemophagocytic_lymphohistiocytosis", "hemophagocytic_syndrome_malignancy_associated_pattern"],
@@ -7450,12 +7450,12 @@ def tahlil_olgoo_haye_moshtagh(
             add(
                 pattern_id="secondary_adrenal_insufficiency_pattern",
                 name_en="Secondary Adrenal Insufficiency Pattern",
-                name_fa="الگوی نارسایی ثانویه آدرنال (هیپوفیزی/مهار استروئید)",
+                name_fa="Secondary adrenal insufficiency pattern (pituitary/steroid suppression)",
                 value=round(cort_v, 1),
                 interpretation=(
-                    f"کورتیزول صبحگاهی پایین ({cort_v:.1f} µg/dL) با ACTH نامتناسباً نرمال/پایین ({acth_v:.1f} pg/mL) و پتاسیم طبیعی ({k or 4.0:.1f} mmol/L) — "
-                    f"به نفع نارسایی ثانویه/ثالثیه آدرنال (مهار محور هیپوتالاموس-هیپوفیز پس از مصرف استروئید یا پاتولوژی هیپوفیز) با حفظ محور رنین-آلدوسترون، "
-                    f"نه بیماری آدیسون اولیه."
+                    f"Low morning cortisol ({cort_v:.1f} ug/dL) with inappropriately normal/low ACTH ({acth_v:.1f} pg/mL) and normal potassium ({k or 4.0:.1f} mmol/L) - "
+                    f"favours secondary/tertiary adrenal insufficiency (hypothalamic-pituitary suppression after steroid use, or pituitary pathology) with a preserved renin-aldosterone axis, "
+                    f"rather than primary Addison disease."
                 ),
                 significance="high",
                 supports=["central_adrenal_insufficiency"],
@@ -7467,11 +7467,11 @@ def tahlil_olgoo_haye_moshtagh(
             add(
                 pattern_id="primary_adrenal_insufficiency_pattern",
                 name_en="Primary Adrenal Insufficiency (Addison Pattern)",
-                name_fa="الگوی نارسایی اولیه آدرنال (بیماری آدیسون)",
+                name_fa="Primary adrenal insufficiency pattern (Addison disease)",
                 value=round(cort_v, 1),
                 interpretation=(
-                    f"کورتیزول صبحگاهی پایین ({cort_v:.1f} µg/dL) همراه با ACTH بالا ({acth_v or 0:.1f} pg/mL) و هایپرکالمی ({k or 0:.1f} mmol/L) — "
-                    f"الگوی کلاسیک بیماری آدیسون (نارسایی قشر آدرنال با کمبود توأم گلوکوکورتیکوئید و مینرالوکورتیکوئید)."
+                    f"Low morning cortisol ({cort_v:.1f} ug/dL) with high ACTH ({acth_v or 0:.1f} pg/mL) and hyperkalaemia ({k or 0:.1f} mmol/L) - "
+                    f"classic pattern of Addison disease (adrenocortical failure with combined glucocorticoid and mineralocorticoid deficiency)."
                 ),
                 significance="high",
                 supports=["primary_adrenal_insufficiency_addison", "primary_adrenal_insufficiency"],
@@ -7488,12 +7488,12 @@ def tahlil_olgoo_haye_moshtagh(
         add(
             pattern_id="pheochromocytoma_crisis_pattern",
             name_en="Pheochromocytoma Catecholamine Excess Pattern",
-            name_fa="الگوی ترشح شدید کاتکول‌آمین‌ها (فئوکروموسیتوم)",
+            name_fa="Marked catecholamine excess pattern (phaeochromocytoma)",
             value=round(max(p_meta or 0, p_normeta or 0), 1),
             interpretation=(
-                f"افزایش بارز متانفرین‌های پلاسما (Metanephrine: {p_meta_pg or 0:.0f} pg/mL، Normetanephrine: {p_normeta_pg or 0:.0f} pg/mL) "
-                f"همراه با بحران فشارخون — بسیار اختصاصی برای تومور کرومافین (فئوکروموسیتوم/پاراگانگلیوم). "
-                f"هشدار دارویی: هرگز از بتابلوکر قبل از آلفابلوک کامل استفاده نشود (ریسک بحران فشارخون مرگبار)."
+                f"Markedly raised plasma metanephrines (metanephrine: {p_meta_pg or 0:.0f} pg/mL, normetanephrine: {p_normeta_pg or 0:.0f} pg/mL) "
+                f"with hypertensive crisis - highly specific for a chromaffin tumour (phaeochromocytoma/paraganglioma). "
+                f"Drug warning: never give a beta-blocker before complete alpha-blockade (risk of fatal hypertensive crisis)."
             ),
             significance="high",
             supports=["pheochromocytoma", "pheochromocytoma_adrenal_medulla"],
@@ -13606,28 +13606,28 @@ class ClinicalRuleEngine:
         L: list[str] = []
 
         if panic_alerts:
-            items = "، ".join(
+            items = ", ".join(
                 f"{a['feature_id']} = {a['value']:.3g} {a.get('unit','')}"
                 for a in panic_alerts[:4])
             L.append(
-                f"🚨 هشدار بحرانی / CRITICAL ALERTS: {items}. ارزیابی بالینی فوری و مداخله درمانی اورژانس لازم است.")
+                f"CRITICAL ALERTS: {items}. Immediate clinical evaluation and emergency treatment are required.")
 
         definitive = [r for r in results if r.status in ("urgent_pattern", "criterion_met")]
         if definitive:
-            names_fa = "، ".join(f"{r.name_fa or r.name_en}" for r in definitive[:5])
+            names_fa = ", ".join(f"{r.name_fa or r.name_en}" for r in definitive[:5])
             names_en = ", ".join(r.name_en for r in definitive[:5])
             more_count = len(definitive) - 5
-            more_str = f" و {more_count} وضعیت دیگر" if more_count > 0 else ""
+            more_str = f" and {more_count} further condition(s)" if more_count > 0 else ""
             L.append(
-                f"★ معیارهای تشخیصی برآورده‌شده (Definitive Criteria Met): {names_fa}{more_str} [{names_en}].")
+                f"Definitive criteria met: {names_fa}{more_str} [{names_en}].")
 
         compatible = [r for r in results if r.status in ("compatible_pattern", "screening_positive")]
         if compatible:
-            c_names = "، ".join(f"{r.name_fa or r.name_en}" for r in compatible[:4])
-            c_more = f" و {len(compatible) - 4} الگوی سازگار دیگر" if len(compatible) > 4 else ""
-            L.append(f"📋 الگوهای آزمایشگاهی سازگار (Compatible Patterns): {c_names}{c_more}.")
+            c_names = ", ".join(f"{r.name_fa or r.name_en}" for r in compatible[:4])
+            c_more = f" and {len(compatible) - 4} further compatible pattern(s)" if len(compatible) > 4 else ""
+            L.append(f"Compatible laboratory patterns: {c_names}{c_more}.")
         elif not definitive:
-            L.append("هیچ الگوی آزمایشگاهی غیرطبیعی مطابق معیارهای معتبر راهنماها شناسایی نشد.")
+            L.append("No abnormal laboratory pattern meeting established guideline criteria was identified.")
 
         if differential:
             top = differential[0]
@@ -13639,31 +13639,31 @@ class ClinicalRuleEngine:
             if has_substantive_support:
                 top_name = top.get("disease_id", "").replace("_", " ").title()
                 L.append(
-                    f"🔍 محتمل‌ترین گزینه در تشخیص افتراقی (Top Differential): "
-                    f"{top_name} (احتمال پسین {top.get('probability', 0):.0%}، اطمینان {top.get('confidence', 0):.0%}).")
+                    f"Top differential: "
+                    f"{top_name} (posterior probability {top.get('probability', 0):.0%}, confidence {top.get('confidence', 0):.0%}).")
                 rivals = [d for d in differential[1:4] if d.get('probability', 0) > 0.25]
                 if rivals:
-                    r_names = "، ".join(
+                    r_names = ", ".join(
                         f"{d.get('disease_id','').replace('_', ' ').title()} ({d.get('probability',0):.0%})"
                         for d in rivals)
-                    L.append(f"گزینه‌های افتراقی رقیب: {r_names}.")
+                    L.append(f"Competing differentials: {r_names}.")
             else:
-                L.append("✅ کلیه شاخص‌های بیوشیمیایی، مینرال‌ها و سلولی در محدوده مرجع فیزیولوژیک سن و جنس بیمار قرار دارند؛ هیچ تشخیص افتراقی یا الگوی بیماری‌زای فعالی مطرح نیست.")
+                L.append("All biochemical, mineral and cellular indices are within the physiological reference range for the patient's age and sex; no active differential diagnosis or disease pattern is suggested.")
 
         key_patterns = [pt for pt in patterns if pt.get('significance') == "high"]
         for pt in key_patterns[:3]:
-            L.append(f"📊 الگوی بالینی کلیدی: {pt.get('interpretation')}")
+            L.append(f"Key clinical pattern: {pt.get('interpretation')}")
 
         if drug_interactions:
             feats = _dedupe(d.get("feature_id") for d in drug_interactions)
             L.append(
-                f"💊 احتیاط تفسیری / تداخلات دارویی: داروهای فعلی ممکن است "
-                f"{'، '.join(feats[:4])} را متأثر سازند.")
+                f"Interpretive caution / drug interactions: current medications may affect "
+                f"{', '.join(feats[:4])}.")
 
         if corrections:
             L.append(
-                "اصلاحات اعمال‌شده: "
-                + "، ".join(f"{c['feature_id']} ({c['correction']})"
+                "Corrections applied: "
+                + ", ".join(f"{c['feature_id']} ({c['correction']})"
                             for c in corrections) + ".")
 
         if definitive or compatible or (differential and differential[0].get("probability", 0) >= 0.35 and differential[0].get("status") != "unlikely"):
@@ -13675,11 +13675,11 @@ class ClinicalRuleEngine:
             if gaps:
                 top_gaps = sorted(gaps.items(), key=lambda kv: -kv[1])[:4]
                 L.append(
-                    '🔬 آزمایش‌های پیشنهادی جهت تکمیل تشخیص (Recommended Follow-up): '
-                    + "، ".join(f for f, _ in top_gaps) + ".")
+                    'Recommended follow-up tests: '
+                    + ", ".join(f for f, _ in top_gaps) + ".")
 
         L.append(
-            "⚕ این خروجی سیستم پشتیبان تصمیم‌گیری بالینی (CDSS) است و تشخیص قطعی نهایی مستلزم قضاوت بالینی پزشک معالج می‌باشد.")
+            "This is the output of a clinical decision-support system (CDSS); the final diagnosis requires the clinical judgement of the treating physician.")
         return '\n\n'.join(L)
 
     def _vizhegi_ghabel_ghabool(self) -> set:
@@ -13823,7 +13823,7 @@ class ClinicalRuleEngine:
                 supporting_patterns.append(pt["interpretation"])
             elif disease_id in (pt.get("argues_against") or ()):
                 supporting_patterns.append(
-                    'شاهد مخالف — ' + pt['interpretation'])
+                    'Evidence against - ' + pt['interpretation'])
         sources_map = self.registry.sources
 
         drug_caveats: list[str] = []
