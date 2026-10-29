@@ -17,7 +17,7 @@
 
 ## Statements inside the manuscript (all present)
 
-Ethics (public de-identified data, no human participants) · Funding (none) · Competing interest (first author's commercial product) · Generative-AI declaration (three declared uses) · CRediT · Data and code availability (GitHub + `reproduce.sh`; Zenodo DOI to be inserted) · Software availability.
+Ethics (public de-identified data, no human participants) · Funding (none) · Competing interest (first author's commercial product) · Generative-AI declaration (three declared uses) · CRediT · Data and code availability (GitHub Hemoglyph-paper1 + `reproduce.sh`; Zenodo doi:10.5281/zenodo.23750557) · Software availability.
 
 ## Before pressing Submit
 
