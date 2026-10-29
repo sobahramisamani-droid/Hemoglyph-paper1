@@ -9,7 +9,7 @@ bash tools/release_check.sh          # must print no FAIL
 
 ## 1. GitHub push (5 min)
 ```bash
-git remote add origin https://github.com/sobahramisamani-droid/Hemoglyph-AlA_1.3.git   # once
+git remote add origin https://github.com/sobahramisamani-droid/Hemoglyph-paper1.git   # once
 git push origin main --tags
 ```
 Then on GitHub: Settings → General → confirm the repository is **public**; About → add the paper title and the topics
@@ -18,13 +18,13 @@ Then on GitHub: Settings → General → confirm the repository is **public**; A
 ## 2. Public-clone check (10 min, optional but worth it)
 On any machine with Python ≥ 3.11:
 ```bash
-git clone https://github.com/sobahramisamani-droid/Hemoglyph-AlA_1.3.git && cd Hemoglyph-AlA_1.3
+git clone https://github.com/sobahramisamani-droid/Hemoglyph-paper1.git && cd Hemoglyph-paper1
 bash reproduce.sh quick
 ```
 Paste the last 20 lines into `REPRODUCTION_LOG.md` under "public clone" and commit. (This is what Supplementary Note 21 points to.)
 
 ## 3. Zenodo (10 min)
-1. zenodo.org → log in with the GitHub account → **GitHub** tab → flip the switch next to `Hemoglyph-AlA_1.3` to ON.
+1. zenodo.org → log in with the GitHub account → **GitHub** tab → flip the switch next to `Hemoglyph-paper1` to ON.
 2. On GitHub: Releases → *Draft a new release* → tag **`paper1-R9-submitted`** (create on `main`), title
    `Paper 1 — CMPB submission snapshot (R9)`, description: one line pointing to `README.md` and `reproduce.sh` → *Publish release*.
    Zenodo picks up `.zenodo.json` (title, creators, licence, description) automatically; the archive is created within a few minutes.
